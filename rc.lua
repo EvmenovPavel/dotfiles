@@ -1,20 +1,16 @@
 -- Standard awesome library
-local gears     = require("lib.gears")
 local awful     = require("lib.awful")
-local wibox     = require("lib.wibox")
 
 -- Import theme
 local beautiful = require("lib.beautiful")
 local theme     = require("theme")
 beautiful.init(theme)
 
-local wallpaper = require("components.wallpaper")
-
 -- Import Logger
-log             = require("logger")
+log        = require("logger")
 
 -- Import Keybinds
-local keys      = require("keys.keys")
+local keys = require("keys.keys")
 root.keys(keys.globalkeys)
 root.buttons(keys.buttonkeys)
 
@@ -28,40 +24,17 @@ require("naughty")
 -- Import Tag Settings
 local tags = require("tags")
 
--- Import components
---require("components.wallpaper")
-require("components.exit-screen")
---require("components.volume-adjust")
-require("widgets.volume-widget.volume")
-
 -- Autostart specified apps
 local apps = require("autostart")
 apps:start()
 
-
--- ===================================================================
--- Set Up Screen & Connect Signals
--- ===================================================================
-
-
--- Define tag layouts
-awful.layout.layouts = {
-    awful.layout.suit.tile,
-    awful.layout.suit.floating,
-    awful.layout.suit.max,
-}
-
--- Set up each screen
---local left_panel     = require("components.left-panel")
-local top_panel      = require("components.top-panel")
+local mywibar   = require("components.mywibar")
+local wallpaper = require("components.mywallpaper")
 
 require("titlebar")
 
 awful.screen.connect_for_each_screen(
         function(s)
-            --require("components.wallpaper")(s)
-
-            --wallpaper:animated(surf, s)
             wallpaper:set_wallpaper(s)
 
             for i, tag in pairs(tags) do
@@ -74,13 +47,8 @@ awful.screen.connect_for_each_screen(
                 })
             end
 
-            -- Only add the left panel on the primary screen
-            if s.index == 1 then
-                --left_panel.create(s)
-            end
-
             -- Add the top manel to the screen
-            top_panel.create(s)
+            mywibar:create(s)
         end)
 
 -- remove gaps if layout is set to max

@@ -112,28 +112,10 @@ local global = gears.table.join(
                       on_show_help()
                   end, hotkeys.awesome.help),
 
-
---[[ AUDACIOUS ]]--
---        awful.key({ }, key.system.audio.play,
---                  function()
---                      on_run("audacious --play-pause")
---                  end, hotkeys.audacious.play),
---
---        awful.key({ }, key.system.audio.next,
---                  function()
---                      on_run("audacious --fwd")
---                  end, hotkeys.audacious.next),
---
---        awful.key({ }, key.system.audio.prev,
---                  function()
---                      on_run("audacious --rew")
---                  end, hotkeys.audacious.prev),
-
-
 --[[ COMMAND ]]--
         awful.key({ key.ctrl, key.alt_L }, key.delete,
                   function()
-                      on_run(programms.terminal .. " htop")
+                      on_run(programms.htop)
                   end, hotkeys.command.htop),
 
         awful.key({ }, key.print,
@@ -176,7 +158,7 @@ local global = gears.table.join(
 
         awful.key({ key.mod }, key.r,
                   function()
-                      on_run(programms.run)
+                      on_run(programms.rofi)
                   end, hotkeys.programm.run),
 
         awful.key({ key.ctrl, key.alt_L }, key.t,

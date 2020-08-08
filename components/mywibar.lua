@@ -1,14 +1,10 @@
-local awful     = require("lib.awful")
-local wibox     = require("lib.wibox")
-local gears     = require("lib.gears")
-local widgets   = require("widgets")
+local awful   = require("lib.awful")
+local wibox   = require("lib.wibox")
+local gears   = require("lib.gears")
+local widgets = require("widgets")
 
-local beautiful = require("lib.beautiful")
-
-local wmapi     = require("lib.wmapi")
-local config    = require("config")
---local systray   = require("my.mysystray")()
---local color     = require("colors")
+local wmapi   = require("lib.wmapi")
+local config  = require("config")
 
 
 -- define module table
@@ -29,17 +25,23 @@ function middle_widget(s)
 end
 
 function right_widget(s)
+
+    if wmapi:index(s) == 1 then
+        return {
+            widgets.systray,
+            widgets.keyboard,
+            widgets.volume(s),
+            widgets.calendar,
+            layout = wibox.layout.fixed.horizontal
+        }
+    end
+
     return {
-        widgets.systray,
-        widgets.keyboard,
-        widgets.volume,
-        widgets.calendar,
         layout = wibox.layout.fixed.horizontal
     }
 end
 
---top_panel.create = function(s)
-function mywibar:new(s)
+function mywibar:create(s)
     local panel_shape           = function(cr, width, height)
         gears.shape.partially_rounded_rect(cr, width, height, false, true, true, false, 0)
     end
@@ -84,5 +86,5 @@ function mywibar:new(s)
 end
 
 return setmetatable(mywibar, {
-    __call = mywibar.new,
+    __call = mywibar.create,
 })

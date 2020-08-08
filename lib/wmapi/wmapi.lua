@@ -111,6 +111,16 @@ function wmapi:tablelength(T)
     return count
 end
 
+function wmapi:index(s)
+    for i = 1, screen.count() do
+        if s == screen[i] then
+            return i
+        end
+    end
+
+    return 1
+end
+
 wmapi.screen_height = ascreen.focused().geometry.height
 wmapi.screen_width  = ascreen.focused().geometry.width
 
