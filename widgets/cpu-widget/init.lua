@@ -1,0 +1,1 @@
+return require("widgets.cpu-widget.cpu-widget")

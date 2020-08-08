@@ -1,0 +1,1 @@
+return require("widgets.volume-widget.volume")
