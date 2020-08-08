@@ -1,22 +1,11 @@
-local gears     = require("lib.gears")
-local config    = require("config")
+local gears       = require("lib.gears")
+local pixbuf      = require("lib.lgi").GdkPixbuf
+local wmapi       = require("lib.wmapi")
+local config      = require("config")
 
-local _         = require("lib.lgi").Gdk
-local pixbuf    = require("lib.lgi").GdkPixbuf
+local mywallpaper = {}
 
-local wallpaper = {}
-
-local function index(s)
-    for i = 1, screen.count() do
-        if s == screen[i] then
-            return i
-        end
-    end
-
-    return 1
-end
-
-function wallpaper:set_animated(surf, s)
+function mywallpaper:set_animated(surf, s)
     local img, err = pixbuf.PixbufAnimation.new_from_file(surf)
     if not img then
         print(err)
@@ -44,16 +33,14 @@ local w = {
     "wp2503419"
 }
 
-function wallpaper:set_wallpaper(s)
-    local file = config.wallpaper .. w[2] .. "/" .. index(s) .. ".png"
+function mywallpaper:set_wallpaper(s)
+    local file = config.wallpaper .. w[2] .. "/" .. wmapi:index(s) .. ".png"
 
     if type(file) == "function" then
         file = file(s)
     end
 
     gears.wallpaper.maximized(file, s, true)
-
-    --screen.connect_signal("property::geometry", set_wallpaper)
 end
 
-return wallpaper
+return mywallpaper
