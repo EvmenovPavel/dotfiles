@@ -111,7 +111,15 @@ function wmapi:tablelength(T)
     return count
 end
 
-function wmapi:index(s)
+function wmapi:display_primary(s)
+    if s == screen.primary then
+        return true
+    end
+
+    return false
+end
+
+function wmapi:display_index(s)
     for i = 1, screen.count() do
         if s == screen[i] then
             return i

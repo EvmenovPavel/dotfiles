@@ -36,142 +36,137 @@ widget_button.panel_notification = awful.wibar({
                                                    shape    = maximized_panel_shape,
                                                })
 
-local config                     = require("config")
-
 local function append_widget_notify(args)
     --markup, image
     local args        = args or {}
-
-    local preset      = args.preset or {
-        fg    = beautiful.fg_normal,
-        bg    = beautiful.bg_normal,
-
-        level = 1,
-    }
 
     local title       = args.title or "Title: test111"
     local text        = args.text or "Text: test111"
     local icon        = args.icon or "/home/be3yh4uk/.config/awesome/icons/close.svg"
     local bg          = args.bg or "#001133"
 
-    local w_title     = wibox.widget {
-        {
-            font   = beautiful.title_font,
+    local w_title     = wibox.widget({
+                                         {
+                                             font   = beautiful.title_font,
 
-            widget = wibox.widget.textbox,
-            markup = title,
+                                             widget = wibox.widget.textbox,
+                                             markup = title,
 
-            align  = "left",
-            valign = "center",
-        },
-        widget = wibox.container.background,
-    }
-    local w_text      = wibox.widget {
-        {
-            font   = beautiful.title_font,
+                                             align  = "left",
+                                             valign = "center",
+                                         },
+                                         widget = wibox.container.background,
+                                     })
 
-            widget = wibox.widget.textbox,
-            markup = text,
+    local w_text      = wibox.widget({
+                                         {
+                                             font   = beautiful.title_font,
 
-            align  = "left",
-            valign = "center",
-        },
-        widget = wibox.container.background,
-    }
-    local w_icon_app  = wibox.widget {
-        {
-            widget        = wibox.widget.imagebox,
-            image         = icon,
-            resize        = true,
+                                             widget = wibox.widget.textbox,
+                                             markup = text,
 
-            align         = "center",
-            valign        = "center",
+                                             align  = "left",
+                                             valign = "center",
+                                         },
+                                         widget = wibox.container.background,
+                                     })
 
-            forced_height = 24,
-            forced_width  = 24,
-        },
-        widget = wibox.container.background
-    }
-    local w_close_app = wibox.widget {
-        {
-            widget        = wibox.widget.imagebox,
-            image         = icon,
-            --resize        = true,
+    local w_icon_app  = wibox.widget({
+                                         {
+                                             widget        = wibox.widget.imagebox,
+                                             image         = icon,
+                                             resize        = true,
 
-            align         = "center",
-            valign        = "center",
+                                             align         = "center",
+                                             valign        = "center",
 
-            forced_height = 12,
-            forced_width  = 12,
-        },
-        widget = wibox.container.background
-    }
-    local w_date      = wibox.widget {
-        {
-            font   = beautiful.title_font,
+                                             forced_height = 24,
+                                             forced_width  = 24,
+                                         },
+                                         widget = wibox.container.background
+                                     })
 
-            widget = wibox.widget.textbox,
-            markup = tostring(os.date()),
+    local w_close_app = wibox.widget({
+                                         {
+                                             widget        = wibox.widget.imagebox,
+                                             image         = icon,
+                                             --resize        = true,
 
-            align  = "left",
-            valign = "center",
-        },
-        widget = wibox.container.background,
-    }
+                                             align         = "center",
+                                             valign        = "center",
 
-    local item        = wibox.widget {
-        {
-            {
-                {
-                    w_icon_app,
-                    margins = 10,
-                    widget  = wibox.container.margin
-                },
-                {
-                    {
-                        {
-                            top    = 10,
-                            w_title,
-                            --margins = 2,
-                            widget = wibox.container.margin
-                        },
-                        {
-                            w_close_app,
-                            margins = 10,
-                            widget  = wibox.container.margin
-                        },
+                                             forced_height = 12,
+                                             forced_width  = 12,
+                                         },
+                                         widget = wibox.container.background
+                                     })
 
-                        --expand = "none",
-                        layout = wibox.layout.align.horizontal,
-                    },
-                    {
-                        w_text,
-                        top    = 5,
-                        bottom = 5,
-                        right  = 10,
-                        --margins = 2,
-                        widget = wibox.container.margin,
-                    },
-                    {
-                        w_date,
-                        bottom = 10,
-                        --margins = 2,
-                        widget = wibox.container.margin,
-                    },
-                    widget = wibox.layout.fixed.vertical,
-                },
-                widget = wibox.layout.fixed.horizontal,
-            },
+    local w_date      = wibox.widget({
+                                         {
+                                             font   = beautiful.title_font,
 
-            bg         = bg,
-            shape      = gears.shape.rounded_rect,
-            shape_clip = true,
-            widget     = wibox.container.background,
-        },
-        --color  = "#001100",
-        bottom = 5,
-        widget = wibox.container.margin,
-    }
+                                             widget = wibox.widget.textbox,
+                                             markup = tostring(os.date()),
+
+                                             align  = "left",
+                                             valign = "center",
+                                         },
+                                         widget = wibox.container.background,
+                                     })
+
+    local item        = wibox.widget({
+                                         {
+                                             {
+                                                 {
+                                                     w_icon_app,
+                                                     margins = 10,
+                                                     widget  = wibox.container.margin
+                                                 },
+                                                 {
+                                                     {
+                                                         {
+                                                             top    = 10,
+                                                             w_title,
+                                                             --margins = 2,
+                                                             widget = wibox.container.margin
+                                                         },
+                                                         {
+                                                             w_close_app,
+                                                             margins = 10,
+                                                             widget  = wibox.container.margin
+                                                         },
+
+                                                         --expand = "none",
+                                                         layout = wibox.layout.align.horizontal,
+                                                     },
+                                                     {
+                                                         w_text,
+                                                         top    = 5,
+                                                         bottom = 5,
+                                                         right  = 10,
+                                                         --margins = 2,
+                                                         widget = wibox.container.margin,
+                                                     },
+                                                     {
+                                                         w_date,
+                                                         bottom = 10,
+                                                         --margins = 2,
+                                                         widget = wibox.container.margin,
+                                                     },
+                                                     widget = wibox.layout.fixed.vertical,
+                                                 },
+                                                 widget = wibox.layout.fixed.horizontal,
+                                             },
+
+                                             bg         = bg,
+                                             shape      = gears.shape.rounded_rect,
+                                             shape_clip = true,
+                                             widget     = wibox.container.background,
+                                         },
+                                         --color  = "#001100",
+                                         bottom = 5,
+                                         widget = wibox.container.margin,
+                                     })
 
     item:connect_signal(signals.button.release,
                         function()

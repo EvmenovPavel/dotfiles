@@ -1,9 +1,9 @@
-local awful  = require("lib.awful")
-local gears  = require("lib.gears")
-local key    = require("keys.key")
-local mouse  = require("device.mouse")
+local awful      = require("lib.awful")
+local gears      = require("lib.gears")
+local key        = require("keys").key
+local mouse      = require("keys").mouse
 
-local button = gears.table.join(
+local buttonkeys = gears.table.join(
         awful.button({ }, mouse.button_click_left,
                      function(c)
                          if c ~= nil then
@@ -29,4 +29,4 @@ local button = gears.table.join(
 
 )
 
-return button
+return buttonkeys

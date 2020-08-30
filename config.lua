@@ -3,6 +3,7 @@ local config       = {}
 config.home        = os.getenv("HOME")
 config.awesome     = config.home .. "/.config/awesome"
 config.theme       = config.awesome .. "/theme"
+config.icons       = config.awesome .. "/icons"
 
 -- Enable sloppy focus
 config.focus       = false
@@ -16,7 +17,7 @@ config.title_font  = "SF Pro Display Medium 20"
 --config.size        = 9
 --config.font        = config.family .. " " .. config.size
 
-config.wallpaper   = config.awesome .. "/wallpapers/"
+config.path_wallpaper = config.awesome .. "/wallpapers"
 
 config.logging     = config.awesome .. "/logging.file"
 

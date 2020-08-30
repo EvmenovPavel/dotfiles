@@ -1,24 +1,28 @@
-local gtable              = require("lib.gears.table")
-local beautiful           = require("lib.beautiful")
 local awful               = require("lib.awful")
 local wibox               = require("lib.wibox")
 local gears               = require("lib.gears")
 local clickable_container = require("widgets.clickable-container")
-
-local mouse               = require("device.mouse")
 
 local dpi                 = require("lib.beautiful").xresources.apply_dpi
 local capi                = { button = button }
 local ICON_DIR            = gears.filesystem.get_configuration_dir() .. "/icons/"
 
 -- define module table
-local task_list           = {}
+local tasklist = {}
 
+local shape    = {
+    function(cr, width, height)
+        gears.shape.transform(gears.shape.rounded_rect):translate(0, height - 1)(cr, width, 1, 0)
+    end,
 
--- ===================================================================
--- Functionality
--- ===================================================================
+    function(cr, width, height)
+        local top    = 0
+        local left   = 0
+        local radial = 5
 
+        gears.shape.transform(gears.shape.rounded_rect):translate(left, top)(cr, width, height, radial)
+    end
+}
 
 local function create_buttons(buttons, object)
     if buttons then
@@ -129,7 +133,7 @@ local function list_update(widget, buttons, label, data, objects)
         end
 
         local text, w_bg, bg_image, icon, args = label(o, tb_text)
-        local args                             = args or {}
+        --local args                             = args or {}
 
         ---- The text might be invalid, so use pcall.
         if text == nil or text == "" then
@@ -164,15 +168,15 @@ local function list_update(widget, buttons, label, data, objects)
             w_bm_icon:set_margins(0)
         end
 
-        bgb_item.shape              = args.shape
-        bgb_item.shape_border_width = args.shape_border_width
-        bgb_item.shape_border_color = args.shape_border_color
+        --bgb_item.shape              = shape[1]--args.shape
+        --bgb_item.shape_border_width = args.shape_border_width
+        --bgb_item.shape_border_color = args.shape_border_color
 
         widget:add(bgb_item)
     end
 end
 
-local tasklist_buttons = awful.util.table.join(
+local buttons = awful.util.table.join(
         awful.button({}, 1,
                      function(c)
                          if c == client.focus then
@@ -198,15 +202,17 @@ local tasklist_buttons = awful.util.table.join(
         )
 )
 
-task_list.create       = function(s)
+function tasklist:create(s)
     return awful.widget.tasklist(
             s,
             awful.widget.tasklist.filter.currenttags,
-            tasklist_buttons,
+            buttons,
             {},
             list_update,
             wibox.layout.fixed.horizontal()
     )
 end
 
-return task_list
+return setmetatable(tasklist, { __call = function(_, ...)
+    return tasklist:init(...)
+end })

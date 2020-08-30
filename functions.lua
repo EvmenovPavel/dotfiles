@@ -1,31 +1,33 @@
 local awful         = require("lib.awful")
 local hotkeys_popup = require("lib.awful.hotkeys_popup").widget
 
-function on_backproc()
+local functions     = {}
+
+function functions:on_backproc()
     awful.screen.focused().quake:toggle()
 end
 
-function on_restart()
+function functions:on_restart()
     awesome.restart()
 end
 
-function on_quit()
+function functions:on_quit()
     awesome.quit()
 end
 
-function on_show_help()
+function functions:on_show_help()
     hotkeys_popup.show_help()
 end
 
-function on_run(command)
-    awful.util.spawn(command)
+function functions:on_run(cmd)
+    awful.util.spawn(cmd)
 end
 
-function on_fullscreen(c)
+function functions:on_fullscreen(c)
     c.fullscreen = not c.fullscreen
 end
 
-function on_maximized(c)
+function functions:on_maximized(c)
     if c.fullscreen then
         c.fullscreen = false
     end
@@ -33,37 +35,37 @@ function on_maximized(c)
     c.maximized = not c.maximized
 end
 
-function on_fullscreen(c)
+function functions:on_fullscreen(c)
     if c.maximized then
         c.maximized = false
     end
 
-    logger:info(c.class)
-    logger:info(c.instance)
     c.fullscreen = not c.fullscreen
 end
 
-function on_minimized(c)
+function functions:on_minimized(c)
     c.minimized = not c.minimized
 end
 
-function on_close(c)
+function functions:on_close(c)
     c:kill()
 end
 
-function on_kill(c)
+function functions:on_kill(c)
     c:kill()
 end
 
-function on_sticky(c)
+function functions:on_sticky(c)
     c.sticky = not c.sticky
 end
 
-function on_ontop(c)
+function functions:on_ontop(c)
     c.ontop = not c.ontop
 end
 
-function on_floating(c)
+function functions:on_floating(c)
     c.maximized = false
     c.floating  = not c.floating
 end
+
+return functions

@@ -22,9 +22,9 @@ local switcher  = require("widgets.switcher")
 --
 --switcher.settings.cycle_raise_client                 = true -- raise clients on cycle
 
-require("functions")
+local fun       = require("functions")
 
-local global = gears.table.join(
+local global    = gears.table.join(
 --awful.key({ key.alt_L, }, key.tab,
 --          function()
 --switcher.switch(1, key.mod, "Alt_L", "Shift", "Tab")
@@ -99,28 +99,28 @@ local global = gears.table.join(
 --[[ AWESOME ]]--
         awful.key({ key.shift, key.mod }, key.r,
                   function()
-                      on_restart()
+                      fun:on_restart()
                   end, hotkeys.awesome.restart),
 
         awful.key({ key.ctrl, key.mod }, key.q,
                   function()
-                      on_quit()
+                      fun:on_quit()
                   end, hotkeys.awesome.quit),
 
         awful.key({ key.mod }, key.s,
                   function()
-                      on_show_help()
+                      fun:on_show_help()
                   end, hotkeys.awesome.help),
 
 --[[ COMMAND ]]--
         awful.key({ key.ctrl, key.alt_L }, key.delete,
                   function()
-                      on_run(programms.htop)
+                      fun:on_run(programms.htop)
                   end, hotkeys.command.htop),
 
         awful.key({ }, key.print,
                   function()
-                      on_run(programms.screenshot)
+                      fun:on_run(programms.screenshot)
                   end, hotkeys.command.printscreen),
 
 
@@ -135,10 +135,12 @@ local global = gears.table.join(
                       awful.tag.viewnext()
                   end, hotkeys.tag.next),
 
---awful.key({ key.mod }, key.tab,
---          function()
---              awful.tag.history.restore()
---          end, hotkeys.tag.restore),
+
+        awful.key({ key.mod }, key.tab,
+                  function()
+                      awful.tag.history.restore()
+                  end, hotkeys.tag.restore),
+
 
         awful.key({ key.alt_L }, key.tab,
                   function()
@@ -153,22 +155,22 @@ local global = gears.table.join(
 --[[ Programms ]]--
         awful.key({ key.mod }, key.e,
                   function()
-                      on_run(programms.manager)
+                      fun:on_run(programms.manager)
                   end, hotkeys.programm.manager),
 
         awful.key({ key.mod }, key.r,
                   function()
-                      on_run(programms.rofi)
+                      fun:on_run(programms.rofi)
                   end, hotkeys.programm.run),
 
         awful.key({ key.ctrl, key.alt_L }, key.t,
                   function()
-                      on_run(programms.terminal)
+                      fun:on_run(programms.terminal)
                   end, hotkeys.programm.terminal),
 
         awful.key({ key.mod }, key.l,
                   function()
-                      on_run(programms.lockscreen)
+                      fun:on_run(programms.lockscreen)
                   end, hotkeys.programm.lockscreen),
 
 
@@ -194,31 +196,6 @@ local global = gears.table.join(
 --                  end,
 --                  { description = "-10%", group = "hotkeys" }),
 --
-
----- ALSA volume control
---        awful.key({ }, keyboard.system.volume.raise,
---                  function()
---                      --os.execute(string.format(amixer.volumeRaise,
---                      --                         beautiful.volume.channel))
---                      --beautiful.volume.update()
---                  end,
---                  { description = "volume up", group = "ALSA volume control" }),
---
---        awful.key({ }, keyboard.system.volume.lower,
---                  function()
---                      --os.execute(string.format(amixer.volumeLower,
---                      --                         beautiful.volume.channel))
---                      --beautiful.volume.update()
---                  end,
---                  { description = "volume down", group = "ALSA volume control" }),
---
---        awful.key({ }, keyboard.system.volume.mute,
---                  function()
---                      --os.execute(string.format(amixer.volumeMute,
---                      --                         beautiful.volume.togglechannel or beautiful.volume.channel))
---                      --beautiful.volume.update()
---                  end,
---                  { description = "toggle mute", group = "ALSA volume control" })
 )
 
 return global

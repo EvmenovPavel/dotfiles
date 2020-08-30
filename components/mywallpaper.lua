@@ -27,14 +27,14 @@ function mywallpaper:set_animated(surf, s)
     end
 end
 
-local w = {
+local list_wallpaper = {
     "anime",
     "spider-verse-triple",
     "wp2503419"
 }
 
 function mywallpaper:set_wallpaper(s)
-    local file = config.wallpaper .. w[2] .. "/" .. wmapi:index(s) .. ".png"
+    local file = config.path_wallpaper .. "/" .. list_wallpaper[2] .. "/" .. wmapi:display_index(s) .. ".png"
 
     if type(file) == "function" then
         file = file(s)

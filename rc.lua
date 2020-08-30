@@ -7,22 +7,18 @@ local theme     = require("theme")
 beautiful.init(theme)
 
 -- Import Logger
-log        = require("logger")
+log            = require("logger")
 
 -- Import Keybinds
-local keys = require("keys.keys")
-root.keys(keys.globalkeys)
-root.buttons(keys.buttonkeys)
+local keybinds = require("keys.keybinds")
+root.keys(keybinds.globalkeys)
+root.buttons(keybinds.buttonkeys)
 
 -- Import rules
-local rules       = require("rules")
-awful.rules.rules = rules:create(keys.clientkeys, keys.buttonkeys)
+awful.rules.rules = require("rules")(keybinds.clientkeys, keybinds.buttonkeys)
 
 -- Notification library
-require("naughty")
-
--- Import Tag Settings
-local tags = require("tags")
+require("widgets.naughty")
 
 -- Autostart specified apps
 local apps = require("autostart")
@@ -31,13 +27,14 @@ apps:start()
 local mywibar   = require("components.mywibar")
 local wallpaper = require("components.mywallpaper")
 
-require("titlebar")
+-- Titlebar library
+require("widgets.titlebar")
 
 awful.screen.connect_for_each_screen(
         function(s)
             wallpaper:set_wallpaper(s)
 
-            for i, tag in pairs(tags) do
+            for i, tag in pairs(theme.taglist_icons) do
                 awful.tag.add(i, {
                     icon      = tag.icon,
                     icon_only = true,

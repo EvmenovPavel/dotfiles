@@ -1,9 +1,7 @@
-local awful     = require("lib.awful")
-local beautiful = require("lib.beautiful")
-local wibox     = require("lib.wibox")
+local awful   = require("lib.awful")
 
-local widgets   = {
-    systray       = wibox.layout.margin(require("widgets.systray"), 3, 3, 3, 3),
+local widgets = {
+    systray       = require("widgets.systray"),
 
     keyboard      = awful.widget.keyboardlayout(),
 
@@ -15,13 +13,14 @@ local widgets   = {
     tasklist      = require("widgets.tasklist"),
     taglist       = require("widgets.taglist"),
 
+    reboot        = require("widgets.reboot"),
+
     --require("widgets.bluetooth"),
     --require("widgets.wifi"),
     --require("widgets.battery"),
     --require("widgets.layout-box"),
 
-    --require("widgets.reboot"),
-    --require("widgets.checkbox"),
+    checkbox      = require("widgets.checkbox"),
     notifications = require("widgets.notifications"),
 }
 

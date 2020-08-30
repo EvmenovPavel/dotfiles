@@ -6,32 +6,30 @@ local widgets = require("widgets")
 local wmapi   = require("lib.wmapi")
 local config  = require("config")
 
-
--- define module table
 local mywibar = {}
 
-function left_widget(s)
+function w_left(s)
     return {
         widgets.taglist.create(s),
         layout = wibox.layout.fixed.horizontal
     }
 end
 
-function middle_widget(s)
+function w_middle(s)
     return {
-        widgets.tasklist.create(s),
+        widgets.tasklist:create(s),
         layout = wibox.layout.fixed.horizontal
     }
 end
 
-function right_widget(s)
-
-    if wmapi:index(s) == 1 then
+function w_right(s)
+    if wmapi:display_primary(s) then
         return {
             widgets.systray,
             widgets.keyboard,
             widgets.volume(s),
             widgets.calendar,
+            widgets.reboot,
             layout = wibox.layout.fixed.horizontal
         }
     end
@@ -41,9 +39,25 @@ function right_widget(s)
     }
 end
 
+local shape = {
+    function(cr, width, height)
+        gears.shape.rectangle(cr, width, height)
+
+        --gears.shape.transform(gears.shape.rounded_rect):translate(0, -1)(cr, width, height, 0)
+    end,
+
+    function(cr, width, height)
+        local top    = 0
+        local left   = 0
+        local radial = 5
+
+        gears.shape.transform(gears.shape.rounded_rect):translate(left, top)(cr, width, height, radial)
+    end
+}
+
 function mywibar:create(s)
     local panel_shape           = function(cr, width, height)
-        gears.shape.partially_rounded_rect(cr, width, height, false, true, true, false, 0)
+        --gears.shape.partially_rounded_rect(cr, width, height, false, true, true, false, 0)
     end
     local maximized_panel_shape = function(cr, width, height)
         gears.shape.rectangle(cr, width, height)
@@ -65,7 +79,7 @@ function mywibar:create(s)
                                                   -- ширина бара (если stretch = true, то игнорирует)
                                                   width        = wmapi.screen_width - 30,
 
-                                                  --shape        = maximized_panel_shape,
+                                                  shape        = shape[1], --maximized_panel_shape,
 
                                                   -- Цвет обводки.
                                                   --border_color = "#000000",
@@ -78,9 +92,9 @@ function mywibar:create(s)
                                               })
 
     s.mywibar:setup {
-        left_widget(s),
-        middle_widget(s),
-        right_widget(s),
+        w_left(s),
+        w_middle(s),
+        w_right(s),
         layout = wibox.layout.align.horizontal,
     }
 end

@@ -11,6 +11,7 @@ local button                          = require("lib.awful.button")
 local gtable                          = require("lib.gears.table")
 local widget_base                     = require("lib.wibox.widget.base")
 local gdebug                          = require("lib.gears.debug")
+local wibox                           = require("wibox")
 
 --- Keyboard Layout widget.
 -- awful.widget.keyboardlayout
@@ -247,7 +248,13 @@ end
 --- Create a keyboard layout widget. It shows current keyboard layout name in a textbox.
 -- @return A keyboard layout widget.
 function keyboardlayout.new()
-    local widget     = textbox()
+    local widget     = wibox.widget {
+        forced_width = 40,
+        align        = "center",
+        valign       = "center",
+        widget       = wibox.widget.textbox
+    }
+
     local self       = widget_base.make_widget(widget)
 
     self.widget      = widget
