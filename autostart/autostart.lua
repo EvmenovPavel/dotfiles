@@ -8,7 +8,7 @@ function autostart.list()
         "nm-applet",
         "blueman-applet",
         "flameshot",
-        "komorebi",
+        --"komorebi",
         --"solaar"
     }
 end

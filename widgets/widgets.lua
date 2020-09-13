@@ -3,7 +3,7 @@ local awful   = require("lib.awful")
 local widgets = {
     systray       = require("widgets.systray"),
 
-    keyboard      = awful.widget.keyboardlayout(),
+    keyboard      = require("widgets.keyboard"),
 
     cpu           = require("widgets.cpu-widget"),
     calendar      = require("widgets.calendar"),

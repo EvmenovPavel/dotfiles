@@ -26,7 +26,7 @@ function w_right(s)
     if wmapi:display_primary(s) then
         return {
             widgets.systray,
-            widgets.keyboard,
+            widgets.keyboard(),
             widgets.volume(s),
             widgets.calendar,
             widgets.reboot,

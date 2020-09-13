@@ -177,25 +177,24 @@ local global    = gears.table.join(
 -- Device button
         awful.key({ }, key.system.poweroff,
                   function()
-                  end)
+                  end),
 
 
 -- Brightness
 -- увеличивает яркость
---        awful.key({ }, keyboard.fn, keyboard.F12,
---        awful.key({ keyboard.win }, keyboard.up,
---                  function()
---                      on_run("sudo brightnessctl s 10%+")
---                  end,
---                  { description = "+10%", group = "hotkeys" }),
----- уменьшает яркость
-----        awful.key({ }, keyboard.fn, keyboard.F11,
---        awful.key({ keyboard.win }, keyboard.down,
---                  function()
---                      on_run("sudo brightnessctl s 10%-")
---                  end,
---                  { description = "-10%", group = "hotkeys" }),
---
+-- awful.key({ }, keyboard.fn, keyboard.F12,
+        awful.key({ key.win }, key.up,
+                  function()
+                      fun:on_run("sudo brightnessctl s 10%+")
+                  end,
+                  { description = "+10%", group = "hotkeys" }),
+-- уменьшает яркость
+-- awful.key({ }, keyboard.fn, keyboard.F11,
+        awful.key({ key.win }, key.down,
+                  function()
+                      fun:on_run("sudo brightnessctl s 10%-")
+                  end,
+                  { description = "-10%", group = "hotkeys" })
 )
 
 return global
