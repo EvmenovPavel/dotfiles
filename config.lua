@@ -17,7 +17,7 @@ config.title_font  = "SF Pro Display Medium 20"
 --config.size        = 9
 --config.font        = config.family .. " " .. config.size
 
-config.path_wallpaper = config.awesome .. "/wallpapers"
+config.wallpapers = config.awesome .. "/wallpapers"
 
 config.logging     = config.awesome .. "/logging.file"
 

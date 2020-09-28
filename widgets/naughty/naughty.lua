@@ -38,6 +38,10 @@ naughty.config.icon_formats          = {
     "svg",
 }
 
+function naughty:init(s)
+    naughty.config.screen = s
+end
+
 naughty.config.presets.normal        = {
     fg            = beautiful.fg_normal,
     bg            = beautiful.bg_normal,
@@ -206,4 +210,6 @@ function naughty:show(args)
     end
 end
 
---return naughty
+return setmetatable(naughty, { __call = function(_, ...)
+    return naughty:init(...)
+end })

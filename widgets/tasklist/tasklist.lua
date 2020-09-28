@@ -2,15 +2,16 @@ local awful               = require("lib.awful")
 local wibox               = require("lib.wibox")
 local gears               = require("lib.gears")
 local clickable_container = require("widgets.clickable-container")
+local beautiful           = require("lib.beautiful")
 
 local dpi                 = require("lib.beautiful").xresources.apply_dpi
 local capi                = { button = button }
 local ICON_DIR            = gears.filesystem.get_configuration_dir() .. "/icons/"
 
 -- define module table
-local tasklist = {}
+local tasklist            = {}
 
-local shape    = {
+local shape               = {
     function(cr, width, height)
         gears.shape.transform(gears.shape.rounded_rect):translate(0, height - 1)(cr, width, 1, 0)
     end,
@@ -213,6 +214,6 @@ function tasklist:create(s)
     )
 end
 
-return setmetatable(tasklist, { __call = function(_, ...)
-    return tasklist:init(...)
-end })
+return setmetatable(tasklist, {
+    __call = tasklist.create,
+})

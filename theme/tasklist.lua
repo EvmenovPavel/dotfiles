@@ -82,7 +82,7 @@ function tasklist:init(theme)
     -- уменьшает иконку
     theme.tasklist_margins           = 3
     -- размер (ширина) апп (икон + текст)
-    theme.tasklist_forced_width      = 160
+    theme.tasklist_forced_width      = 120
     -- отступ слева
     theme.tasklist_left              = 3
     -- отступ справа

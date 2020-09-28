@@ -54,13 +54,10 @@ function systray:draw(context, cr, width, height)
     -- передавать сюда размер виБара, тк, иконки не по центру
     local x, y, _, _  = wbase.rect_to_device_geometry(cr, 0, 0, width, height)
     local num_entries = capi.awesome.systray()
-    -- local bg          = beautiful.colors.systray.bg_systray or beautiful.bg_normal or "#000000"
-    -- FIX
-    local bg          = beautiful.bg_systray or beautiful.bg_normal or "#000000"
 
-    --local spacing     = beautiful.systray_icon_spacing or 0
-    -- если изменить с 0 на 4, то цвет нормально закрашиывает
-    local spacing     = beautiful.systray_icon_spacing or 5
+    local bg      = beautiful.bg_systray or beautiful.bg_normal or "#000000"
+
+    local spacing = beautiful.systray_icon_spacing or 0
 
     if context and not context.wibox then
         error("The systray widget can only be placed inside a wibox.")
@@ -92,8 +89,7 @@ function systray:draw(context, cr, width, height)
         base = in_dir / num_entries
         --base = (in_dir + spacing) / num_entries - spacing
     end
-    capi.awesome.systray(context.wibox.drawin, math.ceil(x), math.ceil(y),
-                         base, is_rotated, bg, reverse, spacing)
+    capi.awesome.systray(context.wibox.drawin, math.ceil(x), math.ceil(y), base, is_rotated, bg, reverse, spacing)
 end
 
 -- Private API. Does not appear in LDoc on purpose. This function is called

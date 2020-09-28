@@ -1,10 +1,5 @@
-local awful            = require("awful")
+local awful            = require("lib.awful")
 
--- define screen height and width
-local screen_height    = awful.screen.focused().geometry.height
-local screen_width     = awful.screen.focused().geometry.width
-
--- define module table
 local rules            = {}
 
 -- Firefox
@@ -24,20 +19,6 @@ local PictureInPicture = {
     }
 }
 
-local Calc             = {
-    rule       = {
-        class = "Gnome-calculator",
-    },
-    properties = {
-        titlebars_enabled = true,
-        floating          = true,
-
-        width             = 360,
-        height            = 400,
-    },
-}
-
--- return a table of client rules including provided keys / buttons
 function rules:init(clientkeys, buttonkeys)
     local list_rules = {
         {
@@ -49,11 +30,8 @@ function rules:init(clientkeys, buttonkeys)
             },
             properties = {
                 titlebars_enabled = true,
-                border_width      = 1,
-                --border_color      = "#ff0000",
 
-                --maximized         = false,
-                --fullscreen        = false,
+                border_width      = 1,
 
                 focus             = awful.client.focus.filter,
                 raise             = true,
@@ -68,31 +46,33 @@ function rules:init(clientkeys, buttonkeys)
                 screen            = awful.screen.preferred,
 
                 placement         = awful.placement.centered,
-                --placement         = awful.placement.no_overlap + awful.placement.no_offscreen,
 
-                --callback          = function(c)
-                --    local workarea = awful.screen.focused().workarea
-                --
-                --    c:geometry({
-                --                   x      = 0,
-                --                   -- FIX
-                --                   -- сюда надо передавать размер wibar
-                --                   -- что бы вниз не отпускало некоторые апп
-                --                   --
-                --                   -- Либо, делать апп не фулл
-                --                   y      = 27,
-                --                   width  = workarea.width,
-                --                   height = workarea.height
-                --               })
-                --end
+                callback          = function(c)
+                    local screen_width  = awful.screen.focused().geometry.width
+                    local screen_height = awful.screen.focused().geometry.height
+
+                    --local workarea = awful.screen.focused().workarea
+
+                    local width         = c.width
+                    local height        = c.height
+
+                    if width < 800 and height < 800 then
+                        c.floating  = true
+
+                        c:geometry({
+                                       x = screen_width / 2 - width / 2,
+                                       y = screen_height / 2 - height / 2,
+                                   })
+
+                    else
+                        c.floating  = false
+                    end
+                end
             },
         },
 
         -- Firefox
         PictureInPicture,
-
-        -- Calculator
-        Calc,
     }
 
     return list_rules

@@ -1,6 +1,6 @@
-local awful   = require("lib.awful")
-
 local widgets = {
+    naughty       = require("widgets.naughty"),
+
     systray       = require("widgets.systray"),
 
     keyboard      = require("widgets.keyboard"),
@@ -14,6 +14,8 @@ local widgets = {
     taglist       = require("widgets.taglist"),
 
     reboot        = require("widgets.reboot"),
+
+    spotify       = require("widgets.spotify-widget.spotify"),
 
     --require("widgets.bluetooth"),
     --require("widgets.wifi"),

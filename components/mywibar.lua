@@ -25,11 +25,15 @@ end
 function w_right(s)
     if wmapi:display_primary(s) then
         return {
+            widgets.naughty(s),
             widgets.systray,
             widgets.keyboard(),
             widgets.volume(s),
+            --widgets.cpu,
             widgets.calendar,
             widgets.reboot,
+            widgets.spotify(),
+
             layout = wibox.layout.fixed.horizontal
         }
     end

@@ -1,17 +1,8 @@
--------------------------------------------------
--- Spotify Widget for Awesome Window Manager
--- Shows currently playing song on Spotify for Linux client
--- More details could be found here:
--- https://github.com/streetturtle/awesome-wm-widgets/tree/master/spotify-widget
-
--- @author Pavel Makhov
--- @copyright 2020 Pavel Makhov
--------------------------------------------------
-
 local awful                  = require("awful")
 local wibox                  = require("wibox")
 local watch                  = require("awful.widget.watch")
 local naughty                = require("naughty")
+local config                 = require("config")
 
 local GET_SPOTIFY_STATUS_CMD = 'sp status'
 local GET_CURRENT_SONG_CMD   = 'sp current'
@@ -28,9 +19,9 @@ local function worker(args)
 
     local args               = args or {}
 
-    local play_icon          = args.play_icon or '/usr/share/icons/Arc/actions/24/player_play.png'
-    local pause_icon         = args.pause_icon or '/usr/share/icons/Arc/actions/24/player_pause.png'
-    local font               = args.font or 'Play 9'
+    local play_icon          = args.play_icon or '/usr/share/icons/gnome/24x24/actions/player_play.png'
+    local pause_icon         = args.pause_icon or '/usr/share/icons/gnome/24x24/actions/player_pause.png'
+    local font               = args.font or config.font
     local dim_when_paused    = args.dim_when_paused == nil and false or args.dim_when_paused
     local dim_opacity        = args.dim_opacity or 0.2
     local max_length         = args.max_length or 15
@@ -42,13 +33,13 @@ local function worker(args)
 
     spotify_widget           = wibox.widget {
         {
+            id     = "icon",
+            widget = wibox.widget.imagebox,
+        },
+        {
             id     = 'artistw',
             font   = font,
             widget = wibox.widget.textbox,
-        },
-        {
-            id     = "icon",
-            widget = wibox.widget.imagebox,
         },
         {
             id     = 'titlew',
@@ -57,7 +48,7 @@ local function worker(args)
         },
         layout     = wibox.layout.align.horizontal,
         set_status = function(self, is_playing)
-            self.icon.image = (is_playing and play_icon or pause_icon)
+            self.icon.image = (is_playing and pause_icon or play_icon)
             if dim_when_paused then
                 self.icon.opacity = (is_playing and 1 or dim_opacity)
 
@@ -93,10 +84,13 @@ local function worker(args)
         end
 
         local escaped                            = string.gsub(stdout, "&", '&amp;')
+
+        --log:message({message = escaped})
+
         local album, album_artist, artist, title = string.match(escaped, 'Album%s*(.*)\nAlbumArtist%s*(.*)\nArtist%s*(.*)\nTitle%s*(.*)\n')
 
         if album ~= nil and title ~= nil and artist ~= nil then
-            cur_artist = artist
+            cur_artist = artist .. " " .. album_artist
             cur_title  = title
             cur_album  = album
 
@@ -114,7 +108,7 @@ local function worker(args)
     --  - scroll down - play previous song
     spotify_widget:connect_signal("button::press", function(_, _, _, button)
         if (button == 1) then
-            awful.spawn("sp play", false)      -- left click
+            awful.spawn("sp play", false)  -- left click
         elseif (button == 4) then
             awful.spawn("sp next", false)  -- scroll up
         elseif (button == 5) then

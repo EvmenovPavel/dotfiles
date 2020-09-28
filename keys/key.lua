@@ -36,6 +36,8 @@ key.right                            = "Right"
 key.down                             = "Down"
 key.up                               = "Up"
 
+key.XF86Search                       = "XF86Search"
+
 key.system                           = {}
 key.system.poweroff                  = "XF86PowerOff"
 key.system.calculator                = "XF86Calculator"

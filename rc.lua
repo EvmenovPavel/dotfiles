@@ -17,9 +17,6 @@ root.buttons(keybinds.buttonkeys)
 -- Import rules
 awful.rules.rules = require("rules")(keybinds.clientkeys, keybinds.buttonkeys)
 
--- Notification library
-require("widgets.naughty")
-
 -- Autostart specified apps
 local apps = require("autostart")
 apps:start()
@@ -80,8 +77,8 @@ require("lib.awful.autofocus")
 -- ===================================================================
 
 
-collectgarbage("setpause", 110)
-collectgarbage("setstepmul", 1000)
+--collectgarbage("setpause", 110)
+--collectgarbage("setstepmul", 1000)
 
 
 --local image = require("lib.image")

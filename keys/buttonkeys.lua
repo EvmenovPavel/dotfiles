@@ -14,17 +14,21 @@ local buttonkeys = gears.table.join(
                      end),
         awful.button({ key.win }, mouse.button_click_left,
                      function(c)
-                         c:emit_signal("request::activate", "mouse_click", {
-                             raise = true
-                         })
-                         awful.mouse.client.move(c)
+                         if c ~= nil then
+                             c:emit_signal("request::activate", "mouse_click", {
+                                 raise = true
+                             })
+                             awful.mouse.client.move(c)
+                         end
                      end),
         awful.button({ key.win }, mouse.button_click_right,
                      function(c)
-                         c:emit_signal("request::activate", "mouse_click", {
-                             raise = true
-                         })
-                         awful.mouse.client.resize(c)
+                         if c ~= nil then
+                             c:emit_signal("request::activate", "mouse_click", {
+                                 raise = true
+                             })
+                             awful.mouse.client.resize(c)
+                         end
                      end)
 
 )
