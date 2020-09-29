@@ -1,84 +1,149 @@
--- Standard awesome library
+local capi      = {
+    root   = root,
+    client = client,
+}
+
+local wibox     = require("lib.wibox")
+local gears     = require("lib.gears")
 local awful     = require("lib.awful")
 
--- Import theme
 local beautiful = require("lib.beautiful")
-local theme     = require("theme")
-beautiful.init(theme)
+--local theme     = require("theme")
+--beautiful.init(theme)
+beautiful.init(awful.util.getdir("config") .. "/icons/blueres/theme.lua")
 
--- Import Logger
 log            = require("logger")
 
--- Import Keybinds
 local keybinds = require("keys.keybinds")
 root.keys(keybinds.globalkeys)
 root.buttons(keybinds.buttonkeys)
 
--- Import rules
-awful.rules.rules = require("rules")(keybinds.clientkeys, keybinds.buttonkeys)
+awful.layout.layouts = {
+    awful.layout.suit.floating,
+    awful.layout.suit.tile,
+    awful.layout.suit.fair,
+    awful.layout.suit.tile.left,
+    awful.layout.suit.tile.bottom,
+    awful.layout.suit.tile.top,
+    awful.layout.suit.fair.horizontal,
+    --awful.layout.suit.spiral,
+    -- awful.layout.suit.spiral.dwindle,
+    -- awful.layout.suit.max,
+    -- awful.layout.suit.max.fullscreen,
+    -- awful.layout.suit.magnifier,
+    -- awful.layout.suit.corner.nw,
+    -- awful.layout.suit.corner.ne,
+    -- awful.layout.suit.corner.sw,
+    -- awful.layout.suit.corner.se,
+}
+-- }}}
 
--- Autostart specified apps
-local apps = require("autostart")
+awful.rules.rules    = require("rules")(keybinds.clientkeys, keybinds.buttonkeys)
+
+local apps           = require("autostart")
 apps:start()
 
-local mywibar   = require("components.mywibar")
-local wallpaper = require("components.mywallpaper")
-
--- Titlebar library
 require("widgets.titlebar")
+local wibar     = require("wibar")
+local wallpaper = require("wallpaper")
 
 awful.screen.connect_for_each_screen(
         function(s)
-            wallpaper:set_wallpaper(s)
+            wallpaper:create(s)
 
-            for i, tag in pairs(theme.taglist_icons) do
-                awful.tag.add(i, {
-                    icon      = tag.icon,
-                    icon_only = true,
-                    layout    = awful.layout.suit.tile,
-                    screen    = s,
-                    selected  = i == 1
-                })
-            end
+            awful.tag({ "  ", "  ", "  ", "  ", "  ", "  ", "  " }, s, awful.layout.layouts[2])
+            beautiful.taglist_spacing = "0"
 
-            -- Add the top manel to the screen
-            mywibar:create(s)
-        end)
+            s.mypromptbox             = awful.widget.prompt()
 
--- remove gaps if layout is set to max
-tag.connect_signal("property::layout", function(t)
-    local current_layout = awful.tag.getproperty(t, "layout")
-    if (current_layout == awful.layout.suit.max) then
-        t.gap = 0
+            s.mylayoutbox             = wibox.container.margin(awful.widget.layoutbox(s), 8, 8, 9, 9)
+            s.mylayoutbox:buttons(gears.table.join(
+                    awful.button({ }, 1, function()
+                        awful.layout.inc(1)
+                    end),
+                    awful.button({ }, 3, function()
+                        awful.layout.inc(-1)
+                    end),
+                    awful.button({ }, 4, function()
+                        awful.layout.inc(1)
+                    end),
+                    awful.button({ }, 5, function()
+                        awful.layout.inc(-1)
+                    end)))
+
+            --for i, tag in pairs(theme.taglist_icons) do
+            --    awful.tag.add(i, {
+            --        icon      = tag.icon,
+            --        icon_only = true,
+            --        layout    = awful.layout.suit.tile,
+            --        screen    = s,
+            --        selected  = i == 1
+            --    })
+            --end
+
+            wibar:create(s)
+        end
+)
+
+-- smart gaps
+local function get_num_tiled(t, s)
+    s = s or t.screen
+    local num_tiled
+    if t == s.selected_tag then
+        num_tiled = #awful.client.tiled(s)
     else
-        t.gap = beautiful.useless_gap
+        num_tiled = 0
+        for _, tc in ipairs(t:clients()) do
+            if not tc.floating
+                    and not tc.fullscreen
+                    and not tc.maximized_vertical
+                    and not tc.maximized_horizontal
+            then
+                num_tiled = num_tiled + 1
+            end
+        end
     end
-end)
+    return num_tiled
+end
+
+awful.tag.object.get_gap = function(t)
+    t = t or awful.screen.focused().selected_tag
+    if get_num_tiled(t) == 1 then
+        return 0
+    end
+
+    return awful.tag.getproperty(t, "useless_gap") or beautiful.useless_gap or 0
+end
+
+--tag.connect_signal("property::layout", function(t)
+--    local current_layout = awful.tag.getproperty(t, "layout")
+--
+--    if (current_layout == awful.layout.suit.max) then
+--        t.gap = 0
+--    else
+--        t.gap = beautiful.useless_gap
+--    end
+--end)
 
 
 -- Signal function to execute when a new client appears.
-client.connect_signal("manage", function(c)
-    -- Set the window as a slave (put it at the end of others instead of setting it as master)
-    if not awesome.startup then
-        awful.client.setslave(c)
-    end
+--client.connect_signal("manage", function(c)
+--    -- Set the window as a slave (put it at the end of others instead of setting it as master)
+--    if not awesome.startup then
+--        awful.client.setslave(c)
+--    end
+--
+--    if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
+--        -- Prevent clients from being unreachable after screen count changes.
+--        awful.placement.no_offscreen(c)
+--    end
+--end)
 
-    if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
-        -- Prevent clients from being unreachable after screen count changes.
-        awful.placement.no_offscreen(c)
-    end
-end)
 
 -- Autofocus a new client when previously focused one is closed
 require("lib.awful.autofocus")
 
--- ===================================================================
--- Garbage collection (allows for lower memory consumption)
--- ===================================================================
 
-
---collectgarbage("setpause", 110)
---collectgarbage("setstepmul", 1000)
 
 
 --local image = require("lib.image")

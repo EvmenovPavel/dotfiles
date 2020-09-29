@@ -3,7 +3,7 @@ local wibox                        = require("lib.wibox")
 local gears                        = require("lib.gears")
 local beautiful                    = require("lib.beautiful")
 local awful_menu                   = require("lib.awful.menu")
-
+local mouse                        = require("keys.mouse")
 local wmapi                        = require("lib.wmapi")
 local config                       = require("config")
 
@@ -286,21 +286,22 @@ client.connect_signal("request::titlebars",
 
                           --if (c.type == "normal" or c.type == "dialog") then
                           -- buttons for the titlebar
-                          local buttons     = awful.util.table.join(awful.button({}, 1,
-                                                                                 function()
-                                                                                     client.focus = c
-                                                                                     c:raise()
-                                                                                     awful.mouse.client.move(c)
-                                                                                 end),
-                                                                    awful.button({}, 3,
-                                                                                 function()
-                                                                                     if c.floating then
-                                                                                         client.focus = c
-                                                                                         c:raise()
-                                                                                         awful.mouse.client.resize(c)
-                                                                                     end
-                                                                                 end))
-
+                          local buttons     = awful.util.table.join(
+                                  awful.button({}, mouse.button_click_left,
+                                               function()
+                                                   client.focus = c
+                                                   c:raise()
+                                                   awful.mouse.client.move(c)
+                                               end),
+                                  awful.button({}, mouse.button_click_right,
+                                               function()
+                                                   if c.floating then
+                                                       client.focus = c
+                                                       c:raise()
+                                                       awful.mouse.client.resize(c)
+                                                   end
+                                               end)
+                          )
 
                           -- Widgets that are aligned to the left
                           local left_layout = wibox.layout.fixed.horizontal()
@@ -310,10 +311,8 @@ client.connect_signal("request::titlebars",
                                   clienticon(c),
                                   layout = wibox.layout.align.horizontal
                               },
-                              top    = 3,
-                              left   = 3,
-                              bottom = 3,
-                              right  = 3,
+                              top    = 3, left = 3,
+                              bottom = 3, right = 3,
                               widget = wibox.container.margin,
                           }
                           left_layout:add(icon)
