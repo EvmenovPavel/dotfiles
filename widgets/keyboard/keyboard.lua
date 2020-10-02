@@ -6,12 +6,12 @@
 
 local capi                            = { awesome = awesome }
 local setmetatable                    = setmetatable
-local textbox                         = require("lib.wibox.widget.textbox")
-local button                          = require("lib.awful.button")
-local gtable                          = require("lib.gears.table")
-local widget_base                     = require("lib.wibox.widget.base")
-local gdebug                          = require("lib.gears.debug")
-local wibox                           = require("lib.wibox")
+local textbox                         = require("wibox.widget.textbox")
+local button                          = require("awful.button")
+local gtable                          = require("gears.table")
+local widget_base                     = require("wibox.widget.base")
+local gdebug                          = require("gears.debug")
+local wibox                           = require("wibox")
 
 --- Keyboard Layout widget.
 -- awful.widget.keyboardlayout

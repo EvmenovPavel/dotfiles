@@ -1,43 +1,44 @@
-local config   = require("config")
-
-local taglist  = {}
+local taglist       = {}
 
 local taglist_icons = {
     {
-        icon = config.icons .. "/tags/terminal.png",
+        icon = capi.path .. "/icons/tags/terminal.png",
     },
     {
-        icon = config.icons .. "/tags/firefox.png",
+        icon = capi.path .. "/icons/tags/firefox.png",
     },
     {
-        icon = config.icons .. "/tags/notepad.png",
+        icon = capi.path .. "/icons/tags/notepad.png",
     },
     {
-        icon = config.icons .. "/tags/folder.png",
+        icon = capi.path .. "/icons/tags/folder.png",
     },
     {
-        icon = config.icons .. "/tags/player.png",
+        icon = capi.path .. "/icons/tags/player.png",
     },
     {
-        icon = config.icons .. "/tags/videogame.png",
+        icon = capi.path .. "/icons/tags/videogame.png",
     },
     {
-        icon = config.icons .. "/tags/star.png",
+        icon = capi.path .. "/icons/tags/star.png",
     },
     {
-        icon = config.icons .. "/tags/mail.png",
+        icon = capi.path .. "/icons/tags/mail.png",
     },
     {
-        icon = config.icons .. "/tags/spotify.png",
+        icon = capi.path .. "/icons/tags/spotify.png",
     }
 }
 
 function taglist:init(theme)
     theme.taglist_disable_icon = false
+
+    theme.taglist_count        = 10
+
     --отспут между item
     theme.taglist_spacing      = 0
     --t.taglist_item_roundness = config.item_roundness
-    theme.taglist_font         = config.font
+    --theme.taglist_font         = beautiful.font
 
     -- Taglist
     theme.taglist_bg_empty     = theme.bg_normal

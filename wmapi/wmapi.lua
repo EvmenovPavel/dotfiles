@@ -1,10 +1,11 @@
-local ascreen = require("lib.awful.screen")
-local wibox   = require("lib.wibox")
+local ascreen = require("awful.screen")
+local wibox   = require("wibox")
+local gears   = require("gears")
 
 local wmapi   = {}
 
-wmapi.timer   = require("lib.wmapi.timer")
-wmapi.markup  = require("lib.wmapi.markup")
+wmapi.timer   = require("wmapi.timer")
+wmapi.markup  = require("wmapi.markup")
 
 function wmapi:base()
     return wibox.widget({
@@ -112,7 +113,7 @@ function wmapi:tablelength(T)
 end
 
 function wmapi:display_primary(s)
-    if s == screen.primary then
+    if s == capi.screen.primary then
         return true
     end
 
@@ -120,8 +121,8 @@ function wmapi:display_primary(s)
 end
 
 function wmapi:display_index(s)
-    for i = 1, screen.count() do
-        if s == screen[i] then
+    for i = 1, capi.screen.count() do
+        if s == capi.screen[i] then
             return i
         end
     end
@@ -129,7 +130,70 @@ function wmapi:display_index(s)
     return 1
 end
 
+function wmapi:update(timeout, callback)
+    local timeout  = timeout or 0.1
+    local callback = callback or nil
+
+    if callback == nil then
+        return nil
+    end
+
+    return gears.timer {
+        timeout   = timeout,
+        call_now  = true,
+        autostart = true,
+        callback  = callback
+    }
+end
+
 wmapi.screen_height = ascreen.focused().geometry.height
 wmapi.screen_width  = ascreen.focused().geometry.width
+
+function wmapi:container(widget)
+    local container = wibox.widget {
+        widget,
+        widget = wibox.container.background
+    }
+    local old_cursor, old_wibox
+
+    container:connect_signal(
+            "mouse::enter",
+            function()
+                container.bg = "#ffffff11"
+                local w      = _G.mouse.current_wibox
+                if w then
+                    old_cursor, old_wibox = w.cursor, w
+                    w.cursor              = "hand1"
+                end
+            end
+    )
+
+    container:connect_signal(
+            "mouse::leave",
+            function()
+                container.bg = "#ffffff00"
+                if old_wibox then
+                    old_wibox.cursor = old_cursor
+                    old_wibox        = nil
+                end
+            end
+    )
+
+    container:connect_signal(
+            "button::press",
+            function()
+                container.bg = "#ffffff22"
+            end
+    )
+
+    container:connect_signal(
+            "button::release",
+            function()
+                container.bg = "#ffffff11"
+            end
+    )
+
+    return container
+end
 
 return wmapi

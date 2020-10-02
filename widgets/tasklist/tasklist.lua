@@ -1,17 +1,15 @@
-local awful               = require("lib.awful")
-local wibox               = require("lib.wibox")
-local gears               = require("lib.gears")
-local clickable_container = require("widgets.clickable-container")
-local beautiful           = require("lib.beautiful")
+local awful    = require("awful")
+local wibox    = require("wibox")
+local gears    = require("gears")
+local mouse    = require("event").mouse
 
-local dpi                 = require("lib.beautiful").xresources.apply_dpi
-local capi                = { button = button }
-local ICON_DIR            = gears.filesystem.get_configuration_dir() .. "/icons/"
+local dpi      = require("beautiful").xresources.apply_dpi
+local ICON_DIR = gears.filesystem.get_configuration_dir() .. "/icons/"
 
 -- define module table
-local tasklist            = {}
+local tasklist = {}
 
-local shape               = {
+local shape    = {
     function(cr, width, height)
         gears.shape.transform(gears.shape.rounded_rect):translate(0, height - 1)(cr, width, 1, 0)
     end,
@@ -66,7 +64,7 @@ local function list_update(widget, buttons, label, data, objects)
             w_bm_icon = cache.ibm
             w_text    = cache.tt
         else
-            w_bm_close = clickable_container()
+            w_bm_close = capi.wmapi:container()
             w_bm_close:set_widget(wibox.widget {
                 {
                     widget = wibox.widget.imagebox,
@@ -78,11 +76,12 @@ local function list_update(widget, buttons, label, data, objects)
             })
             w_bm_close.shape = gears.shape.circle
             w_bm_close       = wibox.container.margin(w_bm_close, dpi(4), dpi(4), dpi(4), dpi(4))
-            w_bm_close:buttons(gears.table.join(awful.button({}, 1, nil,
-                                                             function()
-                                                                 o.kill(o)
-                                                             end
-            )))
+            w_bm_close:buttons(gears.table.join(
+                    awful.button({}, mouse.button_click_left, nil,
+                                 function()
+                                     o.kill(o)
+                                 end))
+            )
 
             ib_icon      = wibox.widget {
                 widget = wibox.widget.imagebox(),
@@ -91,7 +90,6 @@ local function list_update(widget, buttons, label, data, objects)
             w_bm_icon    = wibox.container.margin(ib_icon, dpi(6), dpi(6), dpi(6), dpi(6))
 
             tb_text      = wibox.widget {
-                --markup = 'This <i>is</i> a <b>textbox</b>!!!',
                 align        = "center",
                 valign       = "left",
                 forced_width = 140,
@@ -99,18 +97,19 @@ local function list_update(widget, buttons, label, data, objects)
             }
             w_bm_text    = wibox.container.margin(tb_text, dpi(4), dpi(4))
 
-            bg_clickable = clickable_container()
+            bg_clickable = capi.wmapi:container()
             bg_clickable:set_widget(wibox.widget {
                 w_bm_icon,
+                --spacing = beautiful.tasklist_spacing,
                 w_bm_text,
+                --spacing = beautiful.tasklist_spacing,
                 w_bm_close,
                 widget = wibox.layout.fixed.horizontal()
             })
 
             bgb_item = wibox.widget({
                                         bg_clickable,
-                                        forced_width = 210,
-                                        widget       = wibox.container.background(),
+                                        widget = wibox.container.background(),
                                     })
 
             bgb_item:buttons(create_buttons(buttons, o))
@@ -178,29 +177,25 @@ local function list_update(widget, buttons, label, data, objects)
 end
 
 local buttons = awful.util.table.join(
-        awful.button({}, 1,
+        awful.button({}, mouse.button_click_left,
                      function(c)
-                         if c == client.focus then
+                         if c == capi.client.focus then
                              c.minimized = true
                          else
-                             -- Without this, the following
-                             -- :isvisible() makes no sense
                              c.minimized = false
                              if not c:isvisible() and c.first_tag then
                                  c.first_tag:view_only()
                              end
-                             -- This will also un-minimize
-                             -- the client, if needed
-                             client.focus = c
+
+                             capi.client.focus = c
                              c:raise()
                          end
-                     end
-        ),
-        awful.button({}, 2,
-                     function(c)
-                         c.kill(c)
-                     end
-        )
+                     end),
+
+        awful.button({}, mouse.button_click_right,
+                     function()
+                         awful.menu.client_list({ theme = { width = 250 } })
+                     end)
 )
 
 function tasklist:create(s)

@@ -1,23 +1,18 @@
--------------------------------------------------
--- CPU Widget for Awesome Window Manager
--- Shows the current CPU utilization
--- More details could be found here:
--- https://github.com/streetturtle/awesome-wm-widgets/tree/master/cpu-widget
-
--- @author Pavel Makhov
--- @copyright 2020 Pavel Makhov
--------------------------------------------------
+local capi         = {
+    mouse = mouse
+}
 
 local awful        = require("awful")
 local watch        = require("awful.widget.watch")
 local wibox        = require("wibox")
 local beautiful    = require("beautiful")
 local gears        = require("gears")
+local mouse        = require("event").mouse
 
 local HOME_DIR     = os.getenv("HOME")
 local WIDGET_DIR   = HOME_DIR .. "/.config/awesome/widgets/cpu-widget"
 
-local widget       = {}
+local cpu          = {}
 local cpu_rows     = {
     spacing = 4,
     layout  = wibox.layout.fixed.vertical,
@@ -87,8 +82,7 @@ local function create_kill_process_button()
     }
 end
 
-local function worker(args)
-
+function cpu:init(args)
     local args                    = args or {}
 
     local width                   = args.width or 50
@@ -129,11 +123,11 @@ local function worker(args)
 
     cpugraph_widget:buttons(
             awful.util.table.join(
-                    awful.button({}, 1, function()
+                    awful.button({}, mouse.button_click_left, function()
                         if popup.visible then
                             popup.visible = not popup.visible
                         else
-                            popup:move_next_to(mouse.current_widget_geometry)
+                            popup:move_next_to(capi.mouse.current_widget_geometry)
                         end
                     end)
             )
@@ -297,6 +291,7 @@ local function worker(args)
     return cpu_widget
 end
 
-return setmetatable(widget, { __call = function(_, ...)
-    return worker(...)
-end })()
+return setmetatable(cpu, {
+    __call = cpu.init
+})
+

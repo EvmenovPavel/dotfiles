@@ -1,4 +1,4 @@
-local awful            = require("lib.awful")
+local awful            = require("awful")
 
 local rules            = {}
 
@@ -46,6 +46,7 @@ function rules:init(clientkeys, buttonkeys)
                 screen            = awful.screen.preferred,
 
                 placement         = awful.placement.centered,
+                --placement         = awful.placement.no_overlap + awful.placement.no_offscreen,
 
                 callback          = function(c)
                     local screen_width  = awful.screen.focused().geometry.width
@@ -57,7 +58,7 @@ function rules:init(clientkeys, buttonkeys)
                     local height        = c.height
 
                     if width < 800 and height < 800 then
-                        c.floating  = true
+                        c.floating = true
 
                         c:geometry({
                                        x = screen_width / 2 - width / 2,
@@ -65,7 +66,7 @@ function rules:init(clientkeys, buttonkeys)
                                    })
 
                     else
-                        c.floating  = false
+                        c.floating = false
                     end
                 end
             },

@@ -1,18 +1,8 @@
--------------------------------------------------
--- Calendar Widget for Awesome Window Manager
--- Shows the current month and supports scroll up/down to switch month
--- More details could be found here:
--- https://github.com/streetturtle/awesome-wm-widgets/tree/master/calendar-widget
-
--- @author Pavel Makhov
--- @copyright 2019 Pavel Makhov
--------------------------------------------------
-
 local awful           = require("awful")
 local beautiful       = require("beautiful")
 local wibox           = require("wibox")
 local gears           = require("gears")
-local naughty         = require("naughty")
+--local naughty         = require("naughty")
 
 local calendar_widget = {}
 
@@ -74,10 +64,10 @@ local function worker(args)
     local args            = args or {}
 
     if args.theme ~= nil and calendar_themes[args.theme] == nil then
-        naughty.notify({
-                           preset = naughty.config.presets.critical,
-                           title  = 'Calendar Widget',
-                           text   = 'Theme "' .. args.theme .. '" not found, fallback to default' })
+        --naughty.notify({
+        --                   preset = naughty.config.presets.critical,
+        --                   title  = 'Calendar Widget',
+        --                   text   = 'Theme "' .. args.theme .. '" not found, fallback to default' })
         args.theme = 'nord'
     end
 

@@ -1,9 +1,5 @@
-local beautiful              = require("beautiful")
 local awful                  = require("awful")
-local wibar                  = require("/home/be3yh4uk/.config/awesome/widgets/notifications/wibar")
 local wibox                  = require("wibox")
-local watch                  = require("awful.widget.watch")
-local wmapi                  = require("wmapi")
 
 local GET_SPOTIFY_STATUS_CMD = "sp status"
 local GET_CURRENT_SONG_CMD   = "sp current"
@@ -15,24 +11,6 @@ local function ellipsize(text, length)
 end
 
 local myspotify = {}
-
---function myspotify:w_left(s)
---    return {
---        layout = wibox.layout.fixed.horizontal
---    }
---end
---
---function myspotify:w_middle(s)
---    return {
---        layout = wibox.layout.fixed.horizontal
---    }
---end
---
---function myspotify:w_right(s)
---    return {
---        layout = wibox.layout.fixed.horizontal
---    }
---end
 
 function myspotify:init(s)
     --local play_icon       = "/usr/share/icons/gnome/24x24/actions/player_play.png"
@@ -47,16 +25,16 @@ function myspotify:init(s)
     --local cur_title       = ""
     --local cur_album       = ""
 
-    local spotify         = awful.wibar({
-                                      ontop        = false,
-                                      stretch      = true,
-                                      position     = "bottom",
-                                      border_width = 0,
-                                      visible      = true,
-                                      height       = 27,
-                                      width        = wmapi.screen_width - 30,
-                                      screen       = s,
-                                  })
+    local spotify = awful.wibar({
+                                    ontop        = false,
+                                    stretch      = true,
+                                    position     = "bottom",
+                                    border_width = 0,
+                                    visible      = true,
+                                    height       = 27,
+                                    width        = wmapi.screen_width - 30,
+                                    --screen       = s,
+                                })
 
     spotify:setup {
         --self:w_left(s),

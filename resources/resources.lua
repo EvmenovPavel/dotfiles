@@ -1,8 +1,6 @@
-local config                = require("config")
-
 local resources             = {}
 
-resources.path              = config.awesome .. "/resources/icons"
+resources.path              = capi.path .. "/resources/icons"
 resources.awesome           = resources.path .. "/awesome.png"
 
 resources.menu_submenu_icon = resources.path .. "/submenu.png"

@@ -1,1 +1,1 @@
-return require("widgets.calendar.calendar")
+return require("widgets.calendar.clock")

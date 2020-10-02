@@ -1,16 +1,15 @@
-local naughty                        = require("lib.naughty")
-local beautiful                      = require("lib.beautiful")
-local gears                          = require("lib.gears")
-local awful                          = require("lib.awful")
+local naughty                        = require("naughty")
+local beautiful                      = require("beautiful")
+local gears                          = require("gears")
+local awful                          = require("awful")
 local notification                   = require("widgets.notifications")
 
 local dpi                            = beautiful.xresources.apply_dpi
 
 naughty.config.defaults.ontop        = true
-naughty.config.defaults.icon_size    = dpi(32)
-naughty.config.defaults.screen       = awful.screen.focused()
+naughty.config.defaults.icon_size    = 32
 
-naughty.config.defaults.font         = beautiful.title_font
+naughty.config.defaults.font         = beautiful.font
 
 naughty.config.defaults.title        = "Title: System Notification"
 naughty.config.defaults.text         = "Text: System Notification"
@@ -39,10 +38,10 @@ naughty.config.icon_formats          = {
 }
 
 function naughty:init(s)
-    naughty.config.screen = s
+    naughty.config.defaults.screen = s
 end
 
-naughty.config.presets.normal        = {
+naughty.config.presets.normal   = {
     fg            = beautiful.fg_normal,
     bg            = beautiful.bg_normal,
 
@@ -55,7 +54,7 @@ naughty.config.presets.normal        = {
     text          = "Text normal",
 }
 
-naughty.config.presets.low           = {
+naughty.config.presets.low      = {
     fg            = beautiful.fg_normal,
     bg            = beautiful.bg_normal,
 
@@ -68,7 +67,7 @@ naughty.config.presets.low           = {
     text          = "Text low",
 }
 
-naughty.config.presets.critical      = {
+naughty.config.presets.critical = {
     fg            = "#ffffff",
     bg            = "#ff0000",
 
@@ -81,7 +80,7 @@ naughty.config.presets.critical      = {
     text          = "Text critical",
 }
 
-naughty.config.presets.ok            = {
+naughty.config.presets.ok       = {
     fg            = beautiful.fg_normal,
     bg            = beautiful.bg_normal,
 
@@ -94,7 +93,7 @@ naughty.config.presets.ok            = {
     text          = "Text normal",
 }
 
-naughty.config.presets.info          = {
+naughty.config.presets.info     = {
     fg            = beautiful.fg_normal,
     bg            = beautiful.bg_normal,
 
@@ -107,7 +106,7 @@ naughty.config.presets.info          = {
     text          = "Text normal",
 }
 
-naughty.config.presets.warn          = {
+naughty.config.presets.warn     = {
     fg            = "#ffffff",
     bg            = "#ff0000",
 

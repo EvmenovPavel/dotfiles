@@ -1,1 +1,1 @@
-return require("widgets.volume-widget.volume")
+return require("widgets.volume.volume")

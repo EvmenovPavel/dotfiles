@@ -1,14 +1,12 @@
-local awful               = require("lib.awful")
-local wibox               = require("lib.wibox")
-local clickable_container = require("widgets.clickable-container")
-local gears               = require("lib.gears")
-local dpi                 = require("lib.beautiful").xresources.apply_dpi
+local awful         = require("awful")
+local wibox         = require("wibox")
+local gears         = require("gears")
+local naughty       = require("naughty")
+local dpi           = require("beautiful").xresources.apply_dpi
 
-local naughty             = require("naughty")
+local PATH_TO_ICONS = os.getenv("HOME") .. "/.config/awesome/icons/battery/"
 
-local PATH_TO_ICONS       = os.getenv("HOME") .. "/.config/awesome/icons/battery/"
-
-local widget              = wibox.widget {
+local widget        = wibox.widget {
     checked  = false,
     color    = "#ffffff",
     paddings = 2,
@@ -16,7 +14,7 @@ local widget              = wibox.widget {
     widget   = wibox.widget.checkbox
 }
 
-local widget_button       = clickable_container(wibox.container.margin(widget, dpi(7), dpi(7), dpi(7), dpi(7)))
+local widget_button = capi.wmapi:container(wibox.container.margin(widget, dpi(7), dpi(7), dpi(7), dpi(7)))
 
 function message(str)
     naughty:show({

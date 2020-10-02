@@ -1,1 +1,1 @@
-return require("widgets.cpu-widget.cpu-widget")
+return require("widgets.cpu.cpu")

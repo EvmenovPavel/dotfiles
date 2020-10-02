@@ -1,6 +1,6 @@
-local gears      = require("lib.gears")
-local awful      = require("lib.awful")
-local key        = require("keys").key
+local gears      = require("gears")
+local awful      = require("awful")
+local key        = require("event").key
 local hotkeys    = require("keys.hotkeys")
 
 local fun        = require("functions")

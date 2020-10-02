@@ -1,7 +1,7 @@
-local awful     = require("lib.awful")
-local gears     = require("lib.gears")
-local key       = require("keys.key")
-local programms = require("device.programms")
+local awful     = require("awful")
+local gears     = require("gears")
+local key       = require("event").key
+local programms = require("programms")
 local hotkeys   = require("keys.hotkeys")
 
 local switcher  = require("widgets.switcher")

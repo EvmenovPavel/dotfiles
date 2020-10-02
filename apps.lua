@@ -1,5 +1,5 @@
-local awful           = require("lib.awful")
-local filesystem      = require("lib.gears.filesystem")
+local awful           = require("awful")
+local filesystem      = require("gears.filesystem")
 
 -- define module table
 local apps            = {}

@@ -3,11 +3,9 @@ local gears          = require("gears")
 local wibox          = require("wibox")
 local beautiful      = require("beautiful")
 
-local config         = require("config")
-local wmapi          = require("wmapi")
-local markup         = wmapi.markup
+local markup         = capi.wmapi.markup
 
-local clock_widget   = wibox.widget.textclock(markup.font(beautiful.font, config.datetime), 1)
+local clock_widget   = wibox.widget.textclock(markup.font(beautiful.font, beautiful.datetime), 1)
 
 local cal_shape      = function(cr, width, height)
     gears.shape.partially_rounded_rect(cr, width, height, false, false, true, true, 12)
@@ -28,17 +26,17 @@ local month_calendar = awful.widget.calendar_popup.month({
                                                          })
 
 
-cpugraph_widget:buttons(
-        awful.util.table.join(
-                awful.button({}, mouse.button_click_left, function()
-                    if popup.visible then
-                        popup.visible = not popup.visible
-                    else
-                        popup:move_next_to(capi.mouse.current_widget_geometry)
-                    end
-                end)
-        )
-)
+--cpugraph_widget:buttons(
+--        awful.util.table.join(
+--                awful.button({}, mouse.button_click_left, function()
+--                    if popup.visible then
+--                        popup.visible = not popup.visible
+--                    else
+--                        popup:move_next_to(capi.mouse.current_widget_geometry)
+--                    end
+--                end)
+--        )
+--)
 
 
 -- Attach calentar to clock_widget

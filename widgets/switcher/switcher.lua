@@ -1,17 +1,17 @@
-local cairo                  = require("lib.lgi").cairo
+local cairo                  = require("lgi").cairo
 local mouse                  = mouse
 local screen                 = screen
-local wibox                  = require("lib.wibox")
+local wibox                  = require("wibox")
 local table                  = table
 local keygrabber             = keygrabber
 local math                   = require("math")
-local awful                  = require("lib.awful")
-local gears                  = require("lib.gears")
+local awful                  = require("awful")
+local gears                  = require("gears")
 local timer                  = gears.timer
 local client                 = client
-awful.client                 = require("lib.awful.client")
+awful.client                 = require("awful.client")
 
-local naughty                = require("lib.naughty")
+local naughty                = require("naughty")
 local string                 = string
 local tostring               = tostring
 local tonumber               = tonumber

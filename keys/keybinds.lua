@@ -1,8 +1,8 @@
-local awful     = require("lib.awful")
-local gears     = require("lib.gears")
-local beautiful = require("lib.beautiful")
+local awful     = require("awful")
+local gears     = require("gears")
+local beautiful = require("beautiful")
 local dpi       = beautiful.xresources.apply_dpi
-local key       = require("keys.key")
+local key       = require("event").key
 local hotkeys   = require("keys.hotkeys")
 
 local keys      = {}
@@ -11,9 +11,7 @@ keys.globalkeys = require("keys.globalkeys")
 keys.clientkeys = require("keys.clientkeys")
 keys.buttonkeys = require("keys.buttonkeys")
 
--- Move given client to given direction
 function keys:move_client(c, direction)
-    -- If client is floating, move to edge
     if c.floating or (awful.layout.get(mouse.screen) == awful.layout.suit.floating) then
         local workarea = awful.screen.focused().workarea
         if direction == "up" then
@@ -25,7 +23,6 @@ function keys:move_client(c, direction)
         elseif direction == "right" then
             c:geometry({ x = workarea.width + workarea.x - c:geometry().width - beautiful.useless_gap * 2 - beautiful.border_width * 2, nil, nil, nil })
         end
-        -- Otherwise swap the client in the tiled layout
     elseif awful.layout.get(mouse.screen) == awful.layout.suit.max then
         if direction == "up" or direction == "left" then
             awful.client.swap.byidx(-1, c)
@@ -37,8 +34,6 @@ function keys:move_client(c, direction)
     end
 end
 
-
--- Resize client in given direction
 local floating_resize_amount = dpi(20)
 local tiling_resize_factor   = 0.05
 
@@ -66,14 +61,12 @@ function keys:resize_client(c, direction)
     end
 end
 
--- raise focused client
 function keys:raise_client()
     if client.focus then
         client.focus:raise()
     end
 end
 
--- Bind all key numbers to tags
 for i = 1, 9 do
     local descr_view, descr_toggle, descr_move, descr_toggle_focus
     if i == 1 or i == ipairs(root.tags()) then

@@ -1,7 +1,7 @@
-local awful      = require("lib.awful")
-local gears      = require("lib.gears")
-local key        = require("keys").key
-local mouse      = require("keys").mouse
+local awful      = require("awful")
+local gears      = require("gears")
+local key        = require("event").key
+local mouse      = require("event").mouse
 
 local buttonkeys = gears.table.join(
         awful.button({ }, mouse.button_click_left,
@@ -12,6 +12,7 @@ local buttonkeys = gears.table.join(
                              })
                          end
                      end),
+
         awful.button({ key.win }, mouse.button_click_left,
                      function(c)
                          if c ~= nil then
@@ -21,6 +22,7 @@ local buttonkeys = gears.table.join(
                              awful.mouse.client.move(c)
                          end
                      end),
+
         awful.button({ key.win }, mouse.button_click_right,
                      function(c)
                          if c ~= nil then

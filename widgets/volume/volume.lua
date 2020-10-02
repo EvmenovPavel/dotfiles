@@ -64,26 +64,22 @@ local function on_images()
     )
 end
 
-gears.timer {
-    timeout   = 0.1,
-    call_now  = true,
-    autostart = true,
-    callback  = function()
-        on_volume()
-        on_images()
-    end
-}
+capi.wmapi:update(0.1,
+                  function()
+                      on_volume()
+                      on_images()
+                  end)
 
-awesome.connect_signal("volume_change",
-                       function()
-                           if volume_adjust.visible then
-                               hide_volume_adjust:again()
-                           else
-                               volume_adjust.visible = true
-                               hide_volume_adjust:start()
-                               hide_volume_adjust:again()
-                           end
-                       end
+capi.awesome.connect_signal("volume_change",
+                            function()
+                                if volume_adjust.visible then
+                                    hide_volume_adjust:again()
+                                else
+                                    volume_adjust.visible = true
+                                    hide_volume_adjust:start()
+                                    hide_volume_adjust:again()
+                                end
+                            end
 )
 
 --awesome.connect_signal("volume_change_raise",
@@ -108,9 +104,12 @@ awesome.connect_signal("volume_change",
 --)
 
 local function worker(s)
+
+    local id      = capi.wmapi:display_index(s)
+
     volume_adjust = wibox({
                               screen  = s,
-                              x       = screen.geometry.width - offsetx,
+                              x       = id * screen.geometry.width - offsetx,
                               y       = (screen.geometry.height / 2) - (offsety / 2),
                               width   = dpi(48),
                               height  = offsety,

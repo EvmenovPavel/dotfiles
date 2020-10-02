@@ -1,9 +1,7 @@
-local os      = os
-local config  = require("config")
+local os       = os
+local log_file = os.getenv("HOME") .. "/.config/awesome" .. "/log.file"
 
---local logging = require("lib.lualogging.logging")
-
-local logger  = {}
+local logger   = {}
 
 local function append(args)
     local args    = args or {}
@@ -11,7 +9,7 @@ local function append(args)
     local message = args.message or args
 
     --logging.new(function(self, level, message)
-    local file    = io.open(config.logging, "a")
+    local file    = io.open(log_file, "a")
     if file then
         local date = os.date()
         file:write(tostring(date .. "\n" .. level .. ": " .. message), "\n\n")

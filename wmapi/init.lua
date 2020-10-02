@@ -1,1 +1,1 @@
-return require("lib.wmapi.wmapi")
+return require("wmapi.wmapi")

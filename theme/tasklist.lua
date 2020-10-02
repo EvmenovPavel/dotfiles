@@ -1,5 +1,4 @@
-local gears    = require("lib.gears")
-local config   = require("config")
+local gears    = require("gears")
 
 local tasklist = {}
 
@@ -19,12 +18,12 @@ local shape    = {
 
 function tasklist:init(theme)
     -- шрифт + размер
-    theme.tasklist_font              = config.font
+    --theme.tasklist_font              = beautiful.font
     --theme.tasklist_font_focus        = theme.tasklist_font
     --theme.tasklist_font_minimized    = theme.tasklist_font
     --theme.tasklist_font_urgent       = theme.tasklist_font
 
-    theme.tasklist_align             = config.position.left
+    --theme.tasklist_align             = beautiful.position.left
     --Disable the tasklist client icons.
     theme.tasklist_disable_icon      = false
     -- скрывает текст
@@ -37,7 +36,7 @@ function tasklist:init(theme)
     --theme.tasklist_bg_focus                     = theme.colors.tasklist.focus[2]
     --theme.tasklist_shape_border_color_focus     = theme.colors.tasklist.focus[3]
     --theme.tasklist_shape_border_width_focus     = 1
-    theme.tasklist_shape_focus                  = shape[1]
+    theme.tasklist_shape_focus       = shape[1]
 
 
     -- цвет текста когда апп не свернуто (но не акт)
@@ -46,7 +45,7 @@ function tasklist:init(theme)
     --theme.tasklist_bg_normal                    = theme.colors.tasklist.normal[2]
     --theme.tasklist_shape_border_color           = theme.colors.tasklist.normal[3]
     --theme.tasklist_shape_border_width           = 1
-    theme.tasklist_shape                        = shape[1]
+    theme.tasklist_shape             = shape[1]
 
 
     -- цвет теста при минимизе апп
@@ -55,14 +54,14 @@ function tasklist:init(theme)
     --theme.tasklist_bg_minimize                  = theme.colors.tasklist.minimize[2]
     --theme.tasklist_shape_border_color_minimized = theme.colors.tasklist.minimize[3]
     --theme.tasklist_shape_border_width_minimized = 1
-    theme.tasklist_shape_minimized              = shape[1]
+    theme.tasklist_shape_minimized   = shape[1]
 
     --theme.tasklist_fg_urgent                    = theme.colors.tasklist.urgent[1]
     -- цвет бекграунда
     --theme.tasklist_bg_urgent                    = theme.colors.tasklist.urgent[2]
     --theme.tasklist_shape_border_color_urgent    = theme.colors.tasklist.urgent[3]
     --theme.tasklist_shape_border_width_urgent    = 40
-    theme.tasklist_shape_urgent                 = shape[1]
+    theme.tasklist_shape_urgent      = shape[1]
 
 
     -- Tasklist
@@ -80,7 +79,8 @@ function tasklist:init(theme)
 
 
     -- уменьшает иконку
-    theme.tasklist_margins           = 3
+    theme.tasklist_margins           = 2
+    theme.tasklist_widget            = 4
     -- размер (ширина) апп (икон + текст)
     theme.tasklist_forced_width      = 120
     -- отступ слева
@@ -92,7 +92,7 @@ function tasklist:init(theme)
     -- отступ снизу
     theme.tasklist_bottom            = 1
     -- отступ между апп -> (икон+текст) [отступ] (икон+текст)
-    theme.tasklist_spacing           = 4
+    theme.tasklist_spacing           = 1
 end
 
 return setmetatable(tasklist, { __call = function(_, ...)

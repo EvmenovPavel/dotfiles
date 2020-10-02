@@ -1,16 +1,18 @@
-local config    = require("config")
+--local beautiful = require("beautiful")
+
 local resources = require("resources")
 
 local titlebar  = {}
 
 function titlebar:init(theme)
-    --theme.titlebar_enabled                                = true
+    theme.titlebar_enabled                                = true
+
     theme.titlebar_size                                   = 25
-    --theme.titlebar_title_enabled                          = true
-    theme.titlebar_font                                   = config.font
-    --theme.titlebar_title_align                            = config.position.top
-    theme.titlebar_position                               = config.position.top
-    --theme.titlebar_imitate_borders                        = true
+    theme.titlebar_title_enabled                          = true
+    --theme.titlebar_font                                   = beautiful.title_font
+    --theme.titlebar_title_align                            = beautiful.position.top
+    theme.titlebar_position                               = "top"
+    theme.titlebar_imitate_borders                        = true
 
 
     --theme.titlebar_bg_focus                               = theme.colors.titlebar.focus[1]

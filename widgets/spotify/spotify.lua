@@ -1,239 +1,184 @@
-local awful                      = require("awful")
-local wibox                      = require("wibox")
-local clickable_container        = require("widgets.clickable-container")
-local gears                      = require("gears")
-local beautiful                  = require("beautiful")
-local dpi                        = require("beautiful").xresources.apply_dpi
-local signals                    = require("components.signals")
+--Wed Sep 16 15:37:33 2020
+--nil: Album        Ghost in the Shell (Music Inspired by the Motion Picture)
+--AlbumArtist  Various Artists
+--Artist       DJ Shadow
+--Title        Scars
 
-local PATH_TO_ICONS              = os.getenv("HOME") .. "/.config/awesome/icons/notification/"
 
-local panel_shape                = function(cr, width, height)
-    gears.shape.partially_rounded_rect(cr, width, height, false, true, true, false, 0)
-end
-local maximized_panel_shape      = function(cr, width, height)
-    gears.shape.rectangle(cr, width, height)
-end
 
-local widget_icon                = wibox.widget {
+local awful                  = require("awful")
+local spawn                  = require("awful.spawn")
+local wibox                  = require("wibox")
+local gears                  = require("gears")
+local beautiful              = require("beautiful")
+local dpi                    = require("beautiful").xresources.apply_dpi
+local watch                  = require("awful.widget.watch")
+local separator              = require("widgets.separator.separator")
+local mouse                  = require("event").mouse
+
+local GET_SPOTIFY_STATUS_CMD = "sp status"
+local GET_CURRENT_SONG_CMD   = "sp current"
+
+local pathIcon               = capi.path .. "/widgets/spotify"
+
+local icons                  = {
+    logo  = pathIcon .. "/spotify.svg",
+    play  = pathIcon .. "/player_play.png",
+    pause = pathIcon .. "/player_pause.png",
+    stop  = pathIcon .. "/player_stop.png",
+    next  = pathIcon .. "/player_fwd.png",
+    prev  = pathIcon .. "/player_rew.png",
+}
+
+local myspotify              = {}
+
+local cur_artist             = ""
+local cur_title              = ""
+local cur_album              = ""
+
+local widget_icon            = wibox.widget {
     {
         id     = "icon",
-        image  = PATH_TO_ICONS .. "notification.svg",
+        image  = icons.logo,
         widget = wibox.widget.imagebox,
         resize = true
     },
     layout = wibox.layout.align.horizontal
 }
 
-local widget_button              = clickable_container(wibox.container.margin(widget_icon, dpi(7), dpi(7), dpi(7), dpi(7)))
+local widget_spotify         = capi.wmapi:container(wibox.container.margin(widget_icon, dpi(7), dpi(7), dpi(7), dpi(7)))
 
-widget_button.panel_notification = awful.wibar({
-                                                   visible  = false,
-                                                   position = "right",
-                                                   workarea = false,
-                                                   width    = 400,
-                                                   ontop    = true,
-                                                   shape    = maximized_panel_shape,
-                                               })
+local function create_widget_icon(image, command)
+    local command = command or nil
+    local widget  = wibox.widget {
+        id     = "icon",
+        image  = image,
+        height = 24,
+        width  = 24,
+        widget = wibox.widget.imagebox,
+        resize = true
+    }
 
-local function append_widget_notify(args)
-    --markup, image
-    local args        = args or {}
-
-    local title       = args.title or "Title: test111"
-    local text        = args.text or "Text: test111"
-    local icon        = args.icon or "/home/be3yh4uk/.config/awesome/icons/close.svg"
-    local bg          = args.bg or "#001133"
-
-    local w_title     = wibox.widget({
-                                         {
-                                             font   = beautiful.font,
-
-                                             widget = wibox.widget.textbox,
-                                             markup = title,
-
-                                             align  = "left",
-                                             valign = "center",
-                                         },
-                                         widget = wibox.container.background,
-                                     })
-
-    local w_text      = wibox.widget({
-                                         {
-                                             font   = beautiful.font,
-
-                                             widget = wibox.widget.textbox,
-                                             markup = text,
-
-                                             align  = "left",
-                                             valign = "center",
-                                         },
-                                         widget = wibox.container.background,
-                                     })
-
-    local w_icon_app  = wibox.widget({
-                                         {
-                                             widget        = wibox.widget.imagebox,
-                                             image         = icon,
-                                             resize        = true,
-
-                                             align         = "center",
-                                             valign        = "center",
-
-                                             forced_height = 24,
-                                             forced_width  = 24,
-                                         },
-                                         widget = wibox.container.background
-                                     })
-
-    local w_close_app = wibox.widget({
-                                         {
-                                             widget        = wibox.widget.imagebox,
-                                             image         = icon,
-                                             --resize        = true,
-
-                                             align         = "center",
-                                             valign        = "center",
-
-                                             forced_height = 12,
-                                             forced_width  = 12,
-                                         },
-                                         widget = wibox.container.background
-                                     })
-
-    local w_date      = wibox.widget({
-                                         {
-                                             font   = beautiful.font,
-
-                                             widget = wibox.widget.textbox,
-                                             markup = tostring(os.date()),
-
-                                             align  = "left",
-                                             valign = "center",
-                                         },
-                                         widget = wibox.container.background,
-                                     })
-
-    local item        = wibox.widget({
-                                         {
-                                             {
-                                                 {
-                                                     w_icon_app,
-                                                     margins = 10,
-                                                     widget  = wibox.container.margin
-                                                 },
-                                                 {
-                                                     {
-                                                         {
-                                                             top    = 10,
-                                                             w_title,
-                                                             --margins = 2,
-                                                             widget = wibox.container.margin
-                                                         },
-                                                         {
-                                                             w_close_app,
-                                                             margins = 10,
-                                                             widget  = wibox.container.margin
-                                                         },
-
-                                                         --expand = "none",
-                                                         layout = wibox.layout.align.horizontal,
-                                                     },
-                                                     {
-                                                         w_text,
-                                                         top    = 5,
-                                                         bottom = 5,
-                                                         right  = 10,
-                                                         --margins = 2,
-                                                         widget = wibox.container.margin,
-                                                     },
-                                                     {
-                                                         w_date,
-                                                         bottom = 10,
-                                                         --margins = 2,
-                                                         widget = wibox.container.margin,
-                                                     },
-                                                     widget = wibox.layout.fixed.vertical,
-                                                 },
-                                                 widget = wibox.layout.fixed.horizontal,
-                                             },
-
-                                             bg         = bg,
-                                             shape      = gears.shape.rounded_rect,
-                                             shape_clip = true,
-                                             widget     = wibox.container.background,
-                                         },
-                                         --color  = "#001100",
-                                         bottom = 5,
-                                         widget = wibox.container.margin,
-                                     })
-
-    item:connect_signal(signals.button.release,
-                        function()
-                            --textbox.bg  = colorClick
-                            --imagebox.bg = colorClick
-                            --awful.util.spawn(command)
-                            --quitmenu_widget.show()
-                        end)
-    item:connect_signal(signals.mouse.enter,
-                        function()
-                            -- show
-                            --textbox.bg  = colorShow
-                            --imagebox.bg = colorShow
-                        end)
-    item:connect_signal(signals.mouse.leave,
-                        function()
-                            -- hide
-                            --textbox.bg  = colorHide
-                            --imagebox.bg = colorHide
-                        end)
-
-    return item
-end
-
--- Layout
-local notifbox_layout = wibox.layout.fixed.vertical()
-
-function widget_button:append(args)
-    notifbox_layout:insert(1, append_widget_notify(args))
-end
-
-
-
---t = wibox.widget.textbox('Some text witch need to be justified')
---notifbox_layout._private.layout:set_justify(true)
---notifbox_layout:emit_signal("widget::redraw_needed")
---notifbox_layout:emit_signal("widget::layout_changed")
-
-
-widget_button.panel_notification:setup {
-    {
-        notifbox_layout,
-        widget = wibox.layout.align.vertical
-        --layout = wibox.container.scroll.vertical,
-    },
-    margins = 10,
-    widget  = wibox.container.margin,
-}
-
-
---widget_button.panel_notification
-
-local own_widget         = wibox.widget.base.make_widget()
-local offset_x, offset_y = -20, 0
---function own_widget:layout(context, width, height)
---    -- No idea how to pick good widths and heights for the inner widget.
---    return { wibox.widget.base.place_widget_at(my_widget(), offset_x, offset_y, 200, 40) }
---end
-
-widget_button:buttons(
-        gears.table.join(
-                awful.button({}, 1, nil,
-                             function()
-                                 widget_button.panel_notification.visible = not widget_button.panel_notification.visible
-                             end
+    if command then
+        widget:buttons(
+                gears.table.join(
+                        awful.button({}, mouse.button_click_left, nil,
+                                     function()
+                                         awful.spawn(command, false)
+                                     end
+                        )
                 )
         )
-)
+    end
 
-return widget_button
+    return widget
+end
+
+local function create_widget_text(text)
+    local widget = wibox.widget {
+        margin = text,
+        widget = wibox.widget.textbox,
+    }
+
+    return widget
+end
+
+local prev  = create_widget_icon(icons.prev, "sp prev")
+local pause = create_widget_icon(icons.stop, "sp stop")
+local play  = create_widget_icon(icons.play, "sp play")
+local next  = create_widget_icon(icons.next, "sp next")
+
+local text  = create_widget_text("")
+
+function myspotify:w_left()
+    return {
+        capi.wmapi:container(prev),
+        capi.wmapi:container(play),
+        --capi.wmapi:container(pause),
+        capi.wmapi:container(next),
+
+        layout = wibox.layout.fixed.horizontal
+    }
+end
+
+function myspotify:w_middle()
+    return {
+        text,
+        layout = wibox.layout.fixed.horizontal
+    }
+end
+
+function myspotify:w_right()
+    return {
+        layout = wibox.layout.fixed.horizontal
+    }
+end
+
+--print(os.getenv("HOSTNAME") or os.getenv("HOST"))
+
+function myspotify:init(s)
+    widget_spotify.spotify = awful.wibar({
+                                             screen       = s,
+                                             ontop        = false,
+                                             stretch      = true,
+                                             position     = beautiful.position.button,
+                                             border_width = 0,
+                                             visible      = true,
+                                             height       = 27,
+                                             width        = capi.wmapi.screen_width - 30,
+                                         })
+
+    widget_spotify.spotify:setup {
+        self:w_left(s),
+        self:w_middle(s),
+        self:w_right(s),
+        layout = wibox.layout.align.horizontal,
+    }
+
+    capi.wmapi:update(0.1,
+                      function()
+                          spawn.easy_async(GET_SPOTIFY_STATUS_CMD, function(stdout)
+                              stdout = string.gsub(stdout, "\n", "")
+
+                              if stdout == "Playing" then
+                                  play:set_image(icons.pause)
+                              elseif stdout == "Paused" then
+                                  play:set_image(icons.play)
+                              end
+
+                              widget_spotify.spotify.visible = stdout == "Playing" or stdout == "Paused"
+                          end)
+
+                          spawn.easy_async(GET_CURRENT_SONG_CMD,
+                                           function(stdout)
+                                               stdout                                   = string.gsub(stdout, "&", "&amp;")
+                                               local album, album_artist, artist, title = string.match(stdout, "Album%s*(.*)\nAlbumArtist%s*(.*)\nArtist%s*(.*)\nTitle%s*(.*)\n")
+
+                                               if album ~= nil and title ~= nil and artist ~= nil then
+                                                   cur_artist = artist
+                                                   cur_title  = title
+                                                   cur_album  = album
+
+                                                   local t    = "Artist: " .. cur_artist .. " - " .. cur_title .. " [Album: " .. cur_album .. "]"
+
+                                                   text:set_text(t)
+                                               end
+                                           end)
+                      end)
+
+    widget_spotify:buttons(
+            gears.table.join(
+                    awful.button({}, mouse.button_click_left, nil,
+                                 function()
+                                     widget_spotify.spotify.visible = not widget_spotify.spotify.visible
+                                 end
+                    )
+            )
+    )
+
+    return widget_spotify
+end
+
+return setmetatable(myspotify, {
+    __call = myspotify.init,
+})

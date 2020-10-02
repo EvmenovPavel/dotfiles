@@ -1,9 +1,8 @@
-local awful                      = require("lib.awful")
-local wibox                      = require("lib.wibox")
-local clickable_container        = require("widgets.clickable-container")
-local gears                      = require("lib.gears")
-local beautiful                  = require("lib.beautiful")
-local dpi                        = require("lib.beautiful").xresources.apply_dpi
+local awful                      = require("awful")
+local wibox                      = require("wibox")
+local gears                      = require("gears")
+local beautiful                  = require("beautiful")
+local dpi                        = require("beautiful").xresources.apply_dpi
 local signals                    = require("components.signals")
 
 local PATH_TO_ICONS              = os.getenv("HOME") .. "/.config/awesome/icons/notification/"
@@ -25,7 +24,7 @@ local widget_icon                = wibox.widget {
     layout = wibox.layout.align.horizontal
 }
 
-local widget_button              = clickable_container(wibox.container.margin(widget_icon, dpi(7), dpi(7), dpi(7), dpi(7)))
+local widget_button              = capi.wmapi:container(wibox.container.margin(widget_icon, dpi(7), dpi(7), dpi(7), dpi(7)))
 
 widget_button.panel_notification = awful.wibar({
                                                    visible  = false,
@@ -47,7 +46,7 @@ local function append_widget_notify(args)
 
     local w_title     = wibox.widget({
                                          {
-                                             font   = beautiful.title_font,
+                                             font   = beautiful.font,
 
                                              widget = wibox.widget.textbox,
                                              markup = title,
@@ -60,7 +59,7 @@ local function append_widget_notify(args)
 
     local w_text      = wibox.widget({
                                          {
-                                             font   = beautiful.title_font,
+                                             font   = beautiful.font,
 
                                              widget = wibox.widget.textbox,
                                              markup = text,
@@ -103,7 +102,7 @@ local function append_widget_notify(args)
 
     local w_date      = wibox.widget({
                                          {
-                                             font   = beautiful.title_font,
+                                             font   = beautiful.font,
 
                                              widget = wibox.widget.textbox,
                                              markup = tostring(os.date()),

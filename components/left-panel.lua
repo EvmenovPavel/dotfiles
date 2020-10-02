@@ -1,11 +1,11 @@
-local beautiful   = require("lib.beautiful")
-local wibox       = require("lib.wibox")
+local beautiful   = require("beautiful")
+local wibox       = require("wibox")
 local dpi         = beautiful.xresources.apply_dpi
-local awful       = require("lib.awful")
-local gears       = require("lib.gears")
+local awful       = require("awful")
+local gears       = require("gears")
 
 local tag_list    = require("widgets.tag-list")
-local separator   = require("widgets.horizontal-separator")
+local separator   = require("widgets.separator.separator")
 local folder      = require("widgets.folder")
 
 local home_dir    = os.getenv("HOME")
@@ -60,13 +60,13 @@ left_panel.create = function(s)
     }
 
     -- panel background that becomes visible when client is maximized
-    panel_bg = wibox({
-                         screen   = s,
-                         position = "left",
-                         height   = s.geometry.height,
-                         width    = beautiful.left_panel_width,
-                         visible  = false
-                     })
+    local panel_bg = wibox({
+                               screen   = s,
+                               position = "left",
+                               height   = s.geometry.height,
+                               width    = beautiful.left_panel_width,
+                               visible  = false
+                           })
 
 
     -- ===================================================================

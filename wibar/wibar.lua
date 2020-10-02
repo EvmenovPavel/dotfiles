@@ -1,38 +1,37 @@
-local awful   = require("lib.awful")
-local wibox   = require("lib.wibox")
-local gears   = require("lib.gears")
-local widgets = require("widgets")
+local beautiful = require("beautiful")
+local awful     = require("awful")
+local wibox     = require("wibox")
+local gears     = require("gears")
+local widgets   = require("widgets")
 
-local wmapi   = require("lib.wmapi")
-local config  = require("config")
+local mywibar   = {}
 
-local mywibar = {}
-
-function w_left(s)
+function mywibar:w_left(s)
     return {
-        widgets.taglist.create(s),
+        widgets.taglist:create(s),
         layout = wibox.layout.fixed.horizontal
     }
 end
 
-function w_middle(s)
+function mywibar:w_middle(s)
     return {
         widgets.tasklist:create(s),
         layout = wibox.layout.fixed.horizontal
     }
 end
 
-function w_right(s)
-    if wmapi:display_primary(s) then
+function mywibar:w_right(s)
+    --if capi.wmapi:display_primary(s) then
+    if capi.wmapi:display_index(s) == capi.primary then
         return {
             widgets.naughty(s),
-            widgets.systray,
+            widgets.systray(),
             widgets.keyboard(),
             widgets.volume(s),
-            --widgets.cpu,
-            widgets.calendar,
+            widgets.cpu(),
+            widgets.clock,
             widgets.reboot,
-            widgets.spotify(),
+            widgets.spotify(s),
 
             layout = wibox.layout.fixed.horizontal
         }
@@ -67,13 +66,13 @@ function mywibar:create(s)
         gears.shape.rectangle(cr, width, height)
     end
 
-    s.mywibar                   = awful.wibar({
+    local wibar                 = awful.wibar({
                                                   -- Делает поверх всего
                                                   ontop        = false,
                                                   --Если wibar нужно растянуть, чтобы заполнить экран.
                                                   stretch      = true,
                                                   --Положение Wibox.
-                                                  position     = config.position.top,
+                                                  position     = beautiful.position.top,
                                                   -- Размер обводки
                                                   border_width = 0,
                                                   --Visibility.
@@ -81,7 +80,7 @@ function mywibar:create(s)
                                                   -- размер (высота) бара
                                                   height       = 27,
                                                   -- ширина бара (если stretch = true, то игнорирует)
-                                                  width        = wmapi.screen_width - 30,
+                                                  width        = capi.wmapi.screen_width - 30,
 
                                                   shape        = shape[1], --maximized_panel_shape,
 
@@ -95,10 +94,10 @@ function mywibar:create(s)
                                                   screen       = s,
                                               })
 
-    s.mywibar:setup {
-        w_left(s),
-        w_middle(s),
-        w_right(s),
+    wibar:setup {
+        self:w_left(s),
+        self:w_middle(s),
+        self:w_right(s),
         layout = wibox.layout.align.horizontal,
     }
 end

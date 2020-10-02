@@ -1,15 +1,14 @@
-local awful               = require("lib.awful")
-local gears               = require("lib.gears")
-local wibox               = require("lib.wibox")
-local beautiful           = require("lib.beautiful")
-local clickable_container = require("widgets.clickable-container")
+local awful        = require("awful")
+local gears        = require("gears")
+local wibox        = require("wibox")
+local beautiful    = require("beautiful")
 
 --local apps                = require("apps").default
-local dpi                 = beautiful.xresources.apply_dpi
-local ICON_DIR            = gears.filesystem.get_configuration_dir() .. "/icons/exit-screen/"
+local dpi          = beautiful.xresources.apply_dpi
+local ICON_DIR     = gears.filesystem.get_configuration_dir() .. "/icons/exit-screen/"
 
 -- define module table
-local exit_screen         = {}
+local exit_screen  = {}
 
 
 -- ===================================================================
@@ -17,9 +16,9 @@ local exit_screen         = {}
 -- ===================================================================
 
 
-local icon_size           = dpi(90)
+local icon_size    = dpi(90)
 
-local build_button        = function(icon)
+local build_button = function(icon)
     local button = wibox.widget {
         wibox.widget {
             wibox.widget {
@@ -36,7 +35,7 @@ local build_button        = function(icon)
             shape         = gears.shape.circle,
             forced_width  = icon_size,
             forced_height = icon_size,
-            widget        = clickable_container
+            --widget        = capi.wmapi:container
         },
         left   = dpi(24),
         right  = dpi(24),

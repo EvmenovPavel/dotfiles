@@ -1,1 +1,1 @@
-return require("wibar.wibar")
+return require("spotify.spotify")

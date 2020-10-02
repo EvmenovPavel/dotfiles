@@ -1,6 +1,6 @@
 local autostart = {}
 
-local awful     = require("lib.awful")
+local awful     = require("awful")
 
 function autostart.list()
     return {

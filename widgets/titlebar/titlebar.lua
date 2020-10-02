@@ -1,39 +1,31 @@
-local awful                        = require("lib.awful")
-local wibox                        = require("lib.wibox")
-local gears                        = require("lib.gears")
-local beautiful                    = require("lib.beautiful")
-local awful_menu                   = require("lib.awful.menu")
-local mouse                        = require("keys.mouse")
-local wmapi                        = require("lib.wmapi")
-local config                       = require("config")
+local awful                   = require("awful")
+local wibox                   = require("wibox")
+local gears                   = require("gears")
+local beautiful               = require("beautiful")
+local awful_menu              = require("awful.menu")
+local mouse                   = require("event").mouse
 
-local fun                          = require("functions")
+local fun                     = require("functions")
 
-awful.titlebar.enable_tooltip      = false
-awful.titlebar.fallback_name       = 'Client\'s name'
-beautiful.titlebar_enabled         = true
-beautiful.titlebar_size            = 25
-beautiful.titlebar_font            = config.title_font
-beautiful.titlebar_title_align     = config.position.top
-beautiful.titlebar_position        = "top"
-beautiful.titlebar_imitate_borders = true
+awful.titlebar.enable_tooltip = false
+awful.titlebar.fallback_name  = 'Client\'s name'
 
-local type                         = type
-local abutton                      = require("lib.awful.button")
-local atooltip                     = require("lib.awful.tooltip")
-local clienticon                   = require("lib.awful.widget.clienticon")
+local type                    = type
+local abutton                 = require("awful.button")
+local atooltip                = require("awful.tooltip")
+local clienticon              = require("awful.widget.clienticon")
 
-local capi                         = {
-    client = client
-}
+--local capi                    = {
+--    client = client
+--}
 
-local titlebar                     = {
+local titlebar                = {
     widget         = {},
     enable_tooltip = true,
     fallback_name  = '<unknown>'
 }
 
-local all_titlebars                = setmetatable({}, { __mode = 'k' })
+local all_titlebars           = setmetatable({}, { __mode = 'k' })
 
 function titlebar:titlewidget(c)
     local ret = wibox.widget.textbox()
@@ -248,118 +240,118 @@ function titlebar:add_menu(c)
     return _menu
 end
 
-client.connect_signal("unmanage",
-                      function(c)
-                          all_titlebars[c] = nil
-                      end)
+capi.client.connect_signal("unmanage",
+                           function(c)
+                               all_titlebars[c] = nil
+                           end)
 
-client.connect_signal("request::titlebars",
-                      function(c, startup)
-                          -- Custom
-                          if beautiful.titlebar_fun then
-                              beautiful.titlebar_fun(c)
-                              return
-                          end
+capi.client.connect_signal("request::titlebars",
+                           function(c, startup)
+                               -- Custom
+                               if beautiful.titlebar_fun then
+                                   beautiful.titlebar_fun(c)
+                                   return
+                               end
 
-                          -- Enable sloppy focus
-                          if config.focus then
-                              c:connect_signal("mouse::enter",
-                                               function(c)
-                                                   if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
-                                                           and awful.client.focus.filter(c) then
-                                                       client.focus = c
-                                                   end
-                                               end)
-                          end
+                               -- Enable sloppy focus
+                               --if config.focus then
+                               --    c:connect_signal("mouse::enter",
+                               --                     function(c)
+                               --                         if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+                               --                                 and awful.client.focus.filter(c) then
+                               --                             client.focus = c
+                               --                         end
+                               --                     end)
+                               --end
 
-                          if not startup then
-                              -- Set the windows at the slave,
-                              -- i.e. put it at the end of others instead of setting it master.
-                              -- awful.client.setslave(c)
+                               if not startup then
+                                   -- Set the windows at the slave,
+                                   -- i.e. put it at the end of others instead of setting it master.
+                                   -- awful.client.setslave(c)
 
-                              -- Put windows in a smart way, only if they does not set an initial position.
-                              if not c.size_hints.user_position and not c.size_hints.program_position then
-                                  awful.placement.no_overlap(c)
-                                  awful.placement.no_offscreen(c)
-                              end
-                          end
+                                   -- Put windows in a smart way, only if they does not set an initial position.
+                                   if not c.size_hints.user_position and not c.size_hints.program_position then
+                                       awful.placement.no_overlap(c)
+                                       awful.placement.no_offscreen(c)
+                                   end
+                               end
 
-                          --if (c.type == "normal" or c.type == "dialog") then
-                          -- buttons for the titlebar
-                          local buttons     = awful.util.table.join(
-                                  awful.button({}, mouse.button_click_left,
-                                               function()
-                                                   client.focus = c
-                                                   c:raise()
-                                                   awful.mouse.client.move(c)
-                                               end),
-                                  awful.button({}, mouse.button_click_right,
-                                               function()
-                                                   if c.floating then
-                                                       client.focus = c
-                                                       c:raise()
-                                                       awful.mouse.client.resize(c)
-                                                   end
-                                               end)
-                          )
+                               --if (c.type == "normal" or c.type == "dialog") then
+                               -- buttons for the titlebar
+                               local buttons     = awful.util.table.join(
+                                       awful.button({}, mouse.button_click_left,
+                                                    function()
+                                                        capi.client.focus = c
+                                                        c:raise()
+                                                        awful.mouse.client.move(c)
+                                                    end),
+                                       awful.button({}, mouse.button_click_right,
+                                                    function()
+                                                        if c.floating then
+                                                            capi.client.focus = c
+                                                            c:raise()
+                                                            awful.mouse.client.resize(c)
+                                                        end
+                                                    end)
+                               )
 
-                          -- Widgets that are aligned to the left
-                          local left_layout = wibox.layout.fixed.horizontal()
-                          left_layout:add(wmapi:pad(2))
-                          local icon = wibox.widget {
-                              {
-                                  clienticon(c),
-                                  layout = wibox.layout.align.horizontal
-                              },
-                              top    = 3, left = 3,
-                              bottom = 3, right = 3,
-                              widget = wibox.container.margin,
-                          }
-                          left_layout:add(icon)
+                               -- Widgets that are aligned to the left
+                               local left_layout = wibox.layout.fixed.horizontal()
+                               left_layout:add(capi.wmapi:pad(2))
+                               local icon = wibox.widget {
+                                   {
+                                       clienticon(c),
+                                       layout = wibox.layout.align.horizontal
+                                   },
+                                   top    = 3, left = 3,
+                                   bottom = 3, right = 3,
+                                   widget = wibox.container.margin,
+                               }
+                               left_layout:add(icon)
 
-                          --mytitlebar:add_menu(c)
-                          -- Widgets that are aligned to the right
-                          local right_layout = wibox.layout.fixed.horizontal()
-                          --right_layout:add(mytitlebar:menu(c))
-                          right_layout:add(titlebar:minimizebutton(c))
-                          right_layout:add(titlebar:maximizedbutton(c))
-                          right_layout:add(titlebar:closebutton(c))
-
-
-                          -- The title goes in the middle
-                          local middle_layout = wibox.layout.flex.horizontal()
-                          local title         = awful.titlebar.widget.titlewidget(c)
-                          title:set_align("center")
-                          middle_layout:add(title)
-                          middle_layout:buttons(buttons)
+                               --mytitlebar:add_menu(c)
+                               -- Widgets that are aligned to the right
+                               local right_layout = wibox.layout.fixed.horizontal()
+                               --right_layout:add(mytitlebar:menu(c))
+                               right_layout:add(titlebar:minimizebutton(c))
+                               right_layout:add(titlebar:maximizedbutton(c))
+                               right_layout:add(titlebar:closebutton(c))
 
 
-                          -- Now bring it all together
-                          local layout = wibox.layout.align.horizontal()
-                          layout:set_left(left_layout)
-                          layout:set_right(right_layout)
-                          layout:set_middle(middle_layout)
+                               -- The title goes in the middle
+                               local middle_layout = wibox.layout.flex.horizontal()
+                               local title         = awful.titlebar.widget.titlewidget(c)
+                               title:set_align("center")
+                               middle_layout:add(title)
+                               middle_layout:buttons(buttons)
 
-                          awful.titlebar(c, {
-                              -- FIX
-                              --bg       = awful.titlebar.titlebar_color or "#00ff00",
-                              size     = beautiful.titlebar_size,
-                              position = beautiful.titlebar_position,
-                              --font     = beautiful.titlebar_font
-                          })   :set_widget(layout)
 
-                          if config.shape then
-                              c.shape = function(cr, w, h)
-                                  if config.borderWidth then
-                                      if c.maximized or c.fullscreen then
-                                          gears.shape.partially_rounded_rect(cr, w, h, false, false, false, false, 0)
-                                      else
-                                          gears.shape.partially_rounded_rect(cr, w, h, true, true, true, true, 10)
-                                      end
-                                  else
-                                      gears.shape.partially_rounded_rect(cr, w, h, false, false, false, false, 0)
-                                  end
-                              end
-                          end
-                      end
+                               -- Now bring it all together
+                               local layout = wibox.layout.align.horizontal()
+                               layout:set_left(left_layout)
+                               layout:set_right(right_layout)
+                               layout:set_middle(middle_layout)
+
+                               awful.titlebar(c, {
+                                   -- FIX
+                                   --bg       = awful.titlebar.titlebar_color or "#00ff00",
+                                   size     = beautiful.titlebar_size,
+                                   position = beautiful.titlebar_position,
+                                   font     = beautiful.titlebar_font
+                               })   :set_widget(layout)
+
+                               --if config.shape then
+                               --    c.shape = function(cr, w, h)
+                               --        if config.borderWidth then
+                               --            if c.maximized or c.fullscreen then
+                               --                gears.shape.partially_rounded_rect(cr, w, h, false, false, false, false, 0)
+                               --            else
+                               --                gears.shape.partially_rounded_rect(cr, w, h, true, true, true, true, 10)
+                               --            end
+                               --        else
+                               --            gears.shape.partially_rounded_rect(cr, w, h, false, false, false, false, 0)
+                               --        end
+                               --    end
+                               --end
+                           end
 )

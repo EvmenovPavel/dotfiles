@@ -1,11 +1,11 @@
-local wibox                = require("wibox")
-local dpi                  = require("beautiful").xresources.apply_dpi
+local wibox     = require("wibox")
+local dpi       = require("beautiful").xresources.apply_dpi
 
-local horizontal_separator = wibox.widget {
+local separator = wibox.widget {
     orientation   = "horizontal",
-    forced_height = dpi(16),
+    forced_height = dpi(6),
     opacity       = 0.20,
     widget        = wibox.widget.separator
 }
 
-return horizontal_separator
+return separator

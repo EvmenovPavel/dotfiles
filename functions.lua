@@ -1,5 +1,5 @@
-local awful         = require("lib.awful")
-local hotkeys_popup = require("lib.awful.hotkeys_popup").widget
+local awful         = require("awful")
+local hotkeys_popup = require("awful.hotkeys_popup").widget
 
 local functions     = {}
 

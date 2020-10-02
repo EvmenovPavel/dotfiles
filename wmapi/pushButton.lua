@@ -1,5 +1,5 @@
-local wibox     = require("lib.wibox")
-local beautiful = require("lib.beautiful")
+local wibox     = require("wibox")
+local beautiful = require("beautiful")
 
 local wmapi     = {}
 

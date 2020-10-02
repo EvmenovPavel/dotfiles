@@ -5,17 +5,17 @@ local widgets = {
 
     keyboard      = require("widgets.keyboard"),
 
-    cpu           = require("widgets.cpu-widget"),
-    calendar      = require("widgets.calendar"),
+    cpu           = require("widgets.cpu"),
+    clock         = require("widgets.calendar"),
 
-    volume        = require("widgets.volume-widget.volume"),
+    volume        = require("widgets.volume"),
 
     tasklist      = require("widgets.tasklist"),
     taglist       = require("widgets.taglist"),
 
     reboot        = require("widgets.reboot"),
 
-    spotify       = require("widgets.spotify-widget.spotify"),
+    spotify       = require("widgets.spotify"),
 
     --require("widgets.bluetooth"),
     --require("widgets.wifi"),

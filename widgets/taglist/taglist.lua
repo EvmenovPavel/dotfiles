@@ -1,12 +1,10 @@
-local awful               = require("lib.awful")
-local wibox               = require("lib.wibox")
-local dpi                 = require("lib.beautiful").xresources.apply_dpi
-local capi                = { button = button }
-local clickable_container = require("widgets.clickable-container")
-local modkey              = require("keys").modkey
+local awful   = require("awful")
+local wibox   = require("wibox")
+local dpi     = require("beautiful").xresources.apply_dpi
+local key     = require("event").key
 
 -- define module table
-local taglist             = {}
+local taglist = {}
 
 
 -- Create buttons
@@ -57,7 +55,7 @@ local function list_update(w, buttons, label, data, objects)
             tbm           = wibox.container.margin(tb, dpi(4), dpi(16))
             ibm           = wibox.container.margin(ib, dpi(icondpi), dpi(icondpi), dpi(icondpi), dpi(icondpi))
             l             = wibox.layout.fixed.horizontal()
-            bg_clickable  = clickable_container()
+            bg_clickable  = capi.wmapi:container()
 
             -- All of this is added in a fixed widget
             l:fill_space(true)
@@ -103,7 +101,7 @@ local function list_update(w, buttons, label, data, objects)
 end
 
 -- create the tag list widget
-taglist.create = function(s)
+function taglist:create(s)
     return awful.widget.taglist(
             s,
             awful.widget.taglist.filter.all,
@@ -113,18 +111,19 @@ taglist.create = function(s)
                                      t:view_only()
                                  end
                     ),
-                    awful.button({ modkey }, 1,
+                    awful.button({ key.mod }, 1,
                                  function(t)
                                      if client.focus then
-                                         --client.focus:move_to_tag(t)
-                                         --t:view_only()
+                                         client.focus:move_to_tag(t)
+                                         t:view_only()
                                      end
                                  end
                     ),
                     awful.button({}, 3,
                                  awful.tag.viewtoggle
                     ),
-                    awful.button({ modkey }, 3,
+
+                    awful.button({ key.mod }, 3,
                                  function(t)
                                      if client.focus then
                                          client.focus:toggle_tag(t)
@@ -133,12 +132,12 @@ taglist.create = function(s)
                     ),
                     awful.button({}, 4,
                                  function(t)
-                                     --awful.tag.viewprev(t.screen)
+                                     awful.tag.viewprev(t.screen)
                                  end
                     ),
                     awful.button({}, 5,
                                  function(t)
-                                     --awful.tag.viewnext(t.screen)
+                                     awful.tag.viewnext(t.screen)
                                  end
                     )
             ),

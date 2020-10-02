@@ -1,46 +1,31 @@
-local capi      = {
-    root   = root,
-    client = client,
+capi            = {
+    dbus    = dbus,
+    screen  = screen,
+    root    = root,
+    tag     = tag,
+    button  = button,
+    client  = client,
+    awesome = awesome,
+    timer   = timer,
+    log     = require("logger"),
+    path    = os.getenv("HOME") .. "/.config/awesome",
+    wmapi   = require("wmapi"),
+    primary = 2
 }
 
-local wibox     = require("lib.wibox")
-local gears     = require("lib.gears")
-local awful     = require("lib.awful")
+local awful     = require("awful")
 
-local beautiful = require("lib.beautiful")
---local theme     = require("theme")
---beautiful.init(theme)
-beautiful.init(awful.util.getdir("config") .. "/icons/blueres/theme.lua")
-
-log            = require("logger")
+local beautiful = require("beautiful")
+local theme     = require("theme")
+beautiful.init(theme)
 
 local keybinds = require("keys.keybinds")
-root.keys(keybinds.globalkeys)
-root.buttons(keybinds.buttonkeys)
+capi.root.keys(keybinds.globalkeys)
+capi.root.buttons(keybinds.buttonkeys)
 
-awful.layout.layouts = {
-    awful.layout.suit.floating,
-    awful.layout.suit.tile,
-    awful.layout.suit.fair,
-    awful.layout.suit.tile.left,
-    awful.layout.suit.tile.bottom,
-    awful.layout.suit.tile.top,
-    awful.layout.suit.fair.horizontal,
-    --awful.layout.suit.spiral,
-    -- awful.layout.suit.spiral.dwindle,
-    -- awful.layout.suit.max,
-    -- awful.layout.suit.max.fullscreen,
-    -- awful.layout.suit.magnifier,
-    -- awful.layout.suit.corner.nw,
-    -- awful.layout.suit.corner.ne,
-    -- awful.layout.suit.corner.sw,
-    -- awful.layout.suit.corner.se,
-}
--- }}}
+awful.rules.rules = require("rules")(keybinds.clientkeys, keybinds.buttonkeys)
 
-awful.rules.rules    = require("rules")(keybinds.clientkeys, keybinds.buttonkeys)
-
-local apps           = require("autostart")
+local apps        = require("autostart")
 apps:start()
 
 require("widgets.titlebar")
@@ -51,102 +36,52 @@ awful.screen.connect_for_each_screen(
         function(s)
             wallpaper:create(s)
 
-            awful.tag({ "  ", "  ", "  ", "  ", "  ", "  ", "  " }, s, awful.layout.layouts[2])
-            beautiful.taglist_spacing = "0"
-
-            s.mypromptbox             = awful.widget.prompt()
-
-            s.mylayoutbox             = wibox.container.margin(awful.widget.layoutbox(s), 8, 8, 9, 9)
-            s.mylayoutbox:buttons(gears.table.join(
-                    awful.button({ }, 1, function()
-                        awful.layout.inc(1)
-                    end),
-                    awful.button({ }, 3, function()
-                        awful.layout.inc(-1)
-                    end),
-                    awful.button({ }, 4, function()
-                        awful.layout.inc(1)
-                    end),
-                    awful.button({ }, 5, function()
-                        awful.layout.inc(-1)
-                    end)))
-
-            --for i, tag in pairs(theme.taglist_icons) do
-            --    awful.tag.add(i, {
-            --        icon      = tag.icon,
-            --        icon_only = true,
-            --        layout    = awful.layout.suit.tile,
-            --        screen    = s,
-            --        selected  = i == 1
-            --    })
-            --end
+            for i, tag in pairs(theme.taglist_icons) do
+                awful.tag.add(i, {
+                    icon      = tag.icon,
+                    icon_only = true,
+                    layout    = awful.layout.suit.tile,
+                    screen    = s,
+                    selected  = i == 1
+                })
+            end
 
             wibar:create(s)
         end
 )
 
--- smart gaps
-local function get_num_tiled(t, s)
-    s = s or t.screen
-    local num_tiled
-    if t == s.selected_tag then
-        num_tiled = #awful.client.tiled(s)
+capi.tag.connect_signal("property::layout", function(t)
+    local current_layout = awful.tag.getproperty(t, "layout")
+
+    if (current_layout == awful.layout.suit.max) then
+        t.gap = 0
     else
-        num_tiled = 0
-        for _, tc in ipairs(t:clients()) do
-            if not tc.floating
-                    and not tc.fullscreen
-                    and not tc.maximized_vertical
-                    and not tc.maximized_horizontal
-            then
-                num_tiled = num_tiled + 1
-            end
-        end
+        t.gap = beautiful.useless_gap
     end
-    return num_tiled
-end
-
-awful.tag.object.get_gap = function(t)
-    t = t or awful.screen.focused().selected_tag
-    if get_num_tiled(t) == 1 then
-        return 0
-    end
-
-    return awful.tag.getproperty(t, "useless_gap") or beautiful.useless_gap or 0
-end
-
---tag.connect_signal("property::layout", function(t)
---    local current_layout = awful.tag.getproperty(t, "layout")
---
---    if (current_layout == awful.layout.suit.max) then
---        t.gap = 0
---    else
---        t.gap = beautiful.useless_gap
---    end
---end)
+end)
 
 
 -- Signal function to execute when a new client appears.
---client.connect_signal("manage", function(c)
---    -- Set the window as a slave (put it at the end of others instead of setting it as master)
---    if not awesome.startup then
---        awful.client.setslave(c)
---    end
---
---    if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
---        -- Prevent clients from being unreachable after screen count changes.
---        awful.placement.no_offscreen(c)
---    end
---end)
+capi.client.connect_signal("manage", function(c)
+    -- Set the window as a slave (put it at the end of others instead of setting it as master)
+    if not capi.awesome.startup then
+        awful.client.setslave(c)
+    end
+
+    if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
+        -- Prevent clients from being unreachable after screen count changes.
+        awful.placement.no_offscreen(c)
+    end
+end)
 
 
 -- Autofocus a new client when previously focused one is closed
-require("lib.awful.autofocus")
+require("awful.autofocus")
 
 
 
 
---local image = require("lib.image")
+--local image = require("image")
 
 --local inner_widget = wibox.layout.fixed.vertical()
 --

@@ -1,4 +1,4 @@
-local gears = require("lib.gears")
+local gears = require("gears")
 
 local function file_exists(path)
     -- Try to open it

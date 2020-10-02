@@ -1,8 +1,8 @@
 local type    = type
 
-local types   = require("lib.wmapi.types")
+local types   = require("wmapi.types")
 
-local timer   = type(timer) == "table" and timer or require("lib.gears.timer")
+local timer   = type(timer) == "table" and timer or require("gears.timer")
 
 local vicious = {}
 local timers  = {}
