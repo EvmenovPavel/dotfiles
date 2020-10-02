@@ -8,6 +8,7 @@ capi            = {
     awesome = awesome,
     timer   = timer,
     log     = require("logger"),
+    home    = os.getenv("HOME"),
     path    = os.getenv("HOME") .. "/.config/awesome",
     wmapi   = require("wmapi"),
     primary = 2

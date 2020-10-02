@@ -25,7 +25,7 @@ function mywibar:w_right(s)
     if capi.wmapi:display_index(s) == capi.primary then
         return {
             widgets.naughty(s),
-            widgets.systray(),
+            widgets.systray(s),
             widgets.keyboard(),
             widgets.volume(s),
             widgets.cpu(),

@@ -1,41 +1,41 @@
-local wbase             = require("wibox.widget.base")
-local drawable          = require("wibox.drawable")
-local beautiful         = require("beautiful")
-local gtable            = require("gears.table")
-local capi              = {
-    awesome = awesome,
-    screen  = screen
-}
-local setmetatable      = setmetatable
-local error             = error
-local abs               = math.abs
+local wbase        = require("wibox.widget.base")
+local drawable     = require("wibox.drawable")
+local beautiful    = require("beautiful")
+local gtable       = require("gears.table")
+--local capi              = {
+--    awesome = awesome,
+--    screen  = screen
+--}
+local setmetatable = setmetatable
+local error        = error
+local abs          = math.abs
 
-local mysystray         = {
+local mysystray    = {
     --mt = {}
 }
 
-local instance          = nil
+local instance     = nil
 -- FIX
 -- если виБар изменить положение в лево или право
 -- то и положение систрей сделать false
 -- для вертикаль (либо в конфиг изменять)
-local horizontal        = true
-local base_size         = nil
-local reverse           = false
-local display_on_screen = "primary"
+local horizontal   = true
+local base_size    = nil
+local reverse      = false
+--local display_on_screen = "primary"
 
 function mysystray:should_display_on(s)
-    if display_on_screen == "primary" then
-        return s == capi.screen.primary
-    end
-    return s == display_on_screen
+
+    local primary = capi.primary or 1
+
+    --if primary == "primary" then
+    --    return s == capi.screen.primary
+    --end
+
+    --return s == display_on_screen
 end
 
 function mysystray:draw(context, cr, width, height)
-    if not self:should_display_on(context.screen) then
-        return
-    end
-
     -- FIX
     -- передавать сюда размер виБара, тк, иконки не по центру
     local x, y, _, _  = wbase.rect_to_device_geometry(cr, 0, 0, width, height)
@@ -60,18 +60,11 @@ function mysystray:draw(context, cr, width, height)
     else
         ortho, in_dir = width, height
     end
-    -- The formula for a given base, spacing, and num_entries for the necessary
-    -- space is (draw a picture to convince yourself; this assumes horizontal):
-    --   height = base
-    --   width = (base + spacing) * num_entries - spacing
-    -- Now, we check if we are limited by horizontal or vertical space: Which of
-    -- the two limits the base size more?
 
     --if (ortho + spacing) * num_entries - spacing <= in_dir then
     if ortho * num_entries <= in_dir then
         base = ortho
     else
-        -- Solving the "width" formula above for "base" (with width=in_dir):
         base = in_dir / num_entries
         --base = (in_dir + spacing) / num_entries - spacing
     end
@@ -83,10 +76,6 @@ function mysystray:_kickout(context)
 end
 
 function mysystray:fit(context, width, height)
-    if not self:should_display_on(context.screen) then
-        return 0, 0
-    end
-
     local num_entries = capi.awesome.systray()
     local base        = base_size
     local spacing     = beautiful.systray_icon_spacing or 0
@@ -143,7 +132,7 @@ function mysystray:set_screen(s)
     end
 end
 
-function mysystray:new(revers)
+function mysystray:init(revers)
     local ret = wbase.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, mysystray, true)
@@ -165,13 +154,6 @@ function mysystray:new(revers)
     drawable._set_systray_widget(ret)
 
     return ret
-end
-
-function mysystray:init(...)
-    if not instance then
-        instance = self:new(...)
-    end
-    return instance
 end
 
 return setmetatable(mysystray, {

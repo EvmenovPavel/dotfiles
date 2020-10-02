@@ -176,7 +176,7 @@ function myspotify:init(s)
             )
     )
 
-    return widget_spotify
+    --return widget_spotify
 end
 
 return setmetatable(myspotify, {
