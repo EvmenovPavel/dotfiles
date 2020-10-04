@@ -22,18 +22,6 @@ local instance     = nil
 local horizontal   = true
 local base_size    = nil
 local reverse      = false
---local display_on_screen = "primary"
-
-function mysystray:should_display_on(s)
-
-    local primary = capi.primary or 1
-
-    --if primary == "primary" then
-    --    return s == capi.screen.primary
-    --end
-
-    --return s == display_on_screen
-end
 
 function mysystray:draw(context, cr, width, height)
     -- FIX
@@ -145,11 +133,11 @@ function mysystray:init(revers)
         ret:emit_signal("widget::layout_changed")
         ret:emit_signal("widget::redraw_needed")
     end)
-    capi.screen.connect_signal("primary_changed", function()
-        if display_on_screen == "primary" then
-            ret:emit_signal("widget::layout_changed")
-        end
-    end)
+    --capi.screen.connect_signal("primary_changed", function()
+        --if display_on_screen == "primary" then
+        --    ret:emit_signal("widget::layout_changed")
+        --end
+    --end)
 
     drawable._set_systray_widget(ret)
 

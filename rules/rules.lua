@@ -33,15 +33,19 @@ function rules:init(clientkeys, buttonkeys)
 
                 border_width      = 1,
 
-                focus             = awful.client.focus.filter,
+                --focus             = awful.client.focus.byidx(-1),
+                --focus             = awful.client.focus.filter,
+
+                focus = true,
+
                 raise             = true,
 
                 keys              = clientkeys,
                 buttons           = buttonkeys,
 
-                size_hints_honor  = true,
-                honor_workarea    = true,
-                honor_padding     = true,
+                --size_hints_honor  = true,
+                --honor_workarea    = true,
+                --honor_padding     = true,
 
                 screen            = awful.screen.preferred,
 
@@ -57,17 +61,17 @@ function rules:init(clientkeys, buttonkeys)
                     local width         = c.width
                     local height        = c.height
 
-                    if width < 800 and height < 800 then
-                        c.floating = true
-
-                        c:geometry({
-                                       x = screen_width / 2 - width / 2,
-                                       y = screen_height / 2 - height / 2,
-                                   })
-
-                    else
-                        c.floating = false
-                    end
+                    --if width < 800 or height < 800 then
+                    --    c.floating = true
+                    --
+                    --    c:geometry({
+                    --                   x = screen_width / 2 - width / 2,
+                    --                   y = screen_height / 2 - height / 2,
+                    --               })
+                    --
+                    --else
+                    --    c.floating = false
+                    --end
                 end
             },
         },
