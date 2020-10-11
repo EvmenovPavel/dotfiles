@@ -1,77 +1,129 @@
-local beautiful  = require("lib.beautiful")
-local wibox      = require("lib.wibox")
+--[[
+Brightness control
+==================
+based on `xbacklight`!
+alternative ways to control brightness:
+    sudo setpci -s 00:02.0 F4.B=80
+    xgamma -gamma .75
+    xrandr --output LVDS1 --brightness 0.9
+    echo X > /sys/class/backlight/intel_backlight/brightness
+    xbacklight
+--]]
 
-local wmapi      = require("wmapi")
-local timer      = wmapi.timer
-local markup     = wmapi.markup
-local config     = require("config")
-local resources  = require("resources")
+local awful = require("awful")
+local wibox = require("wibox")
+local gears = require("gears")
 
-local cpu_usage  = {}
-local cpu_total  = {}
-local cpu_active = {}
+local timer = gears.timer or capi.timer
 
-local function cpuinfo(index)
-    local cpu_lines = {}
 
-    local f         = io.open("/proc/stat")
-    for line in f:lines() do
-        if string.sub(line, 1, 3) ~= "cpu" then
-            break
-        end
+------------------------------------------
+-- Private utility functions
+------------------------------------------
 
-        cpu_lines[#cpu_lines + 1] = {}
-
-        for i in string.gmatch(line, "[%s]+([^%s]+)") do
-            table.insert(cpu_lines[#cpu_lines], i)
-        end
-    end
-    f:close()
-
-    for i = #cpu_total + 1, #cpu_lines do
-        cpu_total[i]  = 0
-        cpu_usage[i]  = 0
-        cpu_active[i] = 0
-    end
-
-    for i, v in ipairs(cpu_lines) do
-        local total_new = 0
-        for j = 1, #v do
-            total_new = total_new + v[j]
-        end
-        local active_new  = total_new - (v[4] + v[5])
-
-        local diff_total  = total_new - cpu_total[i]
-        local diff_active = active_new - cpu_active[i]
-
-        if diff_total == 0 then
-            diff_total = 1E-6
-        end
-        cpu_usage[i]  = math.floor((diff_active / diff_total) * 100)
-
-        cpu_total[i]  = total_new
-        cpu_active[i] = active_new
-    end
-
-    return cpu_usage[index]
+local function readcommand(command)
+    local file = io.popen(command)
+    local text = file:read('*all')
+    file:close()
+    return text
 end
 
-return function()
-    local widget = wmapi:textbox()
-    local icon   = wmapi:imagebox(resources.widgets.cpu)
-
-    timer:create(widget,
-                 function()
-                     local usage = cpuinfo(1)
-                     return markup.font(config.font, markup.fg.color(beautiful.colors.widget.fg_widget, usage .. "% "))
-                 end, 1)
-
-    local cpu = wibox.widget({
-                                 icon,
-                                 wmapi:pad(2),
-                                 widget,
-                                 widget = wibox.layout.fixed.horizontal,
-                             })
-
-    return cpu
+local function quote_arg(str)
+    return "'" .. string.gsub(str, "'", "'\\''") .. "'"
 end
+
+local function quote_args(first, ...)
+    if #{ ... } == 0 then
+        return quote_arg(first)
+    else
+        return quote_arg(first), quote_args(...)
+    end
+end
+
+local function make_argv(...)
+    return table.concat({ quote_args(...) }, " ")
+end
+
+
+------------------------------------------
+-- Volume control interface
+------------------------------------------
+
+local vcontrol = {}
+
+function vcontrol:new(args)
+    return setmetatable({}, { __index = self }):init(args)
+end
+
+function vcontrol:init(args)
+    self.args   = args or {}
+    self.cmd    = "xbacklight"
+    self.step   = self.args.step or '5'
+
+    self.widget = wibox.widget.textbox()
+    self.widget.set_align("right")
+
+    self.widget:buttons(awful.util.table.join(
+            awful.button({ }, 1, function()
+                self:up()
+            end),
+            awful.button({ }, 3, function()
+                self:down()
+            end),
+            awful.button({ }, 2, function()
+                self:toggle()
+            end),
+            awful.button({ }, 4, function()
+                self:up(1)
+            end),
+            awful.button({ }, 5, function()
+                self:down(1)
+            end)
+    ))
+
+    self.timer = timer({ timeout = self.args.timeout or 3 })
+    self.timer:connect_signal("timeout", function()
+        self:get()
+    end)
+    self.timer:start()
+    self:get()
+
+    return self
+end
+
+function vcontrol:exec(...)
+    return readcommand(make_argv(self.cmd, ...))
+end
+
+function vcontrol:get()
+    local brightness = math.floor(0.5 )
+    self.widget:set_text(string.format(" [%3d] ", brightness))
+    return brightness
+end
+
+function vcontrol:set(brightness)
+    self:exec('-set', tostring(brightness))
+    self:get()
+end
+
+function vcontrol:up(step)
+    self:exec("-inc", step or self.step)
+    self:get()
+end
+
+function vcontrol:down(step)
+    self:exec("-dec", step or self.step)
+    self:get()
+end
+
+function vcontrol:toggle()
+    if self:get() >= 50 then
+        self:set(1)
+    else
+        self:set(100)
+    end
+end
+
+return setmetatable(vcontrol, {
+    __call = vcontrol.new,
+})

@@ -23,14 +23,14 @@ function mywibar:w_right(s)
     --if capi.wmapi:display_primary(s) then
     if capi.wmapi:display_index(s) == capi.primary then
         return {
-            --widgets.naughty(s),
-            widgets.systray(s),
-            widgets.keyboard(),
-            widgets.volume(s),
-            widgets.cpu(),
-            widgets.clock,
-            widgets.reboot,
-            widgets.spotify(s),
+            --widgets.brightness(),
+            --widgets.systray(s),
+            --widgets.keyboard(),
+            --widgets.volume(s),
+            --widgets.cpu(),
+            --widgets.clock,
+            --widgets.reboot,
+            --widgets.spotify(s),
 
             layout = wibox.layout.fixed.horizontal
         }
@@ -42,18 +42,18 @@ function mywibar:w_right(s)
 end
 
 function mywibar:create(s)
-    local wibar                 = awful.wibar({
-                                                  ontop        = false,
-                                                  stretch      = true,
-                                                  position     = beautiful.position.top,
-                                                  border_width = 0,
-                                                  border_color = beautiful.bg_dark,
-                                                  --bg           = "#00000099",
-                                                  fg           = beautiful.fg_normal,
-                                                  visible      = true,
-                                                  height       = 27,
-                                                  screen       = s,
-                                              })
+    local wibar = awful.wibar({
+                                  ontop        = false,
+                                  stretch      = true,
+                                  position     = beautiful.position.top,
+                                  border_width = 0,
+                                  border_color = beautiful.bg_dark,
+                                  --bg           = "#00000099",
+                                  fg           = beautiful.fg_normal,
+                                  visible      = true,
+                                  height       = 27,
+                                  screen       = s,
+                              })
 
     wibar:setup {
         self:w_left(s),

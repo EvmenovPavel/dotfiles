@@ -2,11 +2,11 @@
 -- Toggle System tray
 -------------------------------------------------
 
-local awful               = require("lib.awful")
-local wibox               = require("lib.wibox")
+local awful               = require("awful")
+local wibox               = require("wibox")
 local clickable_container = require("widgets.clickable-container")
-local gears               = require("lib.gears")
-local dpi                 = require("lib.beautiful").xresources.apply_dpi
+local gears               = require("gears")
+local dpi                 = require("beautiful").xresources.apply_dpi
 
 local HOME                = os.getenv("HOME")
 local PATH_TO_ICONS       = HOME .. "/.config/awesome/icons/"

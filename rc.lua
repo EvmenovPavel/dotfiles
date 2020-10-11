@@ -1,8 +1,10 @@
+-- Global --
 capi            = {
-    dbus    = dbus,
-    screen  = screen,
     root    = root,
+    screen  = screen,
+    primary = 2,
     tag     = tag,
+    dbus    = dbus,
     button  = button,
     client  = client,
     awesome = awesome,
@@ -12,7 +14,6 @@ capi            = {
     home    = os.getenv("HOME"),
     path    = os.getenv("HOME") .. "/.config/awesome",
     wmapi   = require("wmapi"),
-    primary = 2
 }
 
 local awful     = require("awful")
@@ -55,15 +56,15 @@ awful.screen.connect_for_each_screen(
 )
 
 -- No borders if only one tiled client
-capi.screen.connect_signal("arrange", function(s)
-    for _, c in pairs(s.clients) do
-        if c.maximized == false then
-            c.border_width = 0
-        else
-            c.border_width = beautiful.border_width
-        end
-    end
-end)
+--capi.screen.connect_signal("arrange", function(s)
+--    for _, c in pairs(s.clients) do
+--        if c.maximized == false then
+--            c.border_width = 0
+--        else
+--            c.border_width = beautiful.border_width
+--        end
+--    end
+--end)
 
 capi.tag.connect_signal("property::layout", function(t)
     local current_layout = awful.tag.getproperty(t, "layout")

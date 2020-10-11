@@ -12,7 +12,7 @@ keys.clientkeys = require("keys.clientkeys")
 keys.buttonkeys = require("keys.buttonkeys")
 
 function keys:move_client(c, direction)
-    if c.floating or (awful.layout.get(mouse.screen) == awful.layout.suit.floating) then
+    if c.floating or (awful.layout.get(capi.mouse.screen) == awful.layout.suit.floating) then
         local workarea = awful.screen.focused().workarea
         if direction == "up" then
             c:geometry({ nil, y = workarea.y + beautiful.useless_gap * 2, nil, nil })
@@ -23,7 +23,7 @@ function keys:move_client(c, direction)
         elseif direction == "right" then
             c:geometry({ x = workarea.width + workarea.x - c:geometry().width - beautiful.useless_gap * 2 - beautiful.border_width * 2, nil, nil, nil })
         end
-    elseif awful.layout.get(mouse.screen) == awful.layout.suit.max then
+    elseif awful.layout.get(capi.mouse.screen) == awful.layout.suit.max then
         if direction == "up" or direction == "left" then
             awful.client.swap.byidx(-1, c)
         elseif direction == "down" or direction == "right" then
@@ -38,7 +38,7 @@ local floating_resize_amount = dpi(20)
 local tiling_resize_factor   = 0.05
 
 function keys:resize_client(c, direction)
-    if awful.layout.get(mouse.screen) == awful.layout.suit.floating or (c and c.floating) then
+    if awful.layout.get(capi.mouse.screen) == awful.layout.suit.floating or (c and c.floating) then
         if direction == "up" then
             c:relative_move(0, 0, 0, -floating_resize_amount)
         elseif direction == "down" then
@@ -62,14 +62,14 @@ function keys:resize_client(c, direction)
 end
 
 function keys:raise_client()
-    if client.focus then
-        client.focus:raise()
+    if capi.client.focus then
+        capi.client.focus:raise()
     end
 end
 
 for i = 1, 9 do
     local descr_view, descr_toggle, descr_move, descr_toggle_focus
-    if i == 1 or i == ipairs(root.tags()) then
+    if i == 1 or i == ipairs(capi.root.tags()) then
         descr_view         = hotkeys.tag.view
         descr_toggle       = hotkeys.tag.toggle
         descr_move         = hotkeys.tag.move
@@ -89,16 +89,34 @@ for i = 1, 9 do
 
                                        awful.key({ key.mod, key.shift }, i,
                                                  function()
-                                                     if client.focus then
-                                                         local tag = client.focus.screen.tags[i]
+                                                     if capi.client.focus then
+                                                         local tag = capi.client.focus.screen.tags[i]
                                                          if tag then
-                                                             client.focus:move_to_tag(tag)
+                                                             capi.client.focus:move_to_tag(tag)
 
                                                              local screen  = awful.screen.focused()
                                                              local focused = screen.tags[i]
                                                              if focused then
                                                                  focused:view_only()
                                                              end
+                                                         end
+                                                     end
+                                                 end,
+                                                 descr_move),
+
+                                       awful.key({ key.mod, key.shift }, key.ctrl, i,
+                                                 function()
+                                                     if capi.client.focus then
+                                                         --local tag = capi.client.focus.screen.tags[i]
+                                                         local tag = capi.screen[2].tags[9]
+                                                         if tag then
+                                                             capi.client.screen.focus:move_to_tag(tag)
+
+                                                             --local screen  = awful.screen.focused()
+                                                             --local focused = screen.tags[i]
+                                                             --if focused then
+                                                             --    focused:view_only()
+                                                             --end
                                                          end
                                                      end
                                                  end,

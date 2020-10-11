@@ -37,9 +37,7 @@ naughty.config.spacing               = 7
 
 naughty.config.notify_callback       = nil
 
---function naughty:init(s)
---  naughty.config.defaults.screen = s
---end
+naughty.config.defaults.screen       = capi.primary
 
 naughty.config.presets.normal        = {
     fg            = beautiful.fg_normal,

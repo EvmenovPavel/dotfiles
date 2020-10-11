@@ -3,6 +3,7 @@ local gears     = require("gears")
 local key       = require("event").key
 local programms = require("programms")
 local hotkeys   = require("keys.hotkeys")
+--local gmath     = require("gmath")
 
 local switcher  = require("widgets.switcher")
 
@@ -24,6 +25,28 @@ local switcher  = require("widgets.switcher")
 
 local fun       = require("functions")
 
+--local function move_to_previous_tag()
+--    local c = client.focus
+--    if not c then return end
+--    local t = c.screen.selected_tag
+--    local tags = c.screen.tags
+--    local idx = t.index
+--    local newtag = tags[gmath.cycle(#tags, idx - 1)]
+--    c:move_to_tag(newtag)
+--    --awful.tag.viewprev()
+--end
+--
+--local function move_to_next_tag()
+--    local c = client.focus
+--    if not c then return end
+--    local t = c.screen.selected_tag
+--    local tags = c.screen.tags
+--    local idx = t.index
+--    local newtag = tags[gmath.cycle(#tags, idx + 1)]
+--    c:move_to_tag(newtag)
+--    --awful.tag.viewnext()
+--end
+
 local global    = gears.table.join(
 --awful.key({ key.alt_L, }, key.tab,
 --          function()
@@ -36,6 +59,29 @@ local global    = gears.table.join(
 --switcher.switch(-1, "Mod1", "Alt_L", "Shift", "Tab")
 --end),
 
+        --awful.key({ key.win }, "f", function()
+            --capi.mouse.screen.selected_tag.selected = false
+            --for _, t in ipairs(mouse.screen.selected_tags) do
+            --    t.selected = false
+            --end
+        --end),
+
+        awful.key({ key.win, "Mod1" }, "Right",
+                  function()
+                      awful.tag.incmwfact(0.01)
+                  end),
+        awful.key({ key.win, "Mod1" }, "Left",
+                  function()
+                      awful.tag.incmwfact(-0.01)
+                  end),
+        awful.key({ key.win, "Mod1" }, "Down",
+                  function()
+                      awful.client.incwfact(0.01)
+                  end),
+        awful.key({ key.win, "Mod1" }, "Up",
+                  function()
+                      awful.client.incwfact(-0.01)
+                  end),
 
 -- Brightness
         awful.key({}, key.brightness.XF86MonBrightnessUp,

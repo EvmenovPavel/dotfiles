@@ -3,20 +3,11 @@ local gears        = require("gears")
 local wibox        = require("wibox")
 local beautiful    = require("beautiful")
 
---local apps                = require("apps").default
-local dpi          = beautiful.xresources.apply_dpi
 local ICON_DIR     = gears.filesystem.get_configuration_dir() .. "/icons/exit-screen/"
 
--- define module table
 local exit_screen  = {}
 
-
--- ===================================================================
--- Appearance
--- ===================================================================
-
-
-local icon_size    = dpi(90)
+local icon_size    = 90
 
 local build_button = function(icon)
     local button = wibox.widget {
@@ -26,10 +17,10 @@ local build_button = function(icon)
                     image  = icon,
                     widget = wibox.widget.imagebox
                 },
-                top    = dpi(16),
-                bottom = dpi(16),
-                left   = dpi(16),
-                right  = dpi(16),
+                top    = 16,
+                bottom = 16,
+                left   = 16,
+                right  = 16,
                 widget = wibox.container.margin
             },
             shape         = gears.shape.circle,
@@ -37,8 +28,8 @@ local build_button = function(icon)
             forced_height = icon_size,
             --widget        = capi.wmapi:container
         },
-        left   = dpi(24),
-        right  = dpi(24),
+        left   = 24,
+        right  = 24,
         widget = wibox.container.margin
     }
 
