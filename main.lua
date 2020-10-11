@@ -1,11 +1,9 @@
-local stdout = "1"
+capi = {
+    a = 5
+}
 
-local cb1    = function(stdout)
-    --stdout       = string.gsub(stdout, "\n", "")
-    local status = stdout == "Playing" or stdout == "Paused"
-    return stdout
-end
+print(capi.a)
 
-cb1(stdout)
+capi.a = 10
 
-print(cb1())
+print(capi.a)

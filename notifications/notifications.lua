@@ -1,10 +1,8 @@
 local naughty                        = require("naughty")
 local beautiful                      = require("beautiful")
 local gears                          = require("gears")
-local awful                          = require("awful")
-local notification                   = require("widgets.notifications")
 
-local dpi                            = beautiful.xresources.apply_dpi
+local icon_notification              = capi.path .. "/notification/plugin-notification.svg"
 
 naughty.config.defaults.ontop        = true
 naughty.config.defaults.icon_size    = 32
@@ -14,34 +12,36 @@ naughty.config.defaults.font         = beautiful.font
 naughty.config.defaults.title        = "Title: System Notification"
 naughty.config.defaults.text         = "Text: System Notification"
 
-naughty.config.defaults.margin       = dpi(16)
+naughty.config.defaults.margin       = 16
 naughty.config.defaults.border_width = 2
 naughty.config.defaults.position     = "top_right"
 
 naughty.config.defaults.width        = 322
 
 naughty.config.defaults.shape        = function(cr, w, h)
-    gears.shape.rounded_rect(cr, w, h, dpi(5))
+    gears.shape.rounded_rect(cr, w, h, 5)
 end
 
-naughty.config.padding               = dpi(7)
-naughty.config.spacing               = dpi(7)
-naughty.config.icon_dirs             = {
-    --изменить пусть к иконкам
-    "/usr/share/icons/Tela-dark",
-    "/usr/share/pixmaps/"
-}
+naughty.config.padding               = 7
+naughty.config.spacing               = 7
+--naughty.config.icon_dirs             = {
+--    --изменить пусть к иконкам
+--    "/usr/share/icons/Tela-dark",
+--    "/usr/share/pixmaps/"
+--}
+--
+--naughty.config.icon_formats          = {
+--    "png",
+--    "svg",
+--}
 
-naughty.config.icon_formats          = {
-    "png",
-    "svg",
-}
+naughty.config.notify_callback       = nil
 
-function naughty:init(s)
-    naughty.config.defaults.screen = s
-end
+--function naughty:init(s)
+--  naughty.config.defaults.screen = s
+--end
 
-naughty.config.presets.normal   = {
+naughty.config.presets.normal        = {
     fg            = beautiful.fg_normal,
     bg            = beautiful.bg_normal,
 
@@ -54,7 +54,7 @@ naughty.config.presets.normal   = {
     text          = "Text normal",
 }
 
-naughty.config.presets.low      = {
+naughty.config.presets.low           = {
     fg            = beautiful.fg_normal,
     bg            = beautiful.bg_normal,
 
@@ -67,7 +67,7 @@ naughty.config.presets.low      = {
     text          = "Text low",
 }
 
-naughty.config.presets.critical = {
+naughty.config.presets.critical      = {
     fg            = "#ffffff",
     bg            = "#ff0000",
 
@@ -80,7 +80,7 @@ naughty.config.presets.critical = {
     text          = "Text critical",
 }
 
-naughty.config.presets.ok       = {
+naughty.config.presets.ok            = {
     fg            = beautiful.fg_normal,
     bg            = beautiful.bg_normal,
 
@@ -93,7 +93,7 @@ naughty.config.presets.ok       = {
     text          = "Text normal",
 }
 
-naughty.config.presets.info     = {
+naughty.config.presets.info          = {
     fg            = beautiful.fg_normal,
     bg            = beautiful.bg_normal,
 
@@ -106,7 +106,7 @@ naughty.config.presets.info     = {
     text          = "Text normal",
 }
 
-naughty.config.presets.warn     = {
+naughty.config.presets.warn          = {
     fg            = "#ffffff",
     bg            = "#ff0000",
 
@@ -119,12 +119,12 @@ naughty.config.presets.warn     = {
     text          = "Text critical",
 }
 
-if awesome.startup_errors then
+if capi.awesome.startup_errors then
     local preset = naughty.config.presets.critical
     local title  = "Oops, there were errors during startup!"
-    local text   = awesome.startup_errors
+    local text   = capi.awesome.startup_errors
 
-    notification:append({ presets = preset, title = title, text = text })
+    --notification:append({ presets = preset, title = title, text = text })
 
     naughty.notify({
                        preset = preset,
@@ -135,7 +135,7 @@ end
 
 do
     local in_error = false
-    awesome.connect_signal(
+    capi.awesome.connect_signal(
             "debug::error",
             function(err)
                 if in_error then
@@ -148,7 +148,7 @@ do
                 local title  = "Oops, an error happened!"
                 local text   = tostring(err)
 
-                notification:append({ presets = preset, title = title, text = text })
+                --notification:append({ presets = preset, title = title, text = text })
 
                 naughty.notify({
                                    preset = preset,
@@ -175,40 +175,23 @@ function naughty:show(args)
     local timeout       = args.timeout or preset.timeout
     local hover_timeout = args.hover_timeout or preset.hover_timeout
 
-    local icon          = args.icon or nil
+    local icon          = args.icon or icon_notification
 
     local title         = args.title or preset.title
     local text          = args.text or preset.text
 
-    notification:append({ presets = preset, title = title, text = text, icon = icon })
+    --notification:append({ presets = preset, title = title, text = text, icon = icon })
 
-    if not notification.panel_notification.visible then
-        if icon then
-            naughty.notify {
-                preset        = preset,
+    --if not notification.panel_notification.visible then
+    naughty.notify {
+        preset        = preset,
 
-                icon          = icon,
+        icon          = icon,
+        title         = title,
+        text          = text,
 
-                title         = title,
-                text          = text,
-
-                timeout       = timeout,
-                hover_timeout = hover_timeout,
-            }
-        else
-            naughty.notify {
-                preset        = preset,
-
-                title         = title,
-                text          = text,
-
-                timeout       = timeout,
-                hover_timeout = hover_timeout,
-            }
-        end
-    end
+        timeout       = timeout,
+        hover_timeout = hover_timeout,
+    }
+    --end
 end
-
-return setmetatable(naughty, { __call = function(_, ...)
-    return naughty:init(...)
-end })

@@ -52,7 +52,7 @@ theme.border_radius        = 10
 theme.useless_gap          = 10
 theme.gap_single_client    = true
 
-theme.border_width         = 10
+theme.border_width         = 1
 theme.border_normal        = theme.bg_normal
 theme.border_focus         = "#ff8a65"
 theme.border_marked        = theme.fg_urgent

@@ -129,15 +129,12 @@ function mysystray:init(revers)
         ret:set_reverse(true)
     end
 
-    capi.awesome.connect_signal("systray::update", function()
-        ret:emit_signal("widget::layout_changed")
-        ret:emit_signal("widget::redraw_needed")
-    end)
-    --capi.screen.connect_signal("primary_changed", function()
-        --if display_on_screen == "primary" then
-        --    ret:emit_signal("widget::layout_changed")
-        --end
-    --end)
+    capi.awesome.connect_signal(
+            "systray::update",
+            function()
+                ret:emit_signal("widget::layout_changed")
+                ret:emit_signal("widget::redraw_needed")
+            end)
 
     drawable._set_systray_widget(ret)
 

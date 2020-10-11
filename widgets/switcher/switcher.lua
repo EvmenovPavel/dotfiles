@@ -11,10 +11,10 @@ local timer                  = gears.timer
 local client                 = client
 awful.client                 = require("awful.client")
 
-local naughty                = require("naughty")
+--local naughty                = require("naughty")
 local string                 = string
-local tostring               = tostring
-local tonumber               = tonumber
+--local tostring               = tostring
+--local tonumber               = tonumber
 local debug                  = debug
 local pairs                  = pairs
 local unpack                 = unpack or table.unpack

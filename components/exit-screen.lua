@@ -59,7 +59,7 @@ local function suspend_command()
 end
 
 local function exit_command()
-    awesome.quit()
+    capi.awesome.quit()
 end
 
 local function lock_command()

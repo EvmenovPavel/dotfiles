@@ -166,6 +166,12 @@ function myspotify:init(s)
                                            end)
                       end)
 
+    capi.awesome.connect_signal("spotify_change",
+                                function()
+
+                                end
+    )
+
     widget_spotify:buttons(
             gears.table.join(
                     awful.button({}, mouse.button_click_left, nil,

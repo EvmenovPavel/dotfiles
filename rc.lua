@@ -6,6 +6,7 @@ capi            = {
     button  = button,
     client  = client,
     awesome = awesome,
+    mouse   = mouse,
     timer   = timer,
     log     = require("logger"),
     home    = os.getenv("HOME"),
@@ -23,6 +24,8 @@ beautiful.init(theme)
 local keybinds = require("keys.keybinds")
 capi.root.keys(keybinds.globalkeys)
 capi.root.buttons(keybinds.buttonkeys)
+
+require("notifications")
 
 awful.rules.rules = require("rules")(keybinds.clientkeys, keybinds.buttonkeys)
 
@@ -51,6 +54,17 @@ awful.screen.connect_for_each_screen(
         end
 )
 
+-- No borders if only one tiled client
+capi.screen.connect_signal("arrange", function(s)
+    for _, c in pairs(s.clients) do
+        if c.maximized == false then
+            c.border_width = 0
+        else
+            c.border_width = beautiful.border_width
+        end
+    end
+end)
+
 capi.tag.connect_signal("property::layout", function(t)
     local current_layout = awful.tag.getproperty(t, "layout")
 
@@ -61,25 +75,17 @@ capi.tag.connect_signal("property::layout", function(t)
     end
 end)
 
-
--- Signal function to execute when a new client appears.
 capi.client.connect_signal("manage", function(c)
-    -- Set the window as a slave (put it at the end of others instead of setting it as master)
     if not capi.awesome.startup then
         awful.client.setslave(c)
     end
 
-    if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
-        -- Prevent clients from being unreachable after screen count changes.
+    if capi.awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
         awful.placement.no_offscreen(c)
     end
 end)
 
-
--- Autofocus a new client when previously focused one is closed
 require("awful.autofocus")
-
-
 
 
 --local image = require("image")

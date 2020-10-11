@@ -21,7 +21,7 @@ widget_button:buttons(
         gears.table.join(
                 awful.button({}, 1, nil,
                              function()
-                                 awesome.restart()
+                                 capi.awesome.restart()
                              end
                 )
         )

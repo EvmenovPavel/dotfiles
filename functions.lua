@@ -8,11 +8,11 @@ function functions:on_backproc()
 end
 
 function functions:on_restart()
-    awesome.restart()
+    capi.awesome.restart()
 end
 
 function functions:on_quit()
-    awesome.quit()
+    capi.awesome.quit()
 end
 
 function functions:on_show_help()

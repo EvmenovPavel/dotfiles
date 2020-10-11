@@ -1,4 +1,5 @@
 local awful            = require("awful")
+local beautiful        = require("beautiful")
 
 local rules            = {}
 
@@ -31,47 +32,39 @@ function rules:init(clientkeys, buttonkeys)
             properties = {
                 titlebars_enabled = true,
 
-                border_width      = 1,
+                --border_width      = 0,
+                border_color      = beautiful.bg_dark,
 
-                --focus             = awful.client.focus.byidx(-1),
-                --focus             = awful.client.focus.filter,
-
-                focus = true,
-
+                focus             = awful.client.focus.filter,
                 raise             = true,
 
                 keys              = clientkeys,
                 buttons           = buttonkeys,
 
-                --size_hints_honor  = true,
-                --honor_workarea    = true,
-                --honor_padding     = true,
-
                 screen            = awful.screen.preferred,
 
                 placement         = awful.placement.centered,
-                --placement         = awful.placement.no_overlap + awful.placement.no_offscreen,
 
                 callback          = function(c)
+
+
                     local screen_width  = awful.screen.focused().geometry.width
                     local screen_height = awful.screen.focused().geometry.height
-
-                    --local workarea = awful.screen.focused().workarea
 
                     local width         = c.width
                     local height        = c.height
 
-                    --if width < 800 or height < 800 then
-                    --    c.floating = true
-                    --
-                    --    c:geometry({
-                    --                   x = screen_width / 2 - width / 2,
-                    --                   y = screen_height / 2 - height / 2,
-                    --               })
-                    --
-                    --else
-                    --    c.floating = false
-                    --end
+                    if width < 800 and height < 800 then
+                        c.floating = true
+
+                        --c:geometry({
+                        --               x = (capi.primary * screen_width) / 2 - width / 2,
+                        --               y = screen_height / 2 - height / 2,
+                        --           })
+
+                    else
+                        c.floating = false
+                    end
                 end
             },
         },

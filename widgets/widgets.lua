@@ -1,5 +1,5 @@
 local widgets = {
-    naughty       = require("widgets.naughty"),
+    --naughty       = require("widgets.naughty"),
 
     systray       = require("widgets.systray"),
 
@@ -22,8 +22,8 @@ local widgets = {
     --require("widgets.battery"),
     --require("widgets.layout-box"),
 
-    checkbox      = require("widgets.checkbox"),
-    notifications = require("widgets.notifications"),
+    --checkbox      = require("widgets.checkbox"),
+    --notifications = require("widgets.notifications"),
 }
 
 return widgets

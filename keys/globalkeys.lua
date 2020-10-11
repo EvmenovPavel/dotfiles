@@ -55,24 +55,21 @@ local global    = gears.table.join(
         awful.key({}, key.audio.XF86AudioRaiseVolume,
                   function()
                       awful.spawn("amixer -D pulse sset Master 5%+", false)
-                      awesome.emit_signal("volume_change")
-                      --awesome.emit_signal("volume_change_raise")
+                      capi.awesome.emit_signal("volume_change")
                   end,
                   { description = "volume up", group = "hotkeys" }
         ),
         awful.key({}, key.audio.XF86AudioLowerVolume,
                   function()
                       awful.spawn("amixer -D pulse sset Master 5%-", false)
-                      awesome.emit_signal("volume_change")
-                      --awesome.emit_signal("volume_change_lower")
+                      capi.awesome.emit_signal("volume_change")
                   end,
                   { description = "volume down", group = "hotkeys" }
         ),
         awful.key({}, key.audio.XF86AudioMute,
                   function()
                       awful.spawn("amixer -D pulse set Master 1+ toggle", false)
-                      awesome.emit_signal("volume_change")
-                      --awesome.emit_signal("volume_change_mute")
+                      capi.awesome.emit_signal("volume_change")
                   end,
                   { description = "toggle mute", group = "hotkeys" }
         ),
@@ -90,7 +87,8 @@ local global    = gears.table.join(
         ),
         awful.key({}, key.audio.XF86AudioPlay,
                   function()
-                      awful.spawn("mpc toggle", false)
+                      awful.spawn("sp play", false)
+                      capi.awesome.emit_signal("spotify_change")
                   end,
                   { description = "play/pause music", group = "hotkeys" }
         ),
@@ -102,7 +100,7 @@ local global    = gears.table.join(
                       fun:on_restart()
                   end, hotkeys.awesome.restart),
 
-        awful.key({ key.ctrl, key.mod }, key.q,
+        awful.key({ key.shift, key.mod }, key.q,
                   function()
                       fun:on_quit()
                   end, hotkeys.awesome.quit),

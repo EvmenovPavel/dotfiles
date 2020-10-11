@@ -1,0 +1,1 @@
+return require("widgets.quitmenu.quitmenu")

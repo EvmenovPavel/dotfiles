@@ -17,52 +17,8 @@ local shape    = {
 }
 
 function tasklist:init(theme)
-    -- шрифт + размер
-    --theme.tasklist_font              = beautiful.font
-    --theme.tasklist_font_focus        = theme.tasklist_font
-    --theme.tasklist_font_minimized    = theme.tasklist_font
-    --theme.tasklist_font_urgent       = theme.tasklist_font
-
-    --theme.tasklist_align             = beautiful.position.left
-    --Disable the tasklist client icons.
     theme.tasklist_disable_icon      = false
-    -- скрывает текст
     theme.tasklist_disable_task_name = false
-
-
-    -- цвет текста когда апп не свернуто (акт)
-    --theme.tasklist_fg_focus                     = theme.colors.tasklist.focus[1]
-    -- цвет бекграунд
-    --theme.tasklist_bg_focus                     = theme.colors.tasklist.focus[2]
-    --theme.tasklist_shape_border_color_focus     = theme.colors.tasklist.focus[3]
-    --theme.tasklist_shape_border_width_focus     = 1
-    theme.tasklist_shape_focus       = shape[1]
-
-
-    -- цвет текста когда апп не свернуто (но не акт)
-    --theme.tasklist_fg_normal                    = theme.colors.tasklist.normal[1]
-    -- цвет бекграунда
-    --theme.tasklist_bg_normal                    = theme.colors.tasklist.normal[2]
-    --theme.tasklist_shape_border_color           = theme.colors.tasklist.normal[3]
-    --theme.tasklist_shape_border_width           = 1
-    theme.tasklist_shape             = shape[1]
-
-
-    -- цвет теста при минимизе апп
-    --theme.tasklist_fg_minimize                  = theme.colors.tasklist.minimize[1]
-    -- цвет бекграунда
-    --theme.tasklist_bg_minimize                  = theme.colors.tasklist.minimize[2]
-    --theme.tasklist_shape_border_color_minimized = theme.colors.tasklist.minimize[3]
-    --theme.tasklist_shape_border_width_minimized = 1
-    theme.tasklist_shape_minimized   = shape[1]
-
-    --theme.tasklist_fg_urgent                    = theme.colors.tasklist.urgent[1]
-    -- цвет бекграунда
-    --theme.tasklist_bg_urgent                    = theme.colors.tasklist.urgent[2]
-    --theme.tasklist_shape_border_color_urgent    = theme.colors.tasklist.urgent[3]
-    --theme.tasklist_shape_border_width_urgent    = 40
-    theme.tasklist_shape_urgent      = shape[1]
-
 
     -- Tasklist
     theme.tasklist_font              = theme.font
@@ -74,8 +30,6 @@ function tasklist:init(theme)
     theme.tasklist_fg_focus          = theme.fg_focus
     theme.tasklist_fg_urgent         = theme.fg_urgent
     theme.tasklist_fg_normal         = theme.fg_normal
-
-
 
 
     -- уменьшает иконку
