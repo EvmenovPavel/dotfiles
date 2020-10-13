@@ -1,15 +1,16 @@
-local awful    = require("awful")
-local wibox    = require("wibox")
-local gears    = require("gears")
-local mouse    = require("event").mouse
+local awful     = require("awful")
+local wibox     = require("wibox")
+local beautiful = require("beautiful")
+local gears     = require("gears")
+local mouse     = require("event").mouse
 
-local dpi      = require("beautiful").xresources.apply_dpi
-local ICON_DIR = gears.filesystem.get_configuration_dir() .. "/icons/"
+local dpi       = require("beautiful").xresources.apply_dpi
+local ICON_DIR  = gears.filesystem.get_configuration_dir() .. "/icons/"
 
 -- define module table
-local tasklist = {}
+local tasklist  = {}
 
-local shape    = {
+local shape     = {
     function(cr, width, height)
         gears.shape.transform(gears.shape.rounded_rect):translate(0, height - 1)(cr, width, 1, 0)
     end,
@@ -64,6 +65,7 @@ local function list_update(widget, buttons, label, data, objects)
             w_bm_icon = cache.ibm
             w_text    = cache.tt
         else
+            -- CLOSE
             w_bm_close = capi.wmapi:container()
             w_bm_close:set_widget(wibox.widget {
                 {
@@ -71,11 +73,13 @@ local function list_update(widget, buttons, label, data, objects)
                     image  = ICON_DIR .. "close.svg",
                     resize = true,
                 },
-                margins = 6,
-                widget  = wibox.container.margin,
+                left   = 5, right = 5,
+                top    = 5, bottom = 5,
+                widget = wibox.container.margin,
             })
             w_bm_close.shape = gears.shape.circle
             w_bm_close       = wibox.container.margin(w_bm_close, dpi(4), dpi(4), dpi(4), dpi(4))
+
             w_bm_close:buttons(gears.table.join(
                     awful.button({}, mouse.button_click_left, nil,
                                  function()
@@ -83,26 +87,44 @@ local function list_update(widget, buttons, label, data, objects)
                                  end))
             )
 
+
+            -- ICON
             ib_icon      = wibox.widget {
                 widget = wibox.widget.imagebox(),
                 resize = true,
             }
-            w_bm_icon    = wibox.container.margin(ib_icon, dpi(6), dpi(6), dpi(6), dpi(6))
+            w_bm_icon    = wibox.widget {
+                {
+                    ib_icon,
+                    widget = wibox.layout.fixed.horizontal()
+                },
+                left   = 5, right = 5,
+                top    = 5, bottom = 5,
+                widget = wibox.container.margin
+            }
 
+
+            -- TEXT
             tb_text      = wibox.widget {
                 align        = "center",
                 valign       = "left",
                 forced_width = 140,
                 widget       = wibox.widget.textbox()
             }
-            w_bm_text    = wibox.container.margin(tb_text, dpi(4), dpi(4))
+            w_bm_text    = wibox.widget {
+                {
+                    tb_text,
+                    widget = wibox.layout.fixed.horizontal()
+                },
+                widget = wibox.container.margin
+            }
 
+
+            -- WIDGET
             bg_clickable = capi.wmapi:container()
             bg_clickable:set_widget(wibox.widget {
                 w_bm_icon,
-                --spacing = beautiful.tasklist_spacing,
                 w_bm_text,
-                --spacing = beautiful.tasklist_spacing,
                 w_bm_close,
                 widget = wibox.layout.fixed.horizontal()
             })
@@ -113,14 +135,6 @@ local function list_update(widget, buttons, label, data, objects)
                                     })
 
             bgb_item:buttons(create_buttons(buttons, o))
-
-            -- Tooltip to display whole title, if it was truncated
-            w_text  = awful.tooltip({
-                                        objects    = { tb_text },
-                                        mode       = "outside",
-                                        align      = "bottom",
-                                        delay_show = 1,
-                                    })
 
             data[o] = {
                 ib  = ib_icon,
@@ -133,23 +147,10 @@ local function list_update(widget, buttons, label, data, objects)
         end
 
         local text, w_bg, bg_image, icon, args = label(o, tb_text)
-        --local args                             = args or {}
 
-        ---- The text might be invalid, so use pcall.
         if text == nil or text == "" then
-            w_bm_text:set_margins(0)
+            tb_text:set_margins(0)
         else
-            -- truncate when title is too long
-            --log:message()
-
-            local text_only = text:match(">(.-)<")
-            if (text_only:len() > 10) then
-                text = text:gsub(">(.-)<", ">" .. text_only:sub(1, 19) .. "...<")
-                w_text:set_text(text_only)
-                w_text:add_to_object(tb_text)
-            else
-                w_text:remove_from_object(tb_text)
-            end
             if not tb_text:set_markup_silently(text) then
                 tb_text:set_markup("<i>&lt;Invalid text&gt;</i>")
             end
@@ -165,48 +166,91 @@ local function list_update(widget, buttons, label, data, objects)
         if icon then
             ib_icon.image = icon
         else
-            w_bm_icon:set_margins(0)
+            ib_icon:set_margins(0)
         end
 
-        --bgb_item.shape              = shape[1]--args.shape
-        --bgb_item.shape_border_width = args.shape_border_width
-        --bgb_item.shape_border_color = args.shape_border_color
+        local res = wibox.widget {
+            {
+                bgb_item,
+                widget = wibox.layout.fixed.horizontal()
+            },
 
-        widget:add(bgb_item)
+            shape_border_width = 0.5,
+            shape_border_color = "#ffffff20",
+            shape              = function(cr, width, height)
+                gears.shape.transform(gears.shape.rounded_rect):translate(width, 0)(cr, 0, height, 0)
+                gears.shape.transform(gears.shape.rounded_rect):translate(0, 0)(cr, 0, height, 0)
+            end,
+
+            widget             = wibox.container.background()
+        }
+
+        widget:add(res)
     end
 end
 
-local buttons = awful.util.table.join(
-        awful.button({}, mouse.button_click_left,
-                     function(c)
-                         if c == capi.client.focus then
-                             c.minimized = true
-                         else
-                             c.minimized = false
-                             if not c:isvisible() and c.first_tag then
-                                 c.first_tag:view_only()
+function tasklist:tasklist_buttons()
+    return awful.util.table.join(
+            awful.button({}, mouse.button_click_left,
+                         function(c)
+                             if c == capi.client.focus then
+                                 c.minimized = true
+                             else
+                                 c.minimized = false
+                                 if not c:isvisible() and c.first_tag then
+                                     c.first_tag:view_only()
+                                 end
+
+                                 capi.client.focus = c
+                                 c:raise()
                              end
+                         end),
 
-                             capi.client.focus = c
-                             c:raise()
-                         end
-                     end),
-
-        awful.button({}, mouse.button_click_right,
-                     function()
-                         awful.menu.client_list({ theme = { width = 250 } })
-                     end)
-)
+            awful.button({}, mouse.button_click_right,
+                         function()
+                             awful.menu.client_list({ theme = { width = 250 } })
+                         end)
+    )
+end
 
 function tasklist:create(s)
-    return awful.widget.tasklist(
-            s,
-            awful.widget.tasklist.filter.currenttags,
-            buttons,
-            {},
-            list_update,
-            wibox.layout.fixed.horizontal()
-    )
+    return awful.widget.tasklist {
+        screen          = s,
+        style           = {},
+        layout          = {
+            spacing = 0,
+            layout  = wibox.layout.flex.horizontal()
+        },
+        filter          = awful.widget.tasklist.filter.currenttags,
+        buttons         = self:tasklist_buttons(),
+
+        widget_template = {
+            {
+                {
+                    {
+                        {
+                            id     = 'icon_role',
+                            widget = wibox.widget.imagebox,
+                        },
+                        margins = 2,
+                        widget  = wibox.container.margin,
+                    },
+                    {
+                        id     = 'text_role',
+                        widget = wibox.widget.textbox,
+                    },
+                    layout = wibox.layout.fixed.horizontal,
+                },
+                left   = 10,
+                right  = 10,
+                widget = wibox.container.margin
+            },
+            id     = 'background_role',
+            widget = wibox.container.background,
+        },
+
+        update_function = list_update,
+    }
 end
 
 return setmetatable(tasklist, {

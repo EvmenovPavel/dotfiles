@@ -2,7 +2,7 @@
 capi            = {
     root    = root,
     screen  = screen,
-    primary = 2,
+    primary = screen[2],
     tag     = tag,
     dbus    = dbus,
     button  = button,
@@ -10,6 +10,7 @@ capi            = {
     awesome = awesome,
     mouse   = mouse,
     timer   = timer,
+    unpack  = unpack,
     log     = require("logger"),
     home    = os.getenv("HOME"),
     path    = os.getenv("HOME") .. "/.config/awesome",
@@ -40,6 +41,7 @@ local wallpaper = require("wallpaper")
 awful.screen.connect_for_each_screen(
         function(s)
             wallpaper:create(s)
+            wibar:create(s)
 
             for i, tag in pairs(theme.taglist_icons) do
                 awful.tag.add(i, {
@@ -50,21 +52,8 @@ awful.screen.connect_for_each_screen(
                     selected  = i == 1
                 })
             end
-
-            wibar:create(s)
         end
 )
-
--- No borders if only one tiled client
---capi.screen.connect_signal("arrange", function(s)
---    for _, c in pairs(s.clients) do
---        if c.maximized == false then
---            c.border_width = 0
---        else
---            c.border_width = beautiful.border_width
---        end
---    end
---end)
 
 capi.tag.connect_signal("property::layout", function(t)
     local current_layout = awful.tag.getproperty(t, "layout")

@@ -1,4 +1,5 @@
 local awful            = require("awful")
+local gears            = require("gears")
 local beautiful        = require("beautiful")
 
 local rules            = {}
@@ -20,6 +21,21 @@ local PictureInPicture = {
     }
 }
 
+local Terminals        = {
+    rule_any   = {
+        class = {
+            "kitty"
+        },
+    },
+    properties = {
+        maximized    = true,
+        border_width = beautiful.border_width,
+        callback     = function(c)
+            c.border_width = 0
+        end
+    }
+}
+
 function rules:init(clientkeys, buttonkeys)
     local list_rules = {
         {
@@ -31,46 +47,57 @@ function rules:init(clientkeys, buttonkeys)
             },
             properties = {
                 titlebars_enabled = true,
-
-                --border_width      = 0,
+                border_width      = beautiful.border_width,
                 border_color      = beautiful.bg_dark,
-
                 focus             = awful.client.focus.filter,
                 raise             = true,
-
                 keys              = clientkeys,
                 buttons           = buttonkeys,
-
                 screen            = awful.screen.preferred,
-
-                placement         = awful.placement.centered,
+                placement         = awful.placement.no_overlap + awful.placement.no_offscreen,
 
                 callback          = function(c)
+                    c.border_width = 0
 
+                    local width    = c.width
+                    local height   = c.height
 
-                    local screen_width  = awful.screen.focused().geometry.width
-                    local screen_height = awful.screen.focused().geometry.height
+                    --local screen   = c.screen
+                    --local workarea = screen.geometry
+                    --local index    = screen.index
 
-                    local width         = c.width
-                    local height        = c.height
+                    local workarea = awful.screen.focused().workarea
+                    local y        = workarea.height + workarea.y - c:geometry().height - beautiful.useless_gap * 2 - beautiful.border_width * 2
+                    local x        = workarea.width + workarea.x - c:geometry().width - beautiful.useless_gap * 2 - beautiful.border_width * 2
 
-                    if width < 800 and height < 800 then
+                    --c.y = c.screen.geometry.y + c.screen.geometry.height* 0.04
+
+                    if width < 1820 and height < 980 then
                         c.floating = true
-
                         --c:geometry({
-                        --               x = (capi.primary * screen_width) / 2 - width / 2,
-                        --               y = screen_height / 2 - height / 2,
-                        --           })
+                        --               x = x,
+                        --               y = y,
+                        --x = (index * workarea.width) / 2 - width / 2,
+                        --y = workarea.height / 2 - height / 2
+                        --})
+
+                        --local g    = c:geometry()
+                        --g.x        = g.x - x
+                        --g.y        = g.y - y
+                        --c:geometry(g)
 
                     else
                         c.floating = false
                     end
-                end
+                end,
             },
         },
 
         -- Firefox
         PictureInPicture,
+
+        -- Terminals
+        Terminals,
     }
 
     return list_rules

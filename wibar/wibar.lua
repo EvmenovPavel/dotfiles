@@ -21,15 +21,15 @@ end
 
 function mywibar:w_right(s)
     --if capi.wmapi:display_primary(s) then
-    if capi.wmapi:display_index(s) == capi.primary then
+    if capi.wmapi:display_primary(s) then
         return {
             --widgets.brightness(),
-            --widgets.systray(s),
-            --widgets.keyboard(),
-            --widgets.volume(s),
-            --widgets.cpu(),
-            --widgets.clock,
-            --widgets.reboot,
+            widgets.systray(s),
+            widgets.keyboard(),
+            widgets.volume(s),
+            widgets.cpu(),
+            widgets.clock,
+            widgets.reboot,
             --widgets.spotify(s),
 
             layout = wibox.layout.fixed.horizontal
@@ -46,7 +46,7 @@ function mywibar:create(s)
                                   ontop        = false,
                                   stretch      = true,
                                   position     = beautiful.position.top,
-                                  border_width = 0,
+                                  border_width = 1,
                                   border_color = beautiful.bg_dark,
                                   --bg           = "#00000099",
                                   fg           = beautiful.fg_normal,
@@ -63,6 +63,7 @@ function mywibar:create(s)
     }
 end
 
-return setmetatable(mywibar, {
-    __call = mywibar.create,
-})
+return mywibar
+--return setmetatable(mywibar, {
+--    __call = mywibar.create,
+--})

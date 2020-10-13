@@ -1,4 +1,3 @@
---local beautiful = require("beautiful")
 
 local resources = require("resources")
 
@@ -9,17 +8,8 @@ function titlebar:init(theme)
 
     theme.titlebar_size                                   = 25
     theme.titlebar_title_enabled                          = true
-    --theme.titlebar_font                                   = beautiful.title_font
-    --theme.titlebar_title_align                            = beautiful.position.top
     theme.titlebar_position                               = "top"
     theme.titlebar_imitate_borders                        = true
-
-
-    --theme.titlebar_bg_focus                               = theme.colors.titlebar.focus[1]
-    --theme.titlebar_fg_focus                               = theme.colors.titlebar.focus[2]
-    --theme.titlebar_bg_normal                              = theme.colors.titlebar.normal[1]
-    --theme.titlebar_fg_normal                              = theme.colors.titlebar.normal[2]
-
 
     --[[ MENU ]]--
     theme.titlebar_menu_button_focus                      = resources.titlebar.menu.button_focus

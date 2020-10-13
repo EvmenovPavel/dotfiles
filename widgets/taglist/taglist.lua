@@ -2,41 +2,41 @@ local awful   = require("awful")
 local wibox   = require("wibox")
 local dpi     = require("beautiful").xresources.apply_dpi
 local key     = require("event").key
+local mouse   = require("event").mouse
 
--- define module table
 local taglist = {}
 
+function taglist:button()
+    return awful.util.table.join(
+            awful.button({}, mouse.button_click_left,
+                         function(c)
+                             c:view_only()
+                         end
+            ),
+            awful.button({ key.mod }, mouse.button_click_left,
+                         function(c)
+                             if capi.client.focus then
+                                 capi.client.focus:move_to_tag(c)
+                                 c:view_only()
+                             end
+                         end
+            ),
 
--- Create buttons
-local function create_buttons(buttons, object)
-    if buttons then
-        local btns = {}
-        for _, b in ipairs(buttons) do
-            -- Create a proxy button object: it will receive the real
-            -- press and release events, and will propagate them to the
-            -- button object the user provided, but with the object as
-            -- argument.
-            local btn = capi.button { modifiers = b.modifiers, button = b.button }
-            btn:connect_signal("press",
-                               function()
-                                   b:emit_signal("press", object)
-                               end
-            )
-            btn:connect_signal("release",
-                               function()
-                                   b:emit_signal("release", object)
-                               end
-            )
-            btns[#btns + 1] = btn
-        end
+            awful.button({}, mouse.button_click_right,
+                         awful.tag.viewtoggle
+            ),
 
-        return btns
-    end
+            awful.button({ key.mod }, mouse.button_click_right,
+                         function(c)
+                             if capi.client.focus then
+                                 capi.client.focus:toggle_tag(c)
+                             end
+                         end
+            )
+    )
 end
 
--- Update the taglist
-local function list_update(w, buttons, label, data, objects)
-    -- update the widgets, creating them if needed
+function list_update(w, buttons, label, data, objects)
     w:reset()
     for i, o in ipairs(objects) do
         local cache = data[o]
@@ -57,15 +57,13 @@ local function list_update(w, buttons, label, data, objects)
             l             = wibox.layout.fixed.horizontal()
             bg_clickable  = capi.wmapi:container()
 
-            -- All of this is added in a fixed widget
             l:fill_space(true)
             l:add(ibm)
             bg_clickable:set_widget(l)
 
-            -- And all of this gets a background
             bgb:set_widget(bg_clickable)
 
-            bgb:buttons(create_buttons(buttons, o))
+            --bgb:buttons(create_buttons(buttons, o))
 
             data[o] = {
                 ib  = ib,
@@ -100,51 +98,90 @@ local function list_update(w, buttons, label, data, objects)
     end
 end
 
--- create the tag list widget
 function taglist:create(s)
-    return awful.widget.taglist(
-            s,
-            awful.widget.taglist.filter.all,
-            awful.util.table.join(
-                    awful.button({}, 1,
-                                 function(t)
-                                     t:view_only()
-                                 end
-                    ),
-                    awful.button({ key.mod }, 1,
-                                 function(t)
-                                     if client.focus then
-                                         client.focus:move_to_tag(t)
-                                         t:view_only()
-                                     end
-                                 end
-                    ),
-                    awful.button({}, 3,
-                                 awful.tag.viewtoggle
-                    ),
+    return awful.widget.taglist {
+        screen          = s,
+        filter          = awful.widget.taglist.filter.all,
+        style           = {
+            --taglist_count          = 10,
+            --taglist_spacing        = 10,
+            --taglist_squares_resize = true,
 
-                    awful.button({ key.mod }, 3,
-                                 function(t)
-                                     if client.focus then
-                                         client.focus:toggle_tag(t)
-                                     end
-                                 end
-                    ),
-                    awful.button({}, 4,
-                                 function(t)
-                                     awful.tag.viewprev(t.screen)
-                                 end
-                    ),
-                    awful.button({}, 5,
-                                 function(t)
-                                     awful.tag.viewnext(t.screen)
-                                 end
-                    )
-            ),
-            {},
-            list_update,
-            wibox.layout.fixed.horizontal()
-    )
+            spacing = 0,
+            --taglist_spacing = ,
+
+            --shape_border_width = 1,
+            --shape_border_color = "#ffffff20",
+            --shape              = function(cr, width, height)
+            --    gears.shape.transform(gears.shape.rounded_rect):translate(width, 0)(cr, 0, height, 0)
+            --end,
+
+            --update_function = list_update,
+            --shape = gears.shape.powerline
+        },
+        buttons         = self:button(),
+        widget_template = {
+            {
+                {
+                    id     = 'icon_role',
+                    widget = wibox.widget.imagebox,
+                },
+                {
+                    id     = 'text_role',
+                    widget = wibox.widget.textbox,
+                },
+                layout = wibox.layout.fixed.horizontal,
+            },
+            id              = 'background_role',
+            widget          = wibox.container.background,
+
+            create_callback = function(self, c3, index, objects)
+                local old_cursor, old_wibox
+
+                self:connect_signal(
+                        "mouse::enter",
+                        function()
+                            self.bg = "#ffffff11"
+                            local w = _G.mouse.current_wibox
+                            if w then
+                                old_cursor, old_wibox = w.cursor, w
+                                w.cursor              = "hand1"
+                            end
+                        end
+                )
+
+                self:connect_signal(
+                        "mouse::leave",
+                        function()
+                            self.bg = "#ffffff00"
+                            if old_wibox then
+                                old_wibox.cursor = old_cursor
+                                old_wibox        = nil
+                            end
+                        end
+                )
+
+                self:connect_signal(
+                        "button::press",
+                        function()
+                            self.bg = "#ffffff22"
+                        end
+                )
+
+                self:connect_signal(
+                        "button::release",
+                        function()
+                            self.bg = "#ffffff11"
+                        end
+                )
+            end,
+        },
+
+        update_callback = list_update,
+    }
 end
 
-return taglist
+--return taglist
+return setmetatable(taglist, {
+    __call = taglist.create,
+})

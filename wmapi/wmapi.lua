@@ -1,11 +1,11 @@
-local ascreen = require("awful.screen")
-local wibox   = require("wibox")
-local gears   = require("gears")
+local ascreen  = require("awful.screen")
+local wibox    = require("wibox")
+local gears    = require("gears")
 
-local wmapi   = {}
+local wmapi    = {}
 
-wmapi.timer   = require("wmapi.timer")
-wmapi.markup  = require("wmapi.markup")
+wmapi.timer    = require("wmapi.timer")
+wmapi.markup   = require("wmapi.markup")
 
 function wmapi:base()
     return wibox.widget({
@@ -113,7 +113,7 @@ function wmapi:tablelength(T)
 end
 
 function wmapi:display_primary(s)
-    if s == capi.screen.primary then
+    if s == capi.primary then
         return true
     end
 
