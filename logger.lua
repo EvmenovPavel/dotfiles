@@ -18,8 +18,13 @@ local function append(args)
     --end)
 end
 
-function logger:message(args)
-    append(args)
+function logger:message(msg)
+    local file    = io.open(log_file, "a")
+    if file then
+        local date = os.date()
+        file:write(tostring(date .. ": " .. msg), "\n\n")
+        file:close()
+    end
 end
 
 return logger

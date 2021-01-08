@@ -59,12 +59,12 @@ local global    = gears.table.join(
 --switcher.switch(-1, "Mod1", "Alt_L", "Shift", "Tab")
 --end),
 
-        --awful.key({ key.win }, "f", function()
-            --capi.mouse.screen.selected_tag.selected = false
-            --for _, t in ipairs(mouse.screen.selected_tags) do
-            --    t.selected = false
-            --end
-        --end),
+--awful.key({ key.win }, "f", function()
+--capi.mouse.screen.selected_tag.selected = false
+--for _, t in ipairs(mouse.screen.selected_tags) do
+--    t.selected = false
+--end
+--end),
 
         awful.key({ key.win, "Mod1" }, "Right",
                   function()
@@ -121,19 +121,19 @@ local global    = gears.table.join(
         ),
         awful.key({}, key.audio.XF86AudioNext,
                   function()
-                      awful.spawn("mpc next", false)
+                      awful.spawn("playerctl next", false)
                   end,
                   { description = "next music", group = "hotkeys" }
         ),
         awful.key({}, key.audio.XF86AudioPrev,
                   function()
-                      awful.spawn("mpc prev", false)
+                      awful.spawn("playerctl prev", false)
                   end,
                   { description = "previous music", group = "hotkeys" }
         ),
         awful.key({}, key.audio.XF86AudioPlay,
                   function()
-                      awful.spawn("sp play", false)
+                      awful.spawn("playerctl play-pause", false)
                       capi.awesome.emit_signal("spotify_change")
                   end,
                   { description = "play/pause music", group = "hotkeys" }

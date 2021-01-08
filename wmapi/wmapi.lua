@@ -1,11 +1,11 @@
-local ascreen  = require("awful.screen")
-local wibox    = require("wibox")
-local gears    = require("gears")
+local ascreen = require("awful.screen")
+local wibox   = require("wibox")
+local gears   = require("gears")
 
-local wmapi    = {}
+local wmapi   = {}
 
-wmapi.timer    = require("wmapi.timer")
-wmapi.markup   = require("wmapi.markup")
+wmapi.timer   = require("wmapi.timer")
+wmapi.markup  = require("wmapi.markup")
 
 function wmapi:base()
     return wibox.widget({

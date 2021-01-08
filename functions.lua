@@ -32,8 +32,8 @@ function functions:on_maximized(c)
         c.fullscreen = false
     end
 
-    c.floating   = false
-    c.maximized  = not c.maximized
+    c.floating  = false
+    c.maximized = not c.maximized
 end
 
 function functions:on_fullscreen(c)

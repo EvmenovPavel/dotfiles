@@ -28,6 +28,7 @@ function mywibar:w_right(s)
             widgets.keyboard(),
             widgets.volume(s),
             widgets.cpu(),
+            widgets.memory(),
             widgets.clock,
             widgets.reboot,
             --widgets.spotify(s),

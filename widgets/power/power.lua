@@ -1,7 +1,7 @@
-local wibox     = require("lib.wibox")
+local wibox       = require("lib.wibox")
 
-local wmapi     = require("wmapi")
-local resources = require("resources")
+local wmapi       = require("wmapi")
+local resources   = require("resources")
 local signals     = require("device.signals")
 local quitmenu    = require("widgets.quitmenu")
 local awful_menu  = require("lib.awful.menu")

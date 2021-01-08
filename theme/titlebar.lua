@@ -1,4 +1,3 @@
-
 local resources = require("resources")
 
 local titlebar  = {}
