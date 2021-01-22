@@ -1,1 +1,1 @@
-# AwesomeWM
+# AwesomeWM Themes
