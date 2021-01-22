@@ -1,1 +1,3 @@
-# Awesome WM 4.3 Themes
+# Awesome WM
+
+Themes for Awesome WM 4.x
