@@ -2,9 +2,9 @@ local beautiful = require("beautiful")
 local wibox     = require("wibox")
 local watch     = require("awful.widget.watch")
 
-local memory    = {}
+local pacmd     = {}
 
-function memory:init(args)
+function pacmd:init(args)
     local args          = args or {}
 
     local width         = args.width or 50
@@ -12,7 +12,7 @@ function memory:init(args)
     local step_spacing  = args.step_spacing or 1
     local color         = args.color or beautiful.fg_normal
 
-    local graph_widget  = wibox.widget({
+    local pacmd_widget  = wibox.widget({
                                            max_value        = 100,
                                            background_color = "#00000000",
                                            forced_width     = width,
@@ -34,45 +34,24 @@ function memory:init(args)
                                            widget = wibox.widget.textbox,
                                        })
 
-    local memory_widget = wibox.container.margin(wibox.container.mirror(graph_widget, { horizontal = true }), 2, 2, 2, 2)
+    local memory_widget = wibox.container.margin(wibox.container.mirror(pacmd_widget, { horizontal = true }), 2, 2, 2, 2)
 
-    watch([[bash -c "cat /proc/meminfo"]], 1,
+    watch([[bash -c "pacmd list-modules | grep latency_msec=5"]], 1,
           function(widget, stdout)
-              local _mem = { buf = {}, swp = {} }
+              capi.log:message(stdout)
 
-              -- Get MEM info
-              for line in stdout:gmatch("[^\r\n]+") do
-                  for k, v in string.gmatch(line, "([%a]+):[%s]+([%d]+).+") do
-                      if k == "MemTotal" then
-                          _mem.total = math.floor(v / 1024)
-                      elseif k == "MemFree" then
-                          _mem.buf.f = math.floor(v / 1024)
-                      elseif k == "MemAvailable" then
-                          _mem.buf.a = math.floor(v / 1024)
-                      elseif k == "Buffers" then
-                          _mem.buf.b = math.floor(v / 1024)
-                      elseif k == "Cached" then
-                          _mem.buf.c = math.floor(v / 1024)
-                      elseif k == "SwapTotal" then
-                          _mem.swp.t = math.floor(v / 1024)
-                      elseif k == "SwapFree" then
-                          _mem.swp.f = math.floor(v / 1024)
-                      end
-                  end
-              end
+              --local _mem = { buf = {}, swp = {} }
 
-              -- Calculate memory percentage
-              _mem.free      = _mem.buf.a
-              _mem.inuse     = _mem.total - _mem.free
-              _mem.bcuse     = _mem.total - _mem.buf.f
-              _mem.usep      = math.floor(_mem.inuse / _mem.total * 100)
-              -- Calculate swap percentage
-              _mem.swp.inuse = _mem.swp.t - _mem.swp.f
-              _mem.swp.usep  = math.floor(_mem.swp.inuse / _mem.swp.t * 100)
+              --pacmd unload-module module-loopback
 
-              widget:add_value(_mem.usep)
+              --pacmd list-modules | grep latency_msec=5
+
+              --pacmd load-module module-loopback latency_msec=5
+
+
+              --widget:add_value()
           end,
-          graph_widget
+          pacmd_widget
     )
 
     local memory_text = wibox.container.margin(wibox.container.mirror(text_widget, { horizontal = false }), 2, 2, 2, 2)
@@ -86,7 +65,6 @@ function memory:init(args)
     return widget
 end
 
-return setmetatable(memory, {
-    __call = memory.init
+return setmetatable(pacmd, {
+    __call = pacmd.init
 })
-

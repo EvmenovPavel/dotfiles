@@ -20,17 +20,17 @@ function mywibar:w_middle(s)
 end
 
 function mywibar:w_right(s)
-    --if capi.wmapi:display_primary(s) then
     if capi.wmapi:display_primary(s) then
         return {
-            --widgets.brightness(),
             widgets.systray(s),
             widgets.keyboard(),
             widgets.volume(s),
             widgets.cpu(),
+            widgets.pad(),
             widgets.memory(),
-            widgets.clock,
-            widgets.reboot,
+            widgets.clock(),
+            widgets.reboot(),
+            --widgets.pacmd(),
             --widgets.spotify(s),
 
             layout = wibox.layout.fixed.horizontal
@@ -62,9 +62,11 @@ function mywibar:create(s)
         self:w_right(s),
         layout = wibox.layout.align.horizontal,
     }
+
+    return mywibar
 end
 
-return mywibar
---return setmetatable(mywibar, {
---    __call = mywibar.create,
---})
+--return mywibar
+return setmetatable(mywibar, {
+    __call = mywibar.create,
+})

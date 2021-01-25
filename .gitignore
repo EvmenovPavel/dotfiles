@@ -44,3 +44,6 @@ luac.out
 
 # IDEA files
 .idea
+
+# Log file
+log.file

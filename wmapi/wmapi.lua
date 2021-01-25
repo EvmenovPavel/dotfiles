@@ -94,16 +94,6 @@ function wmapi:textclock()
                         })
 end
 
-function wmapi:pad(size)
-    local str = ""
-    for i = 1, size do
-        str = str .. " "
-    end
-
-    local widget = wibox.widget.textbox(str)
-    return widget
-end
-
 function wmapi:tablelength(T)
     local count = 0
     for _ in pairs(T) do
@@ -113,6 +103,7 @@ function wmapi:tablelength(T)
 end
 
 function wmapi:display_primary(s)
+    local s = s or capi.screen[1]
     if s == capi.primary then
         return true
     end

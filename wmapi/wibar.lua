@@ -11,7 +11,7 @@ local function get_screen(s)
     return s and capi.screen[s]
 end
 
-local awfulmywibar = { mt = {} }
+local mywibar = { mt = {} }
 
 local function get_margins(w, args)
     local position = w.position
@@ -81,25 +81,25 @@ local function set_stretch(w, value)
     attach(w, w.position)
 end
 
-function awfulmywibar:get_position(wb)
+function mywibar:get_position(wb)
     gdebug.deprecate("Use wb:get_position() instead of awful.mywibar.get_position", { deprecated_in = 4 })
     return get_position(wb)
 end
 
-function awfulmywibar:set_position(wb, position, screen)
+function mywibar:set_position(wb, position, screen)
     gdebug.deprecate("Use wb:set_position(position) instead of awful.mywibar.set_position", { deprecated_in = 4 })
 
     set_position(wb, position)
 end
 
-function awfulmywibar:attach(wb, position, screen)
+function mywibar:attach(wb, position, screen)
     gdebug.deprecate("awful.mywibar.attach is deprecated, use the 'attach' property" ..
                              " of awful.placement. This method doesn't do anything anymore",
                      { deprecated_in = 4 }
     )
 end
 
-function awfulmywibar:align(wb, align, screen)
+function mywibar:align(wb, align, screen)
     if align == "center" then
         gdebug.deprecate("awful.mywibar.align(wb, 'center' is deprecated, use 'centered'", { deprecated_in = 4 })
         align = "centered"
@@ -114,7 +114,7 @@ function awfulmywibar:align(wb, align, screen)
     end
 end
 
-function awfulmywibar:init(args)
+function mywibar:init(args)
     args                 = args or {}
     local position       = args.position or "top"
     local has_to_stretch = true
@@ -189,6 +189,6 @@ function awfulmywibar:init(args)
     return w
 end
 
-return setmetatable(awfulmywibar, {
-    __call = awfulmywibar.init
+return setmetatable(mywibar, {
+    __call = mywibar.init
 })

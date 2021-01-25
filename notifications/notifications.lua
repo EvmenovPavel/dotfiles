@@ -41,7 +41,7 @@ naughty.config.defaults.screen       = capi.primary
 
 naughty.config.presets.normal        = {
     fg            = beautiful.fg_normal,
-    bg            = beautiful.bg_normal,
+    bg            = "#74C045",
 
     level         = 1,
 
@@ -54,7 +54,7 @@ naughty.config.presets.normal        = {
 
 naughty.config.presets.low           = {
     fg            = beautiful.fg_normal,
-    bg            = beautiful.bg_normal,
+    bg            = "#FECC0C",
 
     level         = 2,
 
@@ -66,8 +66,8 @@ naughty.config.presets.low           = {
 }
 
 naughty.config.presets.critical      = {
-    fg            = "#ffffff",
-    bg            = "#ff0000",
+    fg            = beautiful.fg_normal,
+    bg            = "#EF3F2A",
 
     level         = 3,
 
@@ -80,7 +80,7 @@ naughty.config.presets.critical      = {
 
 naughty.config.presets.ok            = {
     fg            = beautiful.fg_normal,
-    bg            = beautiful.bg_normal,
+    bg            = "#7FFFFF",
 
     level         = 1,
 
@@ -93,7 +93,7 @@ naughty.config.presets.ok            = {
 
 naughty.config.presets.info          = {
     fg            = beautiful.fg_normal,
-    bg            = beautiful.bg_normal,
+    bg            = "#FF7FED",
 
     level         = 1,
 
@@ -105,8 +105,8 @@ naughty.config.presets.info          = {
 }
 
 naughty.config.presets.warn          = {
-    fg            = "#ffffff",
-    bg            = "#ff0000",
+    fg            = beautiful.fg_normal,
+    bg            = "#DCDCDC",
 
     level         = 3,
 
@@ -168,7 +168,7 @@ function naughty:show(args)
         end
     end
 
-    local preset        = args.preset or naughty.config.presets.normal
+    local preset        = args.preset or naughty.config.presets.info
 
     local timeout       = args.timeout or preset.timeout
     local hover_timeout = args.hover_timeout or preset.hover_timeout
@@ -193,3 +193,5 @@ function naughty:show(args)
     }
     --end
 end
+
+return naughty

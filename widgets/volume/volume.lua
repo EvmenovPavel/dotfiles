@@ -11,6 +11,8 @@ local screen             = awful.screen.focused()
 local amixer_volume      = "amixer -D pulse sget Master | grep 'Left:' | awk -F '[][]' '{print $2}' | sed 's/[^0-9]//g'"
 local amixer_active      = "amixer -D pulse sget Master | grep 'Left:' | awk -F '[][]' '{print $4}'"
 
+local volume             = {}
+
 local icon               = {
     on  = gears.filesystem.get_configuration_dir() .. "/icons/volume/volume_on.png",
     off = gears.filesystem.get_configuration_dir() .. "/icons/volume/volume_off.png"
@@ -103,8 +105,7 @@ capi.awesome.connect_signal("volume_change",
 --                       end
 --)
 
-local function worker(s)
-
+function volume:init(s)
     local id      = capi.wmapi:display_index(s)
 
     volume_adjust = wibox({
@@ -133,10 +134,12 @@ local function worker(s)
                 dpi(7), dpi(7), dpi(14), dpi(14)
         )
     }
+
+    local volume_widget = wibox({})
+
+    return w_volume_icon
 end
 
-local volume = {}
-
-return setmetatable(volume, { __call = function(_, ...)
-    return worker(...)
-end })
+return setmetatable(volume, {
+    __call = volume.init
+})

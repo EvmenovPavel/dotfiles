@@ -14,11 +14,16 @@ local widgets = {
     volume   = require("widgets.volume"),
 
     tasklist = require("widgets.tasklist"),
+
     taglist  = require("widgets.taglist"),
 
     reboot   = require("widgets.reboot"),
 
+    pacmd    = require("widgets.pacmd"),
+
     spotify  = require("widgets.spotify"),
+
+    pad      = require("widgets.pad")
 
     --require("widgets.bluetooth"),
     --require("widgets.wifi"),

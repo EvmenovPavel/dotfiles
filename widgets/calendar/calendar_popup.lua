@@ -1,30 +1,3 @@
----------------------------------------------------------------------------
--- A calendar popup wibox
---
--- Display a month or year calendar popup using `calendar_popup.month` or `calendar_popup.year`.
--- The calendar style can be tweaked by providing tables of style properties at creation:
--- `style_year`, `style_month`, `style_yearheader`, `style_header`,
--- `style_weekday`, `style_weeknumber`, `style_normal`, `style_focus` (see `cell_properties`).
---
--- The wibox accepts arguments for the calendar widget: `font`, `spacing`, `week_numbers`,
--- `start_sunday`, `long_weekdays`.
--- It also accepts the extra arguments `opacity`, `bg`, `screen` and `position`.
--- `opacity` and `bg` apply to the wibox itself, they are mainly useful to manage opacity
--- by setting `opacity` for the false opacity or setting `bg="#00000000"` for compositor opacity.
--- The `screen` argument forces the display of the wibox to this screen (instead of the focused screen by default).
--- The `position` argument is a two-characters string describing the screen alignment "[vertical][horizontal]",
--- e.g. "cc", "tr", "bl", ...
---
--- The wibox visibility can be changed calling the `toggle` method.
--- The `attach` method adds mouse bindings to an existing widget in order to toggle the display of the wibox.
---
---
---
--- @author getzze
--- @copyright 2017 getzze
--- @classmod awful.widget.calendar_popup
----------------------------------------------------------------------------
-
 local setmetatable   = setmetatable
 local string         = string
 local gears          = require("lib.gears")
@@ -39,41 +12,6 @@ local calendar_popup = { offset = 0, mt = {} }
 local properties     = { "markup", "fg_color", "bg_color", "shape", "padding", "border_width", "border_color", "opacity" }
 local styles         = { "year", "month", "yearheader", "monthheader", "header", "weekday", "weeknumber", "normal", "focus" }
 
-
---- The generic calendar style table.
---
--- Each table property can also be defined by `beautiful.calendar_[flag]_[property]=val`.
--- @beautiful beautiful.calendar_style
--- @tparam cell_properties table Table of cell style properties
-
-
---- Cell properties.
--- @field markup Markup function or format string
--- @field fg_color Text foreground color
--- @field bg_color Text background color
--- @field shape Cell shape
--- @field padding Cell padding
--- @field border_width Calendar border width
--- @field border_color Calendar border color
--- @field opacity Cell opacity
--- @table cell_properties
-
---- Cell types (flags).
--- @field year Year calendar grid properties table
--- @field month Month calendar grid properties table
--- @field yearheader Year header cell properties table
--- @field header Month header cell properties table (called `monthheader` for a year calendar)
--- @field weekday Weekday cell properties table
--- @field weeknumber Weeknumber cell properties table
--- @field normal Normal day cell properties table
--- @field focus Current day cell properties table
--- @table cell_flags
-
-
-
---- Create a container for the grid layout
--- @tparam table tprops Table of calendar container properties.
--- @treturn function Embedding function widget,flag,date -> widget
 local function embed(tprops)
     local function fn (widget, flag, _)
         if flag == "monthheader" and not tprops.monthheader then
@@ -111,11 +49,6 @@ local function embed(tprops)
     return fn
 end
 
-
---- Parse the properties of the cell type and set default values
--- @tparam string cell The cell type
--- @tparam table args Table of properties to enforce
--- @treturn table The properties table
 local function parse_cell_options(cell, args)
     args           = args or {}
     local props    = {}
@@ -150,9 +83,6 @@ local function parse_cell_options(cell, args)
     return props
 end
 
---- Parse the properties
--- @tparam table args Table of properties
--- @treturn table The properties table
 local function parse_all_options(args)
     args        = args or {}
     local props = {}
@@ -165,12 +95,6 @@ local function parse_all_options(args)
     return props
 end
 
-
---- Make the geometry of a wibox
--- @tparam widget widget Calendar widget
--- @tparam object screen Screen where to display the calendar (default to focused)
--- @tparam string position Two characters position of the calendar (default "cc")
--- @treturn number,number,number,number Geometry of the calendar, list of x, y, width, height
 local function get_geometry(widget, screen, position)
     local pos           = position or "cc"
     local s             = screen or ascreen.focused()
@@ -206,11 +130,6 @@ local function get_geometry(widget, screen, position)
     return { x = x, y = y, width = width, height = height }
 end
 
---- Call the calendar with offset
--- @tparam number offset Offset with respect to current month or year
--- @tparam string position Two-character position of the calendar in the screen
--- @tparam screen screen Screen where to display the calendar
--- @treturn wibox The wibox calendar
 function calendar_popup:call_calendar(offset, position, screen)
     local inc_offset = offset or 0
     local pos        = position or self.position
@@ -230,10 +149,8 @@ function calendar_popup:call_calendar(offset, position, screen)
         date = { year = raw_date.year + self.offset }
     end
 
-    -- set date and screen before updating geometry
     widget:set_date(date)
     self:set_screen(s)
-    -- update geometry (depends on date and screen)
     self:geometry(get_geometry(widget, s, pos))
     return self
 end
@@ -244,18 +161,6 @@ function calendar_popup:toggle()
     self.visible = not self.visible
 end
 
-
---- Attach the calendar to a widget to display at a specific position.
---
---    local mytextclock = wibox.widget.textclock()
---    local month_calendar = awful.widget.calendar_popup.month()
---    month_calendar:attach(mytextclock, 'tr')
---
--- @param widget Widget to attach the calendar
--- @tparam[opt="tr"] string position Two characters string defining the position on the screen
--- @tparam[opt={}] table args Additional options
--- @tparam[opt=true] bool args.on_hover Show popup during mouse hover
--- @treturn wibox The wibox calendar
 function calendar_popup:attach(widget, position, args)
     position = position or "tr"
     args     = args or {}
@@ -293,31 +198,6 @@ function calendar_popup:attach(widget, position, args)
     return self
 end
 
-
---- Return a new calendar wibox by type.
---
--- A calendar widget displaying a `month` or a `year`
--- @tparam string caltype Type of calendar `month` or `year`
--- @tparam table args Properties of the widget
--- @tparam string args.position Two-character position of the calendar in the screen
--- @tparam screen args.screen Screen where to display the calendar
--- @tparam number args.opacity Wibox opacity
--- @tparam string args.bg Wibox background color
--- @tparam string args.font Calendar font
--- @tparam number args.spacing Calendar spacing
--- @tparam number args.margin Margin around calendar widget
--- @tparam boolean args.week_numbers Show weeknumbers
--- @tparam boolean args.start_sunday Start week on Sunday
--- @tparam boolean args.long_weekdays Format the weekdays with three characters instead of two
--- @tparam table args.style_year Container style for the year calendar (see `cell_properties`)
--- @tparam table args.style_month Container style for the month calendar (see `cell_properties`)
--- @tparam table args.style_yearheader Cell style for the year calendar header (see `cell_properties`)
--- @tparam table args.style_header Cell style for the month calendar header (see `cell_properties`)
--- @tparam table args.style_weekday Cell style for the weekday cells (see `cell_properties`)
--- @tparam table args.style_weeknumber Cell style for the weeknumber cells (see `cell_properties`)
--- @tparam table args.style_normal Cell style for the normal day cells (see `cell_properties`)
--- @tparam table args.style_focus Cell style for the current day cell (see `cell_properties`)
--- @treturn wibox A wibox containing the calendar
 local function get_cal_wibox(caltype, args)
     args      = args or {}
 
@@ -362,77 +242,12 @@ local function get_cal_wibox(caltype, args)
     return ret
 end
 
---- A month calendar wibox.
---
--- It is highly customizable using the same options as for the widgets.
--- The options are set once and for all at creation, though.
---
---
---
---    local mytextclock = wibox.widget.textclock()
---    local month_calendar = awful.widget.calendar_popup.month()
---    month_calendar:attach( mytextclock, "tr" )
---
--- @tparam table args Properties of the widget
--- @tparam string args.position Two-character position of the calendar in the screen
--- @tparam screen args.screen Screen where to display the calendar
--- @tparam number args.opacity Wibox opacity
--- @tparam string args.bg Wibox background color
--- @tparam string args.font Calendar font
--- @tparam number args.spacing Calendar spacing
--- @tparam number args.margin Margin around calendar widget
--- @tparam boolean args.week_numbers Show weeknumbers
--- @tparam boolean args.start_sunday Start week on Sunday
--- @tparam boolean args.long_weekdays Format the weekdays with three characters instead of two
--- @tparam table args.style_month Container style for the month calendar (see `cell_properties`)
--- @tparam table args.style_header Cell style for the month calendar header (see `cell_properties`)
--- @tparam table args.style_weekday Cell style for the weekday cells (see `cell_properties`)
--- @tparam table args.style_weeknumber Cell style for the weeknumber cells (see `cell_properties`)
--- @tparam table args.style_normal Cell style for the normal day cells (see `cell_properties`)
--- @tparam table args.style_focus Cell style for the current day cell (see `cell_properties`)
--- @treturn wibox A wibox containing the calendar
--- @function awful.widget.calendar_popup.month
 function calendar_popup.month(args)
     return get_cal_wibox("month", args)
 end
 
-
---- A year calendar wibox.
---
--- It is highly customizable using the same options as for the widgets.
--- The options are set once and for all at creation, though.
---
---
---
---    globalkeys = gears.table.join(globalkeys, awful.key(
---            { modkey, "Control" }, "c",  function () year_calendar:toggle() end))
---
--- @tparam table args Properties of the widget
--- @tparam string args.position Two-character position of the calendar in the screen
--- @tparam screen args.screen Screen where to display the calendar
--- @tparam number args.opacity Wibox opacity
--- @tparam string args.bg Wibox background color
--- @tparam string args.font Calendar font
--- @tparam number args.spacing Calendar spacing
--- @tparam number args.margin Margin around calendar widget
--- @tparam boolean args.week_numbers Show weeknumbers
--- @tparam boolean args.start_sunday Start week on Sunday
--- @tparam boolean args.long_weekdays Format the weekdays with three characters instead of two
--- @tparam table args.style_year Container style for the year calendar (see `cell_properties`)
--- @tparam table args.style_month Container style for the month calendar (see `cell_properties`).
--- This field can also be called `style_monthheader`.
--- @tparam table args.style_yearheader Cell style for the year calendar header (see `cell_properties`)
--- @tparam table args.style_header Cell style for the month calendar header (see `cell_properties`)
--- @tparam table args.style_weekday Cell style for the weekday cells (see `cell_properties`)
--- @tparam table args.style_weeknumber Cell style for the weeknumber cells (see `cell_properties`)
--- @tparam table args.style_normal Cell style for the normal day cells (see `cell_properties`)
--- @tparam table args.style_focus Cell style for the current day cell (see `cell_properties`)
--- @treturn wibox A wibox containing the calendar
--- @function awful.widget.calendar_popup.year
 function calendar_popup.year(args)
     return get_cal_wibox("year", args)
 end
 
 return setmetatable(calendar_popup, calendar_popup.mt)
-
--- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

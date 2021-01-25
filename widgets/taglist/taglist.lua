@@ -3,40 +3,11 @@ local wibox   = require("wibox")
 local dpi     = require("beautiful").xresources.apply_dpi
 local key     = require("event").key
 local mouse   = require("event").mouse
+local notifications = require("notifications")
 
 local taglist = {}
 
-function taglist:button()
-    return awful.util.table.join(
-            awful.button({}, mouse.button_click_left,
-                         function(c)
-                             c:view_only()
-                         end
-            ),
-            awful.button({ key.mod }, mouse.button_click_left,
-                         function(c)
-                             if capi.client.focus then
-                                 capi.client.focus:move_to_tag(c)
-                                 c:view_only()
-                             end
-                         end
-            ),
-
-            awful.button({}, mouse.button_click_right,
-                         awful.tag.viewtoggle
-            ),
-
-            awful.button({ key.mod }, mouse.button_click_right,
-                         function(c)
-                             if capi.client.focus then
-                                 capi.client.focus:toggle_tag(c)
-                             end
-                         end
-            )
-    )
-end
-
-function list_update(w, buttons, label, data, objects)
+function update_callback(w, buttons, label, data, objects)
     w:reset()
     for i, o in ipairs(objects) do
         local cache = data[o]
@@ -62,8 +33,6 @@ function list_update(w, buttons, label, data, objects)
             bg_clickable:set_widget(l)
 
             bgb:set_widget(bg_clickable)
-
-            --bgb:buttons(create_buttons(buttons, o))
 
             data[o] = {
                 ib  = ib,
@@ -98,6 +67,95 @@ function list_update(w, buttons, label, data, objects)
     end
 end
 
+function buttons()
+    return awful.util.table.join(
+            awful.button({}, mouse.button_click_left,
+                         function(c)
+                             c:view_only()
+                         end
+            ),
+            awful.button({ key.mod }, mouse.button_click_left,
+                         function(c)
+                             if capi.client.focus then
+                                 capi.client.focus:move_to_tag(c)
+                                 c:view_only()
+                             end
+                         end
+            ),
+
+            awful.button({}, mouse.button_click_right,
+                         awful.tag.viewtoggle
+            ),
+
+            awful.button({ key.mod }, mouse.button_click_right,
+                         function(c)
+                             if capi.client.focus then
+                                 capi.client.focus:toggle_tag(c)
+                             end
+                         end
+            )
+    )
+end
+
+function widget_template()
+    return {
+        {
+            {
+                id     = 'icon_role',
+                widget = wibox.widget.imagebox,
+            },
+            {
+                id     = 'text_role',
+                widget = wibox.widget.textbox,
+            },
+            layout = wibox.layout.fixed.horizontal,
+        },
+        id              = 'background_role',
+        widget          = wibox.container.background,
+
+        create_callback = function(self, c3, index, objects)
+            local old_cursor, old_wibox
+
+            self:connect_signal(
+                    "mouse::enter",
+                    function()
+                        self.bg = "#ffffff11"
+                        local w = _G.mouse.current_wibox
+                        if w then
+                            old_cursor, old_wibox = w.cursor, w
+                            w.cursor              = "hand1"
+                        end
+                    end
+            )
+
+            self:connect_signal(
+                    "mouse::leave",
+                    function()
+                        self.bg = "#ffffff00"
+                        if old_wibox then
+                            old_wibox.cursor = old_cursor
+                            old_wibox        = nil
+                        end
+                    end
+            )
+
+            self:connect_signal(
+                    "button::press",
+                    function()
+                        self.bg = "#ffffff22"
+                    end
+            )
+
+            self:connect_signal(
+                    "button::release",
+                    function()
+                        self.bg = "#ffffff11"
+                    end
+            )
+        end,
+    }
+end
+
 function taglist:create(s)
     return awful.widget.taglist {
         screen          = s,
@@ -119,69 +177,13 @@ function taglist:create(s)
             --update_function = list_update,
             --shape = gears.shape.powerline
         },
-        buttons         = self:button(),
-        widget_template = {
-            {
-                {
-                    id     = 'icon_role',
-                    widget = wibox.widget.imagebox,
-                },
-                {
-                    id     = 'text_role',
-                    widget = wibox.widget.textbox,
-                },
-                layout = wibox.layout.fixed.horizontal,
-            },
-            id              = 'background_role',
-            widget          = wibox.container.background,
 
-            create_callback = function(self, c3, index, objects)
-                local old_cursor, old_wibox
-
-                self:connect_signal(
-                        "mouse::enter",
-                        function()
-                            self.bg = "#ffffff11"
-                            local w = _G.mouse.current_wibox
-                            if w then
-                                old_cursor, old_wibox = w.cursor, w
-                                w.cursor              = "hand1"
-                            end
-                        end
-                )
-
-                self:connect_signal(
-                        "mouse::leave",
-                        function()
-                            self.bg = "#ffffff00"
-                            if old_wibox then
-                                old_wibox.cursor = old_cursor
-                                old_wibox        = nil
-                            end
-                        end
-                )
-
-                self:connect_signal(
-                        "button::press",
-                        function()
-                            self.bg = "#ffffff22"
-                        end
-                )
-
-                self:connect_signal(
-                        "button::release",
-                        function()
-                            self.bg = "#ffffff11"
-                        end
-                )
-            end,
-        },
-
-        update_callback = list_update,
+        widget_template = widget_template(),
+        buttons         = buttons(),
+        update_callback = update_callback,
     }
 end
 
---return taglist
 return setmetatable(taglist, {
     __call = taglist.create,
 })
