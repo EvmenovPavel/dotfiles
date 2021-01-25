@@ -6,6 +6,19 @@ resources.awesome           = resources.path .. "/awesome.png"
 resources.menu_submenu_icon = resources.path .. "/submenu.png"
 resources.warning           = resources.path .. "/warning.png"
 
+resources.taglist           = {
+    resources.path .. "/taglist/" .. "firefox.png",
+    resources.path .. "/taglist/" .. "folder.png",
+    resources.path .. "/taglist/" .. "mail.png",
+    resources.path .. "/taglist/" .. "messager.png",
+    resources.path .. "/taglist/" .. "notepad.png",
+    resources.path .. "/taglist/" .. "player.png",
+    resources.path .. "/taglist/" .. "spotify.png",
+    resources.path .. "/taglist/" .. "star.png",
+    resources.path .. "/taglist/" .. "terminal.png",
+    resources.path .. "/taglist/" .. "videogame.png"
+}
+
 resources.layout            = {
     -- Layout icons
     --resources.layout                                          = {}

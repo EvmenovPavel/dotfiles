@@ -66,7 +66,6 @@ function mywibar:create(s)
     return mywibar
 end
 
---return mywibar
 return setmetatable(mywibar, {
     __call = mywibar.create,
 })

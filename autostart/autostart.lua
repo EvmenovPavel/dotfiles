@@ -9,8 +9,8 @@ function autostart.list()
         "blueman-applet",
         "flameshot",
         --"sudo solaar" -- only sudo
-        "megasync",
-        "indicator-stickynotes"
+        --"megasync",
+        --"indicator-stickynotes"
     }
 end
 

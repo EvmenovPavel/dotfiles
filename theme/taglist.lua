@@ -1,34 +1,6 @@
-local taglist       = {}
+local resources = require("resources")
 
-local taglist_icons = {
-    {
-        icon = capi.path .. "/icons/tags/terminal.png",
-    },
-    {
-        icon = capi.path .. "/icons/tags/firefox.png",
-    },
-    {
-        icon = capi.path .. "/icons/tags/notepad.png",
-    },
-    {
-        icon = capi.path .. "/icons/tags/folder.png",
-    },
-    {
-        icon = capi.path .. "/icons/tags/player.png",
-    },
-    {
-        icon = capi.path .. "/icons/tags/videogame.png",
-    },
-    {
-        icon = capi.path .. "/icons/tags/star.png",
-    },
-    {
-        icon = capi.path .. "/icons/tags/mail.png",
-    },
-    {
-        icon = capi.path .. "/icons/tags/spotify.png",
-    }
-}
+local taglist       = {}
 
 function taglist:init(theme)
     theme.taglist_disable_icon = false
@@ -44,7 +16,7 @@ function taglist:init(theme)
     theme.taglist_bg_urgent    = "#e91e6399"
     theme.taglist_bg_focus     = theme.bg_focus
 
-    theme.taglist_icons        = taglist_icons
+    theme.taglist_icons        = resources.taglist
 end
 
 return setmetatable(taglist, { __call = function(_, ...)

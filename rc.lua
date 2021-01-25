@@ -18,20 +18,9 @@ capi            = {
 }
 
 local awful     = require("awful")
-local gears       = require("gears")
-local pixbuf      = require("lgi").GdkPixbuf
-local setmetatable = setmetatable
-local tostring     = tostring
-local ipairs       = ipairs
-local error        = error
-local wibox        = require("wibox")
-local beautiful    = require("beautiful")
-local gdebug       = require("gears.debug")
-local placement    = require("awful.placement")
-local widgets   = require("widgets")
 
+local beautiful = require("beautiful")
 local theme     = require("theme")
-
 beautiful.init(theme)
 
 local keybinds = require("keys.keybinds")
@@ -46,126 +35,17 @@ local apps        = require("autostart")
 apps:start()
 
 require("widgets.titlebar")
---local wibar     = require("wibar")
---local wallpaper = require("wallpaper")
-
-local mywallpaper = {}
-
-function mywallpaper:set_animated(surf, s)
-    local img, err = pixbuf.PixbufAnimation.new_from_file(surf)
-    if not img then
-        print(err)
-    else
-        local iter = img:get_iter(nil)
-
-        local function set_wp()
-            local geom, cr = gears.wallpaper.prepare_context(s)
-            iter:advance(nil)
-            cr:set_source_pixbuf(iter:get_pixbuf(), 0, 0)
-            cr.operator = "SOURCE"
-            cr:paint()
-            local delay = iter:get_delay_time()
-            if delay ~= -1 then
-                gears.timer.start_new(delay / 1000, set_wp)
-            end
-        end
-        set_wp()
-    end
-end
-
-local list_wallpaper = {
-    { "anime", "png" },
-    { "spider-verse-triple", "png" },
-    { "wp2503419", "png" },
-    { "retrowave", "jpg" },
-    { "no_game_no_life", "png" },
-    { "pixel", "jpg" }
-}
-
-function mywallpaper:create(s)
-
-    local wallpaper = list_wallpaper[4]
-
-    local file      = beautiful.wallpapers .. "/" .. wallpaper[1] .. "/" .. capi.wmapi:display_index(s) .. "." .. wallpaper[2]
-
-    if type(file) == "function" then
-        file = file(s)
-    end
-
-    gears.wallpaper.maximized(file, s, true)
-end
-
-local mywibar   = {}
-
-function mywibar:w_left(s)
-    return {
-        widgets.taglist:create(s),
-        layout = wibox.layout.fixed.horizontal
-    }
-end
-
-function mywibar:w_middle(s)
-    return {
-        widgets.tasklist:create(s),
-        layout = wibox.layout.fixed.horizontal
-    }
-end
-
-function mywibar:w_right(s)
-    if capi.wmapi:display_primary(s) then
-        return {
-            widgets.systray(s),
-            widgets.keyboard(),
-            widgets.volume(s),
-            --widgets.cpu(),
-            widgets.pad(),
-            --widgets.memory(),
-            widgets.clock(),
-            widgets.reboot(),
-            --widgets.pacmd(),
-            --widgets.spotify(s),
-
-            layout = wibox.layout.fixed.horizontal
-        }
-    end
-
-    return {
-        layout = wibox.layout.fixed.horizontal
-    }
-end
-
-function mywibar:create(s)
-    local wibar = awful.wibar({
-                                  ontop        = false,
-                                  stretch      = true,
-                                  position     = beautiful.position.top,
-                                  border_width = 1,
-                                  border_color = beautiful.bg_dark,
-                                  --bg           = "#00000099",
-                                  fg           = beautiful.fg_normal,
-                                  visible      = true,
-                                  height       = 27,
-                                  screen       = s,
-                              })
-
-    wibar:setup {
-        self:w_left(s),
-        self:w_middle(s),
-        self:w_right(s),
-        layout = wibox.layout.align.horizontal,
-    }
-
-    return mywibar
-end
+local wibar     = require("wibar")
+local wallpaper = require("wallpaper")
 
 awful.screen.connect_for_each_screen(
         function(s)
-            mywallpaper:create(s)
-            mywibar:create(s)
+            wallpaper:create(s)
+            wibar:create(s)
 
-            for i, tag in pairs(theme.taglist_icons) do
+            for i, icon in pairs(theme.taglist_icons) do
                 awful.tag.add(i, {
-                    icon      = tag.icon,
+                    icon      = icon,
                     icon_only = true,
                     layout    = awful.layout.suit.tile,
                     screen    = s,
@@ -196,3 +76,158 @@ capi.client.connect_signal("manage", function(c)
 end)
 
 require("awful.autofocus")
+
+
+--local image = require("image")
+
+--local inner_widget = wibox.layout.fixed.vertical()
+--
+--inner_widget:insert(1, wibox.widget.textbox("String 1"))
+--inner_widget:insert(1, wibox.widget.textbox("String 2"))
+--inner_widget:insert(1, wibox.widget.textbox("String 3"))
+--inner_widget:insert(1, wibox.widget.textbox("String 4"))
+--inner_widget:insert(1, wibox.widget.textbox("String 5"))
+--inner_widget:insert(1, wibox.widget.textbox("String 1"))
+--inner_widget:insert(1, wibox.widget.textbox("String 2"))
+--inner_widget:insert(1, wibox.widget.textbox("String 3"))
+--inner_widget:insert(1, wibox.widget.textbox("String 4"))
+--inner_widget:insert(1, wibox.widget.textbox("String 5"))
+--inner_widget:insert(1, wibox.widget.textbox("String 1"))
+--inner_widget:insert(1, wibox.widget.textbox("String 2"))
+--inner_widget:insert(1, wibox.widget.textbox("String 3"))
+--inner_widget:insert(1, wibox.widget.textbox("String 4"))
+--inner_widget:insert(1, wibox.widget.textbox("String 5"))
+--inner_widget:insert(1, wibox.widget.textbox("String 1"))
+--inner_widget:insert(1, wibox.widget.textbox("String 2"))
+--inner_widget:insert(1, wibox.widget.textbox("String 3"))
+--inner_widget:insert(1, wibox.widget.textbox("String 4"))
+--inner_widget:insert(1, wibox.widget.textbox("String 5"))
+--inner_widget:insert(1, wibox.widget.textbox("String 1"))
+--inner_widget:insert(1, wibox.widget.textbox("String 2"))
+--inner_widget:insert(1, wibox.widget.textbox("String 3"))
+--inner_widget:insert(1, wibox.widget.textbox("String 4"))
+--inner_widget:insert(1, wibox.widget.textbox("String 5"))
+--
+---- отвечает за то, сколько может быть помещено в виджете
+---- inner_height всегда должен увеличиваться
+---- тк, информация будет всегда добавляться
+--local inner_width, inner_height = 200, 200
+---- No idea how to pick a good width and height for the wibox.
+--local w                         = wibox {
+--    x       = 200,
+--    y       = 200,
+--    width   = 200,
+--    height  = 200,
+--    visible = true
+--}
+--
+--local own_widget                = wibox.widget.base.make_widget()
+--w:set_widget(own_widget)
+--local offset_x, offset_y = 0, 0
+--local own_context        = {
+--    screen = screen[1],
+--    dpi    = 100
+--} -- We have to invent something here... :-(
+--
+--local hierarchy
+--hierarchy                = wibox.hierarchy.new(own_context, inner_widget, inner_width, inner_height,
+--                                               function()
+--                                                   log:message({ level = "1", message = "1 - widget::redraw_needed" })
+--                                                   own_widget:emit_signal("widget::redraw_needed")
+--                                               end,
+--                                               function()
+--                                                   hierarchy:update(own_context, inner_widget, inner_width, inner_height)
+--                                                   log:message({ level = "1", message = "2 - widget::redraw_needed" })
+--                                                   own_widget:emit_signal("widget::redraw_needed")
+--                                               end, nil)
+--
+--
+---- Mouse event
+--own_widget:buttons(
+--        gears.table.join(
+--                awful.button({}, 4, nil,
+--                             function()
+--                                 --log:message({ level = "1", message = "some magic here to scroll up" })
+--
+--                                 --if offset_y >= 5 then
+--                                 offset_y = offset_y - 5
+--                                 --end
+--                                 own_widget:emit_signal("widget::layout_changed")
+--
+--                                 -- some magic here to scroll up
+--                             end
+--                ),
+--                awful.button({}, 5, nil,
+--                             function()
+--                                 --log:message({ level = "1", message = "some magic here to scroll down" })
+--
+--                                 --if offset_y <= 490 then
+--                                 offset_y = offset_y + 5
+--                                 --end
+--                                 own_widget:emit_signal("widget::layout_changed")
+--
+--                                 -- some magic here to scroll down
+--                             end
+--                )
+--        )
+--)
+--
+--function own_widget:draw(context, cr, width, height)
+--    -- This does the scrolling
+--    cr:translate(offset_x, offset_y)
+--
+--    -- Then just draw the inner stuff directly
+--    hierarchy:draw(own_context, cr)
+--end
+--
+---- Start a timer to simulate scrolling: Once per second we move things slightly
+--gears.timer.start_new(1, function()
+--    --offset_x = -offset_x
+--    own_widget:emit_signal("widget::redraw_needed")
+--    return true
+--end)
+--
+--function own_widget:before_draw_children(context, cr, width, height)
+--    cr:rectangle(0, 0, width, height)
+--    cr:clip()
+--end
+--
+---- Finally, make input events work
+--local function button_signal(name)
+--    -- This function is basically copy&paste from find_widgets() in
+--    -- wibox.drawable
+--    local function traverse_hierarchy_tree(h, x, y, ...)
+--        local m              = h:get_matrix_from_device()
+--
+--        -- Is (x,y) inside of this hierarchy or any child (aka the draw extents)?
+--        -- If not, we can stop searching.
+--        local x1, y1         = m:transform_point(x, y)
+--        local x2, y2, w2, h2 = h:get_draw_extents()
+--        if x1 < x2 or x1 >= x2 + w2 then
+--            return
+--        end
+--        if y1 < y2 or y1 >= y2 + h2 then
+--            return
+--        end
+--        -- Is (x,y) inside of this widget?
+--        -- If yes, we have to emit the signal on the widget.
+--        local width, height = h:get_size()
+--        if x1 >= 0 and y1 >= 0 and x1 <= width and y1 <= height then
+--            h:get_widget():emit_signal(name, x1, y1, ...)
+--        end
+--        -- Continue searching in all children.
+--        for _, child in ipairs(h:get_children()) do
+--            traverse_hierarchy_tree(child, x, y, ...)
+--        end
+--    end
+--    own_widget:connect_signal(name, function(_, x, y, ...)
+--        -- Translate to "local" coordinates
+--        x = x - offset_x
+--        y = y - offset_y
+--        -- Figure out which widgets were hit and emit the signal on them
+--        traverse_hierarchy_tree(hierarchy, x, y, ...)
+--    end)
+--end
+--
+--button_signal("button::press")
+--button_signal("button::release")

@@ -5,7 +5,7 @@ local gears     = require("gears")
 local mouse     = require("event").mouse
 
 local dpi       = require("beautiful").xresources.apply_dpi
-local ICON_DIR  = gears.filesystem.get_configuration_dir() .. "/icons/"
+local ICON_DIR  = gears.filesystem.get_configuration_dir() .. "/resources/icons3/"
 
 -- define module table
 local tasklist  = {}
