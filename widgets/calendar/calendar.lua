@@ -4,7 +4,7 @@ local wibox     = require("wibox")
 local gears     = require("gears")
 
 local markup    = capi.wmapi.markup
-local event     = require("event")
+local event     = capi.wmapi.event
 
 local calendar  = {}
 

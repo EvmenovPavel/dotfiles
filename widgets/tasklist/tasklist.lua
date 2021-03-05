@@ -1,28 +1,11 @@
 local awful     = require("awful")
 local wibox     = require("wibox")
-local beautiful = require("beautiful")
 local gears     = require("gears")
-local mouse     = require("event").mouse
+local resources = require("resources")
 
-local dpi       = require("beautiful").xresources.apply_dpi
-local ICON_DIR  = gears.filesystem.get_configuration_dir() .. "/resources/icons3/"
+local mouse     = capi.wmapi.event.mouse
 
--- define module table
 local tasklist  = {}
-
-local shape     = {
-    function(cr, width, height)
-        gears.shape.transform(gears.shape.rounded_rect):translate(0, height - 1)(cr, width, 1, 0)
-    end,
-
-    function(cr, width, height)
-        local top    = 0
-        local left   = 0
-        local radial = 5
-
-        gears.shape.transform(gears.shape.rounded_rect):translate(left, top)(cr, width, height, radial)
-    end
-}
 
 local function create_buttons(buttons, object)
     if buttons then
@@ -70,7 +53,7 @@ local function list_update(widget, buttons, label, data, objects)
             w_bm_close:set_widget(wibox.widget {
                 {
                     widget = wibox.widget.imagebox,
-                    image  = ICON_DIR .. "close.svg",
+                    image  = resources.path .. "/close.svg",
                     resize = true,
                 },
                 left   = 5, right = 5,
@@ -78,7 +61,7 @@ local function list_update(widget, buttons, label, data, objects)
                 widget = wibox.container.margin,
             })
             w_bm_close.shape = gears.shape.circle
-            w_bm_close       = wibox.container.margin(w_bm_close, dpi(4), dpi(4), dpi(4), dpi(4))
+            w_bm_close       = wibox.container.margin(w_bm_close, 4, 4, 4, 4)
 
             w_bm_close:buttons(gears.table.join(
                     awful.button({}, mouse.button_click_left, nil,
@@ -166,7 +149,11 @@ local function list_update(widget, buttons, label, data, objects)
         if icon then
             ib_icon.image = icon
         else
-            ib_icon:set_margins(0)
+            -- TODO
+            -- Ошибка, если иконка отсуствует
+            -- то, исчезает с тасклиста апп
+            -- ib_icon:set_margins(0)
+            ib_icon.image = resources.path .. "/error.png"
         end
 
         local res = wibox.widget {

@@ -1,11 +1,61 @@
 local awful   = require("awful")
 local wibox   = require("wibox")
 local dpi     = require("beautiful").xresources.apply_dpi
-local key     = require("event").key
-local mouse   = require("event").mouse
-local notifications = require("notifications")
+local key     = capi.wmapi.event.key
+local mouse   = capi.wmapi.event.mouse
 
 local taglist = {}
+
+function create_callback(self, c3, index, objects)
+    local old_cursor, old_wibox
+
+    --mouse::enter
+    --mouse::leave
+    --mouse::press
+    --mouse::release
+    --mouse::move
+
+    self:connect_signal(
+            "mouse::enter",
+            function()
+                local w = _G.mouse.current_wibox
+                if w then
+                    old_cursor, old_wibox = w.cursor, w
+                    w.cursor              = "hand1"
+                else
+                    self.bg = "#ffffff11"
+                end
+            end
+    )
+
+    -- TODO
+    -- ошибка принаведении курсором на тег
+    self:connect_signal(
+            "mouse::leave",
+            function()
+                if old_wibox then
+                    old_wibox.cursor = old_cursor
+                    old_wibox        = nil
+                else
+                    self.bg = "#ffffff00"
+                end
+            end
+    )
+
+    --self:connect_signal(
+    --        "button::press",
+    --        function()
+    --            self.bg = "#ffffff22"
+    --        end
+    --)
+
+    --self:connect_signal(
+    --        "button::release",
+    --        function()
+    --            self.bg = "#ffffff11"
+    --        end
+    --)
+end
 
 function update_callback(w, buttons, label, data, objects)
     w:reset()
@@ -74,6 +124,7 @@ function buttons()
                              c:view_only()
                          end
             ),
+
             awful.button({ key.mod }, mouse.button_click_left,
                          function(c)
                              if capi.client.focus then
@@ -113,46 +164,7 @@ function widget_template()
         id              = 'background_role',
         widget          = wibox.container.background,
 
-        create_callback = function(self, c3, index, objects)
-            local old_cursor, old_wibox
-
-            self:connect_signal(
-                    "mouse::enter",
-                    function()
-                        self.bg = "#ffffff11"
-                        local w = _G.mouse.current_wibox
-                        if w then
-                            old_cursor, old_wibox = w.cursor, w
-                            w.cursor              = "hand1"
-                        end
-                    end
-            )
-
-            self:connect_signal(
-                    "mouse::leave",
-                    function()
-                        self.bg = "#ffffff00"
-                        if old_wibox then
-                            old_wibox.cursor = old_cursor
-                            old_wibox        = nil
-                        end
-                    end
-            )
-
-            self:connect_signal(
-                    "button::press",
-                    function()
-                        self.bg = "#ffffff22"
-                    end
-            )
-
-            self:connect_signal(
-                    "button::release",
-                    function()
-                        self.bg = "#ffffff11"
-                    end
-            )
-        end,
+        create_callback = create_callback
     }
 end
 

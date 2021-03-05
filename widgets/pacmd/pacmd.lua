@@ -1,46 +1,40 @@
 local beautiful = require("beautiful")
+local awful     = require("awful")
+local gears     = require("gears")
 local wibox     = require("wibox")
 local watch     = require("awful.widget.watch")
 
 local pacmd     = {}
 
-function pacmd:init(args)
-    local args          = args or {}
+function pacmd:init()
+    local pacmd_widget = wibox.widget({
+                                          checked  = false,
+                                          color    = "#ffffff",
+                                          paddings = 2,
+                                          shape    = gears.shape.circle,
+                                          widget   = wibox.widget.checkbox
+                                      })
 
-    local width         = args.width or 50
-    local step_width    = args.step_width or 2
-    local step_spacing  = args.step_spacing or 1
-    local color         = args.color or beautiful.fg_normal
+    local text_widget  = wibox.widget({
+                                          font   = beautiful.font,
 
-    local pacmd_widget  = wibox.widget({
-                                           max_value        = 100,
-                                           background_color = "#00000000",
-                                           forced_width     = width,
-                                           step_width       = step_width,
-                                           step_spacing     = step_spacing,
-                                           widget           = wibox.widget.graph,
-                                           color            = "linear:0,0:0,20:0,#FF0000:0.3,#FFFF00:0.6," .. color
-                                       })
+                                          widget = wibox.widget.textbox,
+                                          markup = "AUX",
 
-    local text_widget   = wibox.widget({
-                                           font   = beautiful.font,
-
-                                           widget = wibox.widget.textbox,
-                                           markup = "ram",
-
-                                           align  = "left",
-                                           valign = "center",
-
-                                           widget = wibox.widget.textbox,
-                                       })
-
-    local memory_widget = wibox.container.margin(wibox.container.mirror(pacmd_widget, { horizontal = true }), 2, 2, 2, 2)
+                                          align  = "left",
+                                          valign = "center",
+                                      })
 
     watch([[bash -c "pacmd list-modules | grep latency_msec=5"]], 1,
           function(widget, stdout)
-              capi.log:message(stdout)
+              --capi.log:message(stdout)
 
-              --local _mem = { buf = {}, swp = {} }
+              if capi.wmapi:isempty(stdout) then
+                  --awful.spawn("pacmd load-module module-loopback latency_msec=5", false)
+                  widget.checked = false
+              else
+                  widget.checked = true
+              end
 
               --pacmd unload-module module-loopback
 
@@ -54,13 +48,15 @@ function pacmd:init(args)
           pacmd_widget
     )
 
-    local memory_text = wibox.container.margin(wibox.container.mirror(text_widget, { horizontal = false }), 2, 2, 2, 2)
+    local margin_widget = wibox.container.margin(wibox.container.mirror(pacmd_widget, { horizontal = true }), 2, 2, 2, 2)
 
-    local widget      = wibox.widget({
-                                         memory_text,
-                                         memory_widget,
-                                         layout = wibox.layout.align.horizontal
-                                     })
+    local margin_text   = wibox.container.margin(wibox.container.mirror(text_widget, { horizontal = false }), 2, 2, 2, 2)
+
+    local widget        = wibox.widget({
+                                           margin_text,
+                                           margin_widget,
+                                           layout = wibox.layout.align.horizontal
+                                       })
 
     return widget
 end

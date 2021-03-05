@@ -1,23 +1,13 @@
 local wibox              = require("wibox")
 local awful              = require("awful")
 local gears              = require("gears")
-local beautiful          = require("beautiful")
-local dpi                = beautiful.xresources.apply_dpi
 
-local offsetx            = dpi(56)
-local offsety            = dpi(300)
-local screen             = awful.screen.focused()
+local resources          = require("resources")
 
 local amixer_volume      = "amixer -D pulse sget Master | grep 'Left:' | awk -F '[][]' '{print $2}' | sed 's/[^0-9]//g'"
 local amixer_active      = "amixer -D pulse sget Master | grep 'Left:' | awk -F '[][]' '{print $4}'"
 
 local volume             = {}
-
-local icon               = {
-    on  = gears.filesystem.get_configuration_dir() .. "/icons/volume/volume_on.png",
-    off = gears.filesystem.get_configuration_dir() .. "/icons/volume/volume_off.png"
-}
-
 local volume_adjust      = {}
 
 local w_volume_bar       = wibox.widget {
@@ -30,7 +20,7 @@ local w_volume_bar       = wibox.widget {
 }
 
 local w_volume_icon      = wibox.widget {
-    image  = icon.on,
+    image  = resources.widgets.volume.on,
     widget = wibox.widget.imagebox
 }
 
@@ -42,35 +32,30 @@ local hide_volume_adjust = gears.timer {
     end
 }
 
-local function on_volume()
-    awful.spawn.easy_async_with_shell(
-            amixer_volume,
-            function(stdout)
-                w_volume_bar.value = tonumber(stdout)
-            end,
-            false
-    )
-end
-
-local function on_images()
+function volume:on_images()
     awful.spawn.easy_async_with_shell(
             amixer_active,
             function(stdout)
                 if string.sub(stdout, 0, 2) == "on" then
-                    w_volume_icon:set_image(icon.on)
+                    w_volume_icon:set_image(resources.widgets.volume.on)
                 elseif string.sub(stdout, 0, 3) == "off" then
-                    w_volume_icon:set_image(icon.off)
+                    w_volume_icon:set_image(resources.widgets.volume.off)
                 end
             end,
             false
     )
 end
 
-capi.wmapi:update(0.1,
-                  function()
-                      on_volume()
-                      on_images()
-                  end)
+function volume:on_volume()
+    awful.spawn.easy_async_with_shell(
+            amixer_volume,
+            function(stdout)
+                w_volume_bar.value = tonumber(stdout)
+                volume:on_images()
+            end,
+            false
+    )
+end
 
 capi.awesome.connect_signal("volume_change",
                             function()
@@ -81,39 +66,24 @@ capi.awesome.connect_signal("volume_change",
                                     hide_volume_adjust:start()
                                     hide_volume_adjust:again()
                                 end
+
+                                volume:on_volume()
                             end
 )
 
---awesome.connect_signal("volume_change_raise",
---                       function()
---                           awful.spawn("amixer -D pulse sset Master 5%+", false)
---                           on_amixer()
---                       end
---)
+function volume:init(args)
+    local args    = args or {}
 
---awesome.connect_signal("volume_change_lower",
---                       function()
---                           awful.spawn("amixer -D pulse sset Master 5%-", false)
---                           on_amixer()
---                       end
---)
-
---awesome.connect_signal("volume_change_mute",
---                       function()
---                           awful.spawn("amixer -D pulse set Master 1+ toggle", false)
---                           on_amixer()
---                       end
---)
-
-function volume:init(s)
-    local id      = capi.wmapi:display_index(s)
+    local offsetx = 48
+    local offsety = 300
 
     volume_adjust = wibox({
-                              screen  = s,
-                              x       = id * screen.geometry.width - offsetx,
-                              y       = (screen.geometry.height / 2) - (offsety / 2),
-                              width   = dpi(48),
+                              x       = capi.primary * capi.wmapi:screenWidth(capi.primary) - offsetx,
+                              y       = capi.wmapi:screenHeight() / 2 - offsety / 2,
+
+                              width   = offsetx,
                               height  = offsety,
+
                               shape   = gears.shape.rounded_rect,
                               visible = false,
                               ontop   = true
@@ -123,19 +93,17 @@ function volume:init(s)
         layout = wibox.layout.align.vertical,
         {
             wibox.container.margin(
-                    w_volume_bar, dpi(14), dpi(20), dpi(20), dpi(20)
+                    w_volume_bar, 14, 20, 20, 20
             ),
-            forced_height = offsety * 0.75,
+            forced_height = 300 * 0.75,
             direction     = "east",
             layout        = wibox.container.rotate,
         },
         wibox.container.margin(
                 w_volume_icon,
-                dpi(7), dpi(7), dpi(14), dpi(14)
+                7, 7, 14, 14
         )
     }
-
-    local volume_widget = wibox({})
 
     return w_volume_icon
 end

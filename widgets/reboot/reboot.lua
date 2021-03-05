@@ -1,17 +1,16 @@
-local awful         = require("awful")
-local wibox         = require("wibox")
-local gears         = require("gears")
-local dpi           = require("beautiful").xresources.apply_dpi
+local awful     = require("awful")
+local wibox     = require("wibox")
+local gears     = require("gears")
+local dpi       = require("beautiful").xresources.apply_dpi
+local resources = require("resources")
 
-local PATH_TO_ICONS = os.getenv("HOME") .. "/.config/awesome/icons/"
-
-local restart = {}
+local restart   = {}
 
 function restart:init()
-    local rebootWidget        = wibox.widget {
+    local rebootWidget = wibox.widget {
         {
             id     = "icon",
-            image  = PATH_TO_ICONS .. "restart-alert.svg",
+            image  = resources.path .. "/restart-alert.svg",
             widget = wibox.widget.imagebox,
             resize = true
         },

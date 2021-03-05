@@ -37,7 +37,7 @@ naughty.config.spacing               = 7
 
 naughty.config.notify_callback       = nil
 
-naughty.config.defaults.screen       = capi.primary
+naughty.config.defaults.screen       = capi.wmapi:display(capi.primary)
 
 naughty.config.presets.normal        = {
     fg            = beautiful.fg_normal,

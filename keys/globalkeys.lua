@@ -1,11 +1,11 @@
 local awful     = require("awful")
 local gears     = require("gears")
-local key       = require("event").key
+local key       = capi.wmapi.event.key
 local programms = require("programms")
 local hotkeys   = require("keys.hotkeys")
 --local gmath     = require("gmath")
 
-local switcher  = require("widgets.switcher")
+--local switcher  = require("widgets.switcher")
 
 --switcher.settings.preview_box                        = true -- display preview-box
 --switcher.settings.preview_box_bg                     = "#ddddddaa" -- background color
@@ -48,6 +48,23 @@ local fun       = require("functions")
 --end
 
 local global    = gears.table.join(
+--[[ AWESOME ]]--
+        awful.key({ key.shift, key.mod }, key.r,
+                  function()
+                      fun:on_restart()
+                  end, hotkeys.awesome.restart),
+
+        awful.key({ key.shift, key.mod }, key.q,
+                  function()
+                      fun:on_quit()
+                  end, hotkeys.awesome.quit),
+
+        awful.key({ key.mod }, key.s,
+                  function()
+                      fun:on_show_help()
+                  end, hotkeys.awesome.help),
+
+
 --awful.key({ key.alt_L, }, key.tab,
 --          function()
 --switcher.switch(1, key.mod, "Alt_L", "Shift", "Tab")
@@ -66,22 +83,22 @@ local global    = gears.table.join(
 --end
 --end),
 
-        awful.key({ key.win, "Mod1" }, "Right",
-                  function()
-                      awful.tag.incmwfact(0.01)
-                  end),
-        awful.key({ key.win, "Mod1" }, "Left",
-                  function()
-                      awful.tag.incmwfact(-0.01)
-                  end),
-        awful.key({ key.win, "Mod1" }, "Down",
-                  function()
-                      awful.client.incwfact(0.01)
-                  end),
-        awful.key({ key.win, "Mod1" }, "Up",
-                  function()
-                      awful.client.incwfact(-0.01)
-                  end),
+--awful.key({ key.win, key.alt_L }, "Right",
+--          function()
+--              awful.tag.incmwfact(0.01)
+--          end),
+--awful.key({ key.win, key.alt_L }, "Left",
+--          function()
+--              awful.tag.incmwfact(-0.01)
+--          end),
+--awful.key({ key.win, key.alt_L }, "Down",
+--          function()
+--              awful.client.incwfact(0.01)
+--          end),
+--awful.key({ key.win, key.alt_L }, "Up",
+--          function()
+--              awful.client.incwfact(-0.01)
+--          end),
 
 -- Brightness
         awful.key({}, key.brightness.XF86MonBrightnessUp,
@@ -105,6 +122,7 @@ local global    = gears.table.join(
                   end,
                   { description = "volume up", group = "hotkeys" }
         ),
+
         awful.key({}, key.audio.XF86AudioLowerVolume,
                   function()
                       awful.spawn("amixer -D pulse sset Master 5%-", false)
@@ -112,6 +130,7 @@ local global    = gears.table.join(
                   end,
                   { description = "volume down", group = "hotkeys" }
         ),
+
         awful.key({}, key.audio.XF86AudioMute,
                   function()
                       awful.spawn("amixer -D pulse set Master 1+ toggle", false)
@@ -119,18 +138,21 @@ local global    = gears.table.join(
                   end,
                   { description = "toggle mute", group = "hotkeys" }
         ),
+
         awful.key({}, key.audio.XF86AudioNext,
                   function()
                       awful.spawn("playerctl next", false)
                   end,
                   { description = "next music", group = "hotkeys" }
         ),
+
         awful.key({}, key.audio.XF86AudioPrev,
                   function()
                       awful.spawn("playerctl prev", false)
                   end,
                   { description = "previous music", group = "hotkeys" }
         ),
+
         awful.key({}, key.audio.XF86AudioPlay,
                   function()
                       awful.spawn("playerctl play-pause", false)
@@ -138,23 +160,6 @@ local global    = gears.table.join(
                   end,
                   { description = "play/pause music", group = "hotkeys" }
         ),
-
-
---[[ AWESOME ]]--
-        awful.key({ key.shift, key.mod }, key.r,
-                  function()
-                      fun:on_restart()
-                  end, hotkeys.awesome.restart),
-
-        awful.key({ key.shift, key.mod }, key.q,
-                  function()
-                      fun:on_quit()
-                  end, hotkeys.awesome.quit),
-
-        awful.key({ key.mod }, key.s,
-                  function()
-                      fun:on_show_help()
-                  end, hotkeys.awesome.help),
 
 --[[ COMMAND ]]--
         awful.key({ key.ctrl, key.alt_L }, key.delete,
@@ -221,19 +226,21 @@ local global    = gears.table.join(
 -- Device button
         awful.key({ }, key.system.poweroff,
                   function()
+                      -- TODO
+                      -- добавить сохранение данных
+                      -- когда выключает ПК
+                      -- (отловить событие poweroff)
+                      -- (тк, можем и через команду выключить)
                   end),
 
 
 -- Brightness
--- увеличивает яркость
--- awful.key({ }, keyboard.fn, keyboard.F12,
         awful.key({ key.win }, key.up,
                   function()
                       fun:on_run("sudo brightnessctl s 10%+")
                   end,
                   { description = "+10%", group = "hotkeys" }),
--- уменьшает яркость
--- awful.key({ }, keyboard.fn, keyboard.F11,
+
         awful.key({ key.win }, key.down,
                   function()
                       fun:on_run("sudo brightnessctl s 10%-")

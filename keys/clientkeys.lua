@@ -1,6 +1,6 @@
 local gears      = require("gears")
 local awful      = require("awful")
-local key        = require("event").key
+local key        = capi.wmapi.event.key
 local hotkeys    = require("keys.hotkeys")
 
 local fun        = require("functions")

@@ -17,7 +17,7 @@ theme.position        = {
     center = "center",
     top    = "top",
     left   = "left",
-    button = "bottom",
+    botton = "bottom",
     right  = "right",
 }
 
@@ -25,6 +25,7 @@ require("theme.titlebar")(theme)
 require("theme.taglist")(theme)
 require("theme.tasklist")(theme)
 require("theme.menu")(theme)
+require("theme.wibar")(theme)
 
 
 -- ### Background ### --
@@ -54,7 +55,7 @@ theme.gap_single_client    = true
 
 theme.border_width         = 1
 theme.border_normal        = theme.bg_normal
-theme.border_focus         = "#ff8a65"
+theme.border_focusw         = "#ff8a65"
 theme.border_marked        = theme.fg_urgent
 
 return theme

@@ -26,26 +26,22 @@ function mywallpaper:set_animated(surf, s)
     end
 end
 
-local list_wallpaper = {
-    { "anime", "png" },
-    { "spider-verse-triple", "png" },
-    { "wp2503419", "png" },
-    { "retrowave", "jpg" },
-    { "no_game_no_life", "png" },
-    { "pixel", "jpg" }
-}
+function mywallpaper:init(s)
+    local indexWallpaper = 3
 
-function mywallpaper:create(s)
-
-    local wallpaper = list_wallpaper[4]
-
-    local file      = beautiful.wallpapers .. "/" .. wallpaper[1] .. "/" .. capi.wmapi:display_index(s) .. "." .. wallpaper[2]
+    local file           = beautiful.wallpapers .. "/" .. indexWallpaper .. "/" .. capi.wmapi:display_index(s) .. ".png"
 
     if type(file) == "function" then
         file = file(s)
     end
 
     gears.wallpaper.maximized(file, s, true)
+
+    return mywallpaper
 end
 
-return mywallpaper
+--return mywallpaper
+
+return setmetatable(mywallpaper, {
+    __call = mywallpaper.init
+})

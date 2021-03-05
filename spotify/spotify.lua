@@ -4,7 +4,7 @@ local wibox     = require("wibox")
 local myspotify = {}
 
 function myspotify:create(s)
-    if wmapi:display_primary(s) then
+    if capi.wmapi:display_primary(s) then
         local spotify = awful.wibar({
                                         ontop        = false,
                                         stretch      = true,

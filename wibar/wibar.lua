@@ -19,14 +19,29 @@ function mywibar:w_middle(s)
     }
 end
 
+--local mymainmenu = awful.menu({ items = {
+--    { "open terminal", "terminal" }
+--}
+--                              })
+--
+--local mylauncher = capi.wmapi:launcher({
+--                                           image = resources.path .. "/lock.png",
+--                                           menu  = mymainmenu
+--                                       })
+
 function mywibar:w_right(s)
     if capi.wmapi:display_primary(s) then
         return {
+            --mylauncher,
             widgets.systray(s),
             widgets.keyboard(),
             widgets.volume(s),
+            --widgets.pad(),
+            --widgets.pacmd(),
             widgets.cpu(),
-            widgets.pad(),
+            --widgets.pad(),
+            --widgets.sensors(),
+            --widgets.pad(),
             widgets.memory(),
             widgets.clock(),
             widgets.reboot(),
@@ -46,13 +61,13 @@ function mywibar:create(s)
     local wibar = awful.wibar({
                                   ontop        = false,
                                   stretch      = true,
-                                  position     = beautiful.position.top,
+                                  position     = beautiful.wr_position,
                                   border_width = 1,
                                   border_color = beautiful.bg_dark,
                                   --bg           = "#00000099",
                                   fg           = beautiful.fg_normal,
                                   visible      = true,
-                                  height       = 27,
+                                  height       = beautiful.wr_height or 27,
                                   screen       = s,
                               })
 

@@ -1,10 +1,3 @@
----------------------------------------------------------------------------
--- @author Aleksey Fedotov &lt;lexa@cfotr.com&gt;
--- @copyright 2015 Aleksey Fedotov
--- @classmod awful.widget.keyboardlayout
----------------------------------------------------------------------------
-
-local capi                            = { awesome = awesome }
 local setmetatable                    = setmetatable
 local textbox                         = require("wibox.widget.textbox")
 local button                          = require("awful.button")
@@ -13,12 +6,8 @@ local widget_base                     = require("wibox.widget.base")
 local gdebug                          = require("gears.debug")
 local wibox                           = require("wibox")
 
---- Keyboard Layout widget.
--- awful.widget.keyboardlayout
 local keyboardlayout                  = { mt = {} }
 
--- As to the country-code-like symbols below, refer to the names of XKB's
--- data files in /.../xkb/symbols/*.
 keyboardlayout.xkeyboard_country_code = {
     ["ad"]    = true, -- Andorra
     ["af"]    = true, -- Afganistan
@@ -310,5 +299,3 @@ function keyboardlayout.mt:__call(...)
 end
 
 return setmetatable(keyboardlayout, keyboardlayout.mt)
-
--- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

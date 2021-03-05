@@ -3,12 +3,11 @@ local resources = require("resources")
 local titlebar  = {}
 
 function titlebar:init(theme)
-    theme.titlebar_enabled                                = true
+    theme.titlebars_enabled                               = true
 
-    theme.titlebar_size                                   = 25
-    theme.titlebar_title_enabled                          = true
-    theme.titlebar_position                               = "top"
-    theme.titlebar_imitate_borders                        = true
+    theme.titlebars_size                                   = 25
+    theme.titlebars_position                               = "top"
+    theme.titlebars_imitate_borders                        = true
 
     --[[ MENU ]]--
     theme.titlebar_menu_button_focus                      = resources.titlebar.menu.button_focus

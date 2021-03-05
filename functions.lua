@@ -7,7 +7,55 @@ function functions:on_backproc()
     awful.screen.focused().quake:toggle()
 end
 
+local client_iterate = require("awful.client").iterate
+local gtable         = require("gears.table")
+
+function clients(filter)
+    local item_args = {}
+
+    local cls_t     = {}
+    for c in client_iterate(filter or
+                                    function()
+                                        return true
+                                    end)
+    do
+        if not c.valid then
+            return
+        end
+
+        cls_t[#cls_t + 1] = {
+            name      = c.name,
+            tag       = c.tag,
+            tags      = c.tags,
+            instance  = c.instance,
+            class     = c.class,
+            screen    = c.screen,
+            icon      = c.icon,
+            exec_once = c.exec_once,
+        }
+
+        gtable.merge(cls_t[#cls_t], item_args)
+    end
+
+    return cls_t
+end
+
 function functions:on_restart()
+    local list = clients()
+
+    -- TODO
+    for i, item in ipairs(list) do
+        --capi.log:message(item.name,
+        --                 tostring(item.tag),
+        --                 tostring(item.tags),
+        --                 tostring(item.instance),
+        --                 tostring(item.class),
+        --                 tostring(item.screen),
+        --                 tostring(item.exec_once),
+        --                 tostring(item.icon)
+        --)
+    end
+
     capi.awesome.restart()
 end
 

@@ -1,6 +1,4 @@
 local widgets = {
-    --brightness = require("widgets.brightness"),
-
     systray  = require("widgets.systray"),
 
     keyboard = require("widgets.keyboard"),
@@ -21,7 +19,9 @@ local widgets = {
 
     pacmd    = require("widgets.pacmd"),
 
-    spotify  = require("widgets.spotify"),
+    sensors    = require("widgets.sensors"),
+
+    --spotify  = require("widgets.spotify"),
 
     pad      = require("widgets.pad")
 

@@ -7,34 +7,32 @@ resources.menu_submenu_icon = resources.path .. "/submenu.png"
 resources.warning           = resources.path .. "/warning.png"
 
 resources.taglist           = {
-    resources.path .. "/taglist/" .. "firefox.png",
-    resources.path .. "/taglist/" .. "folder.png",
-    resources.path .. "/taglist/" .. "mail.png",
-    resources.path .. "/taglist/" .. "messager.png",
-    resources.path .. "/taglist/" .. "notepad.png",
-    resources.path .. "/taglist/" .. "player.png",
-    resources.path .. "/taglist/" .. "spotify.png",
-    resources.path .. "/taglist/" .. "star.png",
-    resources.path .. "/taglist/" .. "terminal.png",
-    resources.path .. "/taglist/" .. "videogame.png"
+    resources.path .. "/taglist/firefox.png",
+    resources.path .. "/taglist/folder.png",
+    resources.path .. "/taglist/mail.png",
+    resources.path .. "/taglist/messager.png",
+    resources.path .. "/taglist/notepad.png",
+    resources.path .. "/taglist/player.png",
+    resources.path .. "/taglist/spotify.png",
+    resources.path .. "/taglist/star.png",
+    resources.path .. "/taglist/terminal.png",
+    resources.path .. "/taglist/videogame.png"
 }
 
 resources.layout            = {
-    -- Layout icons
-    --resources.layout                                          = {}
-    --resources.layout.tile                                     = resources.path .. "/layouts/tile.png"
-    --resources.layout.tileleft                                 = resources.path .. "/layouts/tileleft.png"
-    --resources.layout.tilebottom                               = resources.path .. "/layouts/tilebottom.png"
-    --resources.layout.tiletop                                  = resources.path .. "/layouts/tiletop.png"
-    --resources.layout.fairv                                    = resources.path .. "/layouts/fairv.png"
-    --resources.layout.fairh                                    = resources.path .. "/layouts/fairh.png"
-    --resources.layout.spiral                                   = resources.path .. "/layouts/spiral.png"
-    --resources.layout.centerwork                               = resources.path .. "/layouts/centerwork.png"
-    --resources.layout.dwindle                                  = resources.path .. "/layouts/dwindle.png"
-    --resources.layout.max                                      = resources.path .. "/layouts/max.png"
-    --resources.layout.fullscreen                               = resources.path .. "/layouts/fullscreen.png"
-    --resources.layout.magnifier                                = resources.path .. "/layouts/magnifier.png"
-    --resources.layout.floating                                 = resources.path .. "/layouts/floating.png"
+    tile       = resources.path .. "/layouts/tile.png",
+    tileleft   = resources.path .. "/layouts/tileleft.png",
+    tilebottom = resources.path .. "/layouts/tilebottom.png",
+    tiletop    = resources.path .. "/layouts/tiletop.png",
+    fairv      = resources.path .. "/layouts/fairv.png",
+    fairh      = resources.path .. "/layouts/fairh.png",
+    spiral     = resources.path .. "/layouts/spiral.png",
+    centerwork = resources.path .. "/layouts/centerwork.png",
+    dwindle    = resources.path .. "/layouts/dwindle.png",
+    max        = resources.path .. "/layouts/max.png",
+    fullscreen = resources.path .. "/layouts/fullscreen.png",
+    magnifier  = resources.path .. "/layouts/magnifier.png",
+    floating   = resources.path .. "/layouts/floating.png",
 }
 
 -- Widget icons
@@ -49,15 +47,20 @@ resources.widgets           = {
         veryHigh     = resources.path .. "/widgets/coretemp/Very High.svg",
     },
 
-    calendar = resources.path .. "/widgets/calendar/calendar.svg",
+    calendar = resources.path .. "/calendar/calendar.svg",
 
-    cpu      = resources.path .. "/widgets/cpu/cpu.svg",
+    cpu      = resources.path .. "/cpu/cpu.svg",
 
-    user     = resources.path .. "/widgets/user/user.svg",
+    user     = resources.path .. "/user/user.svg",
 
-    power    = resources.path .. "/widgets/power/power-off.svg",
+    power    = resources.path .. "/power/power-off.svg",
 
-    search   = resources.path .. "/widgets/search/search.svg",
+    search   = resources.path .. "/search/search.svg",
+
+    volume   = {
+        on  = resources.path .. "/volume/volume_on.png",
+        off = resources.path .. "/volume/volume_off.png"
+    },
 
     --resources.widget.ac                                       = resources.path .. "/widget/ac.png"
     --resources.widget.battery                                  = resources.path .. "/widget/battery.png"

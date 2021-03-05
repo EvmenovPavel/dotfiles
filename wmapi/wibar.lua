@@ -1,7 +1,3 @@
-local setmetatable = setmetatable
-local tostring     = tostring
-local ipairs       = ipairs
-local error        = error
 local wibox        = require("wibox")
 local beautiful    = require("beautiful")
 local gdebug       = require("gears.debug")
@@ -119,10 +115,6 @@ function mywibar:init(args)
     local position       = args.position or "top"
     local has_to_stretch = true
     local screen         = get_screen(args.screen or 1)
-
-    local test           = args.test or false
-
-    capi.log:test("asdasd")
 
     args.type = args.type or "dock"
 
