@@ -58,10 +58,3 @@ capi.client.connect_signal("manage", function(c)
         awful.placement.no_offscreen(c)
     end
 end)
-
-capi.client.connect_signal("mouse::enter",
-                           function(c)
-                               c:emit_signal("request::activate", "mouse_enter", { raise = false })
-                               --c:emit_signal('request::activate', "", { raise = not capi.awesome.startup })
-                           end
-)
