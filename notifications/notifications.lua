@@ -158,6 +158,17 @@ do
     )
 end
 
+
+-- буфер обмена показывает
+--local capi1     = { selection = selection }
+--local sel       = capi1.selection()
+--
+--if sel then
+--    --naughty.notify({ text = tostring(sel) })
+--end
+
+
+
 function naughty:show(args)
     local args = args or {}
 

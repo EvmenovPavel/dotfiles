@@ -8,6 +8,7 @@ function autostart.list()
         "nm-applet",
         "blueman-applet",
         "flameshot",
+        "copyq"
         --"sudo solaar" -- only sudo
         --"megasync",
         --"indicator-stickynotes"

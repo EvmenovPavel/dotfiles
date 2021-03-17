@@ -281,6 +281,15 @@ function wmapi:update(timeout, callback)
     return nil
 end
 
+function wmapi:mouseCoords()
+    local mouse = capi.mouse.coords()
+
+    return {
+        x = mouse.x,
+        y = mouse.y
+    }
+end
+
 function wmapi:screenHeight(index)
     local index = index or 1
     local s     = capi.screen[index]
@@ -296,17 +305,17 @@ function wmapi:screenWidth(index)
 end
 
 function wmapi:container(widget)
-    local container = wibox.widget {
+    local widget = wibox.widget {
         widget,
         widget = wibox.container.background
     }
     local old_cursor, old_wibox
 
-    container:connect_signal(
+    widget:connect_signal(
             "mouse::enter",
             function()
-                container.bg = "#ffffff11"
-                local w      = _G.mouse.current_wibox
+                widget.bg = "#ffffff11"
+                local w   = _G.mouse.current_wibox
                 if w then
                     old_cursor, old_wibox = w.cursor, w
                     w.cursor              = "hand1"
@@ -314,10 +323,10 @@ function wmapi:container(widget)
             end
     )
 
-    container:connect_signal(
+    widget:connect_signal(
             "mouse::leave",
             function()
-                container.bg = "#ffffff00"
+                widget.bg = "#ffffff00"
                 if old_wibox then
                     old_wibox.cursor = old_cursor
                     old_wibox        = nil
@@ -325,21 +334,46 @@ function wmapi:container(widget)
             end
     )
 
-    container:connect_signal(
+    widget:connect_signal(
             "button::press",
             function()
-                container.bg = "#ffffff22"
+                widget.bg = "#ffffff22"
             end
     )
 
-    container:connect_signal(
+    widget:connect_signal(
             "button::release",
             function()
-                container.bg = "#ffffff11"
+                widget.bg = "#ffffff11"
             end
     )
 
-    return container
+    return widget
+end
+
+function wmapi:client_info(c)
+    if c then
+        capi.log:message(c.name,
+                         "tag:       " .. tostring(c.tag),
+                         "tags:      " .. tostring(c.tags),
+                         "instance:  " .. tostring(c.instance),
+                         "class:     " .. tostring(c.class),
+                         "screen:    " .. tostring(c.screen),
+                         "exec_once: " .. tostring(c.exec_once),
+                         "icon:      " .. tostring(c.icon),
+                         "width:     " .. tostring(c.width),
+                         "height:    " .. tostring(c.height)
+        )
+    end
+end
+
+function wmapi:list_client()
+    local list = clients()
+
+    -- TODO
+    for i, item in ipairs(list) do
+        self:client_info(item)
+    end
 end
 
 return wmapi

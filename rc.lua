@@ -1,6 +1,4 @@
 require("capi")
-require("awful.autofocus")
---require("autofocus")
 
 local beautiful = require("beautiful")
 local theme     = require("theme")
@@ -58,3 +56,5 @@ capi.client.connect_signal("manage", function(c)
         awful.placement.no_offscreen(c)
     end
 end)
+
+require("awful.autofocus")

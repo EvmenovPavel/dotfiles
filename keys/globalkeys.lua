@@ -100,6 +100,24 @@ local global    = gears.table.join(
 --              awful.client.incwfact(-0.01)
 --          end),
 
+
+        awful.key({key.win, key.shift }, key.v,
+                  function()
+                      capi.undermouse = true
+
+                      awful.util.spawn("copyq show")
+                  end,
+                  { description = "+10%", group = "hotkeys" }
+        ),
+
+-- CopyQ
+--        awful.key({ key.win, key.shift }, key.v,
+--                  function()
+--                      awful.spawn("copyq show", false)
+--                  end,
+--                  { description = "+10%", group = "hotkeys" }
+--        ),
+
 -- Brightness
         awful.key({}, key.brightness.XF86MonBrightnessUp,
                   function()

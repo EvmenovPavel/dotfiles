@@ -15,11 +15,11 @@ local widgets = {
 
     taglist  = require("widgets.taglist"),
 
-    reboot   = require("widgets.reboot"),
+    reboot   = require("widgets.restart"),
 
     pacmd    = require("widgets.pacmd"),
 
-    sensors    = require("widgets.sensors"),
+    sensors  = require("widgets.sensors"),
 
     --spotify  = require("widgets.spotify"),
 

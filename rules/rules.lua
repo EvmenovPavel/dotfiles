@@ -1,78 +1,42 @@
-local awful            = require("awful")
-local beautiful        = require("beautiful")
+local awful     = require("awful")
+local beautiful = require("beautiful")
 
-local rules            = {}
-
--- Firefox
-local PictureInPicture = {
-    rule       = {
-        class = "Firefox",
-    },
-    except     = {
-        instance = "Navigator"
-    },
-    properties = {
-        titlebars_enabled = true,
-        floating          = true,
-
-        width             = 470,
-        height            = 290,
-    }
-}
-
-local RuleMaximized    = {
-    rule_any   = {
-        class = {
-            "kitty",
-            "TeamViewer"
-        },
-    },
-    properties = {
-        maximized    = true,
-        border_width = beautiful.border_width,
-        callback     = function(c)
-            c.border_width = 0
-            --awful.client.movetoscreen(c, client.focus.screen)
-        end
-    }
-}
+local rules     = {}
 
 function rules:init(clientkeys, buttonkeys)
-    local list_rules = {
-        {
-            rule_any   = {
-                type = {
-                    "normal",
-                    "dialog"
-                }
-            },
+    return {
+        rule_any   = {
+            type = {
+                "normal",
+                "dialog"
+            }
+        },
+        properties = {
+            titlebars_enabled = beautiful.titlebars_enabled,
+
+            border_width      = beautiful.border_width,
+            border_color      = beautiful.border_normal,
+
+            focus             = awful.client.focus.filter,
+
+            raise             = true,
+
+            keys              = clientkeys,
+            buttons           = buttonkeys,
+
+            screen            = awful.screen.preferred,
+            placement         = awful.placement.no_overlap + awful.placement.no_offscreen,
+
+            callback          = function(c)
+
+                local client = c
+
+                capi.wmapi:client_info(client)
 
 
-            properties = {
-                titlebars_enabled = beautiful.titlebars_enabled,
-
-                border_width      = beautiful.border_width,
-                border_color      = beautiful.border_normal,
-
-                focus             = awful.client.focus.filter,
-
-                raise             = true,
-
-                keys              = clientkeys,
-                buttons           = buttonkeys,
-
-                screen            = awful.screen.preferred,
-                placement         = awful.placement.no_overlap + awful.placement.no_offscreen,
-
-                --placement         = awful.placement.centered +
-                --        awful.placement.no_overlap +
-                --        awful.placement.no_offscreen,
-                --size_hints_honor  = false,
-
-                --callback          = function(c)
-                    --c:deny("autofocus", "mouse_enter")
-                    --awful.client.setslave(c)
-                    --apply_delayed_rule(c)
+                --c:deny("autofocus", "mouse_enter")
+                --awful.client.setslave(c)
+                --apply_delayed_rule(c)
                 --end
 
                 --callback          = function(c)
@@ -123,18 +87,9 @@ function rules:init(clientkeys, buttonkeys)
                 --        c.floating  = false
                 --        --c.maximized = true
                 --    end
-                --end,
-            },
-        },
-
-        -- Firefox
-        PictureInPicture,
-
-        -- Terminals
-        RuleMaximized,
+            end
+        }
     }
-
-    return list_rules
 end
 
 return setmetatable(rules, { __call = function(_, ...)

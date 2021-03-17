@@ -41,21 +41,6 @@ function clients(filter)
 end
 
 function functions:on_restart()
-    local list = clients()
-
-    -- TODO
-    for i, item in ipairs(list) do
-        --capi.log:message(item.name,
-        --                 tostring(item.tag),
-        --                 tostring(item.tags),
-        --                 tostring(item.instance),
-        --                 tostring(item.class),
-        --                 tostring(item.screen),
-        --                 tostring(item.exec_once),
-        --                 tostring(item.icon)
-        --)
-    end
-
     capi.awesome.restart()
 end
 
