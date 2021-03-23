@@ -222,6 +222,14 @@ function wmapi:isempty(s)
     return s == nil or s == ''
 end
 
+function wmapi:signs(str, signs)
+    return str:gsub(signs, '')
+end
+
+function wmapi:sub(stdout, length)
+    return string.sub(stdout, 0, length)
+end
+
 function wmapi:find(cmd, str)
     local cmd = "echo \"" .. cmd .. "\" | sed -rn \"s/.*" .. str .. ":\\s+([^ ]+).*/\\1/p\""
 

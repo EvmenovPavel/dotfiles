@@ -1,29 +1,33 @@
 local widgets = {
-    systray  = require("widgets.systray"),
+    battery   = require("widgets.battery"),
 
-    keyboard = require("widgets.keyboard"),
+    backlight = require("widgets.backlight"),
 
-    cpu      = require("widgets.cpu"),
+    systray   = require("widgets.systray"),
 
-    memory   = require("widgets.memory"),
+    keyboard  = require("widgets.keyboard"),
 
-    clock    = require("widgets.calendar"),
+    cpu       = require("widgets.cpu"),
 
-    volume   = require("widgets.volume"),
+    memory    = require("widgets.memory"),
 
-    tasklist = require("widgets.tasklist"),
+    clock     = require("widgets.calendar"),
 
-    taglist  = require("widgets.taglist"),
+    volume    = require("widgets.volume"),
 
-    reboot   = require("widgets.restart"),
+    tasklist  = require("widgets.tasklist"),
 
-    pacmd    = require("widgets.pacmd"),
+    taglist   = require("widgets.taglist"),
 
-    sensors  = require("widgets.sensors"),
+    reboot    = require("widgets.restart"),
+
+    pacmd     = require("widgets.pacmd"),
+
+    sensors   = require("widgets.sensors"),
 
     --spotify  = require("widgets.spotify"),
 
-    pad      = require("widgets.pad")
+    pad       = require("widgets.pad")
 
     --require("widgets.bluetooth"),
     --require("widgets.wifi"),

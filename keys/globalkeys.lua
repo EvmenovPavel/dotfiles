@@ -103,31 +103,22 @@ local global    = gears.table.join(
 
         awful.key({key.win, key.shift }, key.v,
                   function()
-                      capi.undermouse = true
-
+                      --capi.undermouse = true
                       awful.util.spawn("copyq show")
                   end,
                   { description = "+10%", group = "hotkeys" }
         ),
 
--- CopyQ
---        awful.key({ key.win, key.shift }, key.v,
---                  function()
---                      awful.spawn("copyq show", false)
---                  end,
---                  { description = "+10%", group = "hotkeys" }
---        ),
-
 -- Brightness
         awful.key({}, key.brightness.XF86MonBrightnessUp,
                   function()
-                      awful.spawn("xbacklight -inc 10", false)
+                      awful.spawn("sudo brightness +25", false)
                   end,
                   { description = "+10%", group = "hotkeys" }
         ),
         awful.key({}, key.brightness.XF86MonBrightnessDown,
                   function()
-                      awful.spawn("xbacklight -dec 10", false)
+                      awful.spawn("sudo brightness -25", false)
                   end,
                   { description = "-10%", group = "hotkeys" }
         ),
@@ -166,7 +157,7 @@ local global    = gears.table.join(
 
         awful.key({}, key.audio.XF86AudioPrev,
                   function()
-                      awful.spawn("playerctl prev", false)
+                      awful.spawn("playerctl previous", false)
                   end,
                   { description = "previous music", group = "hotkeys" }
         ),
@@ -249,21 +240,7 @@ local global    = gears.table.join(
                       -- когда выключает ПК
                       -- (отловить событие poweroff)
                       -- (тк, можем и через команду выключить)
-                  end),
-
-
--- Brightness
-        awful.key({ key.win }, key.up,
-                  function()
-                      fun:on_run("sudo brightnessctl s 10%+")
-                  end,
-                  { description = "+10%", group = "hotkeys" }),
-
-        awful.key({ key.win }, key.down,
-                  function()
-                      fun:on_run("sudo brightnessctl s 10%-")
-                  end,
-                  { description = "-10%", group = "hotkeys" })
+                  end)
 )
 
 return global

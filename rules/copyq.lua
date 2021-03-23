@@ -18,8 +18,8 @@ function CopyQ:init()
                 local coords = capi.wmapi:mouseCoords()
 
                 if (coords.y - c.height < 0) then
-                    c.y = 0
                     c.x = coords.x
+                    c.y = 0
                 else
                     c.x = coords.x
                     c.y = coords.y - c.height

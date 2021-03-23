@@ -1,7 +1,7 @@
 -- Global --
 
 capi = {
-    primary    = 2,
+    primary    = 1,
     root       = root,
     screen     = screen,
     tag        = tag,

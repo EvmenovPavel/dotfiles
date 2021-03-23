@@ -29,8 +29,9 @@ end
 function mywallpaper:init(s)
     local indexWallpaper = 3
 
-    local file           = beautiful.wallpapers .. "/" .. indexWallpaper .. "/" .. capi.wmapi:display_index(s) .. ".png"
+    -- local file           = beautiful.wallpapers .. "/" .. indexWallpaper .. "/" .. capi.wmapi:display_index(s) .. ".png"
 
+    local file           = beautiful.wallpapers .. "/wallpaper.png"
     if type(file) == "function" then
         file = file(s)
     end

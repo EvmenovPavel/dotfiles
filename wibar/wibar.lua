@@ -32,7 +32,9 @@ end
 function mywibar:w_right(s)
     if capi.wmapi:display_primary(s) then
         return {
+            widgets.backlight(),
             --mylauncher,
+            widgets.battery(),
             widgets.systray(s),
             widgets.keyboard(),
             widgets.volume(s),
