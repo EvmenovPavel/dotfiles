@@ -18,8 +18,10 @@ event.key.win                              = event.key.mod
 event.key.num_lock                         = "Mod2"
 event.key.enter                            = "Return"
 event.key.fn                               = "xev"
-event.key.alt_L                            = "Mod1"
-event.key.alt_R                            = "Mod1"
+event.key.altL                             = "Mod1"
+event.key.alt_L                            = "Alt_L"
+event.key.altR                             = "Mod1"
+event.key.alt_R                            = "Alt_L"
 event.key.ctrl                             = "Control"
 event.key.space                            = "space"
 event.key.shift                            = "Shift"
@@ -108,7 +110,6 @@ event.key.F10                              = "F10"
 event.key.F11                              = "F11"
 event.key.F12                              = "F12"
 
-
 event.mouse                                = {}
 event.mouse.button_click_left              = 1
 event.mouse.button_click_right             = 3
@@ -135,5 +136,16 @@ event.signals.widget                       = {}
 event.signals.widget.layout_changed        = "widget::layout_changed"
 event.signals.widget.redraw_needed         = "widget::redraw_needed"
 -- "XF86Launch1" ???
+
+event.key.test                             = {}
+event.key.test.XF86RFKill                  = "XF86RFKill"
+event.key.test.XF86Search                  = "XF86Search"
+event.key.test.Super_L                     = "Super_L"
+event.key.test.h                           = "h"
+event.key.test.XF86Favorites               = "XF86Favorites"
+
+--state 0x50, keycode 43 (keysym 0x68, h), same_screen YES,
+--state 0x50, keycode 133 (keysym 0xffeb, Super_L), same_screen YES,
+--state 0x10, keycode 43 (keysym 0x68, h), same_screen YES,
 
 return event

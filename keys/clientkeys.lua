@@ -21,7 +21,7 @@ local clientkeys = gears.table.join(
                       fun:on_minimized(c)
                   end, hotkeys.client.minimized),
 
-        awful.key({ key.alt_L }, key.F4,
+        awful.key({ key.altL }, key.F4,
                   function(c)
                       fun:on_close(c)
                   end, hotkeys.client.kill),

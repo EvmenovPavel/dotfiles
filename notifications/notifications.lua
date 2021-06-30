@@ -2,7 +2,7 @@ local naughty                        = require("naughty")
 local beautiful                      = require("beautiful")
 local gears                          = require("gears")
 
-local icon_notification              = capi.path .. "/notification/plugin-notification.svg"
+local icon_notification              = capi.awesomewm .. "/notification/plugin-notification.svg"
 
 naughty.config.defaults.ontop        = true
 naughty.config.defaults.icon_size    = 32
@@ -24,20 +24,10 @@ end
 
 naughty.config.padding               = 7
 naughty.config.spacing               = 7
---naughty.config.icon_dirs             = {
---    --изменить пусть к иконкам
---    "/usr/share/icons/Tela-dark",
---    "/usr/share/pixmaps/"
---}
---
---naughty.config.icon_formats          = {
---    "png",
---    "svg",
---}
 
 naughty.config.notify_callback       = nil
 
-naughty.config.defaults.screen       = capi.wmapi:display(capi.primary)
+naughty.config.defaults.screen       = capi.wmapi:screen(capi.primary)
 
 naughty.config.presets.normal        = {
     fg            = beautiful.fg_normal,
@@ -129,6 +119,8 @@ if capi.awesome.startup_errors then
                        title  = title,
                        text   = text
                    })
+
+    capi.log:message("title: " .. title, "text: " .. text)
 end
 
 do
@@ -146,30 +138,20 @@ do
                 local title  = "Oops, an error happened!"
                 local text   = tostring(err)
 
-                --notification:append({ presets = preset, title = title, text = text })
-
                 naughty.notify({
                                    preset = preset,
                                    title  = title,
                                    text   = text
                                })
+
+                capi.log:message("title: " .. title, "text: " .. text)
+
                 in_error = false
             end
     )
 end
 
-
--- буфер обмена показывает
---local capi1     = { selection = selection }
---local sel       = capi1.selection()
---
---if sel then
---    --naughty.notify({ text = tostring(sel) })
---end
-
-
-
-function naughty:show(args)
+function naughty:message(args)
     local args = args or {}
 
     if naughty.config.notify_callback then
@@ -188,8 +170,6 @@ function naughty:show(args)
 
     local title         = args.title or preset.title
     local text          = args.text or preset.text
-
-    --notification:append({ presets = preset, title = title, text = text, icon = icon })
 
     --if not notification.panel_notification.visible then
     naughty.notify {

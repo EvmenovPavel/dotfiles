@@ -9,7 +9,7 @@ theme.font            = "SF Pro Text " .. tostring(theme.font_size)
 theme.title_font_size = 20
 theme.title_font      = "SF Pro Display Medium " .. tostring(theme.title_font_size)
 
-theme.wallpapers      = capi.path .. "/wallpapers"
+theme.wallpapers      = capi.awesomewm .. "/wallpapers"
 
 theme.datetime        = "%A %d %B  %H:%M:%S"
 

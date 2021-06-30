@@ -3,25 +3,7 @@ local gears     = require("gears")
 local key       = capi.wmapi.event.key
 local programms = require("programms")
 local hotkeys   = require("keys.hotkeys")
---local gmath     = require("gmath")
-
---local switcher  = require("widgets.switcher")
-
---switcher.settings.preview_box                        = true -- display preview-box
---switcher.settings.preview_box_bg                     = "#ddddddaa" -- background color
---switcher.settings.preview_box_border                 = "#22222200" -- border-color
---switcher.settings.preview_box_fps                    = 30 -- refresh framerate
---switcher.settings.preview_box_delay                  = 150 -- delay in ms
---switcher.settings.preview_box_title_font             = { "sans", "italic", "normal" } -- the font for cairo
---switcher.settings.preview_box_title_font_size_factor = 0.8 -- the font sizing factor
---switcher.settings.preview_box_title_color            = { 0, 0, 0, 1 } -- the font color
---
---switcher.settings.client_opacity                     = false -- opacity for unselected clients
---switcher.settings.client_opacity_value               = 0.5 -- alpha-value for any client
---switcher.settings.client_opacity_value_in_focus      = 0.5 -- alpha-value for the client currently in focus
---switcher.settings.client_opacity_value_selected      = 1 -- alpha-value for the selected client
---
---switcher.settings.cycle_raise_client                 = true -- raise clients on cycle
+local switcher  = require("widgets.switcher")
 
 local fun       = require("functions")
 
@@ -64,13 +46,6 @@ local global    = gears.table.join(
                       fun:on_show_help()
                   end, hotkeys.awesome.help),
 
-
---awful.key({ key.alt_L, }, key.tab,
---          function()
---switcher.switch(1, key.mod, "Alt_L", "Shift", "Tab")
---switcher:switch(1, key.win, key.alt_L, key.shift, key.tab)
---end),
-
 --awful.key({ key.win, key.shift }, key.tab,
 --          function()
 --switcher.switch(-1, "Mod1", "Alt_L", "Shift", "Tab")
@@ -83,25 +58,25 @@ local global    = gears.table.join(
 --end
 --end),
 
---awful.key({ key.win, key.alt_L }, "Right",
+--awful.key({ key.win, key.altL }, "Right",
 --          function()
 --              awful.tag.incmwfact(0.01)
 --          end),
---awful.key({ key.win, key.alt_L }, "Left",
+--awful.key({ key.win, key.altL }, "Left",
 --          function()
 --              awful.tag.incmwfact(-0.01)
 --          end),
---awful.key({ key.win, key.alt_L }, "Down",
+--awful.key({ key.win, key.altL }, "Down",
 --          function()
 --              awful.client.incwfact(0.01)
 --          end),
---awful.key({ key.win, key.alt_L }, "Up",
+--awful.key({ key.win, key.altL }, "Up",
 --          function()
 --              awful.client.incwfact(-0.01)
 --          end),
 
 
-        awful.key({key.win, key.shift }, key.v,
+        awful.key({ key.win, key.shift }, key.v,
                   function()
                       --capi.undermouse = true
                       awful.util.spawn("copyq show")
@@ -114,13 +89,13 @@ local global    = gears.table.join(
                   function()
                       awful.spawn("sudo brightness +25", false)
                   end,
-                  { description = "+10%", group = "hotkeys" }
+                  { description = "Brightness +25%", group = "hotkeys" }
         ),
         awful.key({}, key.brightness.XF86MonBrightnessDown,
                   function()
                       awful.spawn("sudo brightness -25", false)
                   end,
-                  { description = "-10%", group = "hotkeys" }
+                  { description = "Brightness -25%", group = "hotkeys" }
         ),
 
 -- ALSA volume control
@@ -171,7 +146,7 @@ local global    = gears.table.join(
         ),
 
 --[[ COMMAND ]]--
-        awful.key({ key.ctrl, key.alt_L }, key.delete,
+        awful.key({ key.ctrl, key.altL }, key.delete,
                   function()
                       fun:on_run(programms.htop)
                   end, hotkeys.command.htop),
@@ -200,8 +175,10 @@ local global    = gears.table.join(
                   end, hotkeys.tag.restore),
 
 
-        awful.key({ key.alt_L }, key.tab,
+        awful.key({ key.altL }, key.tab,
                   function()
+                      switcher.switch(key.alt_L, key.tab)
+
                       awful.client.focus.history.previous()
                       if client.focus then
                           client.focus:raise()
@@ -221,7 +198,7 @@ local global    = gears.table.join(
                       fun:on_run(programms.rofi)
                   end, hotkeys.programm.run),
 
-        awful.key({ key.ctrl, key.alt_L }, key.t,
+        awful.key({ key.ctrl, key.altL }, key.t,
                   function()
                       fun:on_run(programms.terminal)
                   end, hotkeys.programm.terminal),
@@ -240,7 +217,27 @@ local global    = gears.table.join(
                       -- когда выключает ПК
                       -- (отловить событие poweroff)
                       -- (тк, можем и через команду выключить)
-                  end)
+                  end),
+
+
+-- Test key
+        awful.key({ key.win, key.shift }, key.p,
+                  function()
+                      fun:on_run(programms.terminal .. " xev | grep 'keycode'")
+                  end),
+
+
+-- Test key
+        awful.key({ }, key.test.XF86Search,
+                  function()
+                      fun:on_run(programms.htop)
+                  end, hotkeys.command.htop),
+
+        awful.key({ }, key.test.XF86Favorites,
+                  function()
+                      fun:on_run(programms.htop)
+                  end, hotkeys.command.htop)
+
 )
 
 return global

@@ -243,7 +243,7 @@ function wmapi:find(cmd, str)
     return s
 end
 
-function wmapi:display_primary(s)
+function wmapi:screen_primary(s)
     if s == capi.screen[capi.primary] then
         return true
     end
@@ -251,10 +251,9 @@ function wmapi:display_primary(s)
     return false
 end
 
-function wmapi:display(index)
+function wmapi:screen(index)
     local index = index or capi.primary
     local count = capi.screen.count()
-    --display_primary
 
     if index > count or index < -1 then
         return capi.screen[capi.primary]
@@ -263,14 +262,29 @@ function wmapi:display(index)
     return capi.screen[index]
 end
 
-function wmapi:display_index(screen)
-    for i = 1, capi.screen.count() do
-        if screen == capi.screen[i] then
-            return i
+function wmapi:screen_er(index)
+    local index = index or 0
+    local count = capi.screen.count()
+
+    if index > count or index <= 0 then
+        return nil
+    end
+
+    return capi.screen[index]
+end
+
+function wmapi:screen_index(screen)
+    local screen = screen
+
+    if screen then
+        for i = 1, capi.screen.count() do
+            if screen == capi.screen[i] then
+                return i
+            end
         end
     end
 
-    return 1
+    return 0
 end
 
 function wmapi:update(timeout, callback)
@@ -295,6 +309,17 @@ function wmapi:mouseCoords()
     return {
         x = mouse.x,
         y = mouse.y
+    }
+end
+
+function wmapi:screenGeometry(index)
+    local index = index or 1
+    local screen     = capi.screen[index]
+    local geometry = screen.geometry
+
+    return {
+        width  = geometry.width,
+        height = geometry.height
     }
 end
 

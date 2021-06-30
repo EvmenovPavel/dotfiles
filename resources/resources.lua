@@ -1,6 +1,6 @@
 local resources             = {}
 
-resources.path              = capi.path .. "/resources/icons"
+resources.path              = capi.awesomewm .. "/resources/icons"
 resources.awesome           = resources.path .. "/awesome.png"
 
 resources.menu_submenu_icon = resources.path .. "/submenu.png"

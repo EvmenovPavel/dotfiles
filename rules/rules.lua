@@ -29,9 +29,9 @@ function rules:init(clientkeys, buttonkeys)
 
             callback          = function(c)
 
-                local client = c
+                --local client = c
 
-                capi.wmapi:client_info(client)
+                --capi.wmapi:client_info(client)
 
 
                 --c:deny("autofocus", "mouse_enter")

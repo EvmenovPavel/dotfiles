@@ -17,7 +17,7 @@ local widget        = wibox.widget {
 local widget_button = capi.wmapi:container(wibox.container.margin(widget, dpi(7), dpi(7), dpi(7), dpi(7)))
 
 function message(str)
-    naughty:show({
+    naughty:message({
                      icon  = PATH_TO_ICONS .. "battery.svg",
                      title = "Title: test",
                      text  = "asdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasd"

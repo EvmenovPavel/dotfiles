@@ -19,18 +19,8 @@ function mywibar:w_middle(s)
     }
 end
 
---local mymainmenu = awful.menu({ items = {
---    { "open terminal", "terminal" }
---}
---                              })
---
---local mylauncher = capi.wmapi:launcher({
---                                           image = resources.path .. "/lock.png",
---                                           menu  = mymainmenu
---                                       })
-
 function mywibar:w_right(s)
-    if capi.wmapi:display_primary(s) then
+    if capi.wmapi:screen_primary(s) then
         return {
             widgets.backlight(),
             --mylauncher,
@@ -47,6 +37,7 @@ function mywibar:w_right(s)
             widgets.memory(),
             widgets.clock(),
             widgets.reboot(),
+            widgets.test(),
             --widgets.pacmd(),
             --widgets.spotify(s),
 
@@ -59,6 +50,16 @@ function mywibar:w_right(s)
     }
 end
 
+local naughty = require("naughty")
+
+function test(text)
+    naughty:message({
+                        icon  = "battery.svg",
+                        title = text,
+                        text  = text
+                    })
+end
+
 function mywibar:create(s)
     local wibar = awful.wibar({
                                   ontop        = false,
@@ -69,7 +70,7 @@ function mywibar:create(s)
                                   --bg           = "#00000099",
                                   fg           = beautiful.fg_normal,
                                   visible      = true,
-                                  height       = beautiful.wr_height or 27,
+                                  height       = beautiful.wr_height,
                                   screen       = s,
                               })
 
@@ -79,6 +80,30 @@ function mywibar:create(s)
         self:w_right(s),
         layout = wibox.layout.align.horizontal,
     }
+
+    local function mouse_move()
+        local id_screen = capi.wmapi:screen_index(capi.mouse.screen)
+        local coords    = capi.wmapi:mouseCoords()
+        local geometry  = wibar:geometry()
+
+        local SIZE      = {
+            x = -1,
+            y = 5
+        }
+
+        local x         = coords.x - geometry.width * id_screen
+
+        if (x > SIZE.x) and (SIZE.y > coords.y) then
+            capi.mouse.coords {
+                x = geometry.width * id_screen + SIZE.x,
+                y = coords.y
+            }
+        end
+
+    end
+
+    --wibar:connect_signal("mouse::move", mouse_move)
+    --capi.wmapi:update(0.01, mouse_move)
 
     return mywibar
 end

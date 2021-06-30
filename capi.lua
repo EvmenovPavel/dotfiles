@@ -1,7 +1,33 @@
 -- Global --
 
-capi = {
-    primary    = 1,
+LuaTypes = {
+    null     = "nil",
+    boolean  = "boolean",
+    number   = "number", str = "string",
+    fun      = "function",
+    userdata = "userdata",
+    thread   = "thread",
+    table    = "table",
+    screen   = "screen"
+}
+
+function Type(var)
+    for _, x in ipairs(LuaTypes) do
+        if (type(var) == x) then
+            return x
+        end
+    end
+end
+
+placement = {
+    top          = "top",
+    top_right    = "top_right",
+    top_left     = "top_left",
+    bottom_right = "bottom_right"
+}
+
+capi      = {
+    primary    = 2, -- remove
     root       = root,
     screen     = screen,
     tag        = tag,
@@ -12,14 +38,11 @@ capi = {
     mouse      = mouse,
     timer      = timer,
     unpack     = unpack,
-
-    undermouse = false,
+    keygrabber = keygrabber,
 
     home       = os.getenv("HOME"),
-    path       = os.getenv("HOME") .. "/.config/awesome",
-
+    awesomewm  = os.getenv("HOME") .. "/.config/awesome",
+    devices    = os.getenv("HOME") .. "/.config/awesome/devices",
     wmapi      = require("wmapi"),
     log        = require("logger"),
 }
-
-return capi

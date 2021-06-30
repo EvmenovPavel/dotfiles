@@ -19,7 +19,7 @@ local mouse                  = capi.wmapi.event.mouse
 local GET_SPOTIFY_STATUS_CMD = "sp status"
 local GET_CURRENT_SONG_CMD   = "sp current"
 
-local pathIcon               = capi.path .. "/widgets/spotify"
+local pathIcon               = capi.awesomewm .. "/widgets/spotify"
 
 local icons                  = {
     logo  = pathIcon .. "/spotify.svg",

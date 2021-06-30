@@ -1,74 +1,84 @@
---local sqlite3 = require("luasql.sqlite3")
-----local env      = assert(sqlite3.sqlite3())
-----local database = assert(env:connect("db.sqlite3"))
+--local LIP    = require("lib.lip.LIP");
 --
---local env = sqlite3.sqlite3()
 --
---local database = env:connect("db.sqlite3")
+---- Data saving
 --
---local sqlite = {}
 --
---function sqlite:create()
+---- Data loading
+----local data = LIP.load('savedata.ini');
 --
+----for _, it in pairs(data.wallpaper) do
+----    print(it)
+----end
+--
+--local lfs    = require("lfs")
+--
+--local config = {}
+--
+--function config:user()
+--    local user = io.popen("getent passwd $USER | cut -d ':' -f 1 | cut -d ',' -f 1"):read()
+--    return user
 --end
 --
---function sqlite:insert(name_table)
---    assert(conn:execute("create table if not exists tbl1(one varchar(10), two smallint)"))
---    assert(conn:execute("insert into tbl1 values('hello!',10)"))
---    assert(conn:execute("insert into tbl1 values('goodbye',20)"))
---
-----    assert(database:execute(
-----            string.format([[INSERT INTO .. name_table .. (name, path) VALUES ('%s', '%s')]], 'asdasd', '123123')
-----    ))
+--function config:create_dir(path, name_fir)
+--    return not lfs.mkdir(path .. "/" .. name_fir) -- error = true
 --end
 --
---function sqlite:show(name_table, con)
---    local cur = assert(con:execute("SELECT * FROM " .. name_table))
+--function config:create_file(path, name_file)
+--    local file = io.open(string.format(path .. "/%s/config", name_file), "w")
+--    file:close()
+--end
 --
---    local row = cur:fetch({}, "a")
---    while row do
---        print(string.format("Name: %s", row.name))
---        print(string.format("Path: %s", row.path))
---        row = cur:fetch(row, "a")
+--function config:save_config(path, data)
+--    LIP:save(path .. "/config", data);
+--end
+--
+--function config:create_config()
+--    local root_path = os.getenv("HOME") .. "/.config/awesome/device"
+--
+--    local device    = self:user()
+--
+--    if (not self:create_dir(root_path, device)) then
+--        self:create_dir(root_path, device .. "/wallpaper")
+--        self:create_file(root_path, device)
 --    end
 --
---    cur:close()
+--    local data = {
+--        screen = {
+--            primary   = 2,
+--            focused   = false,
+--            wallpaper = {
+--                "wallpaper_1.png",
+--                "wallpaper_2.png",
+--                "wallpaper_3.png",
+--            },
+--            font      = "",
+--        },
+--    }
+--
+--    self:save_config(data)
 --end
 --
---sqlite:show("apps_run", database)
+--function config:read_config()
 --
---database:close()
---env:close()
---
---
---function test(...)
---    for i = 1, select('#', ...) do
---        print(tostring(select(i, ...)))
---    end
 --end
 --
---test("asdasd", "11")
+--config:create_config()
+--
+----[[
+--[window]
+--[wallpaper]
+--]]
 
-local json = require("module.json.json")
+function message(...)
+    local date = os.date()
+    local msg  = date
 
-local t    = {
-    { '{x', '1}', },
-    '{x : hello}',
-    "{'x' : 1}",
-    '{"x" : nil}',
-    '{"x" : 0x10}',
-    '{"x" : 001}',
-    '{"x" : .1}',
-    '{"x" : 1, }',
-    '[1, 2, 3, ]',
-}
-
-local str  = json.encode(t)
-print(str)
-
-for _, i in ipairs(json.decode(str)) do
-    if type(i) == "table" then
-        print("YES")
+    for i = 1, select("#", ...) do
+        msg = msg .. "\n\t" .. tostring(select(i, ...))
     end
-    print(i)
+
+    print(msg)
 end
+
+message("asdasd")

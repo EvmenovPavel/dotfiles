@@ -98,8 +98,23 @@ function functions:on_ontop(c)
 end
 
 function functions:on_floating(c)
+    -- как делает floating = true
+    -- узнаем размер экрана и делаем виджет по центру
+
+
+    --local screen = capi.wmapi.screen()
+    --local geometry = capi.wmapi.screenGeometry(screen)
+
+    --local x     = c.x
+    --local y     = c.y
+
     c.maximized = false
     c.floating  = not c.floating
+
+    --if (c.floating) then
+    --    c.x = x - c.width
+    --    c.y = y - c.height / 2
+    --end
 end
 
 return functions

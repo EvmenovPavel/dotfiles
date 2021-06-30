@@ -27,7 +27,9 @@ local widgets = {
 
     --spotify  = require("widgets.spotify"),
 
-    pad       = require("widgets.pad")
+    pad       = require("widgets.pad"),
+
+    test      = require("widgets.test")
 
     --require("widgets.bluetooth"),
     --require("widgets.wifi"),
