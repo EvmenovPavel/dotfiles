@@ -7,28 +7,6 @@ local switcher  = require("widgets.switcher")
 
 local fun       = require("functions")
 
---local function move_to_previous_tag()
---    local c = client.focus
---    if not c then return end
---    local t = c.screen.selected_tag
---    local tags = c.screen.tags
---    local idx = t.index
---    local newtag = tags[gmath.cycle(#tags, idx - 1)]
---    c:move_to_tag(newtag)
---    --awful.tag.viewprev()
---end
---
---local function move_to_next_tag()
---    local c = client.focus
---    if not c then return end
---    local t = c.screen.selected_tag
---    local tags = c.screen.tags
---    local idx = t.index
---    local newtag = tags[gmath.cycle(#tags, idx + 1)]
---    c:move_to_tag(newtag)
---    --awful.tag.viewnext()
---end
-
 local global    = gears.table.join(
 --[[ AWESOME ]]--
         awful.key({ key.shift, key.mod }, key.r,
@@ -45,36 +23,6 @@ local global    = gears.table.join(
                   function()
                       fun:on_show_help()
                   end, hotkeys.awesome.help),
-
---awful.key({ key.win, key.shift }, key.tab,
---          function()
---switcher.switch(-1, "Mod1", "Alt_L", "Shift", "Tab")
---end),
-
---awful.key({ key.win }, "f", function()
---capi.mouse.screen.selected_tag.selected = false
---for _, t in ipairs(mouse.screen.selected_tags) do
---    t.selected = false
---end
---end),
-
---awful.key({ key.win, key.altL }, "Right",
---          function()
---              awful.tag.incmwfact(0.01)
---          end),
---awful.key({ key.win, key.altL }, "Left",
---          function()
---              awful.tag.incmwfact(-0.01)
---          end),
---awful.key({ key.win, key.altL }, "Down",
---          function()
---              awful.client.incwfact(0.01)
---          end),
---awful.key({ key.win, key.altL }, "Up",
---          function()
---              awful.client.incwfact(-0.01)
---          end),
-
 
         awful.key({ key.win, key.shift }, key.v,
                   function()
@@ -177,13 +125,12 @@ local global    = gears.table.join(
 
         awful.key({ key.altL }, key.tab,
                   function()
-                      switcher.switch(key.alt_L, key.tab)
+                      switcher(key.alt_L, key.tab)
 
                       awful.client.focus.history.previous()
-                      if client.focus then
-                          client.focus:raise()
+                      if capi.client.focus then
+                          capi.client.focus:raise()
                       end
-                      --menu.client_list({ theme = { width = 250 } })
                   end, hotkeys.client.previous),
 
 
