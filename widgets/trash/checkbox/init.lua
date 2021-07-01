@@ -1,1 +1,0 @@
-return require("widgets.checkbox.checkbox")

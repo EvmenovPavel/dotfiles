@@ -3,7 +3,8 @@
 LuaTypes = {
     null     = "nil",
     boolean  = "boolean",
-    number   = "number", str = "string",
+    number   = "number",
+    str      = "string",
     fun      = "function",
     userdata = "userdata",
     thread   = "thread",
