@@ -27,8 +27,8 @@ placement = {
     bottom_right = "bottom_right"
 }
 
-capi      = {
-    primary    = 2, -- remove
+capi = {
+    primary    = 1, -- remove
     root       = root,
     screen     = screen,
     tag        = tag,

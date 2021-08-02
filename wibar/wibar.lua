@@ -22,23 +22,18 @@ end
 function mywibar:w_right(s)
     if capi.wmapi:screen_primary(s) then
         return {
-            widgets.backlight(),
-            --mylauncher,
-            widgets.battery(),
             widgets.systray(s),
             widgets.keyboard(),
-            widgets.volume(s),
-            --widgets.pad(),
+
+            widgets.volume(),
+            widgets.brightness(),
             --widgets.pacmd(),
             widgets.cpu(),
-            --widgets.pad(),
-            --widgets.sensors(),
-            --widgets.pad(),
+            widgets.battery(),
             widgets.memory(),
             widgets.clock(),
             widgets.reboot(),
             widgets.test(),
-            --widgets.pacmd(),
             --widgets.spotify(s),
 
             layout = wibox.layout.fixed.horizontal
@@ -103,7 +98,7 @@ function mywibar:create(s)
     end
 
     --wibar:connect_signal("mouse::move", mouse_move)
-    --capi.wmapi:update(0.01, mouse_move)
+    --capi.wmapi:update(mouse_move, 0.01)
 
     return mywibar
 end

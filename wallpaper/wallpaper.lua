@@ -27,9 +27,9 @@ function mywallpaper:set_animated(surf, s)
 end
 
 function mywallpaper:init(s)
-    local indexWallpaper = 3
+    -- local indexWallpaper = 3
 
-     local file           = beautiful.wallpapers .. "/" .. indexWallpaper .. "/" .. capi.wmapi:screen_index(s) .. ".png"
+    local file           = beautiful.wallpapers .. "/spider-man-into.jpeg"--ruby_rose.png"-- .. indexWallpaper .. "/" .. capi.wmapi:screen_index(s) .. ".png"
 
     --local file           = beautiful.wallpapers .. "/wallpaper.png"
     if type(file) == "function" then

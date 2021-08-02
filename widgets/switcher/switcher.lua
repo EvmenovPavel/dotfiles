@@ -481,8 +481,11 @@ function switcher:close()
 
     -- raise chosen client on top of all
     c = switcher.altTabTable[switcher.altTabIndex].client
-    c:raise()
-    client.focus = c
+
+    if c then
+        c:raise()
+        client.focus = c
+    end
 
     -- restore minimized clients
     for i = 1, #switcher.altTabTable do

@@ -71,9 +71,7 @@ capi.awesome.connect_signal("volume_change",
                             end
 )
 
-function volume:init(args)
-    local args    = args or {}
-
+function volume:init()
     local offsetx = 48
     local offsety = 300
 

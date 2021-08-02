@@ -222,8 +222,11 @@ function wmapi:isempty(s)
     return s == nil or s == ''
 end
 
-function wmapi:signs(str, signs)
-    return str:gsub(signs, '')
+function wmapi:signs(stdout, signs)
+    str = stdout:gsub("%s+", signs)
+    str = string.gsub(str, "%s+", signs)
+
+    return str
 end
 
 function wmapi:sub(stdout, length)
@@ -240,6 +243,7 @@ function wmapi:find(cmd, str)
     s = string.gsub(s, '^%s+', '')
     s = string.gsub(s, '%s+$', '')
     s = string.gsub(s, '[\n\r]+', ' ')
+
     return s
 end
 
@@ -287,9 +291,35 @@ function wmapi:screen_index(screen)
     return 0
 end
 
-function wmapi:update(timeout, callback)
-    local timeout  = timeout or 0.3
+function wmapi:watch(command, timeout, callback)
+    timeout     = timeout or 5
+
+    local t     = timer { timeout = timeout }
+    t:connect_signal("timeout", function()
+        t:stop()
+        spawn.easy_async(command, function(stdout, stderr, exitreason, exitcode)
+            callback(stdout, stderr, exitreason, exitcode)
+            t:again()
+        end)
+    end)
+    t:start()
+    t:emit_signal("timeout")
+end
+
+function wmapi:easy_async_with_shell(bash)
+    local last_result = ""
+
+    awful.spawn.easy_async_with_shell(bash, function(result)
+        last_result = result
+        --free_memory_tooltip:set_markup(last_result)
+    end)
+
+    return last_result
+end
+
+function wmapi:update(callback, timeout)
     local callback = callback or nil
+    local timeout  = timeout or 0.3
 
     if callback then
         return gears.timer {
@@ -313,8 +343,8 @@ function wmapi:mouseCoords()
 end
 
 function wmapi:screenGeometry(index)
-    local index = index or 1
-    local screen     = capi.screen[index]
+    local index    = index or 1
+    local screen   = capi.screen[index]
     local geometry = screen.geometry
 
     return {

@@ -35,13 +35,18 @@ local global    = gears.table.join(
 -- Brightness
         awful.key({}, key.brightness.XF86MonBrightnessUp,
                   function()
+                      -- TODO
+                      -- передавать сигнал на звук
+                      -- что бы прятал виджет
                       awful.spawn("sudo brightness +25", false)
+                      capi.awesome.emit_signal("brightness_change")
                   end,
                   { description = "Brightness +25%", group = "hotkeys" }
         ),
         awful.key({}, key.brightness.XF86MonBrightnessDown,
                   function()
                       awful.spawn("sudo brightness -25", false)
+                      capi.awesome.emit_signal("brightness_change")
                   end,
                   { description = "Brightness -25%", group = "hotkeys" }
         ),
@@ -49,6 +54,9 @@ local global    = gears.table.join(
 -- ALSA volume control
         awful.key({}, key.audio.XF86AudioRaiseVolume,
                   function()
+                      -- TODO
+                      -- передавать сигнал на яркость
+                      -- что бы прятал виджет
                       awful.spawn("amixer -D pulse sset Master 5%+", false)
                       capi.awesome.emit_signal("volume_change")
                   end,

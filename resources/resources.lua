@@ -6,6 +6,17 @@ resources.awesome           = resources.path .. "/awesome.png"
 resources.menu_submenu_icon = resources.path .. "/submenu.png"
 resources.warning           = resources.path .. "/warning.png"
 
+resources.battery           = {
+    bolt           = resources.path .. "/battery/bolt.svg",
+    empty          = resources.path .. "/battery/empty.svg",
+    full           = resources.path .. "/battery/full.svg",
+    half           = resources.path .. "/battery/half.svg",
+    quarter        = resources.path .. "/battery/quarter.svg",
+    slash          = resources.path .. "/battery/slash.svg",
+    three_quarters = resources.path .. "/battery/three-quarters.svg"
+
+}
+
 resources.taglist           = {
     resources.path .. "/taglist/firefox.png",
     resources.path .. "/taglist/folder.png",

@@ -1,8 +1,6 @@
 local widgets = {
     battery   = require("widgets.battery"),
 
-    backlight = require("widgets.backlight"),
-
     systray   = require("widgets.systray"),
 
     keyboard  = require("widgets.keyboard"),
@@ -14,6 +12,8 @@ local widgets = {
     clock     = require("widgets.calendar"),
 
     volume    = require("widgets.volume"),
+
+    brightness = require("widgets.brightness"),
 
     tasklist  = require("widgets.tasklist"),
 
