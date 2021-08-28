@@ -7,14 +7,39 @@ resources.menu_submenu_icon = resources.path .. "/submenu.png"
 resources.warning           = resources.path .. "/warning.png"
 
 resources.battery           = {
-    bolt           = resources.path .. "/battery/bolt.svg",
-    empty          = resources.path .. "/battery/empty.svg",
-    full           = resources.path .. "/battery/full.svg",
-    half           = resources.path .. "/battery/half.svg",
-    quarter        = resources.path .. "/battery/quarter.svg",
-    slash          = resources.path .. "/battery/slash.svg",
-    three_quarters = resources.path .. "/battery/three-quarters.svg"
+    batteryFull               = resources.path .. "/battery/battery.svg",
+    batteryOutline            = resources.path .. "/battery/battery-outline.svg",
 
+    battery10                  = resources.path .. "/battery/battery-10.svg",
+    battery20                  = resources.path .. "/battery/battery-20.svg",
+    battery30                  = resources.path .. "/battery/battery-30.svg",
+    battery40                  = resources.path .. "/battery/battery-40.svg",
+    battery50                  = resources.path .. "/battery/battery-50.svg",
+    battery60                  = resources.path .. "/battery/battery-60.svg",
+    battery70                  = resources.path .. "/battery/battery-70.svg",
+    battery80                  = resources.path .. "/battery/battery-80.svg",
+    battery90                  = resources.path .. "/battery/battery-90.svg",
+
+    batteryAlert               = resources.path .. "/battery/battery-alert.svg",
+    batteryAlertVariant        = resources.path .. "/battery/battery-alert-variant.svg",
+    batteryAlertVariantOutline = resources.path .. "/battery/battery-alert-variant-outline.svg",
+
+    batteryCharging            = resources.path .. "/battery/battery-charging.svg",
+    batteryCharging10          = resources.path .. "/battery/battery-charging-10.svg",
+    batteryCharging20          = resources.path .. "/battery/battery-charging-20.svg",
+    batteryCharging30          = resources.path .. "/battery/battery-charging-30.svg",
+    batteryCharging40          = resources.path .. "/battery/battery-charging-40.svg",
+    batteryCharging50          = resources.path .. "/battery/battery-charging-50.svg",
+    batteryCharging60          = resources.path .. "/battery/battery-charging-60.svg",
+    batteryCharging70          = resources.path .. "/battery/battery-charging-70.svg",
+    batteryCharging80          = resources.path .. "/battery/battery-charging-80.svg",
+    batteryCharging90          = resources.path .. "/battery/battery-charging-90.svg",
+    batteryCharging100         = resources.path .. "/battery/battery-charging-100.svg",
+
+    batteryOff                 = resources.path .. "/battery/battery-off.svg",
+    batteryOffOutline          = resources.path .. "/battery/battery-off-outline.svg",
+
+    batteryUnknown             = resources.path .. "/battery/battery-unknown.svg",
 }
 
 resources.taglist           = {

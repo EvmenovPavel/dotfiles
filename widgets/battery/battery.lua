@@ -1,6 +1,5 @@
 local wibox       = require("wibox")
 local awful       = require("awful")
-local beautiful   = require("beautiful")
 local resources   = require("resources")
 
 local naughty     = require("naughty")
@@ -21,37 +20,64 @@ local acpi_status = {
     "Full"
 }
 
--- bolt.svg - заряжает
--- full.svg = 100%
--- three-quarters.svg = 60 - 90%
--- half.svg = 40 - 60%
--- quarter.svg = 20 - 30%
--- empty.svg = 0 - 5%
--- slash.svg - отсуствует
-
-function battery:updateWidgetInfo(acpi)
-    local bash_acpi_status = "acpi -b | grep '" .. acpi_status[tonumber(acpi)] .. "' | awk '{print $4}' | sed 's/[^0-9]//g'"
+function battery:updateWidgetInfo(level_acpi)
+    local bash_acpi_status = "acpi -b | grep '" .. acpi_status[tonumber(level_acpi)] .. "' | awk '{print $4}' | sed 's/[^0-9]//g'"
 
     awful.spawn.easy_async_with_shell(bash_acpi_status, function(result)
         local value = tonumber(result)
         local image = ""
 
-        if acpi == 1 then
-            if (value >= 0 and value < 14) then
-                image = resources.battery.empty
-            elseif (value >= 15 and value < 39) then
-                image = resources.battery.quarter
-            elseif (value >= 40 and value < 59) then
-                image = resources.battery.half
-            elseif (value >= 60 and value < 79) then
-                image = resources.battery.three_quarters
-            elseif (value >= 80 and value <= 100) then
-                image = resources.battery.full
+        if level_acpi == 1 then
+            if (value >= 1 and value < 9) then
+                image = resources.battery.batteryOutline
+            elseif (value >= 10 and value < 19) then
+                image = resources.battery.battery20
+            elseif (value >= 20 and value < 29) then
+                image = resources.battery.battery30
+            elseif (value >= 30 and value < 39) then
+                image = resources.battery.battery40
+            elseif (value >= 40 and value < 49) then
+                image = resources.battery.battery40
+            elseif (value >= 50 and value < 59) then
+                image = resources.battery.battery40
+            elseif (value >= 60 and value < 69) then
+                image = resources.battery.battery40
+            elseif (value >= 70 and value < 79) then
+                image = resources.battery.battery40
+            elseif (value >= 80 and value < 89) then
+                image = resources.battery.battery
+            elseif (value >= 90 and value < 99) then
+                image = resources.battery.battery90
+            elseif (value >= 100) then
+                image = resources.battery.batteryFull
             end
-        elseif acpi == 2 then
-            image = resources.battery.bolt
-        elseif acpi == 3 then
-            image = resources.battery.bolt
+        elseif level_acpi == 2 then
+            if (value >= 0 and value < 10) then
+                --image = resources.battery.batteryCharging10
+
+            elseif (value >= 10 and value < 19) then
+                image = resources.battery.batteryCharging10
+            elseif (value >= 20 and value < 29) then
+                image = resources.battery.batteryCharging20
+            elseif (value >= 30 and value < 39) then
+                image = resources.battery.batteryCharging30
+            elseif (value >= 40 and value < 49) then
+                image = resources.battery.batteryCharging40
+            elseif (value >= 50 and value < 59) then
+                image = resources.battery.batteryCharging50
+            elseif (value >= 60 and value < 69) then
+                image = resources.battery.batteryCharging60
+            elseif (value >= 70 and value < 79) then
+                image = resources.battery.batteryCharging70
+            elseif (value >= 80 and value < 89) then
+                image = resources.battery.batteryCharging80
+            elseif (value >= 90 and value < 99) then
+                image = resources.battery.batteryCharging90
+            elseif (value >= 100) then
+                image = resources.battery.batteryCharging100
+            end
+        elseif level_acpi == 3 then
+            image = resources.battery.batteryFull
         end
 
         wIconBox.image  = image
@@ -74,7 +100,6 @@ function battery:notify_power(notify)
             title  = title,
             text   = "Питание подключено."
         }
-        return 2
     elseif notify == 3 then
         naughty.notify {
             preset = naughty.config.presets.normal,
@@ -84,28 +109,17 @@ function battery:notify_power(notify)
     end
 end
 
-function battery:acpi_info(out)
-    if out == "DI" then
-        return 1
-    elseif out == "CH" then
-        return 2
-    elseif out == "FU" then
-        return 3
-    end
-end
-
 function battery:init()
     local notify           = 0
     local power            = 0
 
-    local bash_acpi_status = [[bash -c "acpi -b | grep 'Battery 1:' | sed -E 's/^.*(Charging|Discharging|Full).*$/\1/;s/Charging/CH/;s/Discharging/DI/;s/Full/FU/'"]]
+    local bash_acpi_status = [[bash -c "acpi -b | grep 'Battery 1:' | sed -E 's/^.*(Discharging|Charging|Full).*$/\1/;s/Discharging/1/;s/Charging/2/;s/Full/3/'"]]
 
     capi.wmapi:watch(bash_acpi_status, 2,
                      function(stdout)
-
                          local out = capi.wmapi:signs(stdout, "")
 
-                         power     = self:acpi_info(out)
+                         power     = tonumber(out)
                          self:updateWidgetInfo(power)
 
                          if power == 1 and notify ~= power then
@@ -116,15 +130,12 @@ function battery:init()
                              self:notify_power(power)
                          end
 
-                         notify = power, wTextBox
+                         notify = power
                      end)
-
-    local wText  = wibox.container.margin(wibox.container.mirror(wTextBox, { horizontal = false }), 2, 2, 2, 2)
 
     local widget = wibox.widget({
                                     wIconBox,
                                     wTextBox,
-                                    --wText,
                                     layout = wibox.layout.align.horizontal
                                 })
 

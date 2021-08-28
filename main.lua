@@ -1,17 +1,28 @@
-local power  = 0
-local notify = 0
+local switch = function(param, case_table)
+    local case = case_table[param]
 
-power        = 3
-
-for i = 1, 10 do
-    if power == 1 and notify ~= 1 then
-        notify = 1
-        print("1")
-    elseif power == 2 and notify ~= 2 then
-        notify = 2
-        print("2")
-    elseif power == 3 and notify ~= 3 then
-        notify = 3
-        print("3")
+    if case then
+        return case()
     end
+
+    local def = case_table['default']
+
+    return def and def() or nil
 end
+
+local a      = 110
+
+switch(a, {
+    [1] = function()
+        -- for case 1
+        print("Case 1.")
+    end,
+    [2]       = function()
+        -- for case 2
+        print("Case 2.")
+    end,
+    [3]       = function()
+        -- for case 3
+        print("Case 3.")
+    end
+})
