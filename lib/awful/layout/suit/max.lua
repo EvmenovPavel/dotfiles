@@ -9,7 +9,7 @@
 -- Grab environment we need
 local pairs = pairs
 
-local max = {}
+local max   = {}
 
 --- The max layout layoutbox icon.
 -- @beautiful beautiful.layout_max
@@ -31,10 +31,10 @@ local function fmax(p, fs)
     end
 
     for _, c in pairs(p.clients) do
-        local g = {
-            x = area.x,
-            y = area.y,
-            width = area.width,
+        local g         = {
+            x      = area.x,
+            y      = area.y,
+            width  = area.width,
             height = area.height
         }
         p.geometries[c] = g
@@ -47,14 +47,15 @@ max.name = "max"
 function max.arrange(p)
     return fmax(p, false)
 end
-function max.skip_gap(nclients, t) -- luacheck: no unused args
+function max.skip_gap(nclients, t)
+    -- luacheck: no unused args
     return true
 end
 
 --- Fullscreen layout.
 -- @clientlayout awful.layout.suit.max.fullscreen
-max.fullscreen = {}
-max.fullscreen.name = "fullscreen"
+max.fullscreen          = {}
+max.fullscreen.name     = "fullscreen"
 max.fullscreen.skip_gap = max.skip_gap
 function max.fullscreen.arrange(p)
     return fmax(p, true)

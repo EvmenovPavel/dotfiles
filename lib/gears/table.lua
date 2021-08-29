@@ -7,7 +7,7 @@
 
 local rtable = table
 
-local gmath = require("gears.math")
+local gmath  = require("gears.math")
 local gtable = {}
 
 --- Join all tables given as arguments.
@@ -68,18 +68,18 @@ end
 -- @tparam table t A potentially sparse table.
 -- @treturn table A packed table with only numeric keys.
 function gtable.from_sparse(t)
-    local keys= {}
+    local keys = {}
     for k in pairs(t) do
         if type(k) == "number" then
-            keys[#keys+1] = k
+            keys[#keys + 1] = k
         end
     end
 
     table.sort(keys)
 
     local ret = {}
-    for _,v in ipairs(keys) do
-        ret[#ret+1] = t[v]
+    for _, v in ipairs(keys) do
+        ret[#ret + 1] = t[v]
     end
 
     return ret
@@ -111,16 +111,20 @@ end
 -- @treturn table|nil An ordered table with all the keys or `nil` if none were
 --   found.
 function gtable.find_keys(t, matcher, ordered, max)
-    if max == 0 then return nil end
+    if max == 0 then
+        return nil
+    end
 
-    ordered, max = ordered or false, 0
+    ordered, max  = ordered or false, 0
     local ret, it = {}, ordered and ipairs or pairs
 
     for k, v in it(t) do
-        if matcher(k,v) then
+        if matcher(k, v) then
             table.insert(ret, k)
 
-            if #ret == max then break end
+            if #ret == max then
+                break
+            end
         end
     end
 
@@ -152,7 +156,7 @@ function gtable.keys(t)
     for k, _ in pairs(t) do
         rtable.insert(keys, k)
     end
-    rtable.sort(keys, function (a, b)
+    rtable.sort(keys, function(a, b)
         return type(a) == type(b) and a < b or false
     end)
     return keys
@@ -165,10 +169,10 @@ end
 -- @tparam string ... The types to look for.
 -- @treturn table A filtered table.
 function gtable.keys_filter(t, ...)
-    local keys = gtable.keys(t)
+    local keys          = gtable.keys(t)
     local keys_filtered = { }
     for _, k in pairs(keys) do
-        for _, et in pairs({...}) do
+        for _, et in pairs({ ... }) do
             if type(t[k]) == et then
                 rtable.insert(keys_filtered, k)
                 break
@@ -205,7 +209,7 @@ end
 -- @tparam[opt=true] bool deep Create a deep clone?
 -- @treturn table A clone of `t`.
 function gtable.clone(t, deep)
-    deep = deep == nil and true or deep
+    deep    = deep == nil and true or deep
     local c = { }
     for k, v in pairs(t) do
         if deep and type(v) == "table" then
@@ -235,12 +239,14 @@ function gtable.iterate(t, filter, start)
     local index  = start or 1
     local length = #t
 
-    return function ()
+    return function()
         while count < length do
             local item = t[index]
-            index = gmath.cycle(#t, index + 1)
-            count = count + 1
-            if filter(item) then return item end
+            index      = gmath.cycle(#t, index + 1)
+            count      = count + 1
+            if filter(item) then
+                return item
+            end
         end
     end
 end
@@ -268,7 +274,7 @@ end
 -- @treturn table
 function gtable.map(f, tbl)
     local t = {}
-    for k,v in pairs(tbl) do
+    for k, v in pairs(tbl) do
         t[k] = f(v)
     end
     return t

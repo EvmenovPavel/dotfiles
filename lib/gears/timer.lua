@@ -49,16 +49,16 @@
 -- @classmod gears.timer
 ---------------------------------------------------------------------------
 
-local capi = { awesome = awesome }
-local ipairs = ipairs
-local pairs = pairs
-local setmetatable = setmetatable
-local table = table
-local tonumber = tonumber
-local traceback = debug.traceback
-local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
-local glib = require("lgi").GLib
-local object = require("gears.object")
+local capi           = { awesome = awesome }
+local ipairs         = ipairs
+local pairs          = pairs
+local setmetatable   = setmetatable
+local table          = table
+local tonumber       = tonumber
+local traceback      = debug.traceback
+local unpack         = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local glib           = require("lgi").GLib
+local object         = require("gears.object")
 local protected_call = require("gears.protected_call")
 
 --- Timer objects. This type of object is useful when triggering events repeatedly.
@@ -80,7 +80,7 @@ local protected_call = require("gears.protected_call")
 --- When the timer had a timeout event.
 -- @signal timeout
 
-local timer = { mt = {} }
+local timer          = { mt = {} }
 
 --- Start the timer.
 function timer:start()
@@ -126,7 +126,7 @@ end
 -- @param number
 
 local timer_instance_mt = {
-    __index = function(self, property)
+    __index    = function(self, property)
         if property == "timeout" then
             return self.data.timeout
         elseif property == "started" then
@@ -155,10 +155,10 @@ local timer_instance_mt = {
 -- @treturn timer
 -- @function gears.timer
 function timer.new(args)
-    args = args or {}
+    args      = args or {}
     local ret = object()
 
-    ret.data = { timeout = 0 } --TODO v5 rename to ._private
+    ret.data  = { timeout = 0 } --TODO v5 rename to ._private
     setmetatable(ret, timer_instance_mt)
 
     for k, v in pairs(args) do
@@ -177,7 +177,9 @@ function timer.new(args)
     end
 
     if args.single_shot then
-        ret:connect_signal("timeout", function() ret:stop() end)
+        ret:connect_signal("timeout", function()
+            ret:stop()
+        end)
     end
 
     return ret
@@ -215,7 +217,7 @@ end
 -- @function gears.timer.weak_start_new
 -- @see gears.timer.start_new
 function timer.weak_start_new(timeout, callback)
-    local indirection = setmetatable({}, { __mode = "v" })
+    local indirection    = setmetatable({}, { __mode = "v" })
     indirection.callback = callback
     return timer.start_new(timeout, function()
         local cb = indirection.callback

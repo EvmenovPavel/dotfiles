@@ -5,13 +5,13 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local type = type
+local type   = type
 local ipairs = ipairs
-local capi = { button = button }
-local wibox = require("wibox")
+local capi   = { button = button }
+local wibox  = require("wibox")
 local gdebug = require("gears.debug")
-local dpi = require("beautiful").xresources.apply_dpi
-local base = require("wibox.widget.base")
+local dpi    = require("beautiful").xresources.apply_dpi
+local base   = require("wibox.widget.base")
 
 --- Common utilities for awful widgets
 local common = {}
@@ -29,8 +29,12 @@ function common.create_buttons(buttons, object)
             -- button object the user provided, but with the object as
             -- argument.
             local btn = capi.button { modifiers = b.modifiers, button = b.button }
-            btn:connect_signal("press", function () b:emit_signal("press", object) end)
-            btn:connect_signal("release", function () b:emit_signal("release", object) end)
+            btn:connect_signal("press", function()
+                b:emit_signal("press", object)
+            end)
+            btn:connect_signal("release", function()
+                b:emit_signal("release", object)
+            end)
             btns[#btns + 1] = btn
         end
 
@@ -69,15 +73,15 @@ local function custom_template(args)
 
     -- The template system requires being able to get children elements by ids.
     -- This is not optimal, but for now there is no way around it.
-    assert(l.get_children_by_id,"The given widget template did not result in a"..
-        "layout with a 'get_children_by_id' method")
+    assert(l.get_children_by_id, "The given widget template did not result in a" ..
+            "layout with a 'get_children_by_id' method")
 
     return {
-        ib              = l:get_children_by_id( "icon_role"        )[1],
-        tb              = l:get_children_by_id( "text_role"        )[1],
-        bgb             = l:get_children_by_id( "background_role"  )[1],
-        tbm             = l:get_children_by_id( "text_margin_role" )[1],
-        ibm             = l:get_children_by_id( "icon_margin_role" )[1],
+        ib              = l:get_children_by_id("icon_role")[1],
+        tb              = l:get_children_by_id("text_role")[1],
+        bgb             = l:get_children_by_id("background_role")[1],
+        tbm             = l:get_children_by_id("text_margin_role")[1],
+        ibm             = l:get_children_by_id("icon_margin_role")[1],
         primary         = l,
         update_callback = l.update_callback,
         create_callback = l.create_callback,
@@ -101,7 +105,7 @@ function common.list_update(w, buttons, label, data, objects, args)
 
         if not cache then
             cache = (args and args.widget_template) and
-                custom_template(args) or default_template()
+                    custom_template(args) or default_template()
 
             cache.primary:buttons(common.create_buttons(buttons, o))
 
@@ -115,7 +119,7 @@ function common.list_update(w, buttons, label, data, objects, args)
         end
 
         local text, bg, bg_image, icon, item_args = label(o, cache.tb)
-        item_args = item_args or {}
+        item_args                                 = item_args or {}
 
         -- The text might be invalid, so use pcall.
         if cache.tbm and (text == nil or text == "") then
@@ -134,12 +138,12 @@ function common.list_update(w, buttons, label, data, objects, args)
             if type(bg_image) ~= "function" then
                 cache.bgb:set_bgimage(bg_image)
             else
-                gdebug.deprecate("If you read this, you used an undocumented API"..
-                    " which has been replaced by the new awful.widget.common "..
-                    "templating system, please migrate now. This feature is "..
-                    "already staged for removal", {
-                    deprecated_in = 4
-                })
+                gdebug.deprecate("If you read this, you used an undocumented API" ..
+                                         " which has been replaced by the new awful.widget.common " ..
+                                         "templating system, please migrate now. This feature is " ..
+                                         "already staged for removal", {
+                                     deprecated_in = 4
+                                 })
             end
 
             cache.bgb.shape              = item_args.shape
@@ -155,7 +159,7 @@ function common.list_update(w, buttons, label, data, objects, args)
         end
 
         w:add(cache.primary)
-   end
+    end
 end
 
 return common

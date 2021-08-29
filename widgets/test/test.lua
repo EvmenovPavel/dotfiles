@@ -4,7 +4,7 @@ local gears     = require("gears")
 local dpi       = require("beautiful").xresources.apply_dpi
 local resources = require("resources")
 
-local test = {}
+local test      = {}
 
 function test:init()
     local rebootWidget = wibox.widget {

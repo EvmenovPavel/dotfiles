@@ -4,24 +4,24 @@
 -- @classmod wibox.widget.systray
 ---------------------------------------------------------------------------
 
-local wbase = require("wibox.widget.base")
-local drawable = require("wibox.drawable")
-local beautiful = require("beautiful")
-local gtable = require("gears.table")
-local capi = {
+local wbase             = require("wibox.widget.base")
+local drawable          = require("wibox.drawable")
+local beautiful         = require("beautiful")
+local gtable            = require("gears.table")
+local capi              = {
     awesome = awesome,
-    screen = screen
+    screen  = screen
 }
-local setmetatable = setmetatable
-local error = error
-local abs = math.abs
+local setmetatable      = setmetatable
+local error             = error
+local abs               = math.abs
 
-local systray = { mt = {} }
+local systray           = { mt = {} }
 
-local instance = nil
-local horizontal = true
-local base_size = nil
-local reverse = false
+local instance          = nil
+local horizontal        = true
+local base_size         = nil
+local reverse           = false
 local display_on_screen = "primary"
 
 --- The systray background color.
@@ -44,10 +44,10 @@ function systray:draw(context, cr, width, height)
         return
     end
 
-    local x, y, _, _ = wbase.rect_to_device_geometry(cr, 0, 0, width, height)
+    local x, y, _, _  = wbase.rect_to_device_geometry(cr, 0, 0, width, height)
     local num_entries = capi.awesome.systray()
-    local bg = beautiful.bg_systray or beautiful.bg_normal or "#000000"
-    local spacing = beautiful.systray_icon_spacing or 0
+    local bg          = beautiful.bg_systray or beautiful.bg_normal or "#000000"
+    local spacing     = beautiful.systray_icon_spacing or 0
 
     if context and not context.wibox then
         error("The systray widget can only be placed inside a wibox.")
@@ -55,12 +55,12 @@ function systray:draw(context, cr, width, height)
 
     -- Figure out if the cairo context is rotated
     local dir_x, dir_y = cr:user_to_device_distance(1, 0)
-    local is_rotated = abs(dir_x) < abs(dir_y)
+    local is_rotated   = abs(dir_x) < abs(dir_y)
 
     local in_dir, ortho, base
     if horizontal then
         in_dir, ortho = width, height
-        is_rotated = not is_rotated
+        is_rotated    = not is_rotated
     else
         ortho, in_dir = width, height
     end
@@ -86,8 +86,8 @@ function systray:fit(context, width, height)
     end
 
     local num_entries = capi.awesome.systray()
-    local base = base_size
-    local spacing = beautiful.systray_icon_spacing or 0
+    local base        = base_size
+    local spacing     = beautiful.systray_icon_spacing or 0
     if num_entries == 0 then
         return 0, 0
     end
@@ -161,7 +161,7 @@ end
 -- @function wibox.widget.systray
 
 local function new(revers)
-    local ret = wbase.make_widget(nil, nil, {enable_properties = true})
+    local ret = wbase.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, systray, true)
 

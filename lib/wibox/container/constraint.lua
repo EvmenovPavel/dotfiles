@@ -10,11 +10,11 @@
 ---------------------------------------------------------------------------
 
 local setmetatable = setmetatable
-local base = require("wibox.widget.base")
-local gtable = require("gears.table")
-local math = math
+local base         = require("wibox.widget.base")
+local gtable       = require("gears.table")
+local math         = math
 
-local constraint = { mt = {} }
+local constraint   = { mt = {} }
 
 -- Layout a constraint layout
 function constraint:layout(_, width, height)
@@ -27,8 +27,8 @@ end
 function constraint:fit(context, width, height)
     local w, h
     if self._private.widget then
-        w = self._private.strategy(width, self._private.width)
-        h = self._private.strategy(height, self._private.height)
+        w    = self._private.strategy(width, self._private.width)
+        h    = self._private.strategy(height, self._private.height)
 
         w, h = base.fit_widget(self, context, self._private.widget, w, h)
     else
@@ -57,7 +57,7 @@ end
 --- Get the number of children element
 -- @treturn table The children
 function constraint:get_children()
-    return {self._private.widget}
+    return { self._private.widget }
 end
 
 --- Replace the layout children
@@ -73,10 +73,10 @@ end
 
 function constraint:set_strategy(val)
     local func = {
-        min = function(real_size, limit)
+        min   = function(real_size, limit)
             return limit and math.max(limit, real_size) or real_size
         end,
-        max = function(real_size, limit)
+        max   = function(real_size, limit)
             return limit and math.min(limit, real_size) or real_size
         end,
         exact = function(real_size, limit)
@@ -125,7 +125,7 @@ end
 --- Reset this layout. The widget will be unreferenced, strategy set to "max"
 -- and the constraints set to nil.
 function constraint:reset()
-    self._private.width = nil
+    self._private.width  = nil
     self._private.height = nil
     self:set_strategy("max")
     self:set_widget(nil)
@@ -145,7 +145,7 @@ end
 -- @treturn table A new constraint container
 -- @function wibox.container.constraint
 local function new(widget, strategy, width, height)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret = base.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, constraint, true)
 

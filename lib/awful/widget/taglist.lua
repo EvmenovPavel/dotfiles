@@ -113,29 +113,29 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local capi = { screen = screen,
-               awesome = awesome,
-               client = client }
+local capi         = { screen  = screen,
+                       awesome = awesome,
+                       client  = client }
 local setmetatable = setmetatable
-local pairs = pairs
-local ipairs = ipairs
-local table = table
-local common = require("awful.widget.common")
-local tag = require("awful.tag")
-local beautiful = require("beautiful")
-local fixed = require("wibox.layout.fixed")
-local surface = require("gears.surface")
-local timer = require("gears.timer")
-local gcolor = require("gears.color")
-local gstring = require("gears.string")
-local gdebug = require("gears.debug")
-local base = require("wibox.widget.base")
+local pairs        = pairs
+local ipairs       = ipairs
+local table        = table
+local common       = require("awful.widget.common")
+local tag          = require("awful.tag")
+local beautiful    = require("beautiful")
+local fixed        = require("wibox.layout.fixed")
+local surface      = require("gears.surface")
+local timer        = require("gears.timer")
+local gcolor       = require("gears.color")
+local gstring      = require("gears.string")
+local gdebug       = require("gears.debug")
+local base         = require("wibox.widget.base")
 
 local function get_screen(s)
     return s and capi.screen[s]
 end
 
-local taglist = { mt = {} }
+local taglist                  = { mt = {} }
 taglist.filter, taglist.source = {}, {}
 
 --- The tag list main foreground (text) color.
@@ -305,72 +305,82 @@ taglist.filter, taglist.source = {}, {}
 -- @param color
 -- @see gears.color
 
-local instances = nil
+local instances                = nil
 
 function taglist.taglist_label(t, args)
-    if not args then args = {} end
-    local theme = beautiful.get()
-    local fg_focus = args.fg_focus or theme.taglist_fg_focus or theme.fg_focus
-    local bg_focus = args.bg_focus or theme.taglist_bg_focus or theme.bg_focus
-    local fg_urgent = args.fg_urgent or theme.taglist_fg_urgent or theme.fg_urgent
-    local bg_urgent = args.bg_urgent or theme.taglist_bg_urgent or theme.bg_urgent
-    local bg_occupied = args.bg_occupied or theme.taglist_bg_occupied
-    local fg_occupied = args.fg_occupied or theme.taglist_fg_occupied
-    local bg_empty = args.bg_empty or theme.taglist_bg_empty
-    local fg_empty = args.fg_empty or theme.taglist_fg_empty
-    local bg_volatile = args.bg_volatile or theme.taglist_bg_volatile
-    local fg_volatile = args.fg_volatile or theme.taglist_fg_volatile
-    local taglist_squares_sel = args.squares_sel or theme.taglist_squares_sel
-    local taglist_squares_unsel = args.squares_unsel or theme.taglist_squares_unsel
-    local taglist_squares_sel_empty = args.squares_sel_empty or theme.taglist_squares_sel_empty
+    if not args then
+        args = {}
+    end
+    local theme                       = beautiful.get()
+    local fg_focus                    = args.fg_focus or theme.taglist_fg_focus or theme.fg_focus
+    local bg_focus                    = args.bg_focus or theme.taglist_bg_focus or theme.bg_focus
+    local fg_urgent                   = args.fg_urgent or theme.taglist_fg_urgent or theme.fg_urgent
+    local bg_urgent                   = args.bg_urgent or theme.taglist_bg_urgent or theme.bg_urgent
+    local bg_occupied                 = args.bg_occupied or theme.taglist_bg_occupied
+    local fg_occupied                 = args.fg_occupied or theme.taglist_fg_occupied
+    local bg_empty                    = args.bg_empty or theme.taglist_bg_empty
+    local fg_empty                    = args.fg_empty or theme.taglist_fg_empty
+    local bg_volatile                 = args.bg_volatile or theme.taglist_bg_volatile
+    local fg_volatile                 = args.fg_volatile or theme.taglist_fg_volatile
+    local taglist_squares_sel         = args.squares_sel or theme.taglist_squares_sel
+    local taglist_squares_unsel       = args.squares_unsel or theme.taglist_squares_unsel
+    local taglist_squares_sel_empty   = args.squares_sel_empty or theme.taglist_squares_sel_empty
     local taglist_squares_unsel_empty = args.squares_unsel_empty or theme.taglist_squares_unsel_empty
-    local taglist_squares_resize = theme.taglist_squares_resize or args.squares_resize or "true"
-    local taglist_disable_icon = args.taglist_disable_icon or theme.taglist_disable_icon or false
-    local font = args.font or theme.taglist_font or theme.font or ""
-    local text = nil
-    local sel = capi.client.focus
-    local bg_color = nil
-    local fg_color = nil
+    local taglist_squares_resize      = theme.taglist_squares_resize or args.squares_resize or "true"
+    local taglist_disable_icon        = args.taglist_disable_icon or theme.taglist_disable_icon or false
+    local font                        = args.font or theme.taglist_font or theme.font or ""
+    local text                        = nil
+    local sel                         = capi.client.focus
+    local bg_color                    = nil
+    local fg_color                    = nil
     local bg_image
     local icon
-    local shape              = args.shape or theme.taglist_shape
-    local shape_border_width = args.shape_border_width or theme.taglist_shape_border_width
-    local shape_border_color = args.shape_border_color or theme.taglist_shape_border_color
+    local shape                       = args.shape or theme.taglist_shape
+    local shape_border_width          = args.shape_border_width or theme.taglist_shape_border_width
+    local shape_border_color          = args.shape_border_color or theme.taglist_shape_border_color
     -- TODO: Re-implement bg_resize
-    local bg_resize = false -- luacheck: ignore
-    local is_selected = false
-    local cls = t:clients()
+    local bg_resize                   = false -- luacheck: ignore
+    local is_selected                 = false
+    local cls                         = t:clients()
 
     if sel and taglist_squares_sel then
         -- Check that the selected client is tagged with 't'.
         local seltags = sel:tags()
         for _, v in ipairs(seltags) do
             if v == t then
-                bg_image = taglist_squares_sel
-                bg_resize = taglist_squares_resize == "true"
+                bg_image    = taglist_squares_sel
+                bg_resize   = taglist_squares_resize == "true"
                 is_selected = true
                 break
             end
         end
     end
     if #cls == 0 and t.selected and taglist_squares_sel_empty then
-        bg_image = taglist_squares_sel_empty
+        bg_image  = taglist_squares_sel_empty
         bg_resize = taglist_squares_resize == "true"
     elseif not is_selected then
         if #cls > 0 then
             if taglist_squares_unsel then
-                bg_image = taglist_squares_unsel
+                bg_image  = taglist_squares_unsel
                 bg_resize = taglist_squares_resize == "true"
             end
-            if bg_occupied then bg_color = bg_occupied end
-            if fg_occupied then fg_color = fg_occupied end
+            if bg_occupied then
+                bg_color = bg_occupied
+            end
+            if fg_occupied then
+                fg_color = fg_occupied
+            end
         else
             if taglist_squares_unsel_empty then
-                bg_image = taglist_squares_unsel_empty
+                bg_image  = taglist_squares_unsel_empty
                 bg_resize = taglist_squares_resize == "true"
             end
-            if bg_empty then bg_color = bg_empty end
-            if fg_empty then fg_color = fg_empty end
+            if bg_empty then
+                bg_color = bg_empty
+            end
+            if fg_empty then
+                fg_color = fg_empty
+            end
 
             if args.shape_empty or theme.taglist_shape_empty then
                 shape = args.shape_empty or theme.taglist_shape_empty
@@ -402,8 +412,12 @@ function taglist.taglist_label(t, args)
         end
 
     elseif tag.getproperty(t, "urgent") then
-        if bg_urgent then bg_color = bg_urgent end
-        if fg_urgent then fg_color = fg_urgent end
+        if bg_urgent then
+            bg_color = bg_urgent
+        end
+        if fg_urgent then
+            fg_color = fg_urgent
+        end
 
         if args.shape_urgent or theme.taglist_shape_urgent then
             shape = args.shape_urgent or theme.taglist_shape_urgent
@@ -418,8 +432,12 @@ function taglist.taglist_label(t, args)
         end
 
     elseif t.volatile then
-        if bg_volatile then bg_color = bg_volatile end
-        if fg_volatile then fg_color = fg_volatile end
+        if bg_volatile then
+            bg_color = bg_volatile
+        end
+        if fg_volatile then
+            fg_color = fg_volatile
+        end
 
         if args.shape_volatile or theme.taglist_shape_volatile then
             shape = args.shape_volatile or theme.taglist_shape_volatile
@@ -435,10 +453,10 @@ function taglist.taglist_label(t, args)
     end
 
     if not tag.getproperty(t, "icon_only") then
-        text = "<span font_desc='"..font.."'>"
+        text = "<span font_desc='" .. font .. "'>"
         if fg_color then
             text = text .. "<span color='" .. gcolor.ensure_pango_color(fg_color) ..
-                "'>" .. (gstring.xml_escape(t.name) or "") .. "</span>"
+                    "'>" .. (gstring.xml_escape(t.name) or "") .. "</span>"
         else
             text = text .. (gstring.xml_escape(t.name) or "")
         end
@@ -460,7 +478,7 @@ function taglist.taglist_label(t, args)
 end
 
 local function taglist_update(s, w, buttons, filter, data, style, update_function, args)
-    local tags = {}
+    local tags   = {}
 
     local source = args and args.source or taglist.source.for_screen or nil
     local list   = source and source(s, args) or s.tags
@@ -471,7 +489,9 @@ local function taglist_update(s, w, buttons, filter, data, style, update_functio
         end
     end
 
-    local function label(c) return taglist.taglist_label(c, style) end
+    local function label(c)
+        return taglist.taglist_label(c, style)
+    end
 
     update_function(w, buttons, label, data, tags, args)
 end
@@ -530,18 +550,18 @@ end
 -- @function awful.taglist
 function taglist.new(args, filter, buttons, style, update_function, base_widget)
 
-    local screen = nil
+    local screen   = nil
 
     local argstype = type(args)
 
     -- Detect the old function signature
     if argstype == "number" or argstype == "screen" or
-      (argstype == "table" and args.index and args == capi.screen[args.index]) then
+            (argstype == "table" and args.index and args == capi.screen[args.index]) then
         gdebug.deprecate("The `screen` paramater is deprecated, use `args.screen`.",
-            {deprecated_in=5})
+                         { deprecated_in = 5 })
 
         screen = get_screen(args)
-        args = {}
+        args   = {}
     end
 
     assert(type(args) == "table")
@@ -552,22 +572,22 @@ function taglist.new(args, filter, buttons, style, update_function, base_widget)
                         update_function = update_function,
                         layout          = base_widget
     } do
-        gdebug.deprecate("The `awful.widget.taglist()` `"..k
-            .."` paramater is deprecated, use `args."..k.."`.",
-        {deprecated_in=5})
+        gdebug.deprecate("The `awful.widget.taglist()` `" .. k
+                                 .. "` paramater is deprecated, use `args." .. k .. "`.",
+                         { deprecated_in = 5 })
         args[k] = v
     end
 
-    screen = screen or get_screen(args.screen)
+    screen   = screen or get_screen(args.screen)
 
     local uf = args.update_function or common.list_update
-    local w = base.make_widget_from_value(args.layout or fixed.horizontal)
+    local w  = base.make_widget_from_value(args.layout or fixed.horizontal)
 
     if w.set_spacing and (args.style and args.style.spacing or beautiful.taglist_spacing) then
         w:set_spacing(args.style and args.style.spacing or beautiful.taglist_spacing)
     end
 
-    local data = setmetatable({}, { __mode = 'k' })
+    local data          = setmetatable({}, { __mode = 'k' })
 
     local queued_update = {}
 
@@ -595,8 +615,12 @@ function taglist.new(args, filter, buttons, style, update_function, base_widget)
                 end
             end
         end
-        local uc = function (c) return u(c.screen) end
-        local ut = function (t) return u(t.screen) end
+        local uc = function(c)
+            return u(c.screen)
+        end
+        local ut = function(t)
+            return u(t.screen)
+        end
         capi.client.connect_signal("focus", uc)
         capi.client.connect_signal("unfocus", uc)
         tag.attached_connect_signal(nil, "property::selected", ut)
@@ -621,7 +645,7 @@ function taglist.new(args, filter, buttons, style, update_function, base_widget)
     w._do_taglist_update()
     local list = instances[screen]
     if not list then
-        list = setmetatable({}, { __mode = "v" })
+        list              = setmetatable({}, { __mode = "v" })
         instances[screen] = list
     end
     table.insert(list, w)

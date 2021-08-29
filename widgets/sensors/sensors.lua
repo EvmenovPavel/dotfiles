@@ -91,11 +91,11 @@ function sensors:init()
                                                menu  = func
                                            })
 
-    local widget   = wibox.widget({
-                                      wText,
-                                      --wSensors,
-                                      layout = wibox.layout.align.horizontal
-                                  })
+    local widget     = wibox.widget({
+                                        wText,
+                                        --wSensors,
+                                        layout = wibox.layout.align.horizontal
+                                    })
 
     return widget
 end

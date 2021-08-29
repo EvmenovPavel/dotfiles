@@ -178,33 +178,35 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local client = client
-local awesome = awesome
-local screen = screen
-local table = table
-local type = type
-local ipairs = ipairs
-local pairs = pairs
-local atag = require("awful.tag")
-local gtable = require("gears.table")
-local a_place = require("awful.placement")
+local client         = client
+local awesome        = awesome
+local screen         = screen
+local table          = table
+local type           = type
+local ipairs         = ipairs
+local pairs          = pairs
+local atag           = require("awful.tag")
+local gtable         = require("gears.table")
+local a_place        = require("awful.placement")
 local protected_call = require("gears.protected_call")
-local aspawn = require("awful.spawn")
-local gsort = require("gears.sort")
-local gdebug = require("gears.debug")
-local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local aspawn         = require("awful.spawn")
+local gsort          = require("gears.sort")
+local gdebug         = require("gears.debug")
+local unpack         = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
 
-local rules = {}
+local rules          = {}
 
 --- This is the global rules table.
-rules.rules = {}
+rules.rules          = {}
 
 --- Check if a client matches a rule.
 -- @client c The client.
 -- @tab rule The rule to check.
 -- @treturn bool True if it matches, false otherwise.
 function rules.match(c, rule)
-    if not rule then return false end
+    if not rule then
+        return false
+    end
     for field, value in pairs(rule) do
         if c[field] then
             if type(c[field]) == "string" then
@@ -226,7 +228,9 @@ end
 -- @tab rule The rule to check.
 -- @treturn bool True if at least one rule is matched, false otherwise.
 function rules.match_any(c, rule)
-    if not rule then return false end
+    if not rule then
+        return false
+    end
     for field, values in pairs(rule) do
         if c[field] then
             for _, value in ipairs(values) do
@@ -248,7 +252,7 @@ end
 -- @treturn bool
 function rules.matches(c, entry)
     return (rules.match(c, entry.rule) or rules.match_any(c, entry.rule_any)) and
-        (not rules.match(c, entry.except) and not rules.match_any(c, entry.except_any))
+            (not rules.match(c, entry.except) and not rules.match_any(c, entry.except_any))
 end
 
 --- Get list of matching rules for a client.
@@ -286,7 +290,7 @@ end
 -- index, the higher the priority. Each entry is a table with a `name` and a
 -- `callback` field. This table is exposed for debugging purpose. The API
 -- is private and should be modified using the public accessors.
-local rule_sources = {}
+local rule_sources     = {}
 local rule_source_sort = gsort.topological()
 
 --- Add a new rule source.
@@ -329,35 +333,35 @@ local rule_source_sort = gsort.topological()
 --  priority over.
 -- @treturn boolean Returns false if a dependency conflict was found.
 function rules.add_rule_source(name, callback, depends_on, precede)
-    depends_on = depends_on  or {}
+    depends_on = depends_on or {}
     precede    = precede or {}
-    assert(type( depends_on ) == "table")
-    assert(type( precede    ) == "table")
+    assert(type(depends_on) == "table")
+    assert(type(precede) == "table")
 
     for _, v in ipairs(rule_sources) do
         -- Names must be unique
         assert(
-            v.name ~= name,
-            "Name must be unique, but '" .. name .. "' was already registered."
+                v.name ~= name,
+                "Name must be unique, but '" .. name .. "' was already registered."
         )
     end
 
     local new_sources = rule_source_sort:clone()
 
-    new_sources:prepend(name, precede    )
-    new_sources:append (name, depends_on )
+    new_sources:prepend(name, precede)
+    new_sources:append(name, depends_on)
 
     local res, err = new_sources:sort()
 
     if err then
-        gdebug.print_warning("Failed to add the rule source: "..err)
+        gdebug.print_warning("Failed to add the rule source: " .. err)
         return false
     end
 
     -- Only replace the source once the additions have been proven safe
     rule_source_sort = new_sources
 
-    local callbacks = {}
+    local callbacks  = {}
 
     -- Get all callbacks for *existing* sources.
     -- It is important to remember that names can be used in the sorting even
@@ -366,8 +370,8 @@ function rules.add_rule_source(name, callback, depends_on, precede)
         callbacks[v.name] = v.callback
     end
 
-    rule_sources = {}
-    callbacks[name]    = callback
+    rule_sources    = {}
+    callbacks[name] = callback
 
     for _, v in ipairs(res) do
         if callbacks[v] then
@@ -400,7 +404,7 @@ end
 -- Add the rules properties
 local function apply_awful_rules(c, props, callbacks)
     for _, entry in ipairs(rules.matching_rules(c, rules.rules)) do
-        gtable.crush(props,entry.properties or {})
+        gtable.crush(props, entry.properties or {})
 
         if entry.callback then
             table.insert(callbacks, entry.callback)
@@ -416,7 +420,7 @@ end
 --
 -- @rulesources awful.rules
 
-rules.add_rule_source("awful.rules", apply_awful_rules, {"awful.spawn"}, {})
+rules.add_rule_source("awful.rules", apply_awful_rules, { "awful.spawn" }, {})
 
 -- Add startup_id overridden properties
 local function apply_spawn_rules(c, props, callbacks)
@@ -441,7 +445,7 @@ end
 --
 -- @rulesources awful.spawn
 
-rules.add_rule_source("awful.spawn", apply_spawn_rules, {}, {"awful.rules"})
+rules.add_rule_source("awful.spawn", apply_spawn_rules, {}, { "awful.rules" })
 
 local function apply_singleton_rules(c, props, callbacks)
     local persis_id, info = c.single_instance_id, nil
@@ -450,11 +454,11 @@ local function apply_singleton_rules(c, props, callbacks)
     if awesome.startup and persis_id then
         info = aspawn.single_instance_manager.by_uid[persis_id]
     elseif c.startup_id then
-        info = aspawn.single_instance_manager.by_snid[c.startup_id]
+        info                                                 = aspawn.single_instance_manager.by_snid[c.startup_id]
         aspawn.single_instance_manager.by_snid[c.startup_id] = nil
     elseif aspawn.single_instance_manager.by_pid[c.pid] then
         info = aspawn.single_instance_manager.by_pid[c.pid].matcher(c) and
-            aspawn.single_instance_manager.by_pid[c.pid] or nil
+                aspawn.single_instance_manager.by_pid[c.pid] or nil
     end
 
     if info then
@@ -481,7 +485,7 @@ end
 --
 -- @rulesources awful.spawn_once
 
-rules.add_rule_source("awful.spawn_once", apply_singleton_rules, {"awful.spawn"}, {"awful.rules"})
+rules.add_rule_source("awful.spawn_once", apply_singleton_rules, { "awful.spawn" }, { "awful.rules" })
 
 --- Apply awful.rules.rules to a client.
 -- @client c The client.
@@ -495,7 +499,9 @@ function rules.apply(c)
 end
 
 local function add_to_tag(c, t)
-    if not t then return end
+    if not t then
+        return
+    end
 
     local tags = c:tags()
     table.insert(tags, t)
@@ -519,7 +525,7 @@ end
 -- * placement
 --
 -- @tfield table awful.rules.extra_properties
-rules.extra_properties = {}
+rules.extra_properties         = {}
 
 --- Extra high priority properties.
 --
@@ -547,46 +553,48 @@ rules.high_priority_properties = {}
 -- By default, the table has the following functions:
 --
 -- * switch_to_tags
-rules.delayed_properties = {}
+rules.delayed_properties       = {}
 
-local force_ignore = {
-    titlebars_enabled=true, focus=true, screen=true, x=true,
-    y=true, width=true, height=true, geometry=true,placement=true,
-    border_width=true,floating=true,size_hints_honor=true
+local force_ignore             = {
+    titlebars_enabled = true, focus = true, screen = true, x = true,
+    y                 = true, width = true, height = true, geometry = true, placement = true,
+    border_width      = true, floating = true, size_hints_honor = true
 }
 
 function rules.high_priority_properties.tag(c, value, props)
     if value then
         if type(value) == "string" then
             local name = value
-            value = atag.find_by_name(c.screen, value)
+            value      = atag.find_by_name(c.screen, value)
             if not value and not props.screen then
                 value = atag.find_by_name(nil, name)
             end
             if not value then
                 require("gears.debug").print_error("awful.rules-rule specified "
-                    .. "tag = '" .. name .. "', but no such tag exists")
+                                                           .. "tag = '" .. name .. "', but no such tag exists")
                 return
             end
         end
 
         -- In case the tag has been forced to another screen, move the client
         if c.screen ~= value.screen then
-            c.screen = value.screen
+            c.screen     = value.screen
             props.screen = value.screen -- In case another rule query it
         end
 
-        c:tags{ value }
+        c:tags { value }
     end
 end
 
 function rules.delayed_properties.switch_to_tags(c, value)
-    if not value then return end
+    if not value then
+        return
+    end
     atag.viewmore(c:tags(), c.screen)
 end
 
 function rules.delayed_properties.switchtotag(c, value)
-    gdebug.deprecate("Use switch_to_tags instead of switchtotag", {deprecated_in=5})
+    gdebug.deprecate("Use switch_to_tags instead of switchtotag", { deprecated_in = 5 })
 
     rules.delayed_properties.switch_to_tags(c, value)
 end
@@ -595,11 +603,11 @@ function rules.extra_properties.geometry(c, _, props)
     local cur_geo = c:geometry()
 
     local new_geo = type(props.geometry) == "function"
-        and props.geometry(c, props) or props.geometry or {}
+            and props.geometry(c, props) or props.geometry or {}
 
-    for _, v in ipairs {"x", "y", "width", "height"} do
+    for _, v in ipairs { "x", "y", "width", "height" } do
         new_geo[v] = type(props[v]) == "function" and props[v](c, props)
-            or props[v] or new_geo[v] or cur_geo[v]
+                or props[v] or new_geo[v] or cur_geo[v]
     end
 
     c:geometry(new_geo) --TODO use request::geometry
@@ -607,25 +615,25 @@ end
 
 function rules.high_priority_properties.new_tag(c, value, props)
     local ty = type(value)
-    local t = nil
+    local t  = nil
 
     if ty == "boolean" then
         -- Create a new tag named after the client class
-        t = atag.add(c.class or "N/A", {screen=c.screen, volatile=true})
+        t = atag.add(c.class or "N/A", { screen = c.screen, volatile = true })
     elseif ty == "string" then
         -- Create a tag named after "value"
-        t = atag.add(value, {screen=c.screen, volatile=true})
+        t = atag.add(value, { screen = c.screen, volatile = true })
     elseif ty == "table" then
         -- Assume a table of tags properties. Set the right screen, but
         -- avoid editing the original table
-        local values = value.screen and value or gtable.clone(value)
+        local values  = value.screen and value or gtable.clone(value)
         values.screen = values.screen or c.screen
 
-        t = atag.add(value.name or c.class or "N/A", values)
+        t             = atag.add(value.name or c.class or "N/A", values)
 
         -- In case the tag has been forced to another screen, move the client
-        c.screen = t.screen
-        props.screen = t.screen -- In case another rule query it
+        c.screen      = t.screen
+        props.screen  = t.screen -- In case another rule query it
     else
         assert(false)
     end
@@ -638,11 +646,11 @@ end
 function rules.extra_properties.placement(c, value, props)
     -- Avoid problems
     if awesome.startup and
-      (c.size_hints.user_position or c.size_hints.program_position) then
+            (c.size_hints.user_position or c.size_hints.program_position) then
         return
     end
 
-    local ty = type(value)
+    local ty   = type(value)
 
     local args = {
         honor_workarea = props.honor_workarea ~= false,
@@ -650,7 +658,7 @@ function rules.extra_properties.placement(c, value, props)
     }
 
     if ty == "function" or (ty == "table" and
-        getmetatable(value) and getmetatable(value).__call
+            getmetatable(value) and getmetatable(value).__call
     ) then
         value(c, args)
     elseif ty == "string" and a_place[value] then
@@ -675,7 +683,7 @@ function rules.high_priority_properties.tags(c, value, props)
     end
 
     if s and s ~= c.screen then
-        c.screen = s
+        c.screen     = s
         props.screen = s -- In case another rule query it
     end
 
@@ -693,35 +701,35 @@ end
 function rules.execute(c, props, callbacks)
     -- This has to be done first, as it will impact geometry related props.
     if props.titlebars_enabled and (type(props.titlebars_enabled) ~= "function"
-            or props.titlebars_enabled(c,props)) then
-        c:emit_signal("request::titlebars", "rules", {properties=props})
+            or props.titlebars_enabled(c, props)) then
+        c:emit_signal("request::titlebars", "rules", { properties = props })
         c._request_titlebars_called = true
     end
 
     -- Border width will also cause geometry related properties to fail
     if props.border_width then
         c.border_width = type(props.border_width) == "function" and
-            props.border_width(c, props) or props.border_width
+                props.border_width(c, props) or props.border_width
     end
 
     -- Size hints will be re-applied when setting width/height unless it is
     -- disabled first
     if props.size_hints_honor ~= nil then
-        c.size_hints_honor = type(props.size_hints_honor) == "function" and props.size_hints_honor(c,props)
-            or props.size_hints_honor
+        c.size_hints_honor = type(props.size_hints_honor) == "function" and props.size_hints_honor(c, props)
+                or props.size_hints_honor
     end
 
     -- Geometry will only work if floating is true, otherwise the "saved"
     -- geometry will be restored.
     if props.floating ~= nil then
-        c.floating = type(props.floating) == "function" and props.floating(c,props)
-            or props.floating
+        c.floating = type(props.floating) == "function" and props.floating(c, props)
+                or props.floating
     end
 
     -- Before requesting a tag, make sure the screen is right
     if props.screen then
-        c.screen = type(props.screen) == "function" and screen[props.screen(c,props)]
-            or screen[props.screen]
+        c.screen = type(props.screen) == "function" and screen[props.screen(c, props)]
+                or screen[props.screen]
     end
 
     -- Some properties need to be handled first. For example, many properties
@@ -742,7 +750,7 @@ function rules.execute(c, props, callbacks)
     -- Previously this was done in a second client.manage callback, but caused
     -- a race condition where the order of modules being loaded would change
     -- the outcome.
-    c:emit_signal("request::tag", nil, {reason="rules"})
+    c:emit_signal("request::tag", nil, { reason = "rules" })
 
     -- By default, rc.lua uses no_overlap+no_offscreen placement. This has to
     -- be executed before x/y/width/height/geometry as it would otherwise
@@ -764,7 +772,7 @@ function rules.execute(c, props, callbacks)
         end
 
         local ignore = rules.high_priority_properties[property] or
-            rules.delayed_properties[property] or force_ignore[property]
+                rules.delayed_properties[property] or force_ignore[property]
 
         if not ignore then
             if rules.extra_properties[property] then
@@ -799,7 +807,7 @@ function rules.execute(c, props, callbacks)
 
     -- Do this at last so we do not erase things done by the focus signal.
     if props.focus and (type(props.focus) ~= "function" or props.focus(c)) then
-        c:emit_signal('request::activate', "rules", {raise=not awesome.startup})
+        c:emit_signal('request::activate', "rules", { raise = not awesome.startup })
     end
 end
 

@@ -5,9 +5,9 @@ local titlebar  = {}
 function titlebar:init(theme)
     theme.titlebars_enabled                               = true
 
-    theme.titlebars_size                                   = 25
-    theme.titlebars_position                               = "top"
-    theme.titlebars_imitate_borders                        = true
+    theme.titlebars_size                                  = 25
+    theme.titlebars_position                              = "top"
+    theme.titlebars_imitate_borders                       = true
 
     --[[ MENU ]]--
     theme.titlebar_menu_button_focus                      = resources.titlebar.menu.button_focus

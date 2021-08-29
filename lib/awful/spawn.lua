@@ -288,23 +288,21 @@
 -- @module awful.spawn
 ---------------------------------------------------------------------------
 
-local capi =
-{
+local capi           = {
     awesome = awesome,
-    mouse = mouse,
-    client = client,
+    mouse   = mouse,
+    client  = client,
 }
-local lgi = require("lgi")
-local Gio = lgi.Gio
-local GLib = lgi.GLib
-local util   = require("awful.util")
-local gtable = require("gears.table")
-local gtimer = require("gears.timer")
-local aclient = require("awful.client")
+local lgi            = require("lgi")
+local Gio            = lgi.Gio
+local GLib           = lgi.GLib
+local util           = require("awful.util")
+local gtable         = require("gears.table")
+local gtimer         = require("gears.timer")
+local aclient        = require("awful.client")
 local protected_call = require("gears.protected_call")
 
-local spawn = {}
-
+local spawn          = {}
 
 local end_of_file
 do
@@ -338,7 +336,7 @@ do
         -- always 0 when line is NULL in C. We cannot tell apart an empty line and
         -- EOF in this case.
         require("gears.debug").print_warning("Cannot reliably detect EOF on an "
-                .. "GIOInputStream with this LGI version")
+                                                     .. "GIOInputStream with this LGI version")
         end_of_file = function(arg)
             return tostring(arg) == ""
         end
@@ -346,13 +344,15 @@ do
 end
 
 local function hash_command(cmd, rules)
-    rules = rules or {}
-    cmd = type(cmd) == "string" and cmd or table.concat(cmd, ';')
+    rules              = rules or {}
+    cmd                = type(cmd) == "string" and cmd or table.concat(cmd, ';')
 
     -- Do its best at adding some entropy
     local concat_rules = nil
-    concat_rules = function (r, depth)
-        if depth > 2 then return end
+    concat_rules       = function(r, depth)
+        if depth > 2 then
+            return
+        end
 
         local keys = gtable.keys(rules)
 
@@ -361,9 +361,9 @@ local function hash_command(cmd, rules)
             local t = type(v)
 
             if t == "string" or t == "number" then
-                cmd = cmd..k..v
+                cmd = cmd .. k .. v
             elseif t == "tag" then
-                cmd = cmd..k..v.name
+                cmd = cmd .. k .. v.name
             elseif t == "table" and not t.connect_signal then
                 cmd = cmd .. k
                 concat_rules(v, depth + 1)
@@ -383,7 +383,7 @@ spawn.snid_buffer = {}
 function spawn.on_snid_callback(c)
     local entry = spawn.snid_buffer[c.startup_id]
     if entry then
-        local props = entry[1]
+        local props    = entry[1]
         local callback = entry[2]
         --TODO v5: Remove this signal
         c:emit_signal("spawn::completed_with_payload", props, callback)
@@ -418,11 +418,11 @@ end
 function spawn.spawn(cmd, sn_rules, callback)
     if cmd and cmd ~= "" then
         local enable_sn = (sn_rules ~= false or callback)
-        enable_sn = not not enable_sn -- Force into a boolean.
+        enable_sn       = not not enable_sn -- Force into a boolean.
         local pid, snid = capi.awesome.spawn(cmd, enable_sn)
         -- The snid will be nil in case of failure
         if snid then
-            sn_rules = type(sn_rules) ~= "boolean" and sn_rules or {}
+            sn_rules                = type(sn_rules) ~= "boolean" and sn_rules or {}
             spawn.snid_buffer[snid] = { sn_rules, { callback } }
         end
         return pid, snid
@@ -461,11 +461,10 @@ end
 -- @treturn[1] Integer the PID of the forked process.
 -- @treturn[2] string Error message.
 function spawn.with_line_callback(cmd, callbacks)
-    local stdout_callback, stderr_callback, done_callback, exit_callback =
-        callbacks.stdout, callbacks.stderr, callbacks.output_done, callbacks.exit
-    local have_stdout, have_stderr = stdout_callback ~= nil, stderr_callback ~= nil
-    local pid, _, stdin, stdout, stderr = capi.awesome.spawn(cmd,
-            false, false, have_stdout, have_stderr, exit_callback)
+    local stdout_callback, stderr_callback, done_callback, exit_callback = callbacks.stdout, callbacks.stderr, callbacks.output_done, callbacks.exit
+    local have_stdout, have_stderr                                       = stdout_callback ~= nil, stderr_callback ~= nil
+    local pid, _, stdin, stdout, stderr                                  = capi.awesome.spawn(cmd,
+                                                                                              false, false, have_stdout, have_stderr, exit_callback)
     if type(pid) == "string" then
         -- Error
         return pid
@@ -483,11 +482,11 @@ function spawn.with_line_callback(cmd, callbacks)
     end
     if have_stdout then
         spawn.read_lines(Gio.UnixInputStream.new(stdout, true),
-                stdout_callback, step_done, true)
+                         stdout_callback, step_done, true)
     end
     if have_stderr then
         spawn.read_lines(Gio.UnixInputStream.new(stderr, true),
-                stderr_callback, step_done, true)
+                         stderr_callback, step_done, true)
     end
     assert(stdin == nil)
     return pid
@@ -518,11 +517,11 @@ function spawn.easy_async(cmd, callback)
     local function done_callback()
         return callback(stdout, stderr, exitreason, exitcode)
     end
-    local exit_callback_fired = false
+    local exit_callback_fired        = false
     local output_done_callback_fired = false
     local function exit_callback(reason, code)
-        exitcode = code
-        exitreason = reason
+        exitcode            = code
+        exitreason          = reason
         exit_callback_fired = true
         if output_done_callback_fired then
             return done_callback()
@@ -535,12 +534,12 @@ function spawn.easy_async(cmd, callback)
         end
     end
     return spawn.with_line_callback(
-        cmd, {
-        stdout=parse_stdout,
-        stderr=parse_stderr,
-        exit=exit_callback,
-        output_done=output_done_callback
-    })
+            cmd, {
+                stdout      = parse_stdout,
+                stderr      = parse_stderr,
+                exit        = exit_callback,
+                output_done = output_done_callback
+            })
 end
 
 --- Call `spawn.easy_async` with a shell.
@@ -578,7 +577,7 @@ function spawn.read_lines(input_stream, line_callback, done_callback, close)
         end
     end
     local start_read, finish_read
-    start_read = function()
+    start_read  = function()
         stream:read_line_async(GLib.PRIORITY_DEFAULT, nil, finish_read)
     end
     finish_read = function(obj, res)
@@ -616,17 +615,25 @@ aclient.property.persist("single_instance_id", "string")
 -- Check if the client is running either using the rule source or the matcher.
 local function is_running(hash, matcher)
     local status = spawn.single_instance_manager.by_uid[hash]
-    if not status then return false end
+    if not status then
+        return false
+    end
 
-    if #status.instances == 0 then return false end
+    if #status.instances == 0 then
+        return false
+    end
 
     for _, c in ipairs(status.instances) do
-        if c.valid then return true end
+        if c.valid then
+            return true
+        end
     end
 
     if matcher then
         for _, c in ipairs(client.get()) do
-            if matcher(c) then return true end
+            if matcher(c) then
+                return true
+            end
         end
     end
 
@@ -636,12 +643,14 @@ end
 -- Keep the data related to this hash.
 local function register_common(hash, rules, matcher, callback)
     local status = spawn.single_instance_manager.by_uid[hash]
-    if status then return status end
+    if status then
+        return status
+    end
 
-    status = {
+    status                                     = {
         rules     = rules,
         callback  = callback,
-        instances = setmetatable({}, {__mode = "v"}),
+        instances = setmetatable({}, { __mode = "v" }),
         hash      = hash,
         exec      = false,
         matcher   = matcher,
@@ -655,12 +664,14 @@ end
 local function run_once_common(hash, cmd, keep_pid)
     local pid, snid = spawn.spawn(cmd)
 
-    if type(pid) == "string" or not snid then return pid, snid end
+    if type(pid) == "string" or not snid then
+        return pid, snid
+    end
 
     assert(spawn.single_instance_manager.by_uid[hash])
 
-    local status = spawn.single_instance_manager.by_uid[hash]
-    status.exec = true
+    local status                                = spawn.single_instance_manager.by_uid[hash]
+    status.exec                                 = true
 
     spawn.single_instance_manager.by_snid[snid] = status
 
@@ -674,7 +685,7 @@ local function run_once_common(hash, cmd, keep_pid)
         autostart   = true,
         timeout     = 30,
         callback    = function()
-            spawn.single_instance_manager.by_pid [pid ] = nil
+            spawn.single_instance_manager.by_pid[pid]   = nil
             spawn.single_instance_manager.by_snid[snid] = nil
         end
     }
@@ -716,7 +727,7 @@ end
 -- @tparam[opt] function callback A callback function when the client is created.
 -- @see awful.rules
 function spawn.once(cmd, rules, matcher, unique_id, callback)
-    local hash = unique_id or hash_command(cmd, rules)
+    local hash   = unique_id or hash_command(cmd, rules)
     local status = register_common(hash, rules, matcher, callback)
     run_after_startup(function()
         if not status.exec and not is_running(hash, matcher) then
@@ -757,7 +768,7 @@ function spawn.single_instance(cmd, rules, matcher, unique_id, callback)
     end)
 end
 
-local raise_rules = {focus = true, switch_to_tags = true, raise = true}
+local raise_rules = { focus = true, switch_to_tags = true, raise = true }
 
 --- Raise a client if it exists or spawn a new one then raise it.
 --
@@ -775,7 +786,7 @@ local raise_rules = {focus = true, switch_to_tags = true, raise = true}
 -- @see awful.rules
 -- @treturn client The client if it already exists.
 function spawn.raise_or_spawn(cmd, rules, matcher, unique_id, callback)
-    local hash = unique_id or hash_command(cmd, rules)
+    local hash   = unique_id or hash_command(cmd, rules)
 
     local status = spawn.single_instance_manager.by_uid[hash]
     if status then
@@ -796,9 +807,11 @@ function spawn.raise_or_spawn(cmd, rules, matcher, unique_id, callback)
     return nil
 end
 
-capi.awesome.connect_signal("spawn::canceled" , spawn.on_snid_cancel   )
-capi.awesome.connect_signal("spawn::timeout"  , spawn.on_snid_cancel   )
-capi.client.connect_signal ("manage"          , spawn.on_snid_callback )
+capi.awesome.connect_signal("spawn::canceled", spawn.on_snid_cancel)
+capi.awesome.connect_signal("spawn::timeout", spawn.on_snid_cancel)
+capi.client.connect_signal("manage", spawn.on_snid_callback)
 
-return setmetatable(spawn, { __call = function(_, ...) return spawn.spawn(...) end })
+return setmetatable(spawn, { __call = function(_, ...)
+    return spawn.spawn(...)
+end })
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

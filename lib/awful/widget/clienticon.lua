@@ -3,12 +3,12 @@
 -- @copyright 2017 Uli Schlachter
 -- @classmod awful.widget.clienticon
 
-local base = require("wibox.widget.base")
-local surface = require("gears.surface")
-local gtable = require("gears.table")
+local base       = require("wibox.widget.base")
+local surface    = require("gears.surface")
+local gtable     = require("gears.table")
 
 local clienticon = {}
-local instances = setmetatable({}, { __mode = "k" })
+local instances  = setmetatable({}, { __mode = "k" })
 
 local function find_best_icon(sizes, width, height)
     local best, best_size
@@ -16,11 +16,11 @@ local function find_best_icon(sizes, width, height)
         if not best then
             best, best_size = k, size
         else
-            local best_too_small = best_size[1] < width or best_size[2] < height
-            local best_too_large = best_size[1] > width or best_size[2] > height
-            local better_because_bigger = best_too_small and size[1] > best_size[1] and size[2] > best_size[2]
+            local best_too_small         = best_size[1] < width or best_size[2] < height
+            local best_too_large         = best_size[1] > width or best_size[2] > height
+            local better_because_bigger  = best_too_small and size[1] > best_size[1] and size[2] > best_size[2]
             local better_because_smaller = best_too_large and size[1] < best_size[1] and size[2] < best_size[2]
-                and size[1] >= width and size[2] >= height
+                    and size[1] >= width and size[2] >= height
             if better_because_bigger or better_because_smaller then
                 best, best_size = k, size
             end
@@ -42,7 +42,7 @@ function clienticon:draw(_, cr, width, height)
 
     local aspect_w = width / size[1]
     local aspect_h = height / size[2]
-    local aspect = math.min(aspect_w, aspect_h)
+    local aspect   = math.min(aspect_w, aspect_h)
     cr:scale(aspect, aspect)
 
     local s = surface(c:get_icon(index))
@@ -90,7 +90,9 @@ function clienticon:get_client()
 end
 
 function clienticon:set_client(c)
-    if self._private.client == c then return end
+    if self._private.client == c then
+        return
+    end
     self._private.client = c
     self:emit_signal("widget::layout_changed")
     self:emit_signal("widget::redraw_needed")
@@ -101,13 +103,13 @@ end
 -- @treturn widget A new `widget`
 -- @function awful.widget.clienticon
 local function new(c)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret = base.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, clienticon, true)
 
     ret._private.client = c
 
-    instances[ret] = true
+    instances[ret]      = true
 
     return ret
 end

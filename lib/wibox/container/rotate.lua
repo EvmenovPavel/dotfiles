@@ -10,15 +10,15 @@
 -- @classmod wibox.container.rotate
 ---------------------------------------------------------------------------
 
-local error = error
-local pi = math.pi
+local error        = error
+local pi           = math.pi
 local setmetatable = setmetatable
-local tostring = tostring
-local base = require("wibox.widget.base")
-local matrix = require("gears.matrix")
-local gtable = require("gears.table")
+local tostring     = tostring
+local base         = require("wibox.widget.base")
+local matrix       = require("gears.matrix")
+local gtable       = require("gears.table")
 
-local rotate = { mt = {} }
+local rotate       = { mt = {} }
 
 local function transform(layout, width, height)
     local dir = layout:get_direction()
@@ -36,7 +36,7 @@ function rotate:layout(_, width, height)
 
     local dir = self:get_direction()
 
-    local m = matrix.identity
+    local m   = matrix.identity
     if dir == "west" then
         m = m:rotate(pi / 2)
         m = m:translate(0, -width)
@@ -80,7 +80,7 @@ end
 --- Get the number of children element
 -- @treturn table The children
 function rotate:get_children()
-    return {self._private.widget}
+    return { self._private.widget }
 end
 
 --- Replace the layout children
@@ -334,9 +334,9 @@ end
 function rotate:set_direction(dir)
     local allowed = {
         north = true,
-        east = true,
+        east  = true,
         south = true,
-        west = true
+        west  = true
     }
 
     if not allowed[dir] then
@@ -361,7 +361,7 @@ end
 -- @treturn table A new rotate container.
 -- @function wibox.container.rotate
 local function new(widget, dir)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret = base.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, rotate, true)
 

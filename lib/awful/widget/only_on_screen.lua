@@ -7,19 +7,19 @@
 -- @classmod awful.widget.only_on_screen
 ---------------------------------------------------------------------------
 
-local type = type
-local pairs = pairs
-local setmetatable = setmetatable
-local base = require("wibox.widget.base")
-local gtable = require("gears.table")
-local capi = {
-    screen = screen,
+local type           = type
+local pairs          = pairs
+local setmetatable   = setmetatable
+local base           = require("wibox.widget.base")
+local gtable         = require("gears.table")
+local capi           = {
+    screen  = screen,
     awesome = awesome
 }
 
 local only_on_screen = { mt = {} }
 
-local instances = setmetatable({}, { __mode = "k" })
+local instances      = setmetatable({}, { __mode = "k" })
 
 local function should_display_on(self, s)
     if not self._private.widget then
@@ -35,7 +35,9 @@ end
 
 -- Layout this layout
 function only_on_screen:layout(context, ...)
-    if not should_display_on(self, context.screen) then return end
+    if not should_display_on(self, context.screen) then
+        return
+    end
     return { base.place_widget_at(self._private.widget, 0, 0, ...) }
 end
 
@@ -66,7 +68,7 @@ end
 --- Get the number of children element
 -- @treturn table The children
 function only_on_screen:get_children()
-    return {self._private.widget}
+    return { self._private.widget }
 end
 
 --- Replace the layout children
@@ -98,7 +100,7 @@ end
 -- @treturn table A new only_on_screen container
 -- @function wibox.container.only_on_screen
 local function new(widget, s)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret = base.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, only_on_screen, true)
 

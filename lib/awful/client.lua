@@ -7,24 +7,23 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local gdebug = require("gears.debug")
-local spawn = nil --TODO v5 deprecate
-local set_shape = require("awful.client.shape").update.all
-local object = require("gears.object")
-local grect = require("gears.geometry").rectangle
-local gmath = require("gears.math")
-local gtable = require("gears.table")
-local pairs = pairs
-local type = type
-local ipairs = ipairs
-local table = table
-local math = math
+local gdebug       = require("gears.debug")
+local spawn        = nil --TODO v5 deprecate
+local set_shape    = require("awful.client.shape").update.all
+local object       = require("gears.object")
+local grect        = require("gears.geometry").rectangle
+local gmath        = require("gears.math")
+local gtable       = require("gears.table")
+local pairs        = pairs
+local type         = type
+local ipairs       = ipairs
+local table        = table
+local math         = math
 local setmetatable = setmetatable
-local capi =
-{
-    client = client,
-    mouse = mouse,
-    screen = screen,
+local capi         = {
+    client  = client,
+    mouse   = mouse,
+    screen  = screen,
     awesome = awesome,
 }
 
@@ -36,28 +35,28 @@ end
 local screen
 do
     screen = setmetatable({}, {
-        __index = function(_, k)
+        __index    = function(_, k)
             screen = require("awful.screen")
             return screen[k]
         end,
         __newindex = error -- Just to be sure in case anything ever does this
     })
 end
-local client = {object={}}
+local client                                 = { object = {} }
 
 -- Private data
-client.data = {}
-client.data.marked = {}
+client.data                                  = {}
+client.data.marked                           = {}
 client.data.persistent_properties_registered = {} -- keys are names of persistent properties, value always true
 
 -- Functions
-client.urgent = require("awful.client.urgent")
-client.swap = {}
-client.floating = {}
-client.dockable = {}
-client.property = {}
-client.shape = require("awful.client.shape")
-client.focus = require("awful.client.focus")
+client.urgent                                = require("awful.client.urgent")
+client.swap                                  = {}
+client.floating                              = {}
+client.dockable                              = {}
+client.property                              = {}
+client.shape                                 = require("awful.client.shape")
+client.focus                                 = require("awful.client.focus")
 
 --- The client default placement on the screen.
 --
@@ -157,7 +156,7 @@ client.focus = require("awful.client.focus")
 --   If it is a function, it will be called with the client and its first
 --   tag as arguments.
 function client.jumpto(c, merge)
-    gdebug.deprecate("Use c:jump_to(merge) instead of awful.client.jumpto", {deprecated_in=4})
+    gdebug.deprecate("Use c:jump_to(merge) instead of awful.client.jumpto", { deprecated_in = 4 })
     client.object.jump_to(c, merge)
 end
 
@@ -192,7 +191,7 @@ function client.object.jump_to(self, merge)
         end
     end
 
-    self:emit_signal("request::activate", "client.jumpto", {raise=true})
+    self:emit_signal("request::activate", "client.jumpto", { raise = true })
 end
 
 --- Get visible clients from a screen.
@@ -203,7 +202,7 @@ end
 -- @tparam[opt=false] boolean stacked Use stacking order? (top to bottom)
 -- @treturn table A table with all visible clients.
 function client.visible(s, stacked)
-    local cls = capi.client.get(s, stacked)
+    local cls  = capi.client.get(s, stacked)
     local vcls = {}
     for _, c in pairs(cls) do
         if c:isvisible() then
@@ -221,15 +220,15 @@ end
 -- @tparam[opt=false] boolean stacked Use stacking order? (top to bottom)
 -- @treturn table A table with all visible and tiled clients.
 function client.tiled(s, stacked)
-    local clients = client.visible(s, stacked)
+    local clients  = client.visible(s, stacked)
     local tclients = {}
     -- Remove floating clients
     for _, c in pairs(clients) do
         if not client.object.get_floating(c)
-            and not c.fullscreen
-            and not c.maximized
-            and not c.maximized_vertical
-            and not c.maximized_horizontal then
+                and not c.fullscreen
+                and not c.maximized
+                and not c.maximized_vertical
+                and not c.maximized_horizontal then
             table.insert(tclients, c)
         end
     end
@@ -254,7 +253,7 @@ function client.next(i, sel, stacked)
     sel = sel or capi.client.focus
     if sel then
         -- Get all visible clients
-        local cls = client.visible(sel.screen, stacked)
+        local cls  = client.visible(sel.screen, stacked)
         local fcls = {}
         -- Remove all non-normal clients
         for _, c in ipairs(cls) do
@@ -281,9 +280,9 @@ end
 function client.swap.bydirection(dir, c, stacked)
     local sel = c or capi.client.focus
     if sel then
-        local cltbl = client.visible(sel.screen, stacked)
+        local cltbl   = client.visible(sel.screen, stacked)
         local geomtbl = {}
-        for i,cl in ipairs(cltbl) do
+        for i, cl in ipairs(cltbl) do
             geomtbl[i] = cl:geometry()
         end
         local target = grect.get_in_direction(dir, geomtbl, sel:geometry())
@@ -300,7 +299,7 @@ end
 -- @param dir The direction, can be either "up", "down", "left" or "right".
 -- @client[opt] sel The client.
 function client.swap.global_bydirection(dir, sel)
-    sel = sel or capi.client.focus
+    sel       = sel or capi.client.focus
     local scr = get_screen(sel and sel.screen or screen.focused())
 
     if sel then
@@ -312,11 +311,11 @@ function client.swap.global_bydirection(dir, sel)
         if get_screen(sel.screen) == get_screen(c.screen) and sel ~= c then
             c:swap(sel)
 
-        -- swapping to an empty screen
+            -- swapping to an empty screen
         elseif sel == c then
             sel:move_to_screen(screen.focused())
 
-        -- swapping to a nonempty screen
+            -- swapping to a nonempty screen
         elseif get_screen(sel.screen) ~= get_screen(c.screen) and sel ~= c then
             sel:move_to_screen(c.screen)
             c:move_to_screen(scr)
@@ -324,7 +323,7 @@ function client.swap.global_bydirection(dir, sel)
 
         screen.focus(sel.screen)
         sel:emit_signal("request::activate", "client.swap.global_bydirection",
-                        {raise=false})
+                        { raise = false })
     end
 end
 
@@ -333,7 +332,7 @@ end
 -- @param i The index.
 -- @client[opt] c The client, otherwise focused one is used.
 function client.swap.byidx(i, c)
-    local sel = c or capi.client.focus
+    local sel    = c or capi.client.focus
     local target = client.next(i, sel)
     if target then
         target:swap(sel)
@@ -347,7 +346,7 @@ end
 -- @param[opt] s The screen where to cycle clients.
 -- @tparam[opt=false] boolean stacked Use stacking order? (top to bottom)
 function client.cycle(clockwise, s, stacked)
-    s = s or screen.focused()
+    s         = s or screen.focused()
     local cls = client.visible(s, stacked)
     -- We can't rotate without at least 2 clients, buddy.
     if #cls >= 2 then
@@ -404,7 +403,7 @@ end
 -- @client[opt] c The client, otherwise focused one is used.
 -- @see client.relative_move
 function client.moveresize(x, y, w, h, c)
-    gdebug.deprecate("Use c:relative_move(x, y, w, h) instead of awful.client.moveresize", {deprecated_in=4})
+    gdebug.deprecate("Use c:relative_move(x, y, w, h) instead of awful.client.moveresize", { deprecated_in = 4 })
     client.object.relative_move(c or capi.client.focus, x, y, w, h)
 end
 
@@ -416,10 +415,10 @@ end
 -- @tparam[opt=c.width] number w The relative width.
 -- @tparam[opt=c.height] number h The relative height.
 function client.object.relative_move(self, x, y, w, h)
-    local geometry = self:geometry()
-    geometry['x'] = geometry['x'] + x
-    geometry['y'] = geometry['y'] + y
-    geometry['width'] = geometry['width'] + w
+    local geometry     = self:geometry()
+    geometry['x']      = geometry['x'] + x
+    geometry['y']      = geometry['y'] + y
+    geometry['width']  = geometry['width'] + w
     geometry['height'] = geometry['height'] + h
     self:geometry(geometry)
 end
@@ -430,7 +429,7 @@ end
 -- @client[opt] c The client to move, otherwise the focused one is used.
 -- @see client.move_to_tag
 function client.movetotag(target, c)
-    gdebug.deprecate("Use c:move_to_tag(target) instead of awful.client.movetotag", {deprecated_in=4})
+    gdebug.deprecate("Use c:move_to_tag(target) instead of awful.client.movetotag", { deprecated_in = 4 })
     client.object.move_to_tag(c or capi.client.focus, target)
 end
 
@@ -441,7 +440,7 @@ function client.object.move_to_tag(self, target)
     local s = target.screen
     if self and s then
         if self == capi.client.focus then
-            self:emit_signal("request::activate", "client.movetotag", {raise=true})
+            self:emit_signal("request::activate", "client.movetotag", { raise = true })
         end
         -- Set client on the same screen as the tag.
         self.screen = s
@@ -455,7 +454,7 @@ end
 -- @client[opt] c The client to toggle, otherwise the focused one is used.
 -- @see client.toggle_tag
 function client.toggletag(target, c)
-    gdebug.deprecate("Use c:toggle_tag(target) instead of awful.client.toggletag", {deprecated_in=4})
+    gdebug.deprecate("Use c:toggle_tag(target) instead of awful.client.toggletag", { deprecated_in = 4 })
     client.object.toggle_tag(c or capi.client.focus, target)
 end
 
@@ -465,7 +464,7 @@ end
 function client.object.toggle_tag(self, target)
     -- Check that tag and client screen are identical
     if self and get_screen(self.screen) == get_screen(target.screen) then
-        local tags = self:tags()
+        local tags  = self:tags()
         local index = nil;
         for i, v in ipairs(tags) do
             if v == target then
@@ -475,7 +474,9 @@ function client.object.toggle_tag(self, target)
         end
         if index then
             -- If it's the only tag for the window, stop.
-            if #tags == 1 then return end
+            if #tags == 1 then
+                return
+            end
             tags[index] = nil
         else
             tags[#tags + 1] = target
@@ -491,7 +492,7 @@ end
 -- @see screen
 -- @see client.move_to_screen
 function client.movetoscreen(c, s)
-    gdebug.deprecate("Use c:move_to_screen(s) instead of awful.client.movetoscreen", {deprecated_in=4})
+    gdebug.deprecate("Use c:move_to_screen(s) instead of awful.client.movetoscreen", { deprecated_in = 4 })
     client.object.move_to_screen(c or capi.client.focus, s)
 end
 
@@ -507,17 +508,21 @@ function client.object.move_to_screen(self, s)
             s = self.screen.index + 1
         end
         if type(s) == "number" then
-            if s > sc then s = 1 elseif s < 1 then s = sc end
+            if s > sc then
+                s = 1
+            elseif s < 1 then
+                s = sc
+            end
         end
         s = get_screen(s)
         if get_screen(self.screen) ~= s then
             local sel_is_focused = self == capi.client.focus
-            self.screen = s
+            self.screen          = s
             screen.focus(s)
 
             if sel_is_focused then
                 self:emit_signal("request::activate", "client.movetoscreen",
-                                {raise=true})
+                                 { raise = true })
             end
         end
     end
@@ -593,7 +598,7 @@ end
 -- @deprecated awful.client.mark
 -- @client c The client to mark, the focused one if not specified.
 function client.mark(c)
-    gdebug.deprecate("Use c.marked = true instead of awful.client.mark", {deprecated_in=4})
+    gdebug.deprecate("Use c.marked = true instead of awful.client.mark", { deprecated_in = 4 })
     client.object.set_marked(c or capi.client.focus, true)
 end
 
@@ -601,7 +606,7 @@ end
 -- @deprecated awful.client.unmark
 -- @client c The client to unmark, or the focused one if not specified.
 function client.unmark(c)
-    gdebug.deprecate("Use c.marked = false instead of awful.client.unmark", {deprecated_in=4})
+    gdebug.deprecate("Use c.marked = false instead of awful.client.unmark", { deprecated_in = 4 })
     client.object.set_marked(c or capi.client.focus, false)
 end
 
@@ -609,7 +614,7 @@ end
 -- @deprecated awful.client.ismarked
 -- @client c The client to check, or the focused one otherwise.
 function client.ismarked(c)
-    gdebug.deprecate("Use c.marked instead of awful.client.ismarked", {deprecated_in=4})
+    gdebug.deprecate("Use c.marked instead of awful.client.ismarked", { deprecated_in = 4 })
     return client.object.get_marked(c or capi.client.focus)
 end
 
@@ -617,7 +622,7 @@ end
 -- @deprecated awful.client.togglemarked
 -- @client c The client to toggle mark.
 function client.togglemarked(c)
-    gdebug.deprecate("Use c.marked = not c.marked instead of awful.client.togglemarked", {deprecated_in=4})
+    gdebug.deprecate("Use c.marked = not c.marked instead of awful.client.togglemarked", { deprecated_in = 4 })
     c = c or capi.client.focus
     if c then
         c.marked = not c.marked
@@ -646,7 +651,7 @@ end
 -- @client c A client.
 -- @param s True or false.
 function client.floating.set(c, s)
-    gdebug.deprecate("Use c.floating = true instead of awful.client.floating.set", {deprecated_in=4})
+    gdebug.deprecate("Use c.floating = true instead of awful.client.floating.set", { deprecated_in = 4 })
     client.object.set_floating(c, s)
 end
 
@@ -690,7 +695,7 @@ capi.client.connect_signal("property::geometry", store_floating_geometry)
 -- @see is_fixed
 -- @see size_hints_honor
 function client.isfixed(c)
-    gdebug.deprecate("Use c.is_fixed instead of awful.client.isfixed", {deprecated_in=4})
+    gdebug.deprecate("Use c.is_fixed instead of awful.client.isfixed", { deprecated_in = 4 })
     c = c or capi.client.focus
     return client.object.is_fixed(c)
 end
@@ -708,14 +713,16 @@ end
 -- @see size_hints_honor
 
 function client.object.is_fixed(c)
-    if not c then return end
+    if not c then
+        return
+    end
     local h = c.size_hints
     if h.min_width and h.max_width
-        and h.max_height and h.min_height
-        and h.min_width > 0 and h.max_width > 0
-        and h.max_height > 0 and h.min_height > 0
-        and h.min_width == h.max_width
-        and h.min_height == h.max_height then
+            and h.max_height and h.min_height
+            and h.min_width > 0 and h.max_width > 0
+            and h.max_height > 0 and h.min_height > 0
+            and h.min_width == h.max_width
+            and h.min_height == h.max_height then
         return true
     end
     return false
@@ -763,7 +770,7 @@ end
 -- did not set them manually. For example, windows with a type different than
 -- normal.
 function client.floating.get(c)
-    gdebug.deprecate("Use c.floating instead of awful.client.floating.get", {deprecated_in=4})
+    gdebug.deprecate("Use c.floating instead of awful.client.floating.get", { deprecated_in = 4 })
     return client.object.get_floating(c)
 end
 
@@ -876,13 +883,13 @@ end
 -- @param height
 
 -- Add the geometry helpers to match the wibox API
-for _, v in ipairs {"x", "y", "width", "height"} do
-    client.object["get_"..v] = function(c)
+for _, v in ipairs { "x", "y", "width", "height" } do
+    client.object["get_" .. v] = function(c)
         return c:geometry()[v]
     end
 
-    client.object["set_"..v] = function(c, value)
-        return c:geometry({[v] = value})
+    client.object["set_" .. v] = function(c, value)
+        return c:geometry({ [v] = value })
     end
 end
 
@@ -892,8 +899,8 @@ end
 -- @param s The screen to use.
 -- @return The restored client if some client was restored, otherwise nil.
 function client.restore(s)
-    s = s or screen.focused()
-    local cls = capi.client.get(s)
+    s          = s or screen.focused()
+    local cls  = capi.client.get(s)
     local tags = s.selected_tags
     for _, c in pairs(cls) do
         local ctags = c:tags()
@@ -913,21 +920,21 @@ end
 -- @param set the set of numbers to normalize
 -- @param num the number of numbers to normalize
 local function normalize(set, num)
-    num = num or #set
+    num         = num or #set
     local total = 0
     if num then
-        for i = 1,num do
+        for i = 1, num do
             total = total + set[i]
         end
-        for i = 1,num do
+        for i = 1, num do
             set[i] = set[i] / total
         end
     else
-        for _,v in ipairs(set) do
+        for _, v in ipairs(set) do
             total = total + v
         end
 
-        for i,v in ipairs(set) do
+        for i, v in ipairs(set) do
             set[i] = v / total
         end
     end
@@ -943,11 +950,13 @@ end
 -- @return num the number of visible clients in the column
 function client.idx(c)
     c = c or capi.client.focus
-    if not c then return end
+    if not c then
+        return
+    end
 
     -- Only check the tiled clients, the others un irrelevant
     local clients = client.tiled(c.screen)
-    local idx = nil
+    local idx     = nil
     for k, cl in ipairs(clients) do
         if cl == c then
             idx = k
@@ -955,43 +964,45 @@ function client.idx(c)
         end
     end
 
-    local t = c.screen.selected_tag
+    local t       = c.screen.selected_tag
     local nmaster = t.master_count
 
     -- This will happen for floating or maximized clients
-    if not idx then return nil end
+    if not idx then
+        return nil
+    end
 
     if idx <= nmaster then
-        return {idx = idx, col=0, num=nmaster}
+        return { idx = idx, col = 0, num = nmaster }
     end
-    local nother = #clients - nmaster
-    idx = idx - nmaster
+    local nother  = #clients - nmaster
+    idx           = idx - nmaster
 
     -- rather than regenerate the column number we can calculate it
     -- based on the how the tiling algorithm places clients we calculate
     -- the column, we could easily use the for loop in the program but we can
     -- calculate it.
-    local ncol = t.column_count
+    local ncol    = t.column_count
     -- minimum number of clients per column
-    local percol = math.floor(nother / ncol)
+    local percol  = math.floor(nother / ncol)
     -- number of columns with an extra client
     local overcol = math.fmod(nother, ncol)
     -- number of columns filled with [percol] clients
-    local regcol = ncol - overcol
+    local regcol  = ncol - overcol
 
-    local col = math.floor( (idx - 1) / percol) + 1
-    if  col > regcol then
+    local col     = math.floor((idx - 1) / percol) + 1
+    if col > regcol then
         -- col = math.floor( (idx - (percol*regcol) - 1) / (percol + 1) ) + regcol + 1
         -- simplified
-        col = math.floor( (idx + regcol + percol) / (percol+1) )
+        col    = math.floor((idx + regcol + percol) / (percol + 1))
         -- calculate the index in the column
-        idx = idx - percol*regcol - (col - regcol - 1) * (percol+1)
-        percol = percol+1
+        idx    = idx - percol * regcol - (col - regcol - 1) * (percol + 1)
+        percol = percol + 1
     else
-        idx = idx - percol*(col-1)
+        idx = idx - percol * (col - 1)
     end
 
-    return {idx = idx, col=col, num=percol}
+    return { idx = idx, col = col, num = percol }
 end
 
 
@@ -1003,17 +1014,21 @@ end
 function client.setwfact(wfact, c)
     -- get the currently selected window
     c = c or capi.client.focus
-    if not c or not c:isvisible() then return end
+    if not c or not c:isvisible() then
+        return
+    end
 
     local w = client.idx(c)
 
-    if not w then return end
+    if not w then
+        return
+    end
 
-    local t = c.screen.selected_tag
+    local t              = c.screen.selected_tag
 
     -- n is the number of windows currently visible for which we have to be concerned with the properties
-    local data = t.windowfact or {}
-    local colfact = data[w.col]
+    local data           = t.windowfact or {}
+    local colfact        = data[w.col]
 
     local need_normalize = colfact ~= nil
 
@@ -1028,18 +1043,18 @@ function client.setwfact(wfact, c)
         return
     end
 
-    local rest = 1-wfact
+    local rest  = 1 - wfact
 
     -- calculate the current denominator
     local total = 0
-    for i = 1,w.num do
+    for i = 1, w.num do
         if i ~= w.idx then
             total = total + colfact[i]
         end
     end
 
     -- normalize the windows
-    for i = 1,w.num do
+    for i = 1, w.num do
         if i ~= w.idx then
             colfact[i] = (colfact[i] * rest) / total
         end
@@ -1057,15 +1072,19 @@ end
 -- @client c the client
 function client.incwfact(add, c)
     c = c or capi.client.focus
-    if not c then return end
+    if not c then
+        return
+    end
 
     local t = c.screen.selected_tag
     local w = client.idx(c)
-    if not w then return end
+    if not w then
+        return
+    end
 
-    local data = t.windowfact or {}
-    local colfact = data[w.col] or {}
-    local curr = colfact[w.idx] or 1
+    local data     = t.windowfact or {}
+    local colfact  = data[w.col] or {}
+    local curr     = colfact[w.idx] or 1
     colfact[w.idx] = curr + add
 
     -- keep our ratios normalized
@@ -1080,7 +1099,7 @@ end
 -- @treturn bool
 -- @deprecated awful.client.dockable.get
 function client.dockable.get(c)
-    gdebug.deprecate("Use c.dockable instead of awful.client.dockable.get", {deprecated_in=4})
+    gdebug.deprecate("Use c.dockable instead of awful.client.dockable.get", { deprecated_in = 4 })
     return client.object.get_dockable(c)
 end
 
@@ -1123,7 +1142,7 @@ end
 -- @param value True or false.
 -- @deprecated awful.client.dockable.set
 function client.dockable.set(c, value)
-    gdebug.deprecate("Use c.dockable = value instead of awful.client.dockable.set", {deprecated_in=4})
+    gdebug.deprecate("Use c.dockable = value instead of awful.client.dockable.set", { deprecated_in = 4 })
     client.property.set(c, "dockable", value)
 end
 
@@ -1142,10 +1161,14 @@ end
 
 function client.object.get_requests_no_titlebar(c)
     local hints = c.motif_wm_hints
-    if not hints then return false end
+    if not hints then
+        return false
+    end
 
     local decor = hints.decorations
-    if not decor then return false end
+    if not decor then
+        return false
+    end
 
     local result = not decor.title
     if decor.all then
@@ -1270,15 +1293,15 @@ end
 --     awful.client.run_or_raise('urxvt', matcher)
 -- end);
 function client.run_or_raise(cmd, matcher, merge)
-    gdebug.deprecate("Use awful.spawn.single_instance instead of"..
-        "awful.client.run_or_raise", {deprecated_in=5})
+    gdebug.deprecate("Use awful.spawn.single_instance instead of" ..
+                             "awful.client.run_or_raise", { deprecated_in = 5 })
 
-    spawn = spawn or require("awful.spawn")
+    spawn         = spawn or require("awful.spawn")
     local clients = capi.client.get()
     local findex  = gtable.hasitem(clients, capi.client.focus) or 1
     local start   = gmath.cycle(#clients, findex + 1)
 
-    local c = client.iterate(matcher, start)()
+    local c       = client.iterate(matcher, start)()
     if c then
         c:jump_to(merge)
     else
@@ -1295,8 +1318,8 @@ end
 --   a matching parent client is found.
 -- @treturn client.client|nil The matching parent client or nil.
 function client.get_transient_for_matching(c, matcher)
-    gdebug.deprecate("Use c:get_transient_for_matching(matcher) instead of"..
-        "awful.client.get_transient_for_matching", {deprecated_in=4})
+    gdebug.deprecate("Use c:get_transient_for_matching(matcher) instead of" ..
+                             "awful.client.get_transient_for_matching", { deprecated_in = 4 })
 
     return client.object.get_transient_for_matching(c, matcher)
 end
@@ -1324,8 +1347,8 @@ end
 -- @client c2 The parent client to check.
 -- @treturn client.client|nil The parent client or nil.
 function client.is_transient_for(c, c2)
-    gdebug.deprecate("Use c:is_transient_for(c2) instead of"..
-        "awful.client.is_transient_for", {deprecated_in=4})
+    gdebug.deprecate("Use c:is_transient_for(c2) instead of" ..
+                             "awful.client.is_transient_for", { deprecated_in = 4 })
     return client.object.is_transient_for(c, c2)
 end
 
@@ -1372,7 +1395,7 @@ end
 -- Add clients during startup to focus history.
 -- This used to happen through ewmh.activate, but that only handles visible
 -- clients now.
-capi.client.connect_signal("manage", function (c)
+capi.client.connect_signal("manage", function(c)
     if awesome.startup then
         client.focus.history.add(c)
     end

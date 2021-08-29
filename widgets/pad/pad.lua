@@ -4,7 +4,7 @@ local pad   = {}
 
 function pad:init(size)
     local size = size or 3
-    local str = ""
+    local str  = ""
     for i = 1, size do
         str = str .. " "
     end

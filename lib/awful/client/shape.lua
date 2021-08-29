@@ -8,37 +8,38 @@
 
 -- Grab environment we need
 local surface = require("gears.surface")
-local cairo = require("lgi").cairo
-local capi =
-{
+local cairo   = require("lgi").cairo
+local capi    = {
     client = client,
 }
 
-local shape = {}
-shape.update = {}
+local shape   = {}
+shape.update  = {}
 
 --- Get one of a client's shapes and transform it to include window decorations.
 -- @function awful.client.shape.get_transformed
 -- @client c The client whose shape should be retrieved
 -- @tparam string shape_name Either "bounding" or "clip"
 function shape.get_transformed(c, shape_name)
-    local border = shape_name == "bounding" and c.border_width or 0
+    local border    = shape_name == "bounding" and c.border_width or 0
     local shape_img = surface.load_silently(c["client_shape_" .. shape_name], false)
-    local _shape = c._shape
-    if not (shape_img or _shape) then return end
+    local _shape    = c._shape
+    if not (shape_img or _shape) then
+        return
+    end
 
     -- Get information about various sizes on the client
-    local geom = c:geometry()
-    local _, t = c:titlebar_top()
-    local _, b = c:titlebar_bottom()
-    local _, l = c:titlebar_left()
-    local _, r = c:titlebar_right()
+    local geom       = c:geometry()
+    local _, t       = c:titlebar_top()
+    local _, b       = c:titlebar_bottom()
+    local _, l       = c:titlebar_left()
+    local _, r       = c:titlebar_right()
 
     -- Figure out the size of the shape that we need
-    local img_width = geom.width + 2*border
-    local img_height = geom.height + 2*border
-    local result = cairo.ImageSurface(cairo.Format.A1, img_width, img_height)
-    local cr = cairo.Context(result)
+    local img_width  = geom.width + 2 * border
+    local img_height = geom.height + 2 * border
+    local result     = cairo.ImageSurface(cairo.Format.A1, img_width, img_height)
+    local cr         = cairo.Context(result)
 
     -- Fill everything (this paints the titlebars and border).
     -- The `cr:paint()` below will have painted the whole surface, so
@@ -64,7 +65,7 @@ function shape.get_transformed(c, shape_name)
             cr:translate(-c.border_width, -c.border_width)
         end
         -- Always call the shape with the size of the bounding shape
-        _shape(cr, geom.width + 2*c.border_width, geom.height + 2*c.border_width)
+        _shape(cr, geom.width + 2 * c.border_width, geom.height + 2 * c.border_width)
         -- Now fill the "selected" part
         cr:set_operator(cairo.Operator.SOURCE)
         cr:set_source_rgba(1, 1, 1, 1)
@@ -73,7 +74,7 @@ function shape.get_transformed(c, shape_name)
             -- Remove an area of size c.border_width again (We use 2*bw since
             -- half of that is on the outside)
             cr:set_source_rgba(0, 0, 0, 0)
-            cr:set_line_width(2*c.border_width)
+            cr:set_line_width(2 * c.border_width)
             cr:stroke()
         end
         -- Combine the result with what we already have
@@ -101,7 +102,7 @@ end
 -- @function awful.client.shape.update.bounding
 -- @client c The client to act on
 function shape.update.bounding(c)
-    local res = shape.get_transformed(c, "bounding")
+    local res        = shape.get_transformed(c, "bounding")
     c.shape_bounding = res and res._native
     -- Free memory
     if res then
@@ -113,7 +114,7 @@ end
 -- @function awful.client.shape.update.clip
 -- @client c The client to act on
 function shape.update.clip(c)
-    local res = shape.get_transformed(c, "clip")
+    local res    = shape.get_transformed(c, "clip")
     c.shape_clip = res and res._native
     -- Free memory
     if res then

@@ -58,7 +58,15 @@ function volume:on_volume()
 end
 
 capi.awesome.connect_signal("volume_change",
-                            function()
+                            function(stdout)
+                                if (stdout == "+") then
+                                    awful.spawn("amixer -D pulse set Master 5%+", false)
+                                elseif (stdout == "-") then
+                                    awful.spawn("amixer -D pulse set Master 5%-", false)
+                                elseif (stdout == "off") then
+                                    awful.spawn("amixer -D pulse set Master 1+ toggle", false)
+                                end
+
                                 if volume_adjust.visible then
                                     hide_volume_adjust:again()
                                 else

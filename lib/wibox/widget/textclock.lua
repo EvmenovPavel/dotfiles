@@ -7,15 +7,15 @@
 ---------------------------------------------------------------------------
 
 local setmetatable = setmetatable
-local os = os
-local textbox = require("wibox.widget.textbox")
-local timer = require("gears.timer")
-local gtable = require("gears.table")
-local glib = require("lgi").GLib
-local DateTime = glib.DateTime
-local TimeZone = glib.TimeZone
+local os           = os
+local textbox      = require("wibox.widget.textbox")
+local timer        = require("gears.timer")
+local gtable       = require("gears.table")
+local glib         = require("lgi").GLib
+local DateTime     = glib.DateTime
+local TimeZone     = glib.TimeZone
 
-local textclock = { mt = {} }
+local textclock    = { mt = {} }
 
 --- Set the clock's format
 -- @property format
@@ -35,7 +35,7 @@ end
 -- @tparam string timezone
 
 function textclock:set_timezone(tzid)
-    self._private.tzid = tzid
+    self._private.tzid     = tzid
     self._private.timezone = tzid and TimeZone.new(tzid)
     self:force_update()
 end
@@ -81,17 +81,17 @@ local function new(format, refresh, tzid)
     local w = textbox()
     gtable.crush(w, textclock, true)
 
-    w._private.format = format or " %a %b %d, %H:%M "
-    w._private.refresh = refresh or 60
-    w._private.tzid = tzid
+    w._private.format   = format or " %a %b %d, %H:%M "
+    w._private.refresh  = refresh or 60
+    w._private.tzid     = tzid
     w._private.timezone = tzid and TimeZone.new(tzid)
 
     function w._private.textclock_update_cb()
         local str = DateTime.new_now(w._private.timezone or TimeZone.new_local()):format(w._private.format)
         if str == nil then
             require("gears.debug").print_warning("textclock: "
-                    .. "g_date_time_format() failed for format "
-                    .. "'" .. w._private.format .. "'")
+                                                         .. "g_date_time_format() failed for format "
+                                                         .. "'" .. w._private.format .. "'")
         end
         w:set_markup(str)
         w._timer.timeout = calc_timeout(w._private.refresh)

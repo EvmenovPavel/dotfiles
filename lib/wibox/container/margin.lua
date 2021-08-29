@@ -9,21 +9,21 @@
 -- @classmod wibox.container.margin
 ---------------------------------------------------------------------------
 
-local pairs = pairs
+local pairs        = pairs
 local setmetatable = setmetatable
-local base = require("wibox.widget.base")
-local gcolor = require("gears.color")
-local cairo = require("lgi").cairo
-local gtable = require("gears.table")
+local base         = require("wibox.widget.base")
+local gcolor       = require("gears.color")
+local cairo        = require("lgi").cairo
+local gtable       = require("gears.table")
 
-local margin = { mt = {} }
+local margin       = { mt = {} }
 
 -- Draw a margin layout
 function margin:draw(_, cr, width, height)
-    local x = self._private.left
-    local y = self._private.top
-    local w = self._private.right
-    local h = self._private.bottom
+    local x     = self._private.left
+    local y     = self._private.top
+    local w     = self._private.right
+    local h     = self._private.bottom
     local color = self._private.color
 
     if not self._private.widget or width <= x + w or height <= y + h then
@@ -55,7 +55,7 @@ end
 function margin:fit(context, width, height)
     local extra_w = self._private.left + self._private.right
     local extra_h = self._private.top + self._private.bottom
-    local w, h = 0, 0
+    local w, h    = 0, 0
     if self._private.widget then
         w, h = base.fit_widget(self, context, self._private.widget, width - extra_w, height - extra_h)
     end
@@ -86,7 +86,7 @@ end
 -- Get the number of children element
 -- @treturn table The children
 function margin:get_children()
-    return {self._private.widget}
+    return { self._private.widget }
 end
 
 -- Replace the layout children
@@ -101,16 +101,16 @@ end
 -- @tparam number val The margin value
 
 function margin:set_margins(val)
-    if self._private.left   == val and
-       self._private.right  == val and
-       self._private.top    == val and
-       self._private.bottom == val then
+    if self._private.left == val and
+            self._private.right == val and
+            self._private.top == val and
+            self._private.bottom == val then
         return
     end
 
-    self._private.left = val
-    self._private.right = val
-    self._private.top = val
+    self._private.left   = val
+    self._private.right  = val
+    self._private.top    = val
     self._private.bottom = val
     self:emit_signal("widget::layout_changed")
 end
@@ -168,7 +168,9 @@ end
 -- Create setters for each direction
 for _, v in pairs({ "left", "right", "top", "bottom" }) do
     margin["set_" .. v] = function(layout, val)
-        if layout._private[v] == val then return end
+        if layout._private[v] == val then
+            return
+        end
         layout._private[v] = val
         layout:emit_signal("widget::layout_changed")
     end
@@ -189,7 +191,7 @@ end
 -- @treturn table A new margin container
 -- @function wibox.container.margin
 local function new(widget, left, right, top, bottom, color, draw_empty)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret = base.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, margin, true)
 

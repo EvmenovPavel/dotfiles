@@ -7,22 +7,22 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment
-local table = table
-local ipairs = ipairs
-local string = string
-local screen = screen
-local gfs = require("gears.filesystem")
-local theme = require("beautiful")
-local lgi = require("lgi")
-local gio = lgi.Gio
-local glib = lgi.GLib
-local w_textbox = require("wibox.widget.textbox")
-local gdebug = require("gears.debug")
+local table          = table
+local ipairs         = ipairs
+local string         = string
+local screen         = screen
+local gfs            = require("gears.filesystem")
+local theme          = require("beautiful")
+local lgi            = require("lgi")
+local gio            = lgi.Gio
+local glib           = lgi.GLib
+local w_textbox      = require("wibox.widget.textbox")
+local gdebug         = require("gears.debug")
 local protected_call = require("gears.protected_call")
-local gstring = require("gears.string")
-local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local gstring        = require("gears.string")
+local unpack         = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
 
-local utils = {}
+local utils          = {}
 
 -- NOTE: This icons/desktop files module was written according to the
 -- following freedesktop.org specifications:
@@ -32,14 +32,14 @@ local utils = {}
 -- Options section
 
 --- Terminal which applications that need terminal would open in.
-utils.terminal = 'xterm'
+utils.terminal       = 'xterm'
 
 --- The default icon for applications that don't provide any icon in
 -- their .desktop files.
-local default_icon = nil
+local default_icon   = nil
 
 --- Name of the WM for the OnlyShowIn entry in the .desktop file.
-utils.wm_name = "awesome"
+utils.wm_name        = "awesome"
 
 -- Maps keys in desktop entries to suitable getter function.
 -- The order of entries is as in the spec.
@@ -63,29 +63,29 @@ do
     end
 
     keys_getters = {
-        Type = get_string,
-        Version = get_string,
-        Name = get_localestring,
-        GenericName = get_localestring,
-        NoDisplay = get_boolean,
-        Comment = get_localestring,
-        Icon = get_localestring,
-        Hidden = get_boolean,
-        OnlyShowIn = get_strings,
-        NotShowIn = get_strings,
+        Type            = get_string,
+        Version         = get_string,
+        Name            = get_localestring,
+        GenericName     = get_localestring,
+        NoDisplay       = get_boolean,
+        Comment         = get_localestring,
+        Icon            = get_localestring,
+        Hidden          = get_boolean,
+        OnlyShowIn      = get_strings,
+        NotShowIn       = get_strings,
         DBusActivatable = get_boolean,
-        TryExec = get_string,
-        Exec = get_string,
-        Path = get_string,
-        Terminal = get_boolean,
-        Actions = get_strings,
-        MimeType = get_strings,
-        Categories = get_strings,
-        Implements = get_strings,
-        Keywords = get_localestrings,
-        StartupNotify = get_boolean,
-        StartupWMClass = get_string,
-        URL = get_string,
+        TryExec         = get_string,
+        Exec            = get_string,
+        Path            = get_string,
+        Terminal        = get_boolean,
+        Actions         = get_strings,
+        MimeType        = get_strings,
+        Categories      = get_strings,
+        Implements      = get_strings,
+        Keywords        = get_localestrings,
+        StartupNotify   = get_boolean,
+        StartupWMClass  = get_string,
+        URL             = get_string,
     }
 end
 
@@ -102,18 +102,18 @@ do
     end))
     if has_yieldable_pcall then
         do_protected_call = protected_call.call
-        call_callback = function(callback, ...)
+        call_callback     = function(callback, ...)
             return callback(...)
         end
     else
         do_protected_call = function(f, ...)
             return f(...)
         end
-        call_callback = protected_call.call
+        call_callback     = protected_call.call
     end
 end
 
-local all_icon_sizes = {
+local all_icon_sizes         = {
     'scalable',
     '128x128',
     '96x96',
@@ -130,14 +130,18 @@ local all_icon_sizes = {
 --- List of supported icon formats.
 local supported_icon_formats = { png = 1, xpm = 2, svg = 3 }
 
-local icon_lookup_path = nil
+local icon_lookup_path       = nil
 --- Get a list of icon lookup paths.
 -- @treturn table A list of directories, without trailing slash.
 local function get_icon_lookup_path()
-    if icon_lookup_path then return icon_lookup_path end
+    if icon_lookup_path then
+        return icon_lookup_path
+    end
 
     local function ensure_args(t, paths)
-        if type(paths) == 'string' then paths = { paths } end
+        if type(paths) == 'string' then
+            paths = { paths }
+        end
         return t or {}, paths
     end
 
@@ -154,7 +158,7 @@ local function get_icon_lookup_path()
 
     local function add_with_dir(t, paths, dir)
         t, paths = ensure_args(t, paths)
-        dir = { nil, dir }
+        dir      = { nil, dir }
 
         for _, path in ipairs(paths) do
             dir[1] = path
@@ -163,13 +167,15 @@ local function get_icon_lookup_path()
         return t
     end
 
-    icon_lookup_path = {}
+    icon_lookup_path     = {}
     local theme_priority = { 'hicolor' }
-    if theme.icon_theme then table.insert(theme_priority, 1, theme.icon_theme) end
+    if theme.icon_theme then
+        table.insert(theme_priority, 1, theme.icon_theme)
+    end
 
     local paths = add_with_dir({}, glib.get_home_dir(), '.icons')
     add_with_dir(paths, {
-        glib.get_user_data_dir(),           -- $XDG_DATA_HOME, typically $HOME/.local/share
+        glib.get_user_data_dir(), -- $XDG_DATA_HOME, typically $HOME/.local/share
         unpack(glib.get_system_data_dirs()) -- $XDG_DATA_DIRS, typically /usr/{,local/}share
     }, 'icons')
     add_with_dir(paths, glib.get_system_data_dirs(), 'pixmaps')
@@ -199,7 +205,9 @@ end
 --- Remove CR newline from the end of the string.
 -- @param s string to trim
 function utils.rtrim(s)
-    if not s then return end
+    if not s then
+        return
+    end
     if string.byte(s, #s) == 13 then
         return string.sub(s, 1, #s - 1)
     end
@@ -278,7 +286,9 @@ function utils.parse_desktop_file(file)
     end
 
     -- In case the (required) 'Name' entry was not found
-    if not program.Name or program.Name == '' then return nil end
+    if not program.Name or program.Name == '' then
+        return nil
+    end
 
     -- Don't show program if NoDisplay attribute is true
     if program.NoDisplay then
@@ -327,11 +337,11 @@ function utils.parse_desktop_file(file)
         -- Substitute Exec special codes as specified in
         -- http://standards.freedesktop.org/desktop-entry-spec/1.1/ar01s06.html
         if program.Name == nil then
-            program.Name = '['.. file:match("([^/]+)%.desktop$") ..']'
+            program.Name = '[' .. file:match("([^/]+)%.desktop$") .. ']'
         end
         local cmdline = program.Exec:gsub('%%c', program.Name)
-        cmdline = cmdline:gsub('%%[fuFU]', '')
-        cmdline = cmdline:gsub('%%k', program.file)
+        cmdline       = cmdline:gsub('%%[fuFU]', '')
+        cmdline       = cmdline:gsub('%%k', program.file)
         if program.icon_path then
             cmdline = cmdline:gsub('%%i', '--icon ' .. program.icon_path)
         else
@@ -359,7 +369,7 @@ function utils.parse_dir(dir_path, callback)
 
     local function parser(file, programs)
         -- Except for "NONE" there is also NOFOLLOW_SYMLINKS
-        local query = gio.FILE_ATTRIBUTE_STANDARD_NAME .. "," .. gio.FILE_ATTRIBUTE_STANDARD_TYPE
+        local query     = gio.FILE_ATTRIBUTE_STANDARD_NAME .. "," .. gio.FILE_ATTRIBUTE_STANDARD_TYPE
         local enum, err = file:async_enumerate_children(query, gio.FileQueryInfoFlags.NONE)
         if not enum then
             gdebug.print_warning(get_readable_path(file) .. ": " .. tostring(err))
@@ -373,7 +383,7 @@ function utils.parse_dir(dir_path, callback)
                 return
             end
             for _, info in ipairs(list) do
-                local file_type = info:get_file_type()
+                local file_type  = info:get_file_type()
                 local file_child = enum:get_child(info)
                 if file_type == 'REGULAR' then
                     local path = file_child:get_path()
@@ -404,8 +414,8 @@ function utils.parse_dir(dir_path, callback)
 end
 
 function utils.compute_textbox_width(textbox, s)
-    gdebug.deprecate("Use 'width, _ = textbox:get_preferred_size(s)' directly.", {deprecated_in=4})
-    s = screen[s or mouse.screen]
+    gdebug.deprecate("Use 'width, _ = textbox:get_preferred_size(s)' directly.", { deprecated_in = 4 })
+    s          = screen[s or mouse.screen]
     local w, _ = textbox:get_preferred_size(s)
     return w
 end

@@ -1,7 +1,7 @@
-local wibox        = require("wibox")
-local beautiful    = require("beautiful")
-local gdebug       = require("gears.debug")
-local placement    = require("awful.placement")
+local wibox     = require("wibox")
+local beautiful = require("beautiful")
+local gdebug    = require("gears.debug")
+local placement = require("awful.placement")
 
 local function get_screen(s)
     return s and capi.screen[s]
@@ -116,7 +116,7 @@ function mywibar:init(args)
     local has_to_stretch = true
     local screen         = get_screen(args.screen or 1)
 
-    args.type = args.type or "dock"
+    args.type            = args.type or "dock"
 
     if position ~= "top" and position ~= "bottom"
             and position ~= "left" and position ~= "right" then

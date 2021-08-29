@@ -4,14 +4,14 @@
 -- @module gears.surface
 ---------------------------------------------------------------------------
 
-local setmetatable = setmetatable
-local type = type
-local capi = { awesome = awesome }
-local cairo = require("lgi").cairo
-local GdkPixbuf = require("lgi").GdkPixbuf
-local color = nil
-local gdebug = require("gears.debug")
-local hierarchy = require("wibox.hierarchy")
+local setmetatable                    = setmetatable
+local type                            = type
+local capi                            = { awesome = awesome }
+local cairo                           = require("lgi").cairo
+local GdkPixbuf                       = require("lgi").GdkPixbuf
+local color                           = nil
+local gdebug                          = require("gears.debug")
+local hierarchy                       = require("wibox.hierarchy")
 
 -- Keep this in sync with build-utils/lgi-check.c!
 local ver_major, ver_minor, ver_patch = string.match(require('lgi.version'), '(%d)%.(%d)%.(%d)')
@@ -19,7 +19,7 @@ if tonumber(ver_major) <= 0 and (tonumber(ver_minor) < 8 or (tonumber(ver_minor)
     error("lgi too old, need at least version 0.8.0")
 end
 
-local surface = { mt = {} }
+local surface       = { mt = {} }
 local surface_cache = setmetatable({}, { __mode = 'v' })
 
 local function get_default(arg)
@@ -97,7 +97,7 @@ local function do_load_and_handle_errors(_surface, func)
         return result
     end
     gdebug.print_error(debug.traceback(
-        "Failed to load '" .. tostring(_surface) .. "': " .. tostring(err)))
+            "Failed to load '" .. tostring(_surface) .. "': " .. tostring(err)))
     return get_default()
 end
 
@@ -127,7 +127,7 @@ end
 -- @param surf The surface you are interested in
 -- @return The surface's width and height
 function surface.get_size(surf)
-    local cr = cairo.Context(surf)
+    local cr         = cairo.Context(surf)
     local x, y, w, h = cr:clip_extents()
     return w - x, h - y
 end
@@ -143,15 +143,15 @@ end
 -- @param s Source surface.
 -- @return The surface's duplicate.
 function surface.duplicate_surface(s)
-    s = surface.load(s)
+    s                = surface.load(s)
 
     -- Figure out surface size (this does NOT work for unbounded recording surfaces)
-    local cr = cairo.Context(s)
+    local cr         = cairo.Context(s)
     local x, y, w, h = cr:clip_extents()
 
     -- Create a copy
-    local result = s:create_similar(s.content, w - x, h - y)
-    cr = cairo.Context(result)
+    local result     = s:create_similar(s.content, w - x, h - y)
+    cr               = cairo.Context(result)
     cr:set_source_surface(s, 0, 0)
     cr.operator = cairo.Operator.SOURCE
     cr:paint()
@@ -167,10 +167,10 @@ end
 -- @param[opt=transparent] bg_color The surface background color
 -- @treturn cairo.surface the new surface
 function surface.load_from_shape(width, height, shape, shape_color, bg_color, ...)
-    color = color or require("gears.color")
+    color     = color or require("gears.color")
 
     local img = cairo.ImageSurface(cairo.Format.ARGB32, width, height)
-    local cr = cairo.Context(img)
+    local cr  = cairo.Context(img)
 
     cr:set_source(color(bg_color or "#00000000"))
     cr:paint()
@@ -193,30 +193,31 @@ end
 --   width and height as parameter.
 -- @param[opt] Any additional parameters will be passed to the shape function
 function surface.apply_shape_bounding(draw, shape, ...)
-  local geo = draw:geometry()
+    local geo = draw:geometry()
 
-  local img = cairo.ImageSurface(cairo.Format.A1, geo.width, geo.height)
-  local cr = cairo.Context(img)
+    local img = cairo.ImageSurface(cairo.Format.A1, geo.width, geo.height)
+    local cr  = cairo.Context(img)
 
-  cr:set_operator(cairo.Operator.CLEAR)
-  cr:set_source_rgba(0,0,0,1)
-  cr:paint()
-  cr:set_operator(cairo.Operator.SOURCE)
-  cr:set_source_rgba(1,1,1,1)
+    cr:set_operator(cairo.Operator.CLEAR)
+    cr:set_source_rgba(0, 0, 0, 1)
+    cr:paint()
+    cr:set_operator(cairo.Operator.SOURCE)
+    cr:set_source_rgba(1, 1, 1, 1)
 
-  shape(cr, geo.width, geo.height, ...)
+    shape(cr, geo.width, geo.height, ...)
 
-  cr:fill()
+    cr:fill()
 
-  draw.shape_bounding = img._native
-  img:finish()
+    draw.shape_bounding = img._native
+    img:finish()
 end
 
-local function no_op() end
+local function no_op()
+end
 
 local function run_in_hierarchy(self, cr, width, height)
-    local context = {dpi=96}
-    local h = hierarchy.new(context, self, width, height, no_op, no_op, {})
+    local context = { dpi = 96 }
+    local h       = hierarchy.new(context, self, width, height, no_op, no_op, {})
     h:draw(context, cr)
     return h
 end
@@ -232,10 +233,10 @@ end
 -- @return The cairo surface
 -- @return The hierarchy
 function surface.widget_to_svg(widget, path, width, height)
-    gdebug.deprecate("Use wibox.widget.draw_to_svg_file instead of "..
-        "gears.surface.render_to_svg", {deprecated_in=5})
+    gdebug.deprecate("Use wibox.widget.draw_to_svg_file instead of " ..
+                             "gears.surface.render_to_svg", { deprecated_in = 5 })
     local img = cairo.SvgSurface.create(path, width, height)
-    local cr = cairo.Context(img)
+    local cr  = cairo.Context(img)
 
     return img, run_in_hierarchy(widget, cr, width, height)
 end
@@ -251,10 +252,10 @@ end
 -- @return The cairo surface
 -- @return The hierarchy
 function surface.widget_to_surface(widget, width, height, format)
-    gdebug.deprecate("Use wibox.widget.draw_to_image_surface instead of "..
-        "gears.surface.render_to_surface", {deprecated_in=5})
+    gdebug.deprecate("Use wibox.widget.draw_to_image_surface instead of " ..
+                             "gears.surface.render_to_surface", { deprecated_in = 5 })
     local img = cairo.ImageSurface(format or cairo.Format.ARGB32, width, height)
-    local cr = cairo.Context(img)
+    local cr  = cairo.Context(img)
 
     return img, run_in_hierarchy(widget, cr, width, height)
 end

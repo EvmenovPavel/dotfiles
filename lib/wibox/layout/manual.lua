@@ -31,9 +31,9 @@
 -- @copyright 2016 Emmanuel Lepage Vallee
 -- @classmod wibox.layout.manual
 ---------------------------------------------------------------------------
-local gtable = require("gears.table")
-local base = require("wibox.widget.base")
-local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local gtable        = require("gears.table")
+local base          = require("wibox.widget.base")
+local unpack        = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
 
 local manual_layout = {}
 
@@ -88,7 +88,7 @@ function manual_layout:layout(context, width, height)
     local res = {}
 
     for k, v in ipairs(self._private.widgets) do
-        local pt = self._private.pos[k] or {x=0,y=0}
+        local pt   = self._private.pos[k] or { x = 0, y = 0 }
         local w, h = base.fit_widget(self, context, v, width, height)
 
         -- Make sure the signature is compatible with `awful.placement`. `Wibox`,
@@ -96,15 +96,15 @@ function manual_layout:layout(context, width, height)
         -- geometry functions again and again.
         if type(pt) == "function" or (getmetatable(pt) or {}).__call then
             local geo = {
-                x      = 0,
-                y      = 0,
-                width  = w,
-                height = h,
+                x        = 0,
+                y        = 0,
+                width    = w,
+                height   = h,
                 geometry = geometry,
             }
-            pt = pt(geo, {
+            pt        = pt(geo, {
                 parent = {
-                    x=0, y=0, width = width, height = height, geometry = geometry
+                    x = 0, y = 0, width = width, height = height, geometry = geometry
                 }
             })
             -- Trick to ensure compatibility with `awful.placement`
@@ -115,7 +115,7 @@ function manual_layout:layout(context, width, height)
         assert(pt.y)
 
         table.insert(res, base.place_widget_at(
-            v, pt.x, pt.y, pt.width or w, pt.height or h
+                v, pt.x, pt.y, pt.width or w, pt.height or h
         ))
     end
 
@@ -123,14 +123,14 @@ function manual_layout:layout(context, width, height)
 end
 
 function manual_layout:add(...)
-    local wdgs = {...}
+    local wdgs      = { ... }
     local old_count = #self._private.widgets
-    gtable.merge(self._private.widgets, {...})
+    gtable.merge(self._private.widgets, { ... })
 
     -- Add the points
     for k, v in ipairs(wdgs) do
         if v.point then
-            self._private.pos[old_count+k] = v.point
+            self._private.pos[old_count + k] = v.point
         end
     end
 
@@ -214,16 +214,16 @@ function manual_layout:add_at(widget, point)
 
     -- Check is the point function is valid
     if type(point) == "function" or (getmetatable(point) or {}).__call then
-        local fake_geo = {x=0,y=0,width=1,height=1,geometry=geometry}
-        local pt = point(fake_geo, {
+        local fake_geo = { x = 0, y = 0, width = 1, height = 1, geometry = geometry }
+        local pt       = point(fake_geo, {
             parent = {
-                x=0, y=0, width = 10, height = 10, geometry = geometry
+                x = 0, y = 0, width = 10, height = 10, geometry = geometry
             }
         })
         assert(pt and pt.x and pt.y, "The point function doesn't seem to be valid")
     end
 
-    self._private.pos[#self._private.widgets+1] = point
+    self._private.pos[#self._private.widgets + 1] = point
     self:add(widget)
 end
 
@@ -234,7 +234,7 @@ end
 function manual_layout:move(index, point)
     assert(self._private.pos[index])
     self._private.pos[index] = point
-    self:emit_signal( "widget::layout_changed" )
+    self:emit_signal("widget::layout_changed")
 end
 
 --- Move a widget.
@@ -277,17 +277,17 @@ end
 function manual_layout:reset()
     self._private.widgets = {}
     self._private.pos     = {}
-    self:emit_signal( "widget::layout_changed" )
+    self:emit_signal("widget::layout_changed")
 end
 
 --- Create a manual layout.
 -- @tparam table ... Widgets to add to the layout.
 local function new_manual(...)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret = base.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, manual_layout, true)
     ret._private.widgets = {}
-    ret._private.pos = {}
+    ret._private.pos     = {}
 
     ret:add(...)
 
@@ -493,4 +493,6 @@ end
 -- @tparam function func The callback to call when the signal is emitted.
 -- @function weak_connect_signal
 
-return setmetatable(manual_layout, {__call=function(_,...) return new_manual(...) end})
+return setmetatable(manual_layout, { __call = function(_, ...)
+    return new_manual(...)
+end })

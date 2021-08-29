@@ -5,9 +5,9 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local Gio = require("lgi").Gio
-local gstring = require("gears.string")
-local gtable = require("gears.table")
+local Gio        = require("lgi").Gio
+local gstring    = require("gears.string")
+local gtable     = require("gears.table")
 
 local filesystem = {}
 
@@ -31,7 +31,7 @@ function filesystem.make_directories(dir)
 end
 
 function filesystem.mkdir(dir)
-    require("gears.debug").deprecate("gears.filesystem.make_directories", {deprecated_in=5})
+    require("gears.debug").deprecate("gears.filesystem.make_directories", { deprecated_in = 5 })
     return filesystem.make_directories(dir)
 end
 
@@ -46,33 +46,33 @@ end
 -- @tparam string filename The file path.
 -- @treturn boolean True if file exists and is readable.
 function filesystem.file_readable(filename)
-    local gfile = Gio.File.new_for_path(filename)
+    local gfile     = Gio.File.new_for_path(filename)
     local gfileinfo = gfile:query_info("standard::type,access::can-read",
                                        Gio.FileQueryInfoFlags.NONE)
     return gfileinfo and gfileinfo:get_file_type() ~= "DIRECTORY" and
-        gfileinfo:get_attribute_boolean("access::can-read")
+            gfileinfo:get_attribute_boolean("access::can-read")
 end
 
 --- Check if a file exists, is executable and not a directory.
 -- @tparam string filename The file path.
 -- @treturn boolean True if file exists and is executable.
 function filesystem.file_executable(filename)
-    local gfile = Gio.File.new_for_path(filename)
+    local gfile     = Gio.File.new_for_path(filename)
     local gfileinfo = gfile:query_info("standard::type,access::can-execute",
                                        Gio.FileQueryInfoFlags.NONE)
     return gfileinfo and gfileinfo:get_file_type() ~= "DIRECTORY" and
-        gfileinfo:get_attribute_boolean("access::can-execute")
+            gfileinfo:get_attribute_boolean("access::can-execute")
 end
 
 --- Check if a path exists, is readable and a directory.
 -- @tparam string path The directory path.
 -- @treturn boolean True if path exists and is readable.
 function filesystem.dir_readable(path)
-    local gfile = Gio.File.new_for_path(path)
+    local gfile     = Gio.File.new_for_path(path)
     local gfileinfo = gfile:query_info("standard::type,access::can-read",
                                        Gio.FileQueryInfoFlags.NONE)
     return gfileinfo and gfileinfo:get_file_type() == "DIRECTORY" and
-        gfileinfo:get_attribute_boolean("access::can-read")
+            gfileinfo:get_attribute_boolean("access::can-read")
 end
 
 --- Check if a path is a directory.
@@ -105,8 +105,10 @@ end
 function filesystem.get_xdg_data_dirs()
     local xdg_data_dirs = os.getenv("XDG_DATA_DIRS") or "/usr/share:/usr/local/share"
     return gtable.map(
-        function(dir) return dir .. "/" end,
-        gstring.split(xdg_data_dirs, ":"))
+            function(dir)
+                return dir .. "/"
+            end,
+            gstring.split(xdg_data_dirs, ":"))
 end
 
 --- Get the path to the user's config dir.
@@ -145,10 +147,10 @@ function filesystem.get_dir(d)
     if d == "config" then
         -- No idea why this is what is returned, I recommend everyone to use
         -- get_configuration_dir() instead
-        require("gears.debug").deprecate("gears.filesystem.get_xdg_config_home() .. 'awesome/'", {deprecated_in=5})
+        require("gears.debug").deprecate("gears.filesystem.get_xdg_config_home() .. 'awesome/'", { deprecated_in = 5 })
         return filesystem.get_xdg_config_home() .. "awesome/"
     elseif d == "cache" then
-        require("gears.debug").deprecate("gears.filesystem.get_cache_dir", {deprecated_in=5})
+        require("gears.debug").deprecate("gears.filesystem.get_cache_dir", { deprecated_in = 5 })
         return filesystem.get_cache_dir()
     end
 end

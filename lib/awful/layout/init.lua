@@ -7,31 +7,31 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local ipairs = ipairs
-local type = type
-local capi = {
-    screen = screen,
-    mouse  = mouse,
+local ipairs         = ipairs
+local type           = type
+local capi           = {
+    screen  = screen,
+    mouse   = mouse,
     awesome = awesome,
-    client = client,
-    tag = tag
+    client  = client,
+    tag     = tag
 }
-local tag = require("awful.tag")
-local client = require("awful.client")
-local ascreen = require("awful.screen")
-local timer = require("gears.timer")
-local gmath = require("gears.math")
-local gtable = require("gears.table")
-local gdebug = require("gears.debug")
+local tag            = require("awful.tag")
+local client         = require("awful.client")
+local ascreen        = require("awful.screen")
+local timer          = require("gears.timer")
+local gmath          = require("gears.math")
+local gtable         = require("gears.table")
+local gdebug         = require("gears.debug")
 local protected_call = require("gears.protected_call")
 
 local function get_screen(s)
     return s and capi.screen[s]
 end
 
-local layout = {}
+local layout   = {}
 
-layout.suit = require("awful.layout.suit")
+layout.suit    = require("awful.layout.suit")
 
 layout.layouts = {
     layout.suit.floating,
@@ -88,7 +88,7 @@ end
 
 -- This is a special lock used by the arrange function.
 -- This avoids recurring call by emitted signals.
-local arrange_lock = false
+local arrange_lock    = false
 -- Delay one arrange call per screen.
 local delayed_arrange = {}
 
@@ -96,7 +96,7 @@ local delayed_arrange = {}
 -- @param screen The screen.
 -- @return The layout function.
 function layout.get(screen)
-    screen = screen or capi.mouse.screen
+    screen  = screen or capi.mouse.screen
     local t = get_screen(screen).selected_tag
     return tag.getproperty(t, "layout") or layout.suit.floating
 end
@@ -109,15 +109,17 @@ function layout.inc(i, s, layouts)
     if type(i) == "table" then
         -- Older versions of this function had arguments (layouts, i, s), but
         -- this was changed so that 'layouts' can be an optional parameter
-        gdebug.deprecate("Use awful.layout.inc(increment, screen, layouts) instead"..
-            " of awful.layout.inc(layouts, increment, screen)", {deprecated_in=5})
+        gdebug.deprecate("Use awful.layout.inc(increment, screen, layouts) instead" ..
+                                 " of awful.layout.inc(layouts, increment, screen)", { deprecated_in = 5 })
 
         layouts, i, s = i, s, layouts
     end
-    s = get_screen(s or ascreen.focused())
+    s       = get_screen(s or ascreen.focused())
     local t = s.selected_tag
 
-    if not t then return end
+    if not t then
+        return
+    end
 
     layouts = layouts or t.layouts or {}
 
@@ -125,23 +127,29 @@ function layout.inc(i, s, layouts)
         layouts = layout.layouts
     end
 
-    local cur_l = layout.get(s)
+    local cur_l   = layout.get(s)
 
     -- First try to match the object
-    local cur_idx =  gtable.find_first_key(
-        layouts, function(_, v) return v == cur_l or cur_l._type == v end, true
+    local cur_idx = gtable.find_first_key(
+            layouts, function(_, v)
+                return v == cur_l or cur_l._type == v
+            end, true
     )
 
     -- Safety net: handle cases where another reference of the layout
     -- might be given (e.g. when (accidentally) cloning it).
-    cur_idx = cur_idx or gtable.find_first_key(
-        layouts, function(_, v) return v.name == cur_l.name end, true
+    cur_idx       = cur_idx or gtable.find_first_key(
+            layouts, function(_, v)
+                return v.name == cur_l.name
+            end, true
     )
 
     -- Trying to come up with some kind of fallback layouts to iterate would
     -- never produce a result the user expect, so if there is nothing to
     -- iterate over, do not iterate.
-    if not cur_idx then return end
+    if not cur_idx then
+        return
+    end
 
     local newindex = gmath.cycle(#layouts, cur_idx + i)
     layout.set(layouts[newindex], t)
@@ -151,7 +159,7 @@ end
 -- @param _layout Layout name.
 -- @tparam[opt=mouse.screen.selected_tag] tag t The tag to modify.
 function layout.set(_layout, t)
-    t = t or capi.mouse.screen.selected_tag
+    t        = t or capi.mouse.screen.selected_tag
     t.layout = _layout
 end
 
@@ -169,17 +177,17 @@ end
 --   geometry (x, y, width, height), the clients, the screen and sometime, a
 --   "geometries" table with client as keys and geometry as value
 function layout.parameters(t, screen)
-    screen = get_screen(screen)
-    t = t or screen.selected_tag
+    screen                  = get_screen(screen)
+    t                       = t or screen.selected_tag
 
-    screen = get_screen(t and t.screen or 1)
+    screen                  = get_screen(t and t.screen or 1)
 
-    local p = {}
+    local p                 = {}
 
     local clients           = client.tiled(screen)
     local gap_single_client = true
 
-    if(t and t.gap_single_client ~= nil) then
+    if (t and t.gap_single_client ~= nil) then
         gap_single_client = t.gap_single_client
     end
 
@@ -193,7 +201,7 @@ function layout.parameters(t, screen)
         end
     end
 
-    p.workarea = screen:get_bounding_geometry {
+    p.workarea    = screen:get_bounding_geometry {
         honor_padding  = true,
         honor_workarea = true,
         margins        = useless_gap,
@@ -212,7 +220,9 @@ end
 -- @param screen The screen to arrange.
 function layout.arrange(screen)
     screen = get_screen(screen)
-    if not screen or delayed_arrange[screen] then return end
+    if not screen or delayed_arrange[screen] then
+        return
+    end
     delayed_arrange[screen] = true
 
     timer.delayed_call(function()
@@ -221,26 +231,28 @@ function layout.arrange(screen)
             delayed_arrange[screen] = nil
             return
         end
-        if arrange_lock then return end
+        if arrange_lock then
+            return
+        end
         arrange_lock = true
 
         -- protected call to ensure that arrange_lock will be reset
         protected_call(function()
-            local p = layout.parameters(nil, screen)
+            local p           = layout.parameters(nil, screen)
 
             local useless_gap = p.useless_gap
 
-            p.geometries = setmetatable({}, {__mode = "k"})
+            p.geometries      = setmetatable({}, { __mode = "k" })
             layout.get(screen).arrange(p)
             for c, g in pairs(p.geometries) do
-                g.width = math.max(1, g.width - c.border_width * 2 - useless_gap * 2)
+                g.width  = math.max(1, g.width - c.border_width * 2 - useless_gap * 2)
                 g.height = math.max(1, g.height - c.border_width * 2 - useless_gap * 2)
-                g.x = g.x + useless_gap
-                g.y = g.y + useless_gap
+                g.x      = g.x + useless_gap
+                g.y      = g.y + useless_gap
                 c:geometry(g)
             end
         end)
-        arrange_lock = false
+        arrange_lock            = false
         delayed_arrange[screen] = nil
 
         screen:emit_signal("arrange")
@@ -261,7 +273,9 @@ local function arrange_prop_nf(obj)
     end
 end
 
-local function arrange_prop(obj) layout.arrange(obj.screen) end
+local function arrange_prop(obj)
+    layout.arrange(obj.screen)
+end
 
 capi.client.connect_signal("property::size_hints_honor", arrange_prop_nf)
 capi.client.connect_signal("property::struts", arrange_prop)
@@ -305,30 +319,41 @@ capi.client.connect_signal("focus", function(c)
         layout.arrange(screen)
     end
 end)
-capi.client.connect_signal("raised", function(c) layout.arrange(c.screen) end)
-capi.client.connect_signal("lowered", function(c) layout.arrange(c.screen) end)
+capi.client.connect_signal("raised", function(c)
+    layout.arrange(c.screen)
+end)
+capi.client.connect_signal("lowered", function(c)
+    layout.arrange(c.screen)
+end)
 capi.client.connect_signal("list", function()
-                                   for screen in capi.screen do
-                                       layout.arrange(screen)
-                                   end
-                               end)
+    for screen in capi.screen do
+        layout.arrange(screen)
+    end
+end)
 
 --- Default handler for `request::geometry` signals for tiled clients with
 -- the "mouse.move" context.
 -- @tparam client c The client
 -- @tparam string context The context
 -- @tparam table hints Additional hints
-function layout.move_handler(c, context, hints) --luacheck: no unused args
+function layout.move_handler(c, context, hints)
+    --luacheck: no unused args
     -- Quit if it isn't a mouse.move on a tiled layout, that's handled elsewhere
-    if c.floating then return end
-    if context ~= "mouse.move" then return end
+    if c.floating then
+        return
+    end
+    if context ~= "mouse.move" then
+        return
+    end
 
     if capi.mouse.screen ~= c.screen then
         c.screen = capi.mouse.screen
     end
 
     local l = c.screen.selected_tag and c.screen.selected_tag.layout or nil
-    if l == layout.suit.floating then return end
+    if l == layout.suit.floating then
+        return
+    end
 
     local c_u_m = capi.mouse.current_client
     if c_u_m and not c_u_m.floating then
@@ -342,15 +367,15 @@ capi.client.connect_signal("request::geometry", layout.move_handler)
 
 -- When a screen is moved, make (floating) clients follow it
 capi.screen.connect_signal("property::geometry", function(s, old_geom)
-    local geom = s.geometry
+    local geom   = s.geometry
     local xshift = geom.x - old_geom.x
     local yshift = geom.y - old_geom.y
     for _, c in ipairs(capi.client.get(s)) do
         local cgeom = c:geometry()
         c:geometry({
-            x = cgeom.x + xshift,
-            y = cgeom.y + yshift
-        })
+                       x = cgeom.x + xshift,
+                       y = cgeom.y + yshift
+                   })
     end
 end)
 

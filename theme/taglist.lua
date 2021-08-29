@@ -1,6 +1,6 @@
 local resources = require("resources")
 
-local taglist       = {}
+local taglist   = {}
 
 function taglist:init(theme)
     theme.taglist_disable_icon = false

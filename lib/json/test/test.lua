@@ -142,16 +142,17 @@ end)
 
 test("decode escape", function()
     local t = {
-        [ [["\u263a"]] ]       = '☺',
-        [ [["\ud83d\ude02"]] ] = '😂',
-        [ [["\r\n\t\\\""]] ]   = '\r\n\t\\"',
-        [ [["\\"]] ]           = '\\',
-        [ [["\\\\"]] ]         = '\\\\',
-        [ [["\/"]] ]           = '/',
+        [[["\u263a"]]]       = '☺',
+    [[["\ud83d\ude02"]]] = '😂',
+    [[["\r\n\t\\\""]]]   = '\r\n\t\\"',
+    [[["\\"]]] = '\\',
+    [[["\\\\"]]]         = '\\\\',
+    [[["\/"]]] = '/',
     }
     for k, v in pairs(t) do
-        local res = json.decode(k)
-        assert(res == v, fmt("expected '%s', got '%s'", v, res))
+    local res = json.decode(k)
+    assert(res == v, fmt("expected '%s', got '%s'", v, res)
+    )
     end
 end)
 

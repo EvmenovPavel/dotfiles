@@ -7,7 +7,7 @@
 local tsort  = {}
 local gtable = require("gears.table")
 
-local mt = { __index = tsort }
+local mt     = { __index = tsort }
 
 local function add_node(self, node)
     if not self._edges[node] then
@@ -64,7 +64,7 @@ end
 -- This is useful to backup it before adding elements that can potentially
 -- have circular dependencies and thus render the original useless.
 function tsort:clone()
-    local new = tsort.topological()
+    local new  = tsort.topological()
 
     -- Disable deep copy as the sorted values may be objects or tables
     new._edges = gtable.clone(self._edges, false)
@@ -131,10 +131,10 @@ end
 
 function tsort.topological()
     return setmetatable({
-        _edges = {},
-    }, mt)
+                            _edges = {},
+                        }, mt)
 end
 
-return setmetatable(tsort, {__call = function(_, ...)
+return setmetatable(tsort, { __call = function(_, ...)
     return tsort.topological(...)
-end})
+end })

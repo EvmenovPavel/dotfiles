@@ -17,25 +17,25 @@
 ---------------------------------------------------------------------------
 
 local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
-local base  = require("wibox.widget.base")
-local table = table
-local pairs = pairs
+local base   = require("wibox.widget.base")
+local table  = table
+local pairs  = pairs
 local gtable = require("gears.table")
 
-local fixed = {}
+local fixed  = {}
 
 -- Layout a fixed layout. Each widget gets just the space it asks for.
 -- @param context The context in which we are drawn.
 -- @param width The available width.
 -- @param height The available height.
 function fixed:layout(context, width, height)
-    local result = {}
-    local pos,spacing = 0, self._private.spacing
+    local result         = {}
+    local pos, spacing   = 0, self._private.spacing
     local spacing_widget = self._private.spacing_widget
-    local is_y = self._private.dir == "y"
-    local is_x = not is_y
-    local abspace = math.abs(spacing)
-    local spoffset = spacing < 0 and 0 or spacing
+    local is_y           = self._private.dir == "y"
+    local is_x           = not is_y
+    local abspace        = math.abs(spacing)
+    local spoffset       = spacing < 0 and 0 or spacing
 
     for k, v in pairs(self._private.widgets) do
         local x, y, w, h, _
@@ -55,16 +55,16 @@ function fixed:layout(context, width, height)
             pos = pos + w + spacing
         end
 
-        if (is_y and pos-spacing > height) or
-            (is_x and pos-spacing > width) then
+        if (is_y and pos - spacing > height) or
+                (is_x and pos - spacing > width) then
             break
         end
 
         -- Add the spacing widget
         if k > 1 and abspace > 0 and spacing_widget then
             table.insert(result, base.place_widget_at(
-                spacing_widget, is_x and (x - spoffset) or x, is_y and (y - spoffset) or y,
-                is_x and abspace or w, is_y and abspace or h
+                    spacing_widget, is_x and (x - spoffset) or x, is_y and (y - spoffset) or y,
+                    is_x and abspace or w, is_y and abspace or h
             ))
         end
         table.insert(result, base.place_widget_at(v, x, y, w, h))
@@ -76,9 +76,9 @@ end
 -- @param ... Widgets that should be added (must at least be one)
 function fixed:add(...)
     -- No table.pack in Lua 5.1 :-(
-    local args = { n=select('#', ...), ... }
+    local args = { n = select('#', ...), ... }
     assert(args.n > 0, "need at least one widget to add")
-    for i=1, args.n do
+    for i = 1, args.n do
         base.check_widget(args[i])
         table.insert(self._private.widgets, args[i])
     end
@@ -90,7 +90,9 @@ end
 -- @tparam number index The widget index to remove
 -- @treturn boolean index If the operation is successful
 function fixed:remove(index)
-    if not index or index < 1 or index > #self._private.widgets then return false end
+    if not index or index < 1 or index > #self._private.widgets then
+        return false
+    end
 
     table.remove(self._private.widgets, index)
 
@@ -105,13 +107,15 @@ end
 -- @param widget ... Widgets that should be removed (must at least be one)
 -- @treturn boolean If the operation is successful
 function fixed:remove_widgets(...)
-    local args = { ... }
+    local args      = { ... }
 
     local recursive = type(args[#args]) == "boolean" and args[#args]
 
-    local ret = true
+    local ret       = true
     for k, rem_widget in ipairs(args) do
-        if recursive and k == #args then break end
+        if recursive and k == #args then
+            break
+        end
 
         local idx, l = self:index(rem_widget, recursive)
 
@@ -155,7 +159,7 @@ end
 
 function fixed:swap(index1, index2)
     if not index1 or not index2 or index1 > #self._private.widgets
-        or index2 > #self._private.widgets then
+            or index2 > #self._private.widgets then
         return false
     end
 
@@ -201,11 +205,13 @@ function fixed:swap_widgets(widget1, widget2, recursive)
 end
 
 function fixed:set(index, widget2)
-    if (not widget2) or (not self._private.widgets[index]) then return false end
+    if (not widget2) or (not self._private.widgets[index]) then
+        return false
+    end
 
     base.check_widget(widget2)
 
-    local w = self._private.widgets[index]
+    local w                      = self._private.widgets[index]
 
     self._private.widgets[index] = widget2
 
@@ -278,7 +284,9 @@ end
 -- @param widget The widget
 -- @treturn boolean If the operation is successful
 function fixed:insert(index, widget)
-    if not index or index < 1 or index > #self._private.widgets + 1 then return false end
+    if not index or index < 1 or index > #self._private.widgets + 1 then
+        return false
+    end
 
     base.check_widget(widget)
     table.insert(self._private.widgets, index, widget)
@@ -293,7 +301,7 @@ end
 -- @param orig_width The available width.
 -- @param orig_height The available height.
 function fixed:fit(context, orig_width, orig_height)
-    local width, height = orig_width, orig_height
+    local width, height         = orig_width, orig_height
     local used_in_dir, used_max = 0, 0
 
     for _, v in pairs(self._private.widgets) do
@@ -301,10 +309,10 @@ function fixed:fit(context, orig_width, orig_height)
         local in_dir, max
         if self._private.dir == "y" then
             max, in_dir = w, h
-            height = height - in_dir
+            height      = height - in_dir
         else
             in_dir, max = w, h
-            width = width - in_dir
+            width       = width - in_dir
         end
         if max > used_max then
             used_max = max
@@ -321,7 +329,7 @@ function fixed:fit(context, orig_width, orig_height)
         end
     end
 
-    local spacing = self._private.spacing * (#self._private.widgets-1)
+    local spacing = self._private.spacing * (#self._private.widgets - 1)
 
     if self._private.dir == "y" then
         return used_max, used_in_dir + spacing
@@ -348,11 +356,11 @@ function fixed:fill_space(val)
 end
 
 local function get_layout(dir, widget1, ...)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret = base.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, fixed, true)
 
-    ret._private.dir = dir
+    ret._private.dir     = dir
     ret._private.widgets = {}
     ret:set_spacing(0)
     ret:fill_space(false)

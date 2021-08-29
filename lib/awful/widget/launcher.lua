@@ -5,27 +5,35 @@
 ---------------------------------------------------------------------------
 
 local setmetatable = setmetatable
-local gtable = require("gears.table")
-local spawn = require("awful.spawn")
-local wbutton = require("awful.widget.button")
-local button = require("awful.button")
+local gtable       = require("gears.table")
+local spawn        = require("awful.spawn")
+local wbutton      = require("awful.widget.button")
+local button       = require("awful.button")
 
-local launcher = { mt = {} }
+local launcher     = { mt = {} }
 
 --- Create a button widget which will launch a command.
 -- @param args Standard widget table arguments, plus image for the image path
 -- and command for the command to run on click, or either menu to create menu.
 -- @return A launcher widget.
 function launcher.new(args)
-    if not args.command and not args.menu then return end
+    if not args.command and not args.menu then
+        return
+    end
     local w = wbutton(args)
-    if not w then return end
+    if not w then
+        return
+    end
 
     local b
     if args.command then
-       b = gtable.join(w:buttons(), button({}, 1, nil, function () spawn(args.command) end))
+        b = gtable.join(w:buttons(), button({}, 1, nil, function()
+            spawn(args.command)
+        end))
     elseif args.menu then
-       b = gtable.join(w:buttons(), button({}, 1, nil, function () args.menu:toggle() end))
+        b = gtable.join(w:buttons(), button({}, 1, nil, function()
+            args.menu:toggle()
+        end))
     end
 
     w:buttons(b)

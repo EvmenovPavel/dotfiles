@@ -1,195 +1,15 @@
-local ascreen   = require("awful.screen")
-local awful     = require("awful")
-local wibox     = require("wibox")
-local gears     = require("gears")
-local beautiful = require("beautiful")
+local awful  = require("awful")
+local wibox  = require("wibox")
+local gears  = require("gears")
 
-local gtable    = require("gears.table")
-local spawn     = require("awful.spawn")
-local wbutton   = require("awful.widget.button")
-local button    = require("awful.button")
+local spawn  = require("awful.spawn")
 
-local wmapi     = {}
+local wmapi  = {}
 
-wmapi.event     = require("wmapi.event")
-wmapi.timer     = require("wmapi.timer")
-wmapi.markup    = require("wmapi.markup")
-
-function wmapi:launcher(args)
-    if not args.command and not args.menu then
-        return
-    end
-
-    local w = wbutton(args)
-    if not w then
-        return
-    end
-
-    local b
-    if args.command then
-        b = gtable.join(w:buttons(), button({}, 1, nil, function()
-            spawn(args.command)
-        end))
-    elseif args.menu then
-        b = gtable.join(w:buttons(), button({}, 1, nil, function()
-            --args.menu:toggle()
-
-            args.menu.visible = true
-        end))
-    end
-
-    w:buttons(b)
-    return w
-end
-
-function wmapi:checkbox()
-    return wibox.widget({
-                            type   = "checkbox",
-                            widget = wibox.widget.checkbox,
-                        })
-end
-
-function wmapi:graph(args)
-    local args      = args or {}
-
-    local set_color = ({ type = "linear", from = { 0, 0 }, to = { 10, 0 }, stops = { { 0, "#FF5656" }, { 0.5, "#88A175" },
-                                                                                     { 1, "#AECF96" } } })
-
-    return wibox.widget({
-                            type             = "graph",
-                            widget           = wibox.widget.graph,
-
-                            max_value        = args.max_value or 100,
-
-                            background_color = args.background_color or "#00000000",
-
-                            forced_width     = args.forced_width or 50,
-
-                            step_width       = args.step_width or 2,
-                            step_spacing     = args.step_spacing or 1,
-
-                            color            = beautiful.fg_normal or set_color
-                            --"linear:0,1:#FFFF00,20:0,#FF0000:0.1,#FFFF00:0.4," .. beautiful.fg_normal
-
-                        })
-end
-
-function wmapi:imagebox(args)
-    local args = args or {}
-
-    return wibox.widget(
-            {
-                type   = "imagebox",
-                widget = wibox.widget.imagebox,
-                image  = args.image,
-            })
-end
-
-function wmapi:piechart(args)
-    local args = args or {}
-
-    return wibox.widget({
-                            type   = "piechart",
-                            widget = wibox.widget.piechart,
-                        })
-end
-
-function wmapi:progressbar(args)
-    local args = args or {}
-
-    return wibox.widget({
-                            type   = "progressbar",
-                            widget = wibox.widget.progressbar,
-                        })
-end
-
-function wmapi:separator(args)
-    local args = args or {}
-
-    return wibox.widget({
-                            type   = "separator",
-                            widget = wibox.widget.separator,
-                        })
-end
-
-function wmapi:slider(args)
-    local args = args or {}
-
-    return wibox.widget({
-                            type   = "slider",
-                            widget = wibox.widget.slider,
-                        })
-end
-
-function wmapi:systray(args)
-    local args = args or {}
-
-    return wibox.widget({
-                            type   = "systray",
-                            widget = wibox.widget.systray,
-                        })
-end
-
-function wmapi:textbox(args)
-    local args = args or {}
-
-    return wibox.widget({
-                            type         = "textbox",
-                            widget       = wibox.widget.textbox,
-
-                            markup       = args.markup,
-                            text         = args.text,
-
-                            font         = beautiful.font,
-
-                            valign       = args.valign or "center",
-                            align        = args.align or "left",
-
-                            forced_width = args.forced_width or 50,
-
-                        })
-end
-
-function wmapi:popup(args)
-    local args = args or {}
-
-    return awful.popup {
-        ontop         = args.ontop or true,
-        visible       = args.visible or false,
-        shape         = args.shape or gears.shape.rounded_rect,
-        border_width  = args.border_width or 1,
-        border_color  = args.border_color or beautiful.bg_normal,
-        maximum_width = args.maximum_width or 300,
-        offset        = args.offset or { y = 5 },
-        widget        = args.widget or {}
-    }
-end
-
-function wmapi:buttons(args)
-    local args = args or {}
-
-    if args.widget == nil then
-        capi.log:message("Error args.widget = nil")
-    else
-        args.widget:buttons(
-                awful.util.table.join(
-                        awful.button({}, args.event or wmapi.event.mouse.button_click_left,
-                                     args.func or function()
-                                         capi.log:message("Error args.func = nil")
-                                     end)
-                )
-        )
-    end
-end
-
-function wmapi:textclock(args)
-    local args = args or {}
-
-    return wibox.widget({
-                            widget = wibox.widget.textclock,
-                            type   = "textclock"
-                        })
-end
+wmapi.event  = require("wmapi.event")
+wmapi.timer  = require("wmapi.timer")
+wmapi.markup = require("wmapi.markup")
+wmapi.widget = require("wmapi.widget")
 
 function wmapi:layout_align_horizontal(items)
     --local widget = wibox.widget({
@@ -248,19 +68,26 @@ function wmapi:find(cmd, str)
 end
 
 function wmapi:screen_primary(s)
-    if s == capi.screen[capi.primary] then
+    local primary = self:primary()
+
+    if s == capi.screen[primary] then
         return true
     end
 
     return false
 end
 
+function wmapi:primary()
+    local primary = capi.primary or 1
+    return primary
+end
+
 function wmapi:screen(index)
-    local index = index or capi.primary
+    local index = index or self:primary()
     local count = capi.screen.count()
 
     if index > count or index < -1 then
-        return capi.screen[capi.primary]
+        return capi.screen[self:primary()]
     end
 
     return capi.screen[index]
@@ -292,9 +119,9 @@ function wmapi:screen_index(screen)
 end
 
 function wmapi:watch(command, timeout, callback)
-    timeout     = timeout or 5
+    timeout = timeout or 5
 
-    local t     = timer { timeout = timeout }
+    local t = gears.timer { timeout = timeout }
     t:connect_signal("timeout", function()
         t:stop()
         spawn.easy_async(command, function(stdout, stderr, exitreason, exitcode)
@@ -302,6 +129,7 @@ function wmapi:watch(command, timeout, callback)
             t:again()
         end)
     end)
+
     t:start()
     t:emit_signal("timeout")
 end

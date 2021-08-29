@@ -123,39 +123,41 @@
 -- @classmod awful.keygrabber
 ---------------------------------------------------------------------------
 
-local ipairs = ipairs
-local table = table
-local gdebug = require('gears.debug')
-local akey = require("awful.key")
-local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
-local gtable = require("gears.table")
-local gobject = require("gears.object")
-local gtimer = require("gears.timer")
-local glib = require("lgi").GLib
-local capi = { keygrabber = keygrabber, root = root, awesome = awesome }
+local ipairs      = ipairs
+local table       = table
+local gdebug      = require('gears.debug')
+local akey        = require("awful.key")
+local unpack      = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local gtable      = require("gears.table")
+local gobject     = require("gears.object")
+local gtimer      = require("gears.timer")
+local glib        = require("lgi").GLib
+local capi        = { keygrabber = keygrabber, root = root, awesome = awesome }
 
-local keygrab = {}
+local keygrab     = {}
 
 -- Private data
-local grabbers = {}
+local grabbers    = {}
 local keygrabbing = false
 
-local keygrabber = {
+local keygrabber  = {
     object = {}
 }
 
 -- Instead of checking for every modifiers, check the key directly.
-local conversion = nil
+local conversion  = nil
 
 --BEGIN one day create a proper API to add and remove keybindings at runtime.
 -- Doing it this way is horrible.
 
 -- This list of keybindings to add in the next event loop cycle.
-local delay_list = {}
+local delay_list  = {}
 
 -- Read the modifiers name and map their keysyms to the modkeys
 local function generate_conversion_map()
-    if conversion then return conversion end
+    if conversion then
+        return conversion
+    end
 
     local mods = capi.awesome._modifiers
     assert(mods)
@@ -172,11 +174,13 @@ local function generate_conversion_map()
     return conversion
 end
 
-capi.awesome.connect_signal("xkb::map_changed"  , function() conversion = nil end)
+capi.awesome.connect_signal("xkb::map_changed", function()
+    conversion = nil
+end)
 
 local function add_root_keybindings(self, list)
     assert(
-        list, "`add_root_keybindings` needs to be called with a list of keybindings"
+            list, "`add_root_keybindings` needs to be called with a list of keybindings"
     )
 
     local was_started = #delay_list > 0
@@ -202,7 +206,7 @@ local function add_root_keybindings(self, list)
 
                 if press then
                     local old_press = press
-                    press = function(...)
+                    press           = function(...)
                         self:start()
                         old_press(...)
                     end
@@ -210,7 +214,7 @@ local function add_root_keybindings(self, list)
 
                 if release then
                     local old_release = release
-                    release = function(...)
+                    release           = function(...)
                         self:start()
                         old_release(...)
                     end
@@ -220,7 +224,7 @@ local function add_root_keybindings(self, list)
             end
 
             -- Wow...
-            capi.root.keys(gtable.join( capi.root.keys(), unpack(ret) ))
+            capi.root.keys(gtable.join(capi.root.keys(), unpack(ret)))
 
             delay_list = {}
         end)
@@ -243,7 +247,7 @@ local function runner(self, modifiers, key, event)
 
     -- Stop the keygrabber with the `stop_key`
     if (key == self.stop_key or (converted and converted == self.stop_key))
-      and event == self.stop_event and self.stop_key then
+            and event == self.stop_event and self.stop_key then
         self:stop(key, modifiers)
         return false
     end
@@ -277,16 +281,18 @@ local function runner(self, modifiers, key, event)
     -- Record the key sequence
     if key == "BackSpace" and seq_len > 0 then
         self.sequence = glib.utf8_substring(self.sequence, 0, seq_len - 2)
-    elseif glib.utf8_strlen(key, -1) == 1 and  event == "release" then
-        self.sequence = self.sequence..key
+    elseif glib.utf8_strlen(key, -1) == 1 and event == "release" then
+        self.sequence = self.sequence .. key
     end
 
     -- Convert index array to hash table
     local mod = {}
-    for _, v in ipairs(modifiers) do mod[v] = true end
+    for _, v in ipairs(modifiers) do
+        mod[v] = true
+    end
 
     -- Emit some signals so the user can connect to a single type of event.
-    self:emit_signal(key.."::"..event, modifiers, mod)
+    self:emit_signal(key .. "::" .. event, modifiers, mod)
 
     local filtered_modifiers = {}
 
@@ -299,10 +305,10 @@ local function runner(self, modifiers, key, event)
             end
         end
 
-        for _,v in ipairs(self._private.keybindings[key]) do
+        for _, v in ipairs(self._private.keybindings[key]) do
             if #filtered_modifiers == #v[1] then
                 local match = true
-                for _,v2 in ipairs(v[1]) do
+                for _, v2 in ipairs(v[1]) do
                     match = match and mod[v2]
                 end
                 if match then
@@ -339,8 +345,8 @@ function keygrab.stop(g)
     -- If `run` is used directly and stop() is called with `g==nil`, get the
     -- first keygrabber.
     g = g
-        or keygrab.current_instance and keygrab.current_instance.grabber
-        or grabbers[#grabbers]
+            or keygrab.current_instance and keygrab.current_instance.grabber
+            or grabbers[#grabbers]
 
     for i, v in ipairs(grabbers) do
         if v == g then
@@ -596,9 +602,9 @@ function keygrabber:start()
     end
 
     self.current_instance = setmetatable({}, {
-        __index = self,
+        __index    = self,
         __newindex = function(tab, key, value)
-            if keygrabber["set_"..key] then
+            if keygrabber["set_" .. key] then
                 self[key](self, value)
             else
                 rawset(tab, key, value)
@@ -606,13 +612,15 @@ function keygrabber:start()
         end
     })
 
-    self.sequence = ""
+    self.sequence         = ""
 
     if self.start_callback then
         self.start_callback(self.current_instance)
     end
 
-    self.grabber = keygrab.run(function(...) return runner(self, ...) end)
+    self.grabber = keygrab.run(function(...)
+        return runner(self, ...)
+    end)
 
     -- Ease making keygrabber that wont hang forever if no action is taken.
     if self.timeout and not self._private.timer then
@@ -641,12 +649,13 @@ end
 
 --- Stop the keygrabber.
 -- @function keygrabber:stop
-function keygrabber:stop(_stop_key, _stop_mods) -- (at)function disables ldoc params
+function keygrabber:stop(_stop_key, _stop_mods)
+    -- (at)function disables ldoc params
     keygrab.stop(self.grabber)
 
     if self.stop_callback then
         self.stop_callback(
-            self.current_instance, _stop_key, _stop_mods, self.sequence
+                self.current_instance, _stop_key, _stop_mods, self.sequence
         )
     end
 
@@ -675,7 +684,7 @@ function keygrabber:add_keybinding(mods, key, callback, description)
     })
 
     if self.export_keybindings then
-        add_root_keybindings(self, {{mods, key, callback, description}})
+        add_root_keybindings(self, { { mods, key, callback, description } })
     end
 end
 
@@ -789,7 +798,7 @@ end
 --  modifier keys (like `Control` or `Mod4`) events.
 -- @function awful.keygrabber
 function keygrab.run_with_keybindings(args)
-    args = args or {}
+    args      = args or {}
 
     local ret = gobject {
         enable_properties   = true,
@@ -807,24 +816,24 @@ function keygrab.run_with_keybindings(args)
     gtable.crush(ret, args)
 
     ret._private.keybindings = {}
-    ret.stop_event = args.stop_event or "press"
+    ret.stop_event           = args.stop_event or "press"
 
     -- Build the hook map
-    for _,v in ipairs(args.keybindings or {}) do
+    for _, v in ipairs(args.keybindings or {}) do
         if #v >= 3 and #v <= 4 then
-            local _,key,callback = unpack(v)
+            local _, key, callback = unpack(v)
             if type(callback) == "function" then
                 ret._private.keybindings[key] = ret._private.keybindings[key] or {}
                 table.insert(ret._private.keybindings[key], v)
             else
                 gdebug.print_warning(
-                    "The hook's 3rd parameter has to be a function. " ..
-                        gdebug.dump(v)
+                        "The hook's 3rd parameter has to be a function. " ..
+                                gdebug.dump(v)
                 )
             end
         else
             gdebug.print_warning(
-                "The hook has to have at least 3 parameters. ".. gdebug.dump(v)
+                    "The hook has to have at least 3 parameters. " .. gdebug.dump(v)
             )
         end
     end
@@ -1012,7 +1021,9 @@ end
 -- @function weak_connect_signal
 
 return setmetatable(keygrab, {
-    __call = function(_, args) return keygrab.run_with_keybindings(args) end
+    __call = function(_, args)
+        return keygrab.run_with_keybindings(args)
+    end
 })
 
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

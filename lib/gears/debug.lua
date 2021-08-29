@@ -5,11 +5,11 @@
 ---------------------------------------------------------------------------
 
 local tostring = tostring
-local print = print
-local type = type
-local pairs = pairs
+local print    = print
+local type     = type
+local pairs    = pairs
 
-local debug = {}
+local debug    = {}
 
 --- Given a table (or any other data) return a string that contains its
 -- tag, value and type. If data is a table then recursively call `dump_raw`
@@ -21,7 +21,7 @@ local debug = {}
 -- @return a string which contains tag, value, value type and table key/value
 -- pairs if data is a table.
 local function dump_raw(data, shift, tag, depth)
-    depth = depth == nil and 10 or depth or 0
+    depth        = depth == nil and 10 or depth or 0
     local result = ""
 
     if tag then
@@ -29,7 +29,7 @@ local function dump_raw(data, shift, tag, depth)
     end
 
     if type(data) == "table" and depth > 0 then
-        shift = (shift or "") .. "  "
+        shift  = (shift or "") .. "  "
         result = result .. tostring(data)
         for k, v in pairs(data) do
             result = result .. "\n" .. shift .. dump_raw(v, shift, k, depth - 1)
@@ -99,9 +99,9 @@ function debug.deprecate(see, args)
     displayed_deprecations[tb] = true
 
     -- Get function name/desc from caller.
-    local info = _G.debug.getinfo(2, "n")
-    local funcname = info.name or "?"
-    local msg = "awful: function " .. funcname .. " is deprecated"
+    local info                 = _G.debug.getinfo(2, "n")
+    local funcname             = info.name or "?"
+    local msg                  = "awful: function " .. funcname .. " is deprecated"
     if see then
         if args.raw then
             msg = see
@@ -125,27 +125,27 @@ end
 -- @tparam string new_name The new class name
 -- @treturn table A proxy class.
 function debug.deprecate_class(fallback, old_name, new_name)
-    local message = old_name.." has been renamed to "..new_name
+    local message = old_name .. " has been renamed to " .. new_name
 
-    local function call(_,...)
-        debug.deprecate(message, {raw = true})
+    local function call(_, ...)
+        debug.deprecate(message, { raw = true })
 
         return fallback(...)
     end
 
     local function index(_, k)
-        debug.deprecate(message, {raw = true})
+        debug.deprecate(message, { raw = true })
 
         return fallback[k]
     end
 
     local function newindex(_, k, v)
-        debug.deprecate(message, {raw = true})
+        debug.deprecate(message, { raw = true })
 
         fallback[k] = v
     end
 
-    return setmetatable({}, {__call = call, __index = index, __newindex  = newindex})
+    return setmetatable({}, { __call = call, __index = index, __newindex = newindex })
 end
 
 return debug

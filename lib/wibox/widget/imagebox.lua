@@ -15,28 +15,34 @@
 -- @classmod wibox.widget.imagebox
 ---------------------------------------------------------------------------
 
-local base = require("wibox.widget.base")
-local surface = require("gears.surface")
-local gtable = require("gears.table")
+local base         = require("wibox.widget.base")
+local surface      = require("gears.surface")
+local gtable       = require("gears.table")
 local setmetatable = setmetatable
-local type = type
-local print = print
-local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local type         = type
+local print        = print
+local unpack       = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
 
-local imagebox = { mt = {} }
+local imagebox     = { mt = {} }
 
 -- Draw an imagebox with the given cairo context in the given geometry.
 function imagebox:draw(_, cr, width, height)
-    if not self._private.image then return end
-    if width == 0 or height == 0 then return end
+    if not self._private.image then
+        return
+    end
+    if width == 0 or height == 0 then
+        return
+    end
 
     if not self._private.resize_forbidden then
         -- Let's scale the image so that it fits into (width, height)
-        local w = self._private.image:get_width()
-        local h = self._private.image:get_height()
-        local aspect = width / w
+        local w        = self._private.image:get_width()
+        local h        = self._private.image:get_height()
+        local aspect   = width / w
         local aspect_h = height / h
-        if aspect > aspect_h then aspect = aspect_h end
+        if aspect > aspect_h then
+            aspect = aspect_h
+        end
 
         cr:scale(aspect, aspect)
     end
@@ -73,11 +79,13 @@ function imagebox:fit(_, width, height)
     end
 
     if not self._private.resize_forbidden then
-        local aspect = width / w
+        local aspect   = width / w
         local aspect_h = height / h
 
         -- Use the smaller one of the two aspect ratios.
-        if aspect > aspect_h then aspect = aspect_h end
+        if aspect > aspect_h then
+            aspect = aspect_h
+        end
 
         w, h = w * aspect, h * aspect
     end
@@ -143,7 +151,7 @@ end
 -- @see clip_shape
 function imagebox:set_clip_shape(clip_shape, ...)
     self._private.clip_shape = clip_shape
-    self._private.clip_args = {...}
+    self._private.clip_args  = { ... }
     self:emit_signal("widget::redraw_needed")
 end
 
@@ -167,7 +175,7 @@ end
 -- @treturn table A new `imagebox`
 -- @function wibox.widget.imagebox
 local function new(image, resize_allowed, clip_shape)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret = base.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, imagebox, true)
 
@@ -179,7 +187,7 @@ local function new(image, resize_allowed, clip_shape)
     end
 
     ret._private.clip_shape = clip_shape
-    ret._private.clip_args = {}
+    ret._private.clip_args  = {}
 
     return ret
 end

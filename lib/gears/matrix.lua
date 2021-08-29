@@ -6,8 +6,8 @@
 -- @classmod gears.matrix
 ---------------------------------------------------------------------------
 
-local cairo = require("lgi").cairo
-local matrix = {}
+local cairo     = require("lgi").cairo
+local matrix    = {}
 
 -- Metatable for matrix instances. This is set up near the end of the file.
 local matrix_mt = {}
@@ -22,9 +22,9 @@ local matrix_mt = {}
 -- @return A new matrix describing the given transformation.
 function matrix.create(xx, yx, xy, yy, x0, y0)
     return setmetatable({
-        xx = xx, xy = xy, x0 = x0,
-        yx = yx, yy = yy, y0 = y0
-    }, matrix_mt)
+                            xx = xx, xy = xy, x0 = x0,
+                            yx = yx, yy = yy, y0 = y0
+                        }, matrix_mt)
 end
 
 --- Create a new translation matrix
@@ -57,9 +57,9 @@ end
 -- @tparam number angle The angle of the rotation in radians.
 -- @return A new matrix describing the given transformation.
 function matrix.create_rotate_at(x, y, angle)
-    return   matrix.create_translate( -x, -y )
-           * matrix.create_rotate   ( angle  )
-           * matrix.create_translate(  x,  y )
+    return matrix.create_translate(-x, -y)
+            * matrix.create_rotate(angle)
+            * matrix.create_translate(x, y)
 end
 
 --- Translate this matrix
@@ -99,10 +99,10 @@ end
 function matrix:invert()
     -- Beware of math! (I just copied the algorithm from cairo's source code)
     local a, b, c, d, x0, y0 = self.xx, self.yx, self.xy, self.yy, self.x0, self.y0
-    local inv_det = 1/(a*d - b*c)
+    local inv_det            = 1 / (a * d - b * c)
     return matrix.create(inv_det * d, inv_det * -b,
-            inv_det * -c, inv_det * a,
-            inv_det * (c * y0 - d * x0), inv_det * (b * x0 - a * y0))
+                         inv_det * -c, inv_det * a,
+                         inv_det * (c * y0 - d * x0), inv_det * (b * x0 - a * y0))
 end
 
 --- Multiply this matrix with another matrix.
@@ -114,11 +114,11 @@ end
 -- @return The multiplication result.
 function matrix:multiply(other)
     local ret = matrix.create(self.xx * other.xx + self.yx * other.xy,
-        self.xx * other.yx + self.yx * other.yy,
-        self.xy * other.xx + self.yy * other.xy,
-        self.xy * other.yx + self.yy * other.yy,
-        self.x0 * other.xx + self.y0 * other.xy + other.x0,
-        self.x0 * other.yx + self.y0 * other.yy + other.y0)
+                              self.xx * other.yx + self.yx * other.yy,
+                              self.xy * other.xx + self.yy * other.xy,
+                              self.xy * other.yx + self.yy * other.yy,
+                              self.x0 * other.xx + self.y0 * other.xy + other.x0,
+                              self.x0 * other.yx + self.y0 * other.yy + other.y0)
 
     return ret
 end
@@ -129,7 +129,7 @@ end
 -- @tparam gears.matrix|cairo.Matrix other The matrix to compare with.
 -- @return True if this and the other matrix are equal.
 function matrix:equals(other)
-    for _, k in pairs{ "xx", "xy", "yx", "yy", "x0", "y0" } do
+    for _, k in pairs { "xx", "xy", "yx", "yy", "x0", "y0" } do
         if self[k] ~= other[k] then
             return false
         end
@@ -141,8 +141,8 @@ end
 -- @return A string showing this matrix in column form.
 function matrix:tostring()
     return string.format("[[%g, %g], [%g, %g], [%g, %g]]",
-            self.xx, self.yx, self.xy,
-            self.yy, self.x0, self.y0)
+                         self.xx, self.yx, self.xy,
+                         self.yy, self.x0, self.y0)
 end
 
 --- Transform a distance by this matrix.
@@ -182,10 +182,10 @@ function matrix:transform_rectangle(x, y, width, height)
     local x3, y3 = self:transform_point(x + width, y + height)
     local x4, y4 = self:transform_point(x + width, y)
     -- Find the extremal points of the result
-    x = math.min(x1, x2, x3, x4)
-    y = math.min(y1, y2, y3, y4)
-    width = math.max(x1, x2, x3, x4) - x
-    height = math.max(y1, y2, y3, y4) - y
+    x            = math.min(x1, x2, x3, x4)
+    y            = math.min(y1, y2, y3, y4)
+    width        = math.max(x1, x2, x3, x4) - x
+    height       = math.max(y1, y2, y3, y4) - y
 
     return x, y, width, height
 end
@@ -205,14 +205,14 @@ function matrix.from_cairo_matrix(mat)
     return matrix.create(mat.xx, mat.yx, mat.xy, mat.yy, mat.x0, mat.y0)
 end
 
-matrix_mt.__index = matrix
+matrix_mt.__index    = matrix
 matrix_mt.__newindex = error
-matrix_mt.__eq = matrix.equals
-matrix_mt.__mul = matrix.multiply
+matrix_mt.__eq       = matrix.equals
+matrix_mt.__mul      = matrix.multiply
 matrix_mt.__tostring = matrix.tostring
 
 --- A constant for the identity matrix.
-matrix.identity = matrix.create(1, 0, 0, 1, 0, 0)
+matrix.identity      = matrix.create(1, 0, 0, 1, 0, 0)
 
 return matrix
 

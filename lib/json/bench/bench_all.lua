@@ -1,4 +1,3 @@
-
 print("[decode]")
 loadfile("bench_decode.lua")()
 print()

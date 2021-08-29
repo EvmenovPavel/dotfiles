@@ -1,8 +1,8 @@
-local wibox       = require("wibox")
-local awful       = require("awful")
-local resources   = require("resources")
-
-local naughty     = require("naughty")
+local wibox     = require("wibox")
+local awful     = require("awful")
+local naughty   = require("naughty")
+local resources = require("resources")
+local wmapi     = require("wmapi")
 
 local battery     = {}
 
@@ -11,7 +11,8 @@ local wIconBox    = wibox.widget {
     widget = wibox.widget.imagebox
 }
 
-local wTextBox    = capi.wmapi:textbox {
+local wTextBox    = wibox.widget {
+    widget = wibox.widget.textbox
 }
 
 local acpi_status = {
@@ -28,56 +29,55 @@ function battery:updateWidgetInfo(level_acpi)
         local image = ""
 
         if level_acpi == 1 then
-            if (value >= 1 and value < 9) then
-                image = resources.battery.batteryOutline
-            elseif (value >= 10 and value < 19) then
-                image = resources.battery.battery20
-            elseif (value >= 20 and value < 29) then
-                image = resources.battery.battery30
-            elseif (value >= 30 and value < 39) then
-                image = resources.battery.battery40
-            elseif (value >= 40 and value < 49) then
-                image = resources.battery.battery40
-            elseif (value >= 50 and value < 59) then
-                image = resources.battery.battery40
-            elseif (value >= 60 and value < 69) then
-                image = resources.battery.battery40
-            elseif (value >= 70 and value < 79) then
-                image = resources.battery.battery40
-            elseif (value >= 80 and value < 89) then
-                image = resources.battery.battery
-            elseif (value >= 90 and value < 99) then
-                image = resources.battery.battery90
-            elseif (value >= 100) then
-                image = resources.battery.batteryFull
+            if (1 and value < 9) then
+                image = resources.battery.level_0
+            elseif (10 and value < 19) then
+                image = resources.battery.level_10
+            elseif (20 and value < 29) then
+                image = resources.battery.level_20
+            elseif (30 and value < 39) then
+                image = resources.battery.level_30
+            elseif (40 and value < 49) then
+                image = resources.battery.level_40
+            elseif (50 and value < 59) then
+                image = resources.battery.level_50
+            elseif (60 and value < 69) then
+                image = resources.battery.level_60
+            elseif (70 and value < 79) then
+                image = resources.battery.level_70
+            elseif (80 and value < 89) then
+                image = resources.battery.level_80
+            elseif (90 and value < 99) then
+                image = resources.battery.level_90
+            elseif (100) then
+                image = resources.battery.level_100
             end
         elseif level_acpi == 2 then
-            if (value >= 0 and value < 10) then
-                --image = resources.battery.batteryCharging10
-
-            elseif (value >= 10 and value < 19) then
-                image = resources.battery.batteryCharging10
-            elseif (value >= 20 and value < 29) then
-                image = resources.battery.batteryCharging20
-            elseif (value >= 30 and value < 39) then
-                image = resources.battery.batteryCharging30
-            elseif (value >= 40 and value < 49) then
-                image = resources.battery.batteryCharging40
-            elseif (value >= 50 and value < 59) then
-                image = resources.battery.batteryCharging50
-            elseif (value >= 60 and value < 69) then
-                image = resources.battery.batteryCharging60
-            elseif (value >= 70 and value < 79) then
-                image = resources.battery.batteryCharging70
-            elseif (value >= 80 and value < 89) then
-                image = resources.battery.batteryCharging80
-            elseif (value >= 90 and value < 99) then
-                image = resources.battery.batteryCharging90
-            elseif (value >= 100) then
-                image = resources.battery.batteryCharging100
+            if (0 and value < 10) then
+                image = resources.battery.level_0_charging
+            elseif (10 and value < 19) then
+                image = resources.battery.level_10_charging
+            elseif (20 and value < 29) then
+                image = resources.battery.level_20_charging
+            elseif (30 and value < 39) then
+                image = resources.battery.level_30_charging
+            elseif (40 and value < 49) then
+                image = resources.battery.level_40_charging
+            elseif (50 and value < 59) then
+                image = resources.battery.level_50_charging
+            elseif (60 and value < 69) then
+                image = resources.battery.level_60_charging
+            elseif (70 and value < 79) then
+                image = resources.battery.level_70_charging
+            elseif (80 and value < 89) then
+                image = resources.battery.level_80_charging
+            elseif (90 and value < 99) then
+                image = resources.battery.level_90_charging
+            elseif (100) then
+                image = resources.battery.level_100_charging
             end
         elseif level_acpi == 3 then
-            image = resources.battery.batteryFull
+            image = resources.battery.level_100_charged
         end
 
         wIconBox.image  = image

@@ -7,16 +7,15 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local ipairs = ipairs
-local table = table
-local capi =
-{
+local ipairs         = ipairs
+local table          = table
+local capi           = {
     awesome = awesome,
-    root = root
+    root    = root
 }
-local beautiful = require("beautiful")
+local beautiful      = require("beautiful")
 
-local app_starting = {}
+local app_starting   = {}
 
 local cursor_waiting = "watch"
 
@@ -47,8 +46,12 @@ local function register_event(event_id)
     update_cursor()
 end
 
-local function unregister_hook(event) unregister_event(event.id) end
-local function register_hook(event) register_event(event.id) end
+local function unregister_hook(event)
+    unregister_event(event.id)
+end
+local function register_hook(event)
+    register_event(event.id)
+end
 
 capi.awesome.connect_signal("spawn::initiated", register_hook)
 capi.awesome.connect_signal("spawn::canceled", unregister_hook)

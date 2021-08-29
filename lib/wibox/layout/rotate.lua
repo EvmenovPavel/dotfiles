@@ -9,9 +9,9 @@
 local gdebug = require("gears.debug")
 
 return gdebug.deprecate_class(
-    require("wibox.container.rotate"),
-    "wibox.layout.rotate",
-    "wibox.container.rotate"
+        require("wibox.container.rotate"),
+        "wibox.layout.rotate",
+        "wibox.container.rotate"
 )
 
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

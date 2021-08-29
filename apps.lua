@@ -1,6 +1,6 @@
-local apps            = {}
+local apps   = {}
 
-apps.default          = {
+apps.default = {
     terminal    = "kitty",
     launcher    = "rofi -modi run -show drun",
     lock        = "i3lock",

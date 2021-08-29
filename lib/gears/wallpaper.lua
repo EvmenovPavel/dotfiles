@@ -23,12 +23,12 @@
 -- @module gears.wallpaper
 ---------------------------------------------------------------------------
 
-local cairo = require("lgi").cairo
-local color = require("gears.color")
-local surface = require("gears.surface")
-local timer = require("gears.timer")
-local debug = require("gears.debug")
-local root = root
+local cairo     = require("lgi").cairo
+local color     = require("gears.color")
+local surface   = require("gears.surface")
+local timer     = require("gears.timer")
+local debug     = require("gears.debug")
+local root      = root
 
 local wallpaper = { mt = {} }
 
@@ -52,10 +52,10 @@ end
 -- @return[1] The available geometry (table with entries width and height)
 -- @return[1] A cairo context that the wallpaper should be drawn to
 function wallpaper.prepare_context(s)
-    s = get_screen(s)
+    s                             = get_screen(s)
 
     local root_width, root_height = root.size()
-    local geom = s and s.geometry or root_geometry()
+    local geom                    = s and s.geometry or root_geometry()
     local source, target, cr
 
     if not pending_wallpaper then
@@ -65,7 +65,7 @@ function wallpaper.prepare_context(s)
 
         -- Set the wallpaper (delayed)
         timer.delayed_call(function()
-            local paper = pending_wallpaper
+            local paper       = pending_wallpaper
             pending_wallpaper = nil
             wallpaper.set(paper.surface)
             paper.surface:finish()
@@ -93,8 +93,8 @@ function wallpaper.prepare_context(s)
 
     pending_wallpaper = {
         surface = target,
-        width = root_width,
-        height = root_height
+        width   = root_width,
+        height  = root_height
     }
 
     -- Only draw to the selected area
@@ -131,10 +131,10 @@ end
 -- @param scale The scale factor for the wallpaper. Default is 1 (original size).
 -- @see gears.color
 function wallpaper.centered(surf, s, background, scale)
-    local geom, cr = wallpaper.prepare_context(s)
+    local geom, cr      = wallpaper.prepare_context(s)
     local original_surf = surf
-    surf = surface.load_uncached(surf)
-    background = color(background)
+    surf                = surface.load_uncached(surf)
+    background          = color(background)
 
     -- Set default scale if unset
     if not scale or scale <= 0 then
@@ -143,7 +143,7 @@ function wallpaper.centered(surf, s, background, scale)
 
     -- Fill the area with the background
     cr.operator = cairo.Operator.SOURCE
-    cr.source = background
+    cr.source   = background
     cr:paint()
 
     -- Now center the surface
@@ -177,11 +177,11 @@ function wallpaper.tiled(surf, s, offset)
     end
 
     local original_surf = surf
-    surf = surface.load_uncached(surf)
-    local pattern = cairo.Pattern.create_for_surface(surf)
-    pattern.extend = cairo.Extend.REPEAT
-    cr.source = pattern
-    cr.operator = cairo.Operator.SOURCE
+    surf                = surface.load_uncached(surf)
+    local pattern       = cairo.Pattern.create_for_surface(surf)
+    pattern.extend      = cairo.Extend.REPEAT
+    cr.source           = pattern
+    cr.operator         = cairo.Operator.SOURCE
     cr:paint()
     if surf ~= original_surf then
         surf:finish()
@@ -199,12 +199,12 @@ end
 --   The default is to honor the aspect ratio.
 -- @param offset This can be set to a table with entries x and y.
 function wallpaper.maximized(surf, s, ignore_aspect, offset)
-    local geom, cr = wallpaper.prepare_context(s)
+    local geom, cr      = wallpaper.prepare_context(s)
     local original_surf = surf
-    surf = surface.load_uncached(surf)
-    local w, h = surface.get_size(surf)
-    local aspect_w = geom.width / w
-    local aspect_h = geom.height / h
+    surf                = surface.load_uncached(surf)
+    local w, h          = surface.get_size(surf)
+    local aspect_w      = geom.width / w
+    local aspect_h      = geom.height / h
 
     if not ignore_aspect then
         aspect_h = math.max(aspect_w, aspect_h)
@@ -215,7 +215,7 @@ function wallpaper.maximized(surf, s, ignore_aspect, offset)
     if offset then
         cr:translate(offset.x, offset.y)
     elseif not ignore_aspect then
-        local scaled_width = geom.width / aspect_w
+        local scaled_width  = geom.width / aspect_w
         local scaled_height = geom.height / aspect_h
         cr:translate((scaled_width - w) / 2, (scaled_height - h) / 2)
     end
@@ -239,21 +239,21 @@ end
 --   gears.color. The default is black.
 -- @see gears.color
 function wallpaper.fit(surf, s, background)
-    local geom, cr = wallpaper.prepare_context(s)
+    local geom, cr      = wallpaper.prepare_context(s)
     local original_surf = surf
-    surf = surface.load_uncached(surf)
-    background = color(background)
+    surf                = surface.load_uncached(surf)
+    background          = color(background)
 
     -- Fill the area with the background
-    cr.operator = cairo.Operator.SOURCE
-    cr.source = background
+    cr.operator         = cairo.Operator.SOURCE
+    cr.source           = background
     cr:paint()
 
     -- Now fit the surface
-    local w, h = surface.get_size(surf)
+    local w, h  = surface.get_size(surf)
     local scale = geom.width / w
     if h * scale > geom.height then
-       scale = geom.height / h
+        scale = geom.height / h
     end
     cr:translate((geom.width - (w * scale)) / 2, (geom.height - (h * scale)) / 2)
     cr:rectangle(0, 0, w * scale, h * scale)

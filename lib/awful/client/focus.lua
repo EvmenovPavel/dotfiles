@@ -7,8 +7,7 @@
 ---------------------------------------------------------------------------
 local grect = require("gears.geometry").rectangle
 
-local capi =
-{
+local capi  = {
     screen = screen,
     client = client,
 }
@@ -17,7 +16,7 @@ local capi =
 local screen
 do
     screen = setmetatable({}, {
-        __index = function(_, k)
+        __index    = function(_, k)
             screen = require("awful.screen")
             return screen[k]
         end,
@@ -28,7 +27,7 @@ end
 local client
 do
     client = setmetatable({}, {
-        __index = function(_, k)
+        __index    = function(_, k)
             client = require("awful.client")
             return client[k]
         end,
@@ -36,7 +35,7 @@ do
     })
 end
 
-local focus = {history = {list = {}}}
+local focus = { history = { list = {} } }
 
 local function get_screen(s)
     return s and capi.screen[s]
@@ -64,7 +63,7 @@ function focus.byidx(i, c)
     local target = client.next(i, c)
     if target then
         target:emit_signal("request::activate", "client.focus.byidx",
-                           {raise=true})
+                           { raise = true })
     end
 end
 
@@ -77,9 +76,9 @@ end
 -- @function awful.client.focus.filter
 function focus.filter(c)
     if c.type == "desktop"
-        or c.type == "dock"
-        or c.type == "splash"
-        or not c.focusable then
+            or c.type == "dock"
+            or c.type == "splash"
+            or not c.focusable then
         return nil
     end
     return c
@@ -107,10 +106,10 @@ end
 -- @treturn client.object A client.
 -- @function awful.client.focus.history.get
 function focus.history.get(s, idx, filter)
-    s = get_screen(s)
+    s             = get_screen(s)
     -- When this counter is equal to idx, we return the client
     local counter = 0
-    local vc = client.visible(s, true)
+    local vc      = client.visible(s, true)
     for _, c in ipairs(focus.history.list) do
         if get_screen(c.screen) == s then
             if not filter or filter(c) then
@@ -143,11 +142,11 @@ end
 -- @function awful.client.focus.history.previous
 function focus.history.previous()
     local sel = capi.client.focus
-    local s = sel and sel.screen or screen.focused()
-    local c = focus.history.get(s, 1)
+    local s   = sel and sel.screen or screen.focused()
+    local c   = focus.history.get(s, 1)
     if c then
         c:emit_signal("request::activate", "client.focus.history.previous",
-                      {raise=false})
+                      { raise = false })
     end
 end
 
@@ -161,9 +160,9 @@ end
 function focus.bydirection(dir, c, stacked)
     local sel = c or capi.client.focus
     if sel then
-        local cltbl = client.visible(sel.screen, stacked)
+        local cltbl   = client.visible(sel.screen, stacked)
         local geomtbl = {}
-        for i,cl in ipairs(cltbl) do
+        for i, cl in ipairs(cltbl) do
             geomtbl[i] = cl:geometry()
         end
 
@@ -172,7 +171,7 @@ function focus.bydirection(dir, c, stacked)
         -- If we found a client to focus, then do it.
         if target then
             cltbl[target]:emit_signal("request::activate",
-                                      "client.focus.bydirection", {raise=false})
+                                      "client.focus.bydirection", { raise = false })
         end
     end
 end
@@ -194,9 +193,9 @@ function focus.global_bydirection(dir, c, stacked)
     if sel == capi.client.focus then
         screen.focus_bydirection(dir, scr)
         if scr ~= get_screen(screen.focused()) then
-            local cltbl = client.visible(screen.focused(), stacked)
+            local cltbl   = client.visible(screen.focused(), stacked)
             local geomtbl = {}
-            for i,cl in ipairs(cltbl) do
+            for i, cl in ipairs(cltbl) do
                 geomtbl[i] = cl:geometry()
             end
             local target = grect.get_in_direction(dir, geomtbl, scr.geometry)
@@ -204,7 +203,7 @@ function focus.global_bydirection(dir, c, stacked)
             if target then
                 cltbl[target]:emit_signal("request::activate",
                                           "client.focus.global_bydirection",
-                                          {raise=false})
+                                          { raise = false })
             end
         end
     end

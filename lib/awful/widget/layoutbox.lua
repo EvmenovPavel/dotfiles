@@ -7,12 +7,12 @@
 ---------------------------------------------------------------------------
 
 local setmetatable = setmetatable
-local capi = { screen = screen, tag = tag }
-local layout = require("awful.layout")
-local tooltip = require("awful.tooltip")
-local beautiful = require("beautiful")
-local wibox = require("wibox")
-local surface = require("gears.surface")
+local capi         = { screen = screen, tag = tag }
+local layout       = require("awful.layout")
+local tooltip      = require("awful.tooltip")
+local beautiful    = require("beautiful")
+local wibox        = require("wibox")
+local surface      = require("gears.surface")
 
 local function get_screen(s)
     return s and capi.screen[s]
@@ -20,21 +20,21 @@ end
 
 local layoutbox = { mt = {} }
 
-local boxes = nil
+local boxes     = nil
 
 local function update(w, screen)
-    screen = get_screen(screen)
+    screen     = get_screen(screen)
     local name = layout.getname(layout.get(screen))
     w._layoutbox_tooltip:set_text(name or "[no name]")
 
-    local img = surface.load_silently(beautiful["layout_" .. name], false)
+    local img        = surface.load_silently(beautiful["layout_" .. name], false)
     w.imagebox.image = img
     w.textbox.text   = img and "" or name
 end
 
 local function update_from_tag(t)
     local screen = get_screen(t.screen)
-    local w = boxes[screen]
+    local w      = boxes[screen]
     if w then
         update(w, screen)
     end
@@ -65,7 +65,7 @@ function layoutbox.new(screen)
     -- Do we already have a layoutbox for this screen?
     local w = boxes[screen]
     if not w then
-        w = wibox.widget {
+        w                    = wibox.widget {
             {
                 id     = "imagebox",
                 widget = wibox.widget.imagebox
@@ -77,7 +77,7 @@ function layoutbox.new(screen)
             layout = wibox.layout.fixed.horizontal
         }
 
-        w._layoutbox_tooltip = tooltip {objects = {w}, delay_show = 1}
+        w._layoutbox_tooltip = tooltip { objects = { w }, delay_show = 1 }
 
         update(w, screen)
         boxes[screen] = w

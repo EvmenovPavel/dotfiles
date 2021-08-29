@@ -10,12 +10,12 @@
 ---------------------------------------------------------------------------
 
 local setmetatable = setmetatable
-local pairs = pairs
-local type = type
-local error = error
-local properties = require("gears.object.properties")
+local pairs        = pairs
+local type         = type
+local error        = error
+local properties   = require("gears.object.properties")
 
-local object = { properties = properties, mt = {} }
+local object       = { properties = properties, mt = {} }
 
 --- Verify that obj is indeed a valid object as returned by new()
 local function check(obj)
@@ -34,7 +34,7 @@ local function find_signal(obj, name)
         assert(type(name) == "string", "name must be a string, got: " .. type(name))
         obj._signals[name] = {
             strong = {},
-            weak = setmetatable({}, { __mode = "kv" })
+            weak   = setmetatable({}, { __mode = "kv" })
         }
     end
     return obj._signals[name]
@@ -42,7 +42,7 @@ end
 
 function object.add_signal()
     require("gears.debug").deprecate("Use signals without explicitly adding them. This is now done implicitly.",
-                                     {deprecated_in=4})
+                                     { deprecated_in = 4 })
 end
 
 --- Connect to a signal.
@@ -92,13 +92,14 @@ local function make_the_gc_obey(func)
         -- value in a weak table. Thus, do some magic so that we get a userdata.
 
         -- luacheck: globals newproxy getfenv setfenv
-        local userdata = newproxy(true)
-        getmetatable(userdata).__gc = function() end
+        local userdata              = newproxy(true)
+        getmetatable(userdata).__gc = function()
+        end
         -- Now bind the lifetime of userdata to the lifetime of func. For this,
         -- we mess with the function's environment and add a table for all the
         -- various userdata that it should keep alive.
-        local key = "_secret_key_used_by_gears_object_in_Lua51"
-        local old_env = getfenv(func)
+        local key                   = "_secret_key_used_by_gears_object_in_Lua51"
+        local old_env               = getfenv(func)
         if old_env[key] then
             -- Assume the code in the else branch added this and the function
             -- already has its own, private environment
@@ -131,8 +132,8 @@ end
 -- @tparam string name The name of the signal
 -- @tparam function func The callback that should be disconnected
 function object:disconnect_signal(name, func)
-    local sig = find_signal(self, name)
-    sig.weak[func] = nil
+    local sig        = find_signal(self, name)
+    sig.weak[func]   = nil
     sig.strong[func] = nil
 end
 
@@ -158,10 +159,10 @@ end
 local function get_miss(self, key)
     local class = rawget(self, "_class")
 
-    if rawget(self, "get_"..key) then
-        return rawget(self, "get_"..key)(self)
-    elseif class and class["get_"..key] then
-        return class["get_"..key](self)
+    if rawget(self, "get_" .. key) then
+        return rawget(self, "get_" .. key)(self)
+    elseif class and class["get_" .. key] then
+        return class["get_" .. key](self)
     elseif class then
         return class[key]
     end
@@ -171,23 +172,23 @@ end
 local function set_miss(self, key, value)
     local class = rawget(self, "_class")
 
-    if rawget(self, "set_"..key) then
-        return rawget(self, "set_"..key)(self, value)
-    elseif class and class["set_"..key] then
-        return class["set_"..key](self, value)
+    if rawget(self, "set_" .. key) then
+        return rawget(self, "set_" .. key)(self, value)
+    elseif class and class["set_" .. key] then
+        return class["set_" .. key](self, value)
     elseif rawget(self, "_enable_auto_signals") then
         local changed = class[key] ~= value
-        class[key] = value
+        class[key]    = value
 
         if changed then
-            self:emit_signal("property::"..key, value)
+            self:emit_signal("property::" .. key, value)
         end
-    elseif (not rawget(self, "get_"..key))
-        and not (class and class["get_"..key]) then
+    elseif (not rawget(self, "get_" .. key))
+            and not (class and class["get_" .. key]) then
         return rawset(self, key, value)
     else
         error("Cannot set '" .. tostring(key) .. "' on " .. tostring(self)
-                .. " because it is read-only")
+                      .. " because it is read-only")
     end
 end
 
@@ -258,7 +259,7 @@ end
 -- @treturn table A new object
 -- @function gears.object
 local function new(args)
-    args = args or {}
+    args      = args or {}
     local ret = {}
 
     -- Automatic signals cannot work without both miss handlers.
@@ -271,11 +272,11 @@ local function new(args)
         end
     end
 
-    ret._signals = {}
+    ret._signals             = {}
 
-    ret._global_receivers = {}
+    ret._global_receivers    = {}
 
-    local mt = {}
+    local mt                 = {}
 
     -- Look for methods in another table
     ret._class               = args.class
@@ -283,7 +284,7 @@ local function new(args)
 
     -- To catch all changes, a proxy is required
     if args.enable_auto_signals then
-        ret._class = ret._class and setmetatable({}, {__index = args.class}) or {}
+        ret._class = ret._class and setmetatable({}, { __index = args.class }) or {}
     end
 
     if args.enable_properties then

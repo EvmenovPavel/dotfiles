@@ -6,19 +6,19 @@
 -- @module awful.ewmh
 ---------------------------------------------------------------------------
 
-local client = client
-local screen = screen
-local ipairs = ipairs
-local timer = require("gears.timer")
-local gtable = require("gears.table")
-local aclient = require("awful.client")
-local aplace = require("awful.placement")
-local asuit = require("awful.layout.suit")
-local beautiful = require("beautiful")
-local alayout = require("awful.layout")
-local atag = require("awful.tag")
+local client               = client
+local screen               = screen
+local ipairs               = ipairs
+local timer                = require("gears.timer")
+local gtable               = require("gears.table")
+local aclient              = require("awful.client")
+local aplace               = require("awful.placement")
+local asuit                = require("awful.layout.suit")
+local beautiful            = require("beautiful")
+local alayout              = require("awful.layout")
+local atag                 = require("awful.tag")
 
-local ewmh = {
+local ewmh                 = {
     generic_activate_filters    = {},
     contextual_activate_filters = {},
 }
@@ -55,7 +55,9 @@ local ewmh = {
 -- resulting from calls within.
 local repair_geometry_lock = false
 local function repair_geometry(window)
-    if repair_geometry_lock then return end
+    if repair_geometry_lock then
+        return
+    end
     repair_geometry_lock = true
 
     -- Re-apply the geometry locking properties to what they should be.
@@ -88,8 +90,9 @@ end
 --  be selected if none of the client's tags are selected?
 -- @tparam[opt=false] boolean hints.switch_to_tags Select all tags associated
 --  with the client.
-function ewmh.activate(c, context, hints) -- luacheck: no unused args
-    hints = hints or  {}
+function ewmh.activate(c, context, hints)
+    -- luacheck: no unused args
+    hints = hints or {}
 
     if c.focusable == false and not hints.force then
         if hints.raise then
@@ -106,12 +109,17 @@ function ewmh.activate(c, context, hints) -- luacheck: no unused args
         ewmh.contextual_activate_filters[context] or {},
         ewmh.generic_activate_filters
     } do
-        for i=#tab, 1, -1 do
+        for i = #tab, 1, -1 do
             ret = tab[i](c, context, hints)
-            if ret ~= nil then found=true; break end
+            if ret ~= nil then
+                found = true;
+                break
+            end
         end
 
-        if found then break end
+        if found then
+            break
+        end
     end
 
     -- Minimized clients can be requested to have focus by, for example, 3rd
@@ -170,8 +178,7 @@ function ewmh.add_activate_filter(f, context)
     if not context then
         table.insert(ewmh.generic_activate_filters, f)
     else
-        ewmh.contextual_activate_filters[context] =
-            ewmh.contextual_activate_filters[context] or {}
+        ewmh.contextual_activate_filters[context] = ewmh.contextual_activate_filters[context] or {}
 
         table.insert(ewmh.contextual_activate_filters[context], f)
     end
@@ -187,7 +194,7 @@ end
 -- @see add_activate_filter
 function ewmh.remove_activate_filter(f, context)
     local tab = context and (ewmh.contextual_activate_filters[context] or {})
-        or ewmh.generic_activate_filters
+            or ewmh.generic_activate_filters
 
     for k, v in ipairs(tab) do
         if v == f then
@@ -225,9 +232,12 @@ end
 -- @client c A client to tag
 -- @tparam[opt] tag|boolean t A tag to use. If true, then the client is made sticky.
 -- @tparam[opt={}] table hints Extra information
-function ewmh.tag(c, t, hints) --luacheck: no unused
+function ewmh.tag(c, t, hints)
+    --luacheck: no unused
     -- There is nothing to do
-    if not t and #get_valid_tags(c, c.screen) > 0 then return end
+    if not t and #get_valid_tags(c, c.screen) > 0 then
+        return
+    end
 
     if not t then
         if c.transient_for and not (hints and hints.reason == "screen") then
@@ -252,7 +262,7 @@ end
 -- @client c A client
 -- @tparam boolean urgent If the client should be urgent
 function ewmh.urgent(c, urgent)
-    if c ~= client.focus and not aclient.property.get(c,"ignore_urgent") then
+    if c ~= client.focus and not aclient.property.get(c, "ignore_urgent") then
         c.urgent = urgent
     end
 end
@@ -281,15 +291,15 @@ function ewmh.geometry(c, context, hints)
         return
     end
 
-    context = context or ""
+    context                = context or ""
 
     local original_context = context
 
     -- Now, map it to something useful
-    context = context_mapper[context] or context
+    context                = context_mapper[context] or context
 
-    local props = gtable.clone(hints or {}, false)
-    props.store_geometry = props.store_geometry==nil and true or props.store_geometry
+    local props            = gtable.clone(hints or {}, false)
+    props.store_geometry   = props.store_geometry == nil and true or props.store_geometry
 
     -- If it is a known placement function, then apply it, otherwise let
     -- other potential handler resize the client (like in-layout resize or
@@ -302,9 +312,9 @@ function ewmh.geometry(c, context, hints)
         -- If the property is boolean and it corresponds to the undo operation,
         -- restore the stored geometry.
         if state == false then
-            local original = repair_geometry_lock
+            local original       = repair_geometry_lock
             repair_geometry_lock = true
-            aplace.restore(c, {context=context})
+            aplace.restore(c, { context = context })
             repair_geometry_lock = original
             return
         end
@@ -320,12 +330,12 @@ function ewmh.geometry(c, context, hints)
         end
 
         if (original_context == "fullscreen" and beautiful.fullscreen_hide_border ~= false) or
-           (original_context == "maximized" and beautiful.maximized_hide_border == true) then
+                (original_context == "maximized" and beautiful.maximized_hide_border == true) then
             props.ignore_border_width = true
-            props.zap_border_width = true
+            props.zap_border_width    = true
         end
 
-        local original = repair_geometry_lock
+        local original       = repair_geometry_lock
         repair_geometry_lock = true
         aplace[context](c, props)
         repair_geometry_lock = original
@@ -362,25 +372,27 @@ function ewmh.merge_maximization(c, context, hints)
         end
 
         timer {
-            timeout     = 1/60,
+            timeout     = 1 / 60,
             autostart   = true,
             single_shot = true,
             callback    = function()
-                if not c.valid then return end
+                if not c.valid then
+                    return
+                end
 
                 c._delay_maximization(c)
                 c._delay_maximization = nil
-                c._delayed_max_h = nil
-                c._delayed_max_v = nil
+                c._delayed_max_h      = nil
+                c._delayed_max_v      = nil
             end
         }
     end
 
     local function get_value(suffix, long_suffix)
-        if hints.toggle and c["_delayed_max_"..suffix] ~= nil then
-            return not c["_delayed_max_"..suffix]
+        if hints.toggle and c["_delayed_max_" .. suffix] ~= nil then
+            return not c["_delayed_max_" .. suffix]
         elseif hints.toggle then
-            return not c["maximized_"..long_suffix]
+            return not c["maximized_" .. long_suffix]
         else
             return hints.status
         end
@@ -404,13 +416,13 @@ end
 function ewmh.client_geometry_requests(c, context, hints)
     if context == "ewmh" and hints then
         if c.immobilized_horizontal then
-            hints = gtable.clone(hints)
-            hints.x = nil
+            hints       = gtable.clone(hints)
+            hints.x     = nil
             hints.width = nil
         end
         if c.immobilized_vertical then
-            hints = gtable.clone(hints)
-            hints.y = nil
+            hints        = gtable.clone(hints)
+            hints.y      = nil
             hints.height = nil
         end
         c:geometry(hints)
@@ -420,7 +432,7 @@ end
 -- The magnifier layout doesn't work with focus follow mouse.
 ewmh.add_activate_filter(function(c)
     if alayout.get(c.screen) ~= alayout.suit.magnifier
-      and aclient.focus.filter(c) then
+            and aclient.focus.filter(c) then
         return nil
     else
         return false

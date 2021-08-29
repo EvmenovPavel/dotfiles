@@ -31,11 +31,11 @@
 ---------------------------------------------------------------------------
 
 local setmetatable = setmetatable
-local textbox = require("wibox.widget.textbox")
-local timer = require("gears.timer")
-local spawn = require("awful.spawn")
+local textbox      = require("wibox.widget.textbox")
+local timer        = require("gears.timer")
+local spawn        = require("awful.spawn")
 
-local watch = { mt = {} }
+local watch        = { mt = {} }
 
 --- Create a textbox that shows the output of a command
 -- and updates it at a given time interval.
@@ -65,17 +65,18 @@ local watch = { mt = {} }
 -- @return The widget used by this watch.
 -- @return Its gears.timer.
 function watch.new(command, timeout, callback, base_widget)
-    timeout = timeout or 5
+    timeout     = timeout or 5
     base_widget = base_widget or textbox()
-    callback = callback or function(widget, stdout, stderr, exitreason, exitcode) -- luacheck: no unused args
+    callback    = callback or function(widget, stdout, stderr, exitreason, exitcode)
+        -- luacheck: no unused args
         widget:set_text(stdout)
     end
-    local t = timer { timeout = timeout }
+    local t     = timer { timeout = timeout }
     t:connect_signal("timeout", function()
         t:stop()
         spawn.easy_async(command, function(stdout, stderr, exitreason, exitcode)
-          callback(base_widget, stdout, stderr, exitreason, exitcode)
-          t:again()
+            callback(base_widget, stdout, stderr, exitreason, exitcode)
+            t:again()
         end)
     end)
     t:start()

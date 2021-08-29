@@ -1,4 +1,4 @@
-local rules     = {}
+local rules = {}
 
 function rules:init(clientkeys, buttonkeys)
     return {

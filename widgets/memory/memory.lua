@@ -1,5 +1,6 @@
 local wibox       = require("wibox")
 local beautiful   = require("beautiful")
+local gears       = require("gears")
 
 local memory      = {}
 
@@ -10,8 +11,8 @@ local memory_rows = {
 
 function row(name, str)
     local row = wibox.widget {
-        capi.wmapi:textbox({ markup = name }),
-        capi.wmapi:textbox({ markup = str }),
+        capi.wmapi.widget.textbox({ markup = name }),
+        capi.wmapi.widget.textbox({ markup = str }),
         layout = wibox.layout.ratio.horizontal
     }
 
@@ -20,12 +21,14 @@ function row(name, str)
     return row
 end
 
-local wGraphBox = capi.wmapi:graph()
-local wTextBox  = capi.wmapi:textbox({ forced_width = 60 })
-local popup     = capi.wmapi:popup()
+local wGraphBox = capi.wmapi.widget.graph()
+local wTextBox  = capi.wmapi.widget.textbox({ forced_width = 80 })
 
 function memory:init()
-    local bash = [[bash -c "cat /proc/meminfo"]]
+    local bash  = [[bash -c "cat /proc/meminfo"]]
+
+    local popup = capi.wmapi.widget.popup()
+
     capi.wmapi:watch(bash, 3,
                      function(stdout)
                          local _mem = { buf = {}, swp = {} }
@@ -60,7 +63,7 @@ function memory:init()
                          _mem.swp.inuse  = _mem.swp.t - _mem.swp.f
                          _mem.swp.usep   = math.floor(_mem.swp.inuse / _mem.swp.t * 100)
 
-                         wTextBox.markup = "Mem [" .. tostring(_mem.usep) .. "]"
+                         wTextBox.markup = "Mem [" .. tostring(_mem.usep) .. "%]"
                          wGraphBox:add_value(_mem.usep)
 
                          memory_rows[1] = row("free", _mem.free)
@@ -71,29 +74,19 @@ function memory:init()
                          memory_rows[6] = row("swp.usep", _mem.swp.usep)
 
                          popup:setup {
-                             {
-                                 memory_rows,
-                                 {
-                                     orientation   = "horizontal",
-                                     forced_height = 15,
-                                     color         = beautiful.bg_focus,
-                                     widget        = wibox.widget.separator
-                                 },
-                                 layout = wibox.layout.fixed.vertical,
-                             },
-                             margins = 8,
-                             widget  = wibox.container.margin
+                             memory_rows,
+                             layout = wibox.layout.fixed.vertical,
                          }
                      end)
 
     local wText  = wibox.container.margin(wibox.container.mirror(wTextBox, { horizontal = false }), 2, 2, 2, 2)
     local wGraph = wibox.container.margin(wibox.container.mirror(wGraphBox, { horizontal = true }), 2, 2, 2, 2)
 
-    local widget = wibox.widget({
-                                    wText,
-                                    --wGraph,
-                                    layout = wibox.layout.align.horizontal
-                                })
+    local w      = wibox.widget {
+        wText,
+        --wGraph,
+        layout = wibox.layout.align.horizontal
+    }
 
     local func   = function()
         if popup.visible then
@@ -103,9 +96,9 @@ function memory:init()
         end
     end
 
-    capi.wmapi:buttons({ widget = widget, func = func })
+    capi.wmapi.widget.buttons({ widget = w, func = func })
 
-    return widget
+    return w
 end
 
 return setmetatable(memory, {

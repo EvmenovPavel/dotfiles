@@ -55,7 +55,7 @@ theme.gap_single_client    = true
 
 theme.border_width         = 1
 theme.border_normal        = theme.bg_normal
-theme.border_focusw         = "#ff8a65"
+theme.border_focusw        = "#ff8a65"
 theme.border_marked        = theme.fg_urgent
 
 return theme

@@ -6,7 +6,7 @@
 
 local rtable = table
 
-local gmath = {}
+local gmath  = {}
 
 local function subset_mask_apply(mask, set)
     local ret = {}
@@ -22,7 +22,7 @@ local function subset_next(mask)
     local i = 1
     while i <= #mask and mask[i] do
         mask[i] = false
-        i = i + 1
+        i       = i + 1
     end
 
     if i <= #mask then
@@ -43,8 +43,10 @@ end
 -- @return A table with all subset.
 function gmath.subsets(set)
     local mask = {}
-    local ret = {}
-    for i = 1, #set do mask[i] = false end
+    local ret  = {}
+    for i = 1, #set do
+        mask[i] = false
+    end
 
     -- Insert the empty one
     rtable.insert(ret, {})
@@ -62,7 +64,9 @@ end
 -- @param i An absolute index to fit into #t.
 -- @return An integer in (1, t) or nil if t is less than or equal to zero.
 function gmath.cycle(t, i)
-    if t < 1 then return end
+    if t < 1 then
+        return
+    end
     i = i % t
     if i == 0 then
         i = t
@@ -78,6 +82,5 @@ end
 function gmath.round(x)
     return math.floor(x + 0.5)
 end
-
 
 return gmath

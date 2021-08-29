@@ -24,13 +24,13 @@
 -- @classmod wibox.layout.stack
 ---------------------------------------------------------------------------
 
-local base  = require("wibox.widget.base" )
-local fixed = require("wibox.layout.fixed")
-local table = table
-local pairs = pairs
-local gtable  = require("gears.table")
+local base   = require("wibox.widget.base")
+local fixed  = require("wibox.layout.fixed")
+local table  = table
+local pairs  = pairs
+local gtable = require("gears.table")
 
-local stack = {mt={}}
+local stack  = { mt = {} }
 
 ----- Set a widget at a specific index, replace the current one.
 -- **Signal:** widget::replaced The argument is the new widget and the old one
@@ -124,30 +124,32 @@ local stack = {mt={}}
 -- @tparam number spacing Spacing between widgets.
 
 function stack:layout(_, width, height)
-    local result = {}
-    local spacing = self._private.spacing
+    local result       = {}
+    local spacing      = self._private.spacing
 
-    width  = width  - math.abs(self._private.h_offset * #self._private.widgets) - 2*spacing
-    height = height - math.abs(self._private.v_offset * #self._private.widgets) - 2*spacing
+    width              = width - math.abs(self._private.h_offset * #self._private.widgets) - 2 * spacing
+    height             = height - math.abs(self._private.v_offset * #self._private.widgets) - 2 * spacing
 
     local h_off, v_off = spacing, spacing
 
     for _, v in pairs(self._private.widgets) do
         table.insert(result, base.place_widget_at(v, h_off, v_off, width, height))
         h_off, v_off = h_off + self._private.h_offset, v_off + self._private.v_offset
-        if self._private.top_only then break end
+        if self._private.top_only then
+            break
+        end
     end
 
     return result
 end
 
 function stack:fit(context, orig_width, orig_height)
-    local max_w, max_h = 0,0
-    local spacing = self._private.spacing
+    local max_w, max_h = 0, 0
+    local spacing      = self._private.spacing
 
     for _, v in pairs(self._private.widgets) do
-        local w, h = base.fit_widget(self, context, v, orig_width, orig_height)
-        max_w, max_h = math.max(max_w, w+2*spacing), math.max(max_h, h+2*spacing)
+        local w, h   = base.fit_widget(self, context, v, orig_width, orig_height)
+        max_w, max_h = math.max(max_w, w + 2 * spacing), math.max(max_h, h + 2 * spacing)
     end
 
     return math.min(max_w, orig_width), math.min(max_h, orig_height)
@@ -167,7 +169,9 @@ end
 --- Raise a widget at `index` to the top of the stack
 -- @tparam number index the widget index to raise
 function stack:raise(index)
-    if (not index) or self._private.widgets[index] then return end
+    if (not index) or self._private.widgets[index] then
+        return
+    end
 
     local w = self._private.widgets[index]
     table.remove(self._private.widgets, index)
@@ -183,7 +187,9 @@ end
 function stack:raise_widget(widget, recursive)
     local idx, layout = self:index(widget, recursive)
 
-    if not idx or not layout then return end
+    if not idx or not layout then
+        return
+    end
 
     -- Bubble up in the stack until the right index is found
     while layout and layout ~= self do

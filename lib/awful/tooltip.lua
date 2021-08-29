@@ -78,21 +78,21 @@
 -- @classmod awful.tooltip
 -------------------------------------------------------------------------
 
-local timer = require("gears.timer")
-local gtable = require("gears.table")
-local object = require("gears.object")
-local color = require("gears.color")
-local wibox = require("wibox")
-local a_placement = require("awful.placement")
-local a_button = require("awful.button")
-local shape = require("gears.shape")
-local beautiful = require("beautiful")
-local dpi = require("beautiful").xresources.apply_dpi
-local setmetatable = setmetatable
-local ipairs = ipairs
-local capi = {mouse=mouse, awesome=awesome}
+local timer         = require("gears.timer")
+local gtable        = require("gears.table")
+local object        = require("gears.object")
+local color         = require("gears.color")
+local wibox         = require("wibox")
+local a_placement   = require("awful.placement")
+local a_button      = require("awful.button")
+local shape         = require("gears.shape")
+local beautiful     = require("beautiful")
+local dpi           = require("beautiful").xresources.apply_dpi
+local setmetatable  = setmetatable
+local ipairs        = ipairs
+local capi          = { mouse = mouse, awesome = awesome }
 
-local tooltip = { mt = {} }
+local tooltip       = { mt = {} }
 
 -- The mouse point is 1x1, so anything aligned based on it as parent
 -- geometry will go out of bound. To get the desired placement, it is
@@ -109,15 +109,15 @@ local align_convert = {
 }
 
 -- If the wibox is under the cursor, it will trigger a mouse::leave
-local offset = {
-    top_left     = {x =  0, y =  0 },
-    left         = {x =  0, y =  0 },
-    bottom_left  = {x =  0, y =  0 },
-    right        = {x =  1, y =  0 },
-    top_right    = {x =  0, y =  0 },
-    bottom_right = {x =  1, y =  1 },
-    top          = {x =  0, y =  0 },
-    bottom       = {x =  0, y =  1 },
+local offset        = {
+    top_left     = { x = 0, y = 0 },
+    left         = { x = 0, y = 0 },
+    bottom_left  = { x = 0, y = 0 },
+    right        = { x = 1, y = 0 },
+    top_right    = { x = 0, y = 0 },
+    bottom_right = { x = 1, y = 1 },
+    top          = { x = 0, y = 0 },
+    bottom       = { x = 0, y = 1 },
 }
 
 --- The tooltip border color.
@@ -158,9 +158,9 @@ local function apply_mouse_mode(self)
 end
 
 local function apply_outside_mode(self)
-    local w = self:get_wibox()
+    local w               = self:get_wibox()
 
-    local _, position = a_placement.next_to(w, {
+    local _, position     = a_placement.next_to(w, {
         geometry            = self._private.widget_geometry,
         preferred_positions = self.preferred_positions,
         preferred_anchors   = self.preferred_alignments,
@@ -176,10 +176,10 @@ end
 local function set_geometry(self)
     -- calculate width / height
     local n_w, n_h = self.textbox:get_preferred_size(capi.mouse.screen)
-    n_w = n_w + self.marginbox.left + self.marginbox.right
-    n_h = n_h + self.marginbox.top + self.marginbox.bottom
+    n_w            = n_w + self.marginbox.left + self.marginbox.right
+    n_h            = n_h + self.marginbox.top + self.marginbox.bottom
 
-    local w = self:get_wibox()
+    local w        = self:get_wibox()
     w:geometry({ width = n_w, height = n_h })
 
     local mode = self.mode
@@ -198,7 +198,9 @@ end
 -- @tparam tooltip self The tooltip to show.
 local function show(self)
     -- do nothing if the tooltip is already shown
-    if self._private.visible then return end
+    if self._private.visible then
+        return
+    end
     if self.timer then
         if not self.timer.started then
             self:timer_function()
@@ -206,7 +208,7 @@ local function show(self)
         end
     end
     set_geometry(self)
-    self.wibox.visible = true
+    self.wibox.visible    = true
     self._private.visible = true
     self:emit_signal("property::visible")
 end
@@ -216,13 +218,15 @@ end
 -- @tparam tooltip self The tooltip to hide.
 local function hide(self)
     -- do nothing if the tooltip is already hidden
-    if not self._private.visible then return end
+    if not self._private.visible then
+        return
+    end
     if self.timer then
         if self.timer.started then
             self.timer:stop()
         end
     end
-    self.wibox.visible = false
+    self.wibox.visible    = false
     self._private.visible = false
     self:emit_signal("property::visible")
 end
@@ -257,7 +261,9 @@ function tooltip:get_visible()
 end
 
 function tooltip:set_visible(value)
-    if self._private.visible == value then return end
+    if self._private.visible == value then
+        return
+    end
 
     if value then
         show(self)
@@ -406,7 +412,7 @@ end
 
 function tooltip:get_preferred_positions()
     return self._private.preferred_positions or
-        {"top", "right", "left", "bottom"}
+            { "top", "right", "left", "bottom" }
 end
 
 function tooltip:set_preferred_positions(value)
@@ -457,7 +463,7 @@ end
 
 function tooltip:get_preferred_alignments()
     return self._private.preferred_alignments or
-        {"front", "back", "middle"}
+            { "front", "back", "middle" }
 end
 
 function tooltip:set_preferred_alignments(value)
@@ -600,7 +606,9 @@ end
 --   `mouse::leave` signals.
 -- @function add_to_object
 function tooltip:add_to_object(obj)
-    if not obj then return end
+    if not obj then
+        return
+    end
 
     obj:connect_signal("mouse::enter", self.show)
     obj:connect_signal("mouse::leave", self.hide)
@@ -662,19 +670,19 @@ function tooltip.new(args)
         enable_properties = true,
     }
 
-    rawset(self,"_private", {})
+    rawset(self, "_private", {})
 
     self._private.visible = false
-    self._private.align   = args.align or beautiful.tooltip_align  or "right"
+    self._private.align   = args.align or beautiful.tooltip_align or "right"
     self._private.shape   = args.shape or beautiful.tooltip_shape
-                                or shape.rectangle
+            or shape.rectangle
 
     -- private data
     if args.delay_show then
         local delay_timeout
 
         delay_timeout = timer { timeout = args.delay_show }
-        delay_timeout:connect_signal("timeout", function ()
+        delay_timeout:connect_signal("timeout", function()
             show(self)
             delay_timeout:stop()
         end)
@@ -720,64 +728,64 @@ function tooltip.new(args)
 
     -- setup the timer action only if needed
     if args.timer_function then
-        self.timer = timer { timeout = args.timeout and args.timeout or 1 }
+        self.timer          = timer { timeout = args.timeout and args.timeout or 1 }
         self.timer_function = function()
-                self:set_markup(args.timer_function())
-            end
+            self:set_markup(args.timer_function())
+        end
         self.timer:connect_signal("timeout", self.timer_function)
     end
 
     -- collect tooltip properties
     -- wibox
-    local fg = args.fg or beautiful.tooltip_fg or beautiful.fg_focus or "#000000"
-    local opacity = args.opacity or beautiful.tooltip_opacity or 1
+    local fg              = args.fg or beautiful.tooltip_fg or beautiful.fg_focus or "#000000"
+    local opacity         = args.opacity or beautiful.tooltip_opacity or 1
     -- textbox
-    local font = args.font or beautiful.tooltip_font or beautiful.font
+    local font            = args.font or beautiful.tooltip_font or beautiful.font
     -- marginbox
-    local m_lr = args.margin_leftright or dpi(5)
-    local m_tb = args.margin_topbottom or dpi(3)
+    local m_lr            = args.margin_leftright or dpi(5)
+    local m_tb            = args.margin_topbottom or dpi(3)
     -- backgroundbox
-    local bg = args.bg or beautiful.tooltip_bg
-        or beautiful.bg_focus or "#ffcb60"
-    local border_width = args.border_width or beautiful.tooltip_border_width or 0
-    local border_color = args.border_color or beautiful.tooltip_border_color
-        or beautiful.border_normal or "#ffcb60"
+    local bg              = args.bg or beautiful.tooltip_bg
+            or beautiful.bg_focus or "#ffcb60"
+    local border_width    = args.border_width or beautiful.tooltip_border_width or 0
+    local border_color    = args.border_color or beautiful.tooltip_border_color
+            or beautiful.border_normal or "#ffcb60"
 
     -- Set wibox default properties
     self.wibox_properties = {
-        visible = false,
-        ontop = true,
+        visible      = false,
+        ontop        = true,
         border_width = 0,
-        fg = fg,
-        bg = color.transparent,
-        opacity = opacity,
-        type = "tooltip",
+        fg           = fg,
+        bg           = color.transparent,
+        opacity      = opacity,
+        type         = "tooltip",
     }
 
-    self.widget = wibox.widget {
+    self.widget           = wibox.widget {
         {
             {
-                id = 'text_role',
-                font = font,
+                id     = 'text_role',
+                font   = font,
                 widget = wibox.widget.textbox,
             },
-            id = 'margin_role',
-            left = m_lr,
-            right = m_lr,
-            top = m_tb,
+            id     = 'margin_role',
+            left   = m_lr,
+            right  = m_lr,
+            top    = m_tb,
             bottom = m_tb,
             widget = wibox.container.margin,
         },
-        id = 'background_role',
-        bg = bg,
-        shape = self._private.shape,
+        id                 = 'background_role',
+        bg                 = bg,
+        shape              = self._private.shape,
         shape_border_width = border_width,
         shape_border_color = border_color,
-        widget = wibox.container.background,
+        widget             = wibox.container.background,
     }
-    self.textbox = self.widget:get_children_by_id('text_role')[1]
-    self.marginbox = self.widget:get_children_by_id('margin_role')[1]
-    self.backgroundbox = self.widget:get_children_by_id('background_role')[1]
+    self.textbox          = self.widget:get_children_by_id('text_role')[1]
+    self.marginbox        = self.widget:get_children_by_id('margin_role')[1]
+    self.backgroundbox    = self.widget:get_children_by_id('background_role')[1]
 
     -- Add tooltip to objects
     if args.objects then
@@ -788,7 +796,7 @@ function tooltip.new(args)
 
     -- Apply the properties
     for k, v in pairs(args) do
-        if tooltip["set_"..k] then
+        if tooltip["set_" .. k] then
             self[k] = v
         end
     end

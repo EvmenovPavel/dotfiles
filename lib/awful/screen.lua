@@ -7,17 +7,16 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local capi =
-{
-    mouse = mouse,
-    screen = screen,
-    client = client,
+local capi   = {
+    mouse   = mouse,
+    screen  = screen,
+    client  = client,
     awesome = awesome,
 }
 local gdebug = require("gears.debug")
-local gmath = require("gears.math")
+local gmath  = require("gears.math")
 local object = require("gears.object")
-local grect =  require("gears.geometry").rectangle
+local grect  = require("gears.geometry").rectangle
 
 local function get_screen(s)
     return s and capi.screen[s]
@@ -26,9 +25,9 @@ end
 -- we use require("awful.client") inside functions to prevent circular dependencies.
 local client
 
-local screen = {object={}}
+local screen = { object = {} }
 
-local data = {}
+local data   = {}
 data.padding = {}
 
 --- Take an input geometry and substract/add a delta.
@@ -37,10 +36,10 @@ data.padding = {}
 -- @treturn table A geometry (width, height, x, y) table.
 local function apply_geometry_ajustments(geo, delta)
     return {
-        x      = geo.x      + (delta.left or 0),
-        y      = geo.y      + (delta.top  or 0),
-        width  = geo.width  - (delta.left or 0) - (delta.right  or 0),
-        height = geo.height - (delta.top  or 0) - (delta.bottom or 0),
+        x      = geo.x + (delta.left or 0),
+        y      = geo.y + (delta.top or 0),
+        width  = geo.width - (delta.left or 0) - (delta.right or 0),
+        height = geo.height - (delta.top or 0) - (delta.bottom or 0),
     }
 end
 
@@ -52,7 +51,7 @@ end
 -- @return The squared distance of the screen to the provided point.
 -- @see screen.get_square_distance
 function screen.getdistance_sq(s, x, y)
-    gdebug.deprecate("Use s:get_square_distance(x, y) instead of awful.screen.getdistance_sq", {deprecated_in=4})
+    gdebug.deprecate("Use s:get_square_distance(x, y) instead of awful.screen.getdistance_sq", { deprecated_in = 4 })
     return screen.object.get_square_distance(s, x, y)
 end
 
@@ -90,7 +89,9 @@ end
 -- @screen _screen Screen number (defaults / falls back to mouse.screen).
 function screen.focus(_screen)
     client = client or require("awful.client")
-    if type(_screen) == "number" and _screen > capi.screen.count() then _screen = screen.focused() end
+    if type(_screen) == "number" and _screen > capi.screen.count() then
+        _screen = screen.focused()
+    end
     _screen = get_screen(_screen)
 
     -- screen and pos for current screen
@@ -100,12 +101,12 @@ function screen.focus(_screen)
     if not _screen.mouse_per_screen then
         -- This is the first time we enter this screen,
         -- keep relative mouse position on the new screen.
-        pos = capi.mouse.coords()
+        pos        = capi.mouse.coords()
         local relx = (pos.x - s.geometry.x) / s.geometry.width
         local rely = (pos.y - s.geometry.y) / s.geometry.height
 
-        pos.x = _screen.geometry.x + relx * _screen.geometry.width
-        pos.y = _screen.geometry.y + rely * _screen.geometry.height
+        pos.x      = _screen.geometry.x + relx * _screen.geometry.width
+        pos.y      = _screen.geometry.y + rely * _screen.geometry.height
     else
         -- restore mouse position
         pos = _screen.mouse_per_screen
@@ -114,12 +115,12 @@ function screen.focus(_screen)
     -- save pointer position of current screen
     s.mouse_per_screen = capi.mouse.coords()
 
-   -- move cursor without triggering signals mouse::enter and mouse::leave
+    -- move cursor without triggering signals mouse::enter and mouse::leave
     capi.mouse.coords(pos, true)
 
     local c = client.focus.history.get(_screen, 0)
     if c then
-        c:emit_signal("request::activate", "screen.focus", {raise=false})
+        c:emit_signal("request::activate", "screen.focus", { raise = false })
     end
 end
 
@@ -153,7 +154,7 @@ end
 -- @param dir The direction, can be either "up", "down", "left" or "right".
 -- @param _screen Screen.
 function screen.focus_bydirection(dir, _screen)
-    local sel = get_screen(_screen or screen.focused())
+    local sel    = get_screen(_screen or screen.focused())
     local target = sel:get_next_in_direction(dir)
 
     if target then
@@ -171,7 +172,7 @@ end
 --   focus the next one, -1 to focus the previous one.
 function screen.focus_relative(offset)
     return screen.focus(gmath.cycle(capi.screen.count(),
-                                   screen.focused().index + offset))
+                                    screen.focused().index + offset))
 end
 
 --- Get or set the screen padding.
@@ -184,7 +185,7 @@ end
 -- @treturn table A table with left, right, top and bottom number values.
 -- @see padding
 function screen.padding(_screen, padding)
-    gdebug.deprecate("Use _screen.padding = value instead of awful.screen.padding", {deprecated_in=4})
+    gdebug.deprecate("Use _screen.padding = value instead of awful.screen.padding", { deprecated_in = 4 })
     if padding then
         screen.object.set_padding(_screen, padding)
     end
@@ -210,9 +211,9 @@ function screen.object.get_padding(self)
     local p = data.padding[self] or {}
     -- Create a copy to avoid accidental mutation and nil values.
     return {
-        left   = p.left   or 0,
-        right  = p.right  or 0,
-        top    = p.top    or 0,
+        left   = p.left or 0,
+        right  = p.right or 0,
+        top    = p.top or 0,
         bottom = p.bottom or 0,
     }
 end
@@ -264,7 +265,7 @@ end
 function screen.focused(args)
     args = args or screen.default_focused_args or {}
     return get_screen(
-        args.client and capi.client.focus and capi.client.focus.screen or capi.mouse.screen
+            args.client and capi.client.focus and capi.client.focus.screen or capi.mouse.screen
     )
 end
 
@@ -299,22 +300,22 @@ function screen.object.get_bounding_geometry(self, args)
         self = args.tag.screen
     end
 
-    self = get_screen(self or capi.mouse.screen)
+    self      = get_screen(self or capi.mouse.screen)
 
     local geo = args.bounding_rect or (args.parent and args.parent:geometry()) or
-        self[args.honor_workarea and "workarea" or "geometry"]
+            self[args.honor_workarea and "workarea" or "geometry"]
 
     if (not args.parent) and (not args.bounding_rect) and args.honor_padding then
         local padding = self.padding
-        geo = apply_geometry_ajustments(geo, padding)
+        geo           = apply_geometry_ajustments(geo, padding)
     end
 
     if args.margins then
         geo = apply_geometry_ajustments(geo,
-            type(args.margins) == "table" and args.margins or {
-                left = args.margins, right  = args.margins,
-                top  = args.margins, bottom = args.margins,
-            }
+                                        type(args.margins) == "table" and args.margins or {
+                                            left = args.margins, right = args.margins,
+                                            top  = args.margins, bottom = args.margins,
+                                        }
         )
     end
     return geo
@@ -345,7 +346,7 @@ end
 -- @tparam[opt=true] boolean stacked Use stacking order? (top to bottom)
 -- @treturn table The clients list.
 function screen.object.get_clients(s, stacked)
-    local cls = capi.client.get(s, stacked == nil and true or stacked)
+    local cls  = capi.client.get(s, stacked == nil and true or stacked)
     local vcls = {}
     for _, c in pairs(cls) do
         if c:isvisible() then
@@ -366,7 +367,7 @@ end
 -- @see client.get
 
 function screen.object.get_hidden_clients(s)
-    local cls = capi.client.get(s, true)
+    local cls  = capi.client.get(s, true)
     local vcls = {}
     for _, c in pairs(cls) do
         if not c:isvisible() then
@@ -414,14 +415,14 @@ end
 -- @tparam[opt=true] boolean stacked Use stacking order? (top to bottom)
 -- @treturn table The clients list.
 function screen.object.get_tiled_clients(s, stacked)
-    local clients = s:get_clients(stacked)
+    local clients  = s:get_clients(stacked)
     local tclients = {}
     -- Remove floating clients
     for _, c in pairs(clients) do
         if not c.floating
-            and not c.fullscreen
-            and not c.maximized_vertical
-            and not c.maximized_horizontal then
+                and not c.fullscreen
+                and not c.maximized_vertical
+                and not c.maximized_horizontal then
             table.insert(tclients, c)
         end
     end
@@ -482,7 +483,7 @@ end
 -- @see client.to_selected_tags
 
 function screen.object.get_selected_tags(s)
-    local tags = screen.object.get_tags(s, true)
+    local tags  = screen.object.get_tags(s, true)
 
     local vtags = {}
     for _, t in pairs(tags) do
@@ -548,7 +549,7 @@ local function get_fallback()
     -- the X server. This will generally be 96 on Xorg, unless the user
     -- has configured it differently
     if root and not fallback_dpi then
-        local _, h = root.size()
+        local _, h   = root.size()
         local _, hmm = root.size_mm()
         fallback_dpi = hmm ~= 0 and h * mm_per_inch / hmm
     end
@@ -586,7 +587,7 @@ function screen.object.get_dpi(s)
         if o.mm_width ~= 0 and o.mm_height ~= 0 then
             local dpix = geo.width * mm_per_inch / o.mm_width
             local dpiy = geo.height * mm_per_inch / o.mm_height
-            dpi = math.min(dpix, dpiy, dpi or dpix)
+            dpi        = math.min(dpix, dpiy, dpi or dpix)
         end
     end
     if dpi then

@@ -9,9 +9,9 @@
 -- @copyright 2008 Julien Danjou
 -- @module gears.geometry
 ---------------------------------------------------------------------------
-local math = math
+local math  = math
 
-local gears = {geometry = {rectangle = {} } }
+local gears = { geometry = { rectangle = {} } }
 
 --- Get the square distance between a rectangle and a point.
 -- @tparam table geom A rectangle
@@ -44,7 +44,7 @@ end
 -- @return The key from the closest geometry.
 function gears.geometry.rectangle.get_closest_by_coord(list, x, y)
     local dist = math.huge
-    local ret = nil
+    local ret  = nil
 
     for k, v in pairs(list) do
         local d = gears.geometry.rectangle.get_square_distance(v, x, y)
@@ -69,7 +69,7 @@ end
 function gears.geometry.rectangle.get_by_coord(list, x, y)
     for k, geometry in pairs(list) do
         if x >= geometry.x and x < geometry.x + geometry.width
-           and y >= geometry.y and y < geometry.y + geometry.height then
+                and y >= geometry.y and y < geometry.y + geometry.height then
             return k
         end
     end
@@ -139,7 +139,7 @@ function gears.geometry.rectangle.get_in_direction(dir, recttbl, cur)
 
             -- If distance is shorter then keep the object.
             if not target or dist < dist_min then
-                target = i
+                target   = i
                 dist_min = dist
             end
         end
@@ -171,10 +171,10 @@ end
 -- @tparam number b.height The rectangle height
 -- @treturn table The intersect area.
 function gears.geometry.rectangle.get_intersection(a, b)
-    local g = {}
-    g.x = math.max(a.x, b.x)
-    g.y = math.max(a.y, b.y)
-    g.width = math.min(a.x + a.width, b.x + b.width) - g.x
+    local g  = {}
+    g.x      = math.max(a.x, b.x)
+    g.y      = math.max(a.y, b.y)
+    g.width  = math.min(a.x + a.width, b.x + b.width) - g.x
     g.height = math.min(a.y + a.height, b.y + b.height) - g.y
     if g.width <= 0 or g.height <= 0 then
         g.width, g.height = 0, 0
@@ -196,41 +196,41 @@ function gears.geometry.rectangle.area_remove(areas, elem)
         -- Check if the 'elem' intersect
         if gears.geometry.rectangle.area_intersect_area(areas[i], elem) then
             -- It does? remove it
-            local r = table.remove(areas, i)
+            local r     = table.remove(areas, i)
             local inter = gears.geometry.rectangle.get_intersection(r, elem)
 
             if inter.x > r.x then
                 table.insert(areas, {
-                    x = r.x,
-                    y = r.y,
-                    width = inter.x - r.x,
+                    x      = r.x,
+                    y      = r.y,
+                    width  = inter.x - r.x,
                     height = r.height
                 })
             end
 
             if inter.y > r.y then
                 table.insert(areas, {
-                    x = r.x,
-                    y = r.y,
-                    width = r.width,
+                    x      = r.x,
+                    y      = r.y,
+                    width  = r.width,
                     height = inter.y - r.y
                 })
             end
 
             if inter.x + inter.width < r.x + r.width then
                 table.insert(areas, {
-                    x = inter.x + inter.width,
-                    y = r.y,
-                    width = (r.x + r.width) - (inter.x + inter.width),
+                    x      = inter.x + inter.width,
+                    y      = r.y,
+                    width  = (r.x + r.width) - (inter.x + inter.width),
                     height = r.height
                 })
             end
 
             if inter.y + inter.height < r.y + r.height then
                 table.insert(areas, {
-                    x = r.x,
-                    y = inter.y + inter.height,
-                    width = r.width,
+                    x      = r.x,
+                    y      = inter.y + inter.height,
+                    width  = r.width,
                     height = (r.y + r.height) - (inter.y + inter.height)
                 })
             end
