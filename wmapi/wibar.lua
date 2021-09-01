@@ -181,6 +181,6 @@ function mywibar:init(args)
     return w
 end
 
-return setmetatable(mywibar, {
-    __call = mywibar.init
-})
+return setmetatable(mywibar, { __call = function(_, ...)
+    return mywibar:init(...)
+end })

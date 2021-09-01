@@ -12,11 +12,11 @@ return function()
     local uname  = io.popen("getent passwd $USER | cut -d ':' -f 5 | cut -d ',' -f 1"):read()
     local widget = wmapi:textbox(markup.font(config.font, markup.fg.color(beautiful.colors.widget.fg_widget, uname)))
 
-    local user   = wibox.widget({
-                                    icon,
-                                    widget,
-                                    widget = wibox.layout.fixed.horizontal,
-                                })
+    local user   = wibox.widget {
+        icon,
+        widget,
+        widget = wibox.layout.fixed.horizontal,
+    }
 
     return user
 end

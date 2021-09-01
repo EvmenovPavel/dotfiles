@@ -1,4 +1,3 @@
-local awful     = require("awful")
 local wibox     = require("wibox")
 local beautiful = require("beautiful")
 local mouse     = capi.wmapi.event.mouse
@@ -20,7 +19,7 @@ function cpu:init()
 
     local popup    = capi.wmapi.widget.popup()
 
-    local func     = function()
+    local toggle   = function()
         if popup.visible then
             popup.visible = not popup.visible
         else
@@ -57,20 +56,27 @@ function cpu:init()
                                  end
 
                                  local row = wibox.widget {
-                                     capi.wmapi.widget.textbox({ markup = name }),
+                                     capi.wmapi.widget.textbox {
+                                         markup = name .. "  [" .. math.modf(diff_usage) .. "%]"
+                                     },
                                      {
                                          max_value        = 100,
                                          value            = diff_usage,
                                          forced_height    = 20,
                                          forced_width     = 150,
                                          paddings         = 1,
+
                                          margins          = 4,
+
                                          border_width     = 1,
                                          border_color     = beautiful.bg_focus,
+
                                          background_color = beautiful.bg_normal,
+
                                          bar_border_width = 1,
                                          bar_border_color = beautiful.bg_focus,
-                                         color            = "linear:150,0:0,0:0,#D08770:0.3,#BF616A:0.6," .. beautiful.fg_normal,
+
+                                         color            = beautiful.fg_normal,
                                          widget           = wibox.widget.progressbar,
 
                                      },
@@ -83,7 +89,7 @@ function cpu:init()
                          end
 
                          popup:setup {
-                             cpu_rows,
+                             capi.wmapi.containers.margin({ widget = cpu_rows }),
                              layout = wibox.layout.fixed.vertical,
                          }
                      end
@@ -99,12 +105,11 @@ function cpu:init()
         layout = wibox.layout.align.horizontal
     }
 
-    capi.wmapi.widget.buttons({ widget = w, event = mouse.button_click_left, func = func })
+    capi.wmapi.widget.buttons({ widget = w, event = mouse.button_click_left, func = toggle })
 
     return w
 end
 
-return setmetatable(cpu, {
-    __call = cpu.init
-})
-
+return setmetatable(cpu, { __call = function(_, ...)
+    return cpu:init(...)
+end })

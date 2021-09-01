@@ -208,7 +208,7 @@ capi.client.connect_signal("request::titlebars",
                                end
 
                                local buttons  = awful.util.table.join(
-                                       awful.button({}, mouse.button_click_left,
+                                       awful.button({}, capi.wmapi.event.mouse.button_click_left,
                                                     function()
                                                         capi.client.focus = c
                                                         c:raise()

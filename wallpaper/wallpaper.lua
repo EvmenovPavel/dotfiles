@@ -41,8 +41,6 @@ function mywallpaper:init(s)
     return mywallpaper
 end
 
---return mywallpaper
-
-return setmetatable(mywallpaper, {
-    __call = mywallpaper.init
-})
+return setmetatable(mywallpaper, { __call = function(_, ...)
+    return mywallpaper:init(...)
+end })

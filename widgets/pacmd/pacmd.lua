@@ -7,29 +7,29 @@ local watch     = require("awful.widget.watch")
 local pacmd     = {}
 
 function pacmd:init()
-    local pacmd_widget = wibox.widget({
-                                          checked  = false,
-                                          color    = "#ffffff",
-                                          paddings = 2,
-                                          shape    = gears.shape.circle,
-                                          widget   = wibox.widget.checkbox
-                                      })
+    local pacmd_widget = wibox.widget {
+        checked  = false,
+        color    = "#ffffff",
+        paddings = 2,
+        shape    = gears.shape.circle,
+        widget   = wibox.widget.checkbox
+    }
 
-    local text_widget  = wibox.widget({
-                                          font   = beautiful.font,
+    local text_widget  = wibox.widget {
+        font   = beautiful.font,
 
-                                          widget = wibox.widget.textbox,
-                                          markup = "AUX",
+        widget = wibox.widget.textbox,
+        markup = "AUX",
 
-                                          align  = "left",
-                                          valign = "center",
-                                      })
+        align  = "left",
+        valign = "center",
+    }
 
     watch([[bash -c "pacmd list-modules | grep latency_msec=5"]], 1,
           function(widget, stdout)
               --capi.log:message(stdout)
 
-              if capi.wmapi:isempty(stdout) then
+              if capi.wmapi:is_empty(stdout) then
                   --awful.spawn("pacmd load-module module-loopback latency_msec=5", false)
                   widget.checked = false
               else
@@ -52,15 +52,15 @@ function pacmd:init()
 
     local margin_text   = wibox.container.margin(wibox.container.mirror(text_widget, { horizontal = false }), 2, 2, 2, 2)
 
-    local widget        = wibox.widget({
-                                           margin_text,
-                                           margin_widget,
-                                           layout = wibox.layout.align.horizontal
-                                       })
+    local widget        = wibox.widget {
+        margin_text,
+        margin_widget,
+        layout = wibox.layout.align.horizontal
+    }
 
     return widget
 end
 
-return setmetatable(pacmd, {
-    __call = pacmd.init
-})
+return setmetatable(pacmd, { __call = function(_, ...)
+    return pacmd:init(...)
+end })

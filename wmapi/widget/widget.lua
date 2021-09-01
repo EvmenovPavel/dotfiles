@@ -1,21 +1,17 @@
---{
---    orientation   = "horizontal",
---    forced_height = 15,
---    color         = beautiful.bg_focus,
---    widget        = wibox.widget.separator
---},
+local widget       = {}
 
-return {
-    buttons     = require("wmapi.widget.buttons"),
-    checkbox    = require("wmapi.widget.checkbox"),
-    graph       = require("wmapi.widget.graph"),
-    imagebox    = require("wmapi.widget.imagebox"),
-    launcher    = require("wmapi.widget.launcher"),
-    piechart    = require("wmapi.widget.piechart"),
-    popup       = require("wmapi.widget.popup"),
-    progressbar = require("wmapi.widget.progressbar"),
-    separator   = require("wmapi.widget.separator"),
-    slider      = require("wmapi.widget.slider"),
-    textbox     = require("wmapi.widget.textbox"),
-    textclock   = require("wmapi.widget.textclock"),
-}
+widget.buttons     = require("wmapi.widget.buttons")
+widget.checkbox    = require("wmapi.widget.checkbox")
+widget.graph       = require("wmapi.widget.graph")
+widget.imagebox    = require("wmapi.widget.imagebox")
+widget.launcher    = require("wmapi.widget.launcher")
+widget.piechart    = require("wmapi.widget.piechart")
+widget.popup       = require("wmapi.widget.popup")
+widget.progressbar = require("wmapi.widget.progressbar")
+widget.separator   = require("wmapi.widget.separator")
+widget.slider      = require("wmapi.widget.slider")
+widget.textbox     = require("wmapi.widget.textbox")
+widget.textclock   = require("wmapi.widget.textclock")
+widget.box         = require("wmapi.widget.box")
+
+return widget

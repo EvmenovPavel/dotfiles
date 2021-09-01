@@ -29,27 +29,27 @@ function battery:updateWidgetInfo(level_acpi)
         local image = ""
 
         if level_acpi == 1 then
-            if (1 and value < 9) then
+            if (value >= 1 and value < 9) then
                 image = resources.battery.level_0
-            elseif (10 and value < 19) then
+            elseif (value >= 10 and value < 19) then
                 image = resources.battery.level_10
-            elseif (20 and value < 29) then
+            elseif (value >= 20 and value < 29) then
                 image = resources.battery.level_20
-            elseif (30 and value < 39) then
+            elseif (value >= 30 and value < 39) then
                 image = resources.battery.level_30
-            elseif (40 and value < 49) then
+            elseif (value >= 40 and value < 49) then
                 image = resources.battery.level_40
-            elseif (50 and value < 59) then
+            elseif (value >= 50 and value < 59) then
                 image = resources.battery.level_50
-            elseif (60 and value < 69) then
+            elseif (value >= 60 and value < 69) then
                 image = resources.battery.level_60
-            elseif (70 and value < 79) then
+            elseif (value >= 70 and value < 79) then
                 image = resources.battery.level_70
-            elseif (80 and value < 89) then
+            elseif (value >= 80 and value < 89) then
                 image = resources.battery.level_80
-            elseif (90 and value < 99) then
+            elseif (value >= 90 and value < 99) then
                 image = resources.battery.level_90
-            elseif (100) then
+            elseif (value == 100) then
                 image = resources.battery.level_100
             end
         elseif level_acpi == 2 then
@@ -115,7 +115,7 @@ function battery:init()
 
     local bash_acpi_status = [[bash -c "acpi -b | grep 'Battery 1:' | sed -E 's/^.*(Discharging|Charging|Full).*$/\1/;s/Discharging/1/;s/Charging/2/;s/Full/3/'"]]
 
-    capi.wmapi:watch(bash_acpi_status, 2,
+    capi.wmapi:watch(bash_acpi_status, 1,
                      function(stdout)
                          local out = capi.wmapi:signs(stdout, "")
 
@@ -133,16 +133,15 @@ function battery:init()
                          notify = power
                      end)
 
-    local widget = wibox.widget({
+    local widget = wibox.widget{
                                     wIconBox,
                                     wTextBox,
                                     layout = wibox.layout.align.horizontal
-                                })
+                                }
 
     return widget
 end
 
-return setmetatable(battery, {
-    __call = battery.init
-})
-
+return setmetatable(battery, { __call = function(_, ...)
+    return battery:init(...)
+end })

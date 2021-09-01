@@ -1,8 +1,7 @@
-local awful     = require("awful")
 local wibox     = require("wibox")
-local gears     = require("gears")
-local dpi       = require("beautiful").xresources.apply_dpi
 local resources = require("resources")
+
+local mouse     = capi.wmapi.event.mouse
 
 local restart   = {}
 
@@ -17,21 +16,18 @@ function restart:init()
         layout = wibox.layout.fixed.horizontal
     }
 
-    rebootWidget:buttons(
-            gears.table.join(
-                    awful.button({}, 1, nil,
-                                 function()
-                                     capi.awesome.restart()
-                                 end
-                    )
-            )
-    )
+    capi.wmapi.widget.buttons({
+                                  event = mouse.button_click_left,
+                                  func  = function()
+                                      capi.awesome.restart()
+                                  end
+                              })
 
-    local container = capi.wmapi:container(wibox.container.margin(rebootWidget, dpi(7), dpi(7), dpi(7), dpi(7)))
+    local container = capi.wmapi:container(wibox.container.margin(rebootWidget, 7, 7, 7, 7))
 
     return container
 end
 
-return setmetatable(restart, {
-    __call = restart.init
-})
+return setmetatable(restart, { __call = function(_, ...)
+    return restart:init(...)
+end })

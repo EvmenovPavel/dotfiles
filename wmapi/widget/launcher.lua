@@ -1,15 +1,16 @@
-local gtable   = require("gears.table")
-local spawn    = require("awful.spawn")
-local wbutton  = require("awful.widget.button")
-local button   = require("awful.button")
+local gtable       = require("gears.table")
+local spawn        = require("awful.spawn")
+local wbutton      = require("awful.widget.button")
+local button       = require("awful.button")
 
-local launcher = {}
+local launcher     = { }
+
+launcher.mt        = {}
 
 function launcher:init(args)
     if not args.command and not args.menu then
         return
     end
-
     local w = wbutton(args)
     if not w then
         return
@@ -22,9 +23,8 @@ function launcher:init(args)
         end))
     elseif args.menu then
         b = gtable.join(w:buttons(), button({}, 1, nil, function()
-            --args.menu:toggle()
-
-            args.menu.visible = true
+            args.menu:toggle()
+            --args.menu()
         end))
     end
 

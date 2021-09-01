@@ -13,6 +13,6 @@ function pad:init(size)
     return widget
 end
 
-return setmetatable(pad, {
-    __call = pad.init
-})
+return setmetatable(pad, { __call = function(_, ...)
+    return pad:init(...)
+end })

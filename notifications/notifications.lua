@@ -112,8 +112,6 @@ if capi.awesome.startup_errors then
     local title  = "Oops, there were errors during startup!"
     local text   = capi.awesome.startup_errors
 
-    --notification:append({ presets = preset, title = title, text = text })
-
     naughty.notify({
                        preset = preset,
                        title  = title,

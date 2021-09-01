@@ -1,6 +1,4 @@
 local wibox       = require("wibox")
-local beautiful   = require("beautiful")
-local gears       = require("gears")
 
 local memory      = {}
 
@@ -21,13 +19,19 @@ function row(name, str)
     return row
 end
 
-local wGraphBox = capi.wmapi.widget.graph()
-local wTextBox  = capi.wmapi.widget.textbox({ forced_width = 80 })
+local wTextBox = capi.wmapi.widget.textbox({ forced_width = 80 })
 
 function memory:init()
     local bash  = [[bash -c "cat /proc/meminfo"]]
 
-    local popup = capi.wmapi.widget.popup()
+    local popup = capi.wmapi.widget.popup({
+                                              top    = 12,
+                                              left   = 4,
+                                              bottom = 4,
+                                              right  = 4,
+
+                                              widget = wibox.container.margin,
+                                          })
 
     capi.wmapi:watch(bash, 3,
                      function(stdout)
@@ -59,36 +63,32 @@ function memory:init()
                          _mem.inuse      = _mem.total - _mem.free
                          _mem.bcuse      = _mem.total - _mem.buf.f
                          _mem.usep       = math.floor(_mem.inuse / _mem.total * 100)
-                         -- Calculate swap percentage
                          _mem.swp.inuse  = _mem.swp.t - _mem.swp.f
                          _mem.swp.usep   = math.floor(_mem.swp.inuse / _mem.swp.t * 100)
 
                          wTextBox.markup = "Mem [" .. tostring(_mem.usep) .. "%]"
-                         wGraphBox:add_value(_mem.usep)
 
-                         memory_rows[1] = row("free", _mem.free)
-                         memory_rows[2] = row("inuse", _mem.inuse)
-                         memory_rows[3] = row("bcuse", _mem.bcuse)
-                         memory_rows[4] = row("usep", _mem.usep)
-                         memory_rows[5] = row("swp.inuse", _mem.swp.inuse)
-                         memory_rows[6] = row("swp.usep", _mem.swp.usep)
+                         memory_rows[1]  = row("free", _mem.free)
+                         memory_rows[2]  = row("inuse", _mem.inuse)
+                         memory_rows[3]  = row("bcuse", _mem.bcuse)
+                         memory_rows[4]  = row("usep", _mem.usep)
+                         memory_rows[5]  = row("swp.inuse", _mem.swp.inuse)
+                         memory_rows[6]  = row("swp.usep", _mem.swp.usep)
 
                          popup:setup {
-                             memory_rows,
+                             capi.wmapi.containers.margin({ widget = memory_rows }),
                              layout = wibox.layout.fixed.vertical,
                          }
                      end)
 
-    local wText  = wibox.container.margin(wibox.container.mirror(wTextBox, { horizontal = false }), 2, 2, 2, 2)
-    local wGraph = wibox.container.margin(wibox.container.mirror(wGraphBox, { horizontal = true }), 2, 2, 2, 2)
+    local wText = wibox.container.margin(wibox.container.mirror(wTextBox, { horizontal = false }), 2, 2, 2, 2)
 
-    local w      = wibox.widget {
+    local w     = wibox.widget {
         wText,
-        --wGraph,
         layout = wibox.layout.align.horizontal
     }
 
-    local func   = function()
+    local func  = function()
         if popup.visible then
             popup.visible = not popup.visible
         else
@@ -101,7 +101,6 @@ function memory:init()
     return w
 end
 
-return setmetatable(memory, {
-    __call = memory.init
-})
-
+return setmetatable(memory, { __call = function(_, ...)
+    return memory:init(...)
+end })

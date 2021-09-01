@@ -11,6 +11,8 @@ return {
 
     clock      = require("widgets.calendar"),
 
+    calendar   = require("widgets.calendar"),
+
     volume     = require("widgets.volume"),
 
     brightness = require("widgets.brightness"),

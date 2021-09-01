@@ -71,3 +71,9 @@ function screen_primary(s)
 end
 
 print(screen_primary())
+
+local fun = function(test)
+    print(test)
+end
+
+fun(1)

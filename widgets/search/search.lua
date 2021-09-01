@@ -8,10 +8,10 @@ local programms = require("device.programms")
 return function()
     local icon   = wmapi:imagebox(resources.widgets.search)
 
-    local search = wibox.widget({
-                                    icon,
-                                    widget = wibox.layout.fixed.horizontal,
-                                })
+    local search = wibox.widget {
+        icon,
+        widget = wibox.layout.fixed.horizontal,
+    }
 
     search:connect_signal(signals.button.press,
                           function()

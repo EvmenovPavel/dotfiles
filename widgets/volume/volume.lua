@@ -114,6 +114,6 @@ function volume:init()
     return w_volume_icon
 end
 
-return setmetatable(volume, {
-    __call = volume.init
-})
+return setmetatable(volume, { __call = function(_, ...)
+    return volume:init(...)
+end })

@@ -538,6 +538,6 @@ function switcher:init(mod_key, key_switch)
 
 end -- function altTab
 
-return setmetatable(switcher, {
-    __call = switcher.init
-})
+return setmetatable(switcher, { __call = function(_, ...)
+    return switcher:init(...)
+end })

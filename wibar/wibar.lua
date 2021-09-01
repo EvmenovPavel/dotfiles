@@ -2,19 +2,34 @@ local beautiful = require("beautiful")
 local awful     = require("awful")
 local wibox     = require("wibox")
 local widgets   = require("widgets")
+local res       = require("resources")
 
 local mywibar   = {}
 
 function mywibar:w_left(s)
     return {
-        widgets.taglist:create(s),
+        widgets.taglist(s),
         layout = wibox.layout.fixed.horizontal
     }
 end
 
+local mymainmenu    = awful.menu({
+                                     items = {
+                                         {
+                                             "awesome",
+                                             res.path .. "/close.svg"
+                                         }
+                                     }
+                                 })
+
+local mylauncher    = capi.wmapi.widget.launcher({
+                                                image = res.path .. "/close.svg",
+                                                menu  = mymainmenu
+                                            })
+
 function mywibar:w_middle(s)
     return {
-        widgets.tasklist:create(s),
+        widgets.tasklist(s),
         layout = wibox.layout.fixed.horizontal
     }
 end
@@ -22,6 +37,8 @@ end
 function mywibar:w_right(s)
     if capi.wmapi:screen_primary(s) then
         return {
+            mylauncher,
+
             widgets.systray(s),
             widgets.keyboard(),
 
@@ -31,9 +48,10 @@ function mywibar:w_right(s)
             widgets.cpu(),
             widgets.battery(),
             widgets.memory(),
-            widgets.clock(),
+            --widgets.clock(),
+            widgets.calendar(),
             widgets.reboot(),
-            widgets.test(),
+            -- widgets.test(),
             --widgets.spotify(s),
 
             layout = wibox.layout.fixed.horizontal
@@ -55,7 +73,7 @@ function test(text)
                     })
 end
 
-function mywibar:create(s)
+function mywibar:init(s)
     local wibar = awful.wibar({
                                   ontop        = false,
                                   stretch      = true,
@@ -103,6 +121,6 @@ function mywibar:create(s)
     return mywibar
 end
 
-return setmetatable(mywibar, {
-    __call = mywibar.create,
-})
+return setmetatable(mywibar, { __call = function(_, ...)
+    return mywibar:init(...)
+end })

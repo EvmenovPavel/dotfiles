@@ -36,7 +36,7 @@ function sensors:init()
                                for line in stdout:gmatch("[^\r\n]+") do
                                    local str = capi.wmapi:find(line, name)
 
-                                   if not capi.wmapi:isempty(str) then
+                                   if not capi.wmapi:is_empty(str) then
                                        local row = wibox.widget {
                                            capi.wmapi:textbox({ markup = name }),
                                            capi.wmapi:textbox({ markup = str }),
@@ -91,16 +91,15 @@ function sensors:init()
                                                menu  = func
                                            })
 
-    local widget     = wibox.widget({
-                                        wText,
-                                        --wSensors,
-                                        layout = wibox.layout.align.horizontal
-                                    })
+    local widget     = wibox.widget {
+        wText,
+        --wSensors,
+        layout = wibox.layout.align.horizontal
+    }
 
     return widget
 end
 
-return setmetatable(sensors, {
-    __call = sensors.init
-})
-
+return setmetatable(sensors, { __call = function(_, ...)
+    return sensors:init(...)
+end })

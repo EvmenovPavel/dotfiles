@@ -8,7 +8,6 @@ function textbox:init(args)
 
     return wibox.widget {
         type         = "textbox",
-        widget       = wibox.widget.textbox,
 
         markup       = args.markup,
         text         = args.text,
@@ -20,6 +19,7 @@ function textbox:init(args)
 
         forced_width = args.forced_width or 50,
 
+        widget       = wibox.widget.textbox,
     }
 end
 

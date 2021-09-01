@@ -1,15 +1,16 @@
-local awful  = require("awful")
-local wibox  = require("wibox")
-local gears  = require("gears")
+local awful      = require("awful")
+local wibox      = require("wibox")
+local gears      = require("gears")
 
-local spawn  = require("awful.spawn")
+local spawn      = require("awful.spawn")
 
-local wmapi  = {}
+local wmapi      = {}
 
-wmapi.event  = require("wmapi.event")
-wmapi.timer  = require("wmapi.timer")
-wmapi.markup = require("wmapi.markup")
-wmapi.widget = require("wmapi.widget")
+wmapi.event      = require("wmapi.event")
+wmapi.timer      = require("wmapi.timer")
+wmapi.markup     = require("wmapi.markup")
+wmapi.widget     = require("wmapi.widget.widget")
+wmapi.containers = require("wmapi.container.container")
 
 function wmapi:layout_align_horizontal(items)
     --local widget = wibox.widget({
@@ -38,7 +39,7 @@ function wmapi:table_length(T)
     return count
 end
 
-function wmapi:isempty(s)
+function wmapi:is_empty(s)
     return s == nil or s == ''
 end
 
@@ -193,6 +194,17 @@ function wmapi:screenWidth(index)
     local s     = capi.screen[index]
 
     return s.geometry.width
+end
+
+function wmapi:button(args)
+    local args = args or {}
+
+    return awful.button({ args.key },
+                        args.event or wmapi.event.mouse.button_click_left,
+                        args.func or function()
+                            capi.log:message("Error args.func = nil")
+                        end
+    )
 end
 
 function wmapi:container(widget)

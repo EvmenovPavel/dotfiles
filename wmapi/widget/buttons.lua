@@ -10,10 +10,11 @@ function buttons:init(args)
     else
         args.widget:buttons(
                 awful.util.table.join(
-                        awful.button({}, args.event or capi.wmapi.event.mouse.button_click_left,
-                                     args.func or function()
-                                         capi.log:message("Error args.func = nil")
-                                     end)
+                        capi.wmapi:button({
+                                              key   = args.key,
+                                              event = args.event,
+                                              func  = args.func
+                                          })
                 )
         )
     end

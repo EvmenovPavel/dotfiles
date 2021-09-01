@@ -141,6 +141,6 @@ function mysystray:init(revers)
     return ret
 end
 
-return setmetatable(mysystray, {
-    __call = mysystray.init
-})
+return setmetatable(mysystray, { __call = function(_, ...)
+    return mysystray:init(...)
+end })

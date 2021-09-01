@@ -178,29 +178,31 @@ end
 
 function tasklist:tasklist_buttons()
     return awful.util.table.join(
-            awful.button({}, mouse.button_click_left,
-                         function(c)
-                             if c == capi.client.focus then
-                                 c.minimized = true
-                             else
-                                 c.minimized = false
-                                 if not c:isvisible() and c.first_tag then
-                                     c.first_tag:view_only()
-                                 end
+            capi.wmapi:button({
+                                  event = mouse.button_click_left,
+                                  func  = function(c)
+                                      if c == capi.client.focus then
+                                          c.minimized = true
+                                      else
+                                          c.minimized = false
+                                          if not c:isvisible() and c.first_tag then
+                                              c.first_tag:view_only()
+                                          end
 
-                                 capi.client.focus = c
-                                 c:raise()
-                             end
-                         end),
+                                          capi.client.focus = c
+                                          c:raise()
+                                      end
+                                  end }),
 
-            awful.button({}, mouse.button_click_right,
-                         function()
-                             awful.menu.client_list({ theme = { width = 250 } })
-                         end)
+            capi.wmapi:button({
+                                  event = mouse.button_click_right,
+                                  func  = function()
+                                      awful.menu.client_list({ theme = { width = 250 } })
+                                  end })
     )
 end
 
-function tasklist:create(s)
+function tasklist:init(s)
     return awful.widget.tasklist {
         screen          = s,
         style           = {},
@@ -240,6 +242,6 @@ function tasklist:create(s)
     }
 end
 
-return setmetatable(tasklist, {
-    __call = tasklist.create,
-})
+return setmetatable(tasklist, { __call = function(_, ...)
+    return tasklist:init(...)
+end })

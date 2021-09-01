@@ -6,8 +6,13 @@ function separator:inti(args)
     local args = args or {}
 
     return wibox.widget({
-                            type   = "separator",
-                            widget = wibox.widget.separator,
+                            type          = "separator",
+
+                            orientation   = args.orientation or "horizontal",
+                            forced_height = args.forced_height or 15,
+                            color         = args.color or beautiful.bg_focus,
+
+                            widget        = wibox.widget.separator,
                         })
 end
 

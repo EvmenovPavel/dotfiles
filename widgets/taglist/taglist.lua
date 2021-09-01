@@ -119,32 +119,38 @@ end
 
 function buttons()
     return awful.util.table.join(
-            awful.button({}, mouse.button_click_left,
-                         function(c)
-                             c:view_only()
-                         end
-            ),
+            capi.wmapi:button({
+                                  event = mouse.button_click_left,
+                                  func  = function(c)
+                                      c:view_only()
+                                  end
+                              }),
 
-            awful.button({ key.mod }, mouse.button_click_left,
-                         function(c)
-                             if capi.client.focus then
-                                 capi.client.focus:move_to_tag(c)
-                                 c:view_only()
-                             end
-                         end
-            ),
+            capi.wmapi:button({
+                                  key   = key.mod,
+                                  event = mouse.button_click_left,
+                                  func  = function(c)
+                                      if capi.client.focus then
+                                          capi.client.focus:move_to_tag(c)
+                                          c:view_only()
+                                      end
+                                  end
+                              }),
 
-            awful.button({}, mouse.button_click_right,
-                         awful.tag.viewtoggle
-            ),
+            capi.wmapi:button({
+                                  event = mouse.button_click_right,
+                                  func  = awful.tag.viewtoggle
+                              }),
 
-            awful.button({ key.mod }, mouse.button_click_right,
-                         function(c)
-                             if capi.client.focus then
-                                 capi.client.focus:toggle_tag(c)
-                             end
-                         end
-            )
+            capi.wmapi:button({
+                                  key   = key.mod,
+                                  event = mouse.button_click_right,
+                                  func  = function(c)
+                                      if capi.client.focus then
+                                          capi.client.focus:toggle_tag(c)
+                                      end
+                                  end
+                              })
     )
 end
 
@@ -168,7 +174,7 @@ function widget_template()
     }
 end
 
-function taglist:create(s)
+function taglist:init(s)
     return awful.widget.taglist {
         screen          = s,
         filter          = awful.widget.taglist.filter.all,
@@ -196,6 +202,6 @@ function taglist:create(s)
     }
 end
 
-return setmetatable(taglist, {
-    __call = taglist.create,
-})
+return setmetatable(taglist, { __call = function(_, ...)
+    return taglist:init(...)
+end })
