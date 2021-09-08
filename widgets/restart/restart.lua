@@ -1,4 +1,7 @@
-local restart = {}
+local wibox     = require("wibox")
+local beautiful = require("beautiful")
+
+local restart   = {}
 
 function restart:init()
     local button = capi.widget:button()
@@ -10,13 +13,16 @@ function restart:init()
                       })
 
     local image   = capi.widget:imagebox()
+
     local textbox = capi.widget:textbox()
-    textbox:set_text("Asdasdasd")
+    textbox:set_text("BBBB1")
 
-    --button:set_text("111text")
-    button:set_widget(image, textbox)
+    local textbox1 = capi.widget:textbox()
+    textbox1:set_text("AAAA1")
 
-    return button.widget
+    button:set_widget(image, textbox, textbox1)
+
+    return textbox:get()
 end
 
 return setmetatable(restart, { __call = function()

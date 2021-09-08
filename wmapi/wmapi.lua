@@ -53,6 +53,33 @@ function wmapi:signs(stdout, signs)
     return str
 end
 
+function wmapi:set_widget(...)
+    if not self.res then
+        self.res = wibox.widget({
+                                    layout = wibox.layout.fixed.horizontal()
+                                })
+    end
+
+    for i = 1, select("#", ...) do
+        local item = select(i, ...)
+
+        capi.log:message(item.type)
+
+        if item then
+            local widget = item.widget
+            if widget then
+                if LuaWidgetTypes[widget.type] then
+                    self.res:add(widget)
+                end
+            else
+                self.res:add(item)
+            end
+        end
+    end
+
+    self.widget:set_widget(self.res)
+end
+
 function wmapi:sub(stdout, length)
     return string.sub(stdout, 0, length)
 end

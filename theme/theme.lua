@@ -37,6 +37,12 @@ theme.bg_minimize          = "#444444"
 
 
 -- ### systray ### --
+theme.mouse_enter          = "#ffffff11"
+theme.mouse_leave          = "#ffffff00"
+theme.button_press         = "#ffffff22"
+theme.button_release       = "#ffffff11"
+
+-- ### systray ### --
 theme.systray_icon_spacing = 2
 theme.bg_systray           = theme.bg_normal
 

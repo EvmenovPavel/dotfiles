@@ -90,10 +90,38 @@
 --
 --fun(1)
 
-local LuaWidgetTypes = {
-    imagebox  = "imagebox",
-    imagebox1 = "imagebox1"
-}
+require 'lfs'
 
-print(LuaWidgetTypes["imagebox1"])
-print(LuaWidgetTypes["image"])
+function scandir(directory)
+    local i, t, popen = 0, {}, io.popen
+    local pfile       = popen('ls -a "' .. directory .. '"')
+    for filename in pfile:lines() do
+        i    = i + 1
+        t[i] = filename
+        --print("filename", filename)
+    end
+    pfile:close()
+    return t
+end
+
+local t    = scandir("/home/evmenov/.config/awesome/wmapi/widget/")
+
+local list = {}
+
+for _, file in ipairs(t) do
+    local length = #file - string.len(".lua")
+    local f      = string.sub(file, 1, length)
+
+    table.insert(list, f)
+end
+
+--for file in lfs.dir [[/home/evmenov/.config/awesome/wmapi/widget/]] do
+--    if lfs.attributes(file, "mode") == "file" then
+--        print("found file, " .. file)
+--    elseif lfs.attributes(file, "mode") == "directory" then
+--        print("found dir, " .. file, " containing:")
+--        for l in lfs.dir("/home/evmenov/.config/awesome/wmapi/widget/" .. file) do
+--            print("", l)
+--        end
+--    end
+--end

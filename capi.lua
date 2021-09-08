@@ -13,7 +13,19 @@ LuaTypes       = {
 }
 
 LuaWidgetTypes = {
-    imagebox = "imagebox"
+    box         = "box",
+    button      = "button",
+    checkbox    = "checkbox",
+    graph       = "graph",
+    imagebox    = "imagebox",
+    launcher    = "launcher",
+    piechart    = "piechart",
+    popup       = "popup",
+    progressbar = "progressbar",
+    separator   = "separator",
+    slider      = "slider",
+    textbox     = "textbox",
+    textclock   = "textclock",
 }
 
 function Type(var)

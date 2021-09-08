@@ -49,8 +49,8 @@ function widget:slider(argc)
 
 end
 
-function widget:textbox()
-    return require("wmapi.widget.textbox")()
+function widget:textbox(argc)
+    return require("wmapi.widget.textbox")(argc)
 end
 
 function widget:textclock(argc)

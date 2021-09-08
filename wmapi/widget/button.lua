@@ -1,19 +1,20 @@
-local awful  = require("awful")
-local wibox  = require("wibox")
-local gears  = require("gears")
+local awful     = require("awful")
+local wibox     = require("wibox")
+local gears     = require("gears")
+local beautiful = require("beautiful")
 
-local button = {}
+local function init()
+    local button  = {}
 
-function button:init()
-    self.widget = wibox.widget({
-                                   type   = "button",
-                                   widget = wibox.container.background(),
-                               })
+    button.widget = wibox.widget({
+                                     type   = "button",
+                                     widget = wibox.container.background(),
+                                 })
 
-    self.widget:connect_signal(
+    button.widget:connect_signal(
             capi.event.signals.mouse.enter,
             function(self)
-                self.bg = "#ffffff11"
+                self.bg = beautiful.mouse_enter
                 local w = _G.mouse.current_wibox
                 if w then
                     self.old_cursor, self.old_wibox = w.cursor, w
@@ -22,10 +23,10 @@ function button:init()
             end
     )
 
-    self.widget:connect_signal(
+    button.widget:connect_signal(
             capi.event.signals.mouse.leave,
             function(self)
-                self.bg = "#ffffff00"
+                self.bg = beautiful.mouse_leave
                 if self.old_wibox then
                     self.old_wibox.cursor = self.old_cursor
                     self.old_wibox        = nil
@@ -33,80 +34,85 @@ function button:init()
             end
     )
 
-    self.widget:connect_signal(
+    button.widget:connect_signal(
             capi.event.signals.button.press,
             function(self)
-                self.bg = "#ffffff22"
+                self.bg = beautiful.button_press
             end
     )
 
-    self.widget:connect_signal(
+    button.widget:connect_signal(
             capi.event.signals.button.release,
             function(self)
-                self.bg = "#ffffff11"
+                self.bg = beautiful.button_release
             end
     )
 
-    return self
-end
+    function button:set_widget(...)
+        if not button.res then
+            button.res = wibox.widget({
+                                          layout = wibox.layout.fixed.horizontal()
+                                      })
+        end
 
-function button:set_widget(...)
-    if not self.res then
-        self.res = wibox.widget({
-                                    layout = wibox.layout.fixed.horizontal()
-                                })
-    end
+        for i = 1, select("#", ...) do
+            local item = select(i, ...)
 
-    for i = 1, select("#", ...) do
-        local item = select(i, ...)
+            capi.log:message(item.type)
 
-        capi.log:message(item.type)
-
-        if item then
-            local widget = item.widget
-            if widget then
-                --self.res:add(widget)
-            else
-                --self.res:add(item)
+            if item then
+                local widget = item.widget
+                if widget then
+                    --if LuaWidgetTypes[widget.type] then
+                    self.res:add(widget)
+                    --end
+                else
+                    self.res:add(item)
+                end
             end
         end
+
+        self.widget:set_widget(self.res)
     end
 
-    self.widget:set_widget(self.res)
-end
+    function button:set_button(argc)
+        local argc  = argc or {}
 
-function button:set_button(argc)
-    local argc  = argc or {}
+        local key   = argc.key or {}
+        local event = argc.event or capi.event.mouse.button_click_left
+        local func  = argc.func or function()
+            capi.log:message("button:init")
+        end
 
-    local key   = argc.key or {}
-    local event = argc.event or capi.event.mouse.button_click_left
-    local func  = argc.func or function()
-        capi.log:message("button:init")
+        self.widget:buttons(
+                gears.table.join(
+                        awful.button(
+                                key,
+                                event,
+                                func
+                        )
+                )
+        )
     end
 
-    self.widget:buttons(
-            gears.table.join(
-                    awful.button(
-                            key,
-                            event,
-                            nil,
-                            func
-                    )
-            )
-    )
+    function button:get()
+        return self.widget
+    end
+
+    function button:set_text(text)
+        --local textbox = capi.widget:textbox()
+        --textbox:set_text(text)
+        --self:set_widget(textbox)
+    end
+
+    function button:set_icon(src)
+        local imagebox = capi.widget:imagebox({ src = src })
+        self:set_widget(imagebox)
+    end
+
+    return button
 end
 
-function button:set_text(text)
-    local textbox = capi.widget:textbox()
-    textbox:set_text(text)
-    self:set_widget(textbox)
-end
-
-function button:set_icon(src)
-    local imagebox = capi.widget:imagebox({ src = src })
-    self:set_widget(imagebox)
-end
-
-return setmetatable(button, { __call = function()
-    return button:init()
+return setmetatable({ }, { __call = function()
+    return init()
 end })
