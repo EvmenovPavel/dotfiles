@@ -2,7 +2,6 @@ local wibox     = require("wibox")
 local awful     = require("awful")
 local naughty   = require("naughty")
 local resources = require("resources")
-local wmapi     = require("wmapi")
 
 local battery     = {}
 

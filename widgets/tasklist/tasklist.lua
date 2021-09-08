@@ -3,8 +3,6 @@ local wibox     = require("wibox")
 local gears     = require("gears")
 local resources = require("resources")
 
-local mouse     = capi.wmapi.event.mouse
-
 local tasklist  = {}
 
 local function create_buttons(buttons, object)
@@ -15,7 +13,7 @@ local function create_buttons(buttons, object)
             -- press and release events, and will propagate them to the
             -- button object the user provided, but with the object as
             -- argument.
-            local btn = capi.button { modifiers = b.modifiers, button = b.button }
+            local btn = button { modifiers = b.modifiers, button = b.button }
             btn:connect_signal("press",
                                function()
                                    b:emit_signal("press", object)
@@ -64,12 +62,11 @@ local function list_update(widget, buttons, label, data, objects)
             w_bm_close       = wibox.container.margin(w_bm_close, 4, 4, 4, 4)
 
             w_bm_close:buttons(gears.table.join(
-                    awful.button({}, mouse.button_click_left, nil,
+                    awful.button({}, capi.event.mouse.button_click_left, nil,
                                  function()
                                      o.kill(o)
                                  end))
             )
-
 
             -- ICON
             ib_icon      = wibox.widget {
@@ -156,21 +153,21 @@ local function list_update(widget, buttons, label, data, objects)
             ib_icon.image = resources.path .. "/error.png"
         end
 
-        local res = wibox.widget {
-            {
-                bgb_item,
-                widget = wibox.layout.fixed.horizontal()
-            },
+        local res = wibox.widget({
+                                     {
+                                         bgb_item,
+                                         widget = wibox.layout.fixed.horizontal()
+                                     },
 
-            shape_border_width = 0.5,
-            shape_border_color = "#ffffff20",
-            shape              = function(cr, width, height)
-                gears.shape.transform(gears.shape.rounded_rect):translate(width, 0)(cr, 0, height, 0)
-                gears.shape.transform(gears.shape.rounded_rect):translate(0, 0)(cr, 0, height, 0)
-            end,
+                                     shape_border_width = 0.5,
+                                     shape_border_color = "#ffffff20",
+                                     shape              = function(cr, width, height)
+                                         gears.shape.transform(gears.shape.rounded_rect):translate(width, 0)(cr, 0, height, 0)
+                                         gears.shape.transform(gears.shape.rounded_rect):translate(0, 0)(cr, 0, height, 0)
+                                     end,
 
-            widget             = wibox.container.background()
-        }
+                                     widget             = wibox.container.background()
+                                 })
 
         widget:add(res)
     end
@@ -179,9 +176,9 @@ end
 function tasklist:tasklist_buttons()
     return awful.util.table.join(
             capi.wmapi:button({
-                                  event = mouse.button_click_left,
+                                  event = capi.event.mouse.button_click_left,
                                   func  = function(c)
-                                      if c == capi.client.focus then
+                                      if c == client.focus then
                                           c.minimized = true
                                       else
                                           c.minimized = false
@@ -189,13 +186,13 @@ function tasklist:tasklist_buttons()
                                               c.first_tag:view_only()
                                           end
 
-                                          capi.client.focus = c
+                                          client.focus = c
                                           c:raise()
                                       end
                                   end }),
 
             capi.wmapi:button({
-                                  event = mouse.button_click_right,
+                                  event = capi.event.mouse.button_click_right,
                                   func  = function()
                                       awful.menu.client_list({ theme = { width = 250 } })
                                   end })

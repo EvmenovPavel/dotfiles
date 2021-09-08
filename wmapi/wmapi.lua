@@ -1,16 +1,10 @@
-local awful      = require("awful")
-local wibox      = require("wibox")
-local gears      = require("gears")
+local awful = require("awful")
+local wibox = require("wibox")
+local gears = require("gears")
 
-local spawn      = require("awful.spawn")
+local spawn = require("awful.spawn")
 
-local wmapi      = {}
-
-wmapi.event      = require("wmapi.event")
-wmapi.timer      = require("wmapi.timer")
-wmapi.markup     = require("wmapi.markup")
-wmapi.widget     = require("wmapi.widget.widget")
-wmapi.containers = require("wmapi.container.container")
+local wmapi = {}
 
 function wmapi:layout_align_horizontal(items)
     --local widget = wibox.widget({
@@ -31,6 +25,15 @@ function wmapi:layout_align_horizontal(items)
     return bg
 end
 
+function wmapi:path(debug)
+    local debug  = debug or debug
+
+    local source = string.sub(debug.source, 2)
+    local path   = string.sub(source, 1, string.find(source, "/[^/]*$"))
+
+    return path
+end
+
 function wmapi:table_length(T)
     local count = 0
     for _ in pairs(T) do
@@ -40,12 +43,12 @@ function wmapi:table_length(T)
 end
 
 function wmapi:is_empty(s)
-    return s == nil or s == ''
+    return s == nil or s == ""
 end
 
 function wmapi:signs(stdout, signs)
-    str = stdout:gsub("%s+", signs)
-    str = string.gsub(str, "%s+", signs)
+    local str = stdout:gsub("%s+", signs)
+    str       = string.gsub(str, "%s+", signs)
 
     return str
 end
@@ -61,9 +64,9 @@ function wmapi:find(cmd, str)
     local s   = assert(f:read('*a'))
     f:close()
 
-    s = string.gsub(s, '^%s+', '')
-    s = string.gsub(s, '%s+$', '')
-    s = string.gsub(s, '[\n\r]+', ' ')
+    s = string.gsub(s, "^%s+", "")
+    s = string.gsub(s, "%s+$", "")
+    s = string.gsub(s, "[\n\r]+", " ")
 
     return s
 end
@@ -71,7 +74,7 @@ end
 function wmapi:screen_primary(s)
     local primary = self:primary()
 
-    if s == capi.screen[primary] then
+    if s == screen[primary] then
         return true
     end
 
@@ -85,32 +88,32 @@ end
 
 function wmapi:screen(index)
     local index = index or self:primary()
-    local count = capi.screen.count()
+    local count = screen.count()
 
     if index > count or index < -1 then
-        return capi.screen[self:primary()]
+        return screen[self:primary()]
     end
 
-    return capi.screen[index]
+    return screen[index]
 end
 
 function wmapi:screen_er(index)
     local index = index or 0
-    local count = capi.screen.count()
+    local count = screen.count()
 
     if index > count or index <= 0 then
         return nil
     end
 
-    return capi.screen[index]
+    return screen[index]
 end
 
 function wmapi:screen_index(screen)
     local screen = screen
 
     if screen then
-        for i = 1, capi.screen.count() do
-            if screen == capi.screen[i] then
+        for i = 1, screen.count() do
+            if screen == screen[i] then
                 return i
             end
         end
@@ -163,7 +166,7 @@ function wmapi:update(callback, timeout)
 end
 
 function wmapi:mouseCoords()
-    local mouse = capi.mouse.coords()
+    local mouse = mouse.coords()
 
     return {
         x = mouse.x,
@@ -173,7 +176,7 @@ end
 
 function wmapi:screenGeometry(index)
     local index    = index or 1
-    local screen   = capi.screen[index]
+    local screen   = screen[index]
     local geometry = screen.geometry
 
     return {
@@ -184,14 +187,14 @@ end
 
 function wmapi:screenHeight(index)
     local index = index or 1
-    local s     = capi.screen[index]
+    local s     = screen[index]
 
     return s.geometry.height
 end
 
 function wmapi:screenWidth(index)
     local index = index or 1
-    local s     = capi.screen[index]
+    local s     = screen[index]
 
     return s.geometry.width
 end
@@ -199,59 +202,81 @@ end
 function wmapi:button(args)
     local args = args or {}
 
-    return awful.button({ args.key },
-                        args.event or wmapi.event.mouse.button_click_left,
-                        args.func or function()
-                            capi.log:message("Error args.func = nil")
-                        end
+    return awful.button(
+            { args.key },
+            args.event or capi.event.mouse.button_click_left,
+            args.func or function()
+                capi.log:message("Error args.func = nil")
+            end
     )
 end
 
+function wmapi:set_widget(widget, ...)
+
+    --if widget.type == nil then
+    --    capi.log:message("yes")
+    --else
+    --    capi.log:message("no")
+    --end
+
+    local res = wibox.widget({
+                                 layout = wibox.layout.fixed.horizontal()
+                             })
+
+    for i = 1, select("#", ...) do
+        local w = select(i, ...)
+        if w then
+            res:add(w)
+        end
+    end
+
+    widget:set_widget(res)
+end
+
 function wmapi:container(widget)
-    local widget = wibox.widget {
-        widget,
-        widget = wibox.container.background
-    }
-    local old_cursor, old_wibox
+    --local widget = wibox.widget {
+    --    widget,
+    --    widget = wibox.container.background
+    --}
 
-    widget:connect_signal(
-            "mouse::enter",
-            function()
-                widget.bg = "#ffffff11"
-                local w   = _G.mouse.current_wibox
-                if w then
-                    old_cursor, old_wibox = w.cursor, w
-                    w.cursor              = "hand1"
-                end
-            end
-    )
+    --widget:connect_signal(
+    --        capi.event.signals.mouse.enter,
+    --        function(self, _, _, button)
+    --            self.bg = "#ffffff11"
+    --            local w = _G.mouse.current_wibox
+    --            if w then
+    --                self.old_cursor, self.old_wibox = w.cursor, w
+    --                w.cursor                        = "hand1"
+    --            end
+    --        end
+    --)
+    --
+    --widget:connect_signal(
+    --        capi.event.signals.mouse.leave,
+    --        function(self, _, _, button)
+    --            self.bg = "#ffffff00"
+    --            if self.old_wibox then
+    --                self.old_wibox.cursor = self.old_cursor
+    --                self.old_wibox        = nil
+    --            end
+    --        end
+    --)
+    --
+    --widget:connect_signal(
+    --        capi.event.signals.button.press,
+    --        function(self, _, _, button)
+    --            self.bg = "#ffffff22"
+    --        end
+    --)
+    --
+    --widget:connect_signal(
+    --        capi.event.signals.button.release,
+    --        function(self, _, _, button)
+    --            self.bg = "#ffffff11"
+    --        end
+    --)
 
-    widget:connect_signal(
-            "mouse::leave",
-            function()
-                widget.bg = "#ffffff00"
-                if old_wibox then
-                    old_wibox.cursor = old_cursor
-                    old_wibox        = nil
-                end
-            end
-    )
-
-    widget:connect_signal(
-            "button::press",
-            function()
-                widget.bg = "#ffffff22"
-            end
-    )
-
-    widget:connect_signal(
-            "button::release",
-            function()
-                widget.bg = "#ffffff11"
-            end
-    )
-
-    return widget
+    --return widget
 end
 
 function wmapi:client_info(c)

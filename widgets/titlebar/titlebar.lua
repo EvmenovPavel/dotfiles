@@ -1,7 +1,7 @@
 local awful                   = require("awful")
 local wibox                   = require("wibox")
 local beautiful               = require("beautiful")
-local mouse                   = capi.wmapi.event.mouse
+local mouse                   = capi.event.mouse
 
 local fun                     = require("functions")
 
@@ -53,7 +53,7 @@ function mytitlebar:button(c, name, selector, action)
                 end
             end
             local prefix = "normal"
-            if capi.client.focus == c then
+            if client.focus == c then
                 prefix = "focus"
             end
             if img ~= "" then
@@ -187,74 +187,74 @@ function mytitlebar:stickybutton(c)
     return widget
 end
 
-capi.client.connect_signal("unmanage",
-                           function(c)
-                               all_titlebars[c] = nil
-                           end)
+client.connect_signal("unmanage",
+                      function(c)
+                          all_titlebars[c] = nil
+                      end)
 
-capi.client.connect_signal("request::titlebars",
-                           function(c, startup)
-                               -- Custom
-                               if beautiful.titlebar_fun then
-                                   beautiful.titlebar_fun(c)
-                                   return
-                               end
+client.connect_signal("request::titlebars",
+                      function(c, startup)
+                          -- Custom
+                          if beautiful.titlebar_fun then
+                              beautiful.titlebar_fun(c)
+                              return
+                          end
 
-                               if not startup then
-                                   if not c.size_hints.user_position and not c.size_hints.program_position then
-                                       awful.placement.no_overlap(c)
-                                       awful.placement.no_offscreen(c)
-                                   end
-                               end
+                          if not startup then
+                              if not c.size_hints.user_position and not c.size_hints.program_position then
+                                  awful.placement.no_overlap(c)
+                                  awful.placement.no_offscreen(c)
+                              end
+                          end
 
-                               local buttons  = awful.util.table.join(
-                                       awful.button({}, capi.wmapi.event.mouse.button_click_left,
-                                                    function()
-                                                        capi.client.focus = c
-                                                        c:raise()
-                                                        awful.mouse.client.move(c)
-                                                    end),
-                                       awful.button({}, mouse.button_click_right,
-                                                    function()
-                                                        if c.floating then
-                                                            capi.client.focus = c
-                                                            c:raise()
-                                                            awful.mouse.client.resize(c)
-                                                        end
-                                                    end)
-                               )
+                          local buttons  = awful.util.table.join(
+                                  awful.button({}, capi.event.mouse.button_click_left,
+                                               function()
+                                                   client.focus = c
+                                                   c:raise()
+                                                   awful.mouse.client.move(c)
+                                               end),
+                                  awful.button({}, mouse.button_click_right,
+                                               function()
+                                                   if c.floating then
+                                                       client.focus = c
+                                                       c:raise()
+                                                       awful.mouse.client.resize(c)
+                                                   end
+                                               end)
+                          )
 
-                               local titlebar = awful.titlebar(c, {
-                                   --bg       = awful.titlebar.titlebar_color or "#00ff00",
-                                   size     = beautiful.titlebars_size,
-                                   position = beautiful.titlebars_position,
-                                   font     = beautiful.titlebars_font,
-                               })
+                          local titlebar = awful.titlebar(c, {
+                              --bg       = awful.titlebar.titlebar_color or "#00ff00",
+                              size     = beautiful.titlebars_size,
+                              position = beautiful.titlebars_position,
+                              font     = beautiful.titlebars_font,
+                          })
 
-                               titlebar:setup {
-                                   {
-                                       {
-                                           clienticon(c),
-                                           layout = wibox.layout.align.horizontal
-                                       },
-                                       margins = 3,
-                                       widget  = wibox.container.margin(),
-                                   },
-                                   {
-                                       {
-                                           align  = "center",
-                                           widget = mytitlebar:titlewidget(c),
-                                       },
-                                       buttons = buttons,
-                                       layout  = wibox.layout.flex.horizontal()
-                                   },
-                                   {
-                                       mytitlebar:minimizebutton(c),
-                                       mytitlebar:maximizedbutton(c),
-                                       mytitlebar:closebutton(c),
-                                       layout = wibox.layout.flex.horizontal()
-                                   },
-                                   layout = wibox.layout.align.horizontal()
-                               }
-                           end
+                          titlebar:setup {
+                              {
+                                  {
+                                      clienticon(c),
+                                      layout = wibox.layout.align.horizontal
+                                  },
+                                  margins = 3,
+                                  widget  = wibox.container.margin(),
+                              },
+                              {
+                                  {
+                                      align  = "center",
+                                      widget = mytitlebar:titlewidget(c),
+                                  },
+                                  buttons = buttons,
+                                  layout  = wibox.layout.flex.horizontal()
+                              },
+                              {
+                                  mytitlebar:minimizebutton(c),
+                                  mytitlebar:maximizedbutton(c),
+                                  mytitlebar:closebutton(c),
+                                  layout = wibox.layout.flex.horizontal()
+                              },
+                              layout = wibox.layout.align.horizontal()
+                          }
+                      end
 )

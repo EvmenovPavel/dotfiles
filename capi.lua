@@ -1,6 +1,6 @@
 -- Global --
 
-LuaTypes = {
+LuaTypes       = {
     null     = "nil",
     boolean  = "boolean",
     number   = "number",
@@ -10,6 +10,10 @@ LuaTypes = {
     thread   = "thread",
     table    = "table",
     screen   = "screen"
+}
+
+LuaWidgetTypes = {
+    imagebox = "imagebox"
 }
 
 function Type(var)
@@ -29,21 +33,16 @@ placement = {
 
 capi      = {
     primary    = 1, -- remove
-    root       = root,
-    screen     = screen,
-    tag        = tag,
-    dbus       = dbus,
-    button     = button,
-    client     = client,
-    awesome    = awesome,
-    mouse      = mouse,
-    timer      = timer,
-    unpack     = unpack,
-    keygrabber = keygrabber,
+
+    event      = require("wmapi.event"),
+    timer      = require("wmapi.timer"),
+    markup     = require("wmapi.markup"),
+    widget     = require("wmapi.widget.widget"),
+    containers = require("wmapi.container.container"),
+    wmapi      = require("wmapi.wmapi"),
 
     home       = os.getenv("HOME"),
     awesomewm  = os.getenv("HOME") .. "/.config/awesome",
     devices    = os.getenv("HOME") .. "/.config/awesome/devices",
-    wmapi      = require("wmapi"),
     log        = require("logger"),
 }

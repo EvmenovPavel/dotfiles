@@ -1,7 +1,7 @@
 local os                           = os
 local capi                         = {
-    mouse  = capi.mouse,
-    screen = capi.screen,
+    mouse  = mouse,
+    screen = screen,
 }
 
 local awful                        = require("awful")
@@ -144,7 +144,7 @@ function calendar:show(year, month)
                                                text          = text,
                                                timeout       = 0,
                                                hover_timeout = 0.5,
-                                               screen        = capi.mouse.screen,
+                                               screen        = mouse.screen,
                                                position      = self.position,
                                            })
         self.num_lines    = num_lines

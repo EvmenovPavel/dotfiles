@@ -1,11 +1,11 @@
 local awful     = require("awful")
 local gears     = require("gears")
-local key       = capi.wmapi.event.key
 local programms = require("programms")
 local hotkeys   = require("keys.hotkeys")
 local switcher  = require("widgets.switcher")
-
 local fun       = require("functions")
+
+local key       = capi.event.key
 
 local global    = gears.table.join(
 --[[ AWESOME ]]--
@@ -35,13 +35,13 @@ local global    = gears.table.join(
 -- Brightness
         awful.key({}, key.brightness.XF86MonBrightnessUp,
                   function()
-                      capi.awesome.emit_signal("brightness_change", "+")
+                      awesome.emit_signal("brightness_change", "+")
                   end,
                   { description = "Brightness +25%", group = "hotkeys" }
         ),
         awful.key({}, key.brightness.XF86MonBrightnessDown,
                   function()
-                      capi.awesome.emit_signal("brightness_change", "-")
+                      awesome.emit_signal("brightness_change", "-")
                   end,
                   { description = "Brightness -25%", group = "hotkeys" }
         ),
@@ -49,21 +49,21 @@ local global    = gears.table.join(
 -- ALSA volume control
         awful.key({}, key.audio.XF86AudioRaiseVolume,
                   function()
-                      capi.awesome.emit_signal("volume_change", "+")
+                      awesome.emit_signal("volume_change", "+")
                   end,
                   { description = "volume up", group = "hotkeys" }
         ),
 
         awful.key({}, key.audio.XF86AudioLowerVolume,
                   function()
-                      capi.awesome.emit_signal("volume_change", "-")
+                      awesome.emit_signal("volume_change", "-")
                   end,
                   { description = "volume down", group = "hotkeys" }
         ),
 
         awful.key({}, key.audio.XF86AudioMute,
                   function()
-                      capi.awesome.emit_signal("volume_change", "off")
+                      awesome.emit_signal("volume_change", "off")
                   end,
                   { description = "toggle mute", group = "hotkeys" }
         ),
@@ -85,7 +85,7 @@ local global    = gears.table.join(
         awful.key({}, key.audio.XF86AudioPlay,
                   function()
                       awful.spawn("playerctl play-pause", false)
-                      capi.awesome.emit_signal("spotify_change")
+                      awesome.emit_signal("spotify_change")
                   end,
                   { description = "play/pause music", group = "hotkeys" }
         ),
@@ -125,8 +125,8 @@ local global    = gears.table.join(
                       switcher(key.alt_L, key.tab)
 
                       awful.client.focus.history.previous()
-                      if capi.client.focus then
-                          capi.client.focus:raise()
+                      if client.focus then
+                          client.focus:raise()
                       end
                   end, hotkeys.client.previous),
 

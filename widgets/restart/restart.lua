@@ -1,33 +1,24 @@
-local wibox     = require("wibox")
-local resources = require("resources")
-
-local mouse     = capi.wmapi.event.mouse
-
-local restart   = {}
+local restart = {}
 
 function restart:init()
-    local rebootWidget = wibox.widget {
-        {
-            id     = "icon",
-            image  = resources.path .. "/restart-alert.svg",
-            widget = wibox.widget.imagebox,
-            resize = true
-        },
-        layout = wibox.layout.fixed.horizontal
-    }
+    local button = capi.widget:button()
+    button:set_button({
+                          event = capi.event.mouse.button_click_left,
+                          func  = function()
+                              awesome.restart()
+                          end
+                      })
 
-    capi.wmapi.widget.buttons({
-                                  event = mouse.button_click_left,
-                                  func  = function()
-                                      capi.awesome.restart()
-                                  end
-                              })
+    local image   = capi.widget:imagebox()
+    local textbox = capi.widget:textbox()
+    textbox:set_text("Asdasdasd")
 
-    local container = capi.wmapi:container(wibox.container.margin(rebootWidget, 7, 7, 7, 7))
+    --button:set_text("111text")
+    button:set_widget(image, textbox)
 
-    return container
+    return button.widget
 end
 
-return setmetatable(restart, { __call = function(_, ...)
-    return restart:init(...)
+return setmetatable(restart, { __call = function()
+    return restart:init()
 end })

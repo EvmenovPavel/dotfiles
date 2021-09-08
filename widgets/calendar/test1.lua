@@ -1,13 +1,13 @@
 local os                           = os
 local capi                         = {
-    mouse  = capi.mouse,
-    screen = capi.screen,
+    mouse  = mouse,
+    screen = screen,
 }
 
 local awful                        = require("awful")
 local naughty                      = require("naughty")
 
-local version_major, version_minor = capi.awesome.version:match("(%d+)%.(%d+)")
+local version_major, version_minor = awesome.version:match("(%d+)%.(%d+)")
 version_major                      = tonumber(version_major)
 version_minor                      = tonumber(version_minor)
 local can_update_size              = version_major and version_minor and version_major >= 4 and version_minor >= 2
@@ -141,7 +141,7 @@ function calendar:show(year, month)
                                                text          = text,
                                                timeout       = 0,
                                                hover_timeout = 0.5,
-                                               screen        = capi.mouse.screen,
+                                               screen        = mouse.screen,
                                                position      = self.position,
                                            })
         self.num_lines    = num_lines

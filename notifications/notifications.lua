@@ -107,10 +107,10 @@ naughty.config.presets.warn          = {
     text          = "Text critical",
 }
 
-if capi.awesome.startup_errors then
+if awesome.startup_errors then
     local preset = naughty.config.presets.critical
     local title  = "Oops, there were errors during startup!"
-    local text   = capi.awesome.startup_errors
+    local text   = awesome.startup_errors
 
     naughty.notify({
                        preset = preset,
@@ -123,7 +123,7 @@ end
 
 do
     local in_error = false
-    capi.awesome.connect_signal(
+    awesome.connect_signal(
             "debug::error",
             function(err)
                 if in_error then

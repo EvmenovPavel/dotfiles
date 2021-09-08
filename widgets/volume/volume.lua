@@ -57,26 +57,26 @@ function volume:on_volume()
     )
 end
 
-capi.awesome.connect_signal("volume_change",
-                            function(stdout)
-                                if (stdout == "+") then
-                                    awful.spawn("amixer -D pulse set Master 5%+", false)
-                                elseif (stdout == "-") then
-                                    awful.spawn("amixer -D pulse set Master 5%-", false)
-                                elseif (stdout == "off") then
-                                    awful.spawn("amixer -D pulse set Master 1+ toggle", false)
-                                end
+awesome.connect_signal("volume_change",
+                       function(stdout)
+                           if (stdout == "+") then
+                               awful.spawn("amixer -D pulse set Master 5%+", false)
+                           elseif (stdout == "-") then
+                               awful.spawn("amixer -D pulse set Master 5%-", false)
+                           elseif (stdout == "off") then
+                               awful.spawn("amixer -D pulse set Master 1+ toggle", false)
+                           end
 
-                                if volume_adjust.visible then
-                                    hide_volume_adjust:again()
-                                else
-                                    volume_adjust.visible = true
-                                    hide_volume_adjust:start()
-                                    hide_volume_adjust:again()
-                                end
+                           if volume_adjust.visible then
+                               hide_volume_adjust:again()
+                           else
+                               volume_adjust.visible = true
+                               hide_volume_adjust:start()
+                               hide_volume_adjust:again()
+                           end
 
-                                volume:on_volume()
-                            end
+                           volume:on_volume()
+                       end
 )
 
 function volume:init()
@@ -84,7 +84,7 @@ function volume:init()
     local offsety = 300
 
     volume_adjust = wibox({
-                              x       = capi.primary * capi.wmapi:screenWidth(capi.primary) - offsetx,
+                              x       = capi.wmapi:primary() * capi.wmapi:screenWidth() - offsetx,
                               y       = capi.wmapi:screenHeight() / 2 - offsety / 2,
 
                               width   = offsetx,

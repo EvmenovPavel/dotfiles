@@ -41,11 +41,11 @@ function clients(filter)
 end
 
 function functions:on_restart()
-    capi.awesome.restart()
+    awesome.restart()
 end
 
 function functions:on_quit()
-    capi.awesome.quit()
+    awesome.quit()
 end
 
 function functions:on_show_help()

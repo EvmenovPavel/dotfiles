@@ -80,22 +80,17 @@ function sensors:init()
         if popup.visible then
             popup.visible = not popup.visible
         else
-            popup:move_next_to(capi.mouse.current_widget_geometry)
+            popup:move_next_to(mouse.current_widget_geometry)
         end
     end
-
-    capi.wmapi:buttons({ widget = widget, func = func })
-
-    local mylauncher = capi.wmapi:launcher({
-                                               image = resources.path .. "/lock.png",
-                                               menu  = func
-                                           })
 
     local widget     = wibox.widget {
         wText,
         --wSensors,
         layout = wibox.layout.align.horizontal
     }
+
+    capi.wmapi:buttons({ widget = widget, func = func })
 
     return widget
 end

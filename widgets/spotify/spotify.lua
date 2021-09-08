@@ -12,7 +12,7 @@ function myspotify:create(s)
                                         border_width = 0,
                                         visible      = true,
                                         height       = 27,
-                                        width        = capi.wmapi.screen_width - 30,
+                                        width        = capi.wmapi:screenWidth() - 30,
                                         screen       = s,
                                     })
 

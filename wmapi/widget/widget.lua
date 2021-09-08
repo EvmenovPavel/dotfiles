@@ -1,17 +1,66 @@
-local widget       = {}
+local widget = {}
 
-widget.buttons     = require("wmapi.widget.buttons")
-widget.checkbox    = require("wmapi.widget.checkbox")
-widget.graph       = require("wmapi.widget.graph")
-widget.imagebox    = require("wmapi.widget.imagebox")
-widget.launcher    = require("wmapi.widget.launcher")
-widget.piechart    = require("wmapi.widget.piechart")
-widget.popup       = require("wmapi.widget.popup")
-widget.progressbar = require("wmapi.widget.progressbar")
-widget.separator   = require("wmapi.widget.separator")
-widget.slider      = require("wmapi.widget.slider")
-widget.textbox     = require("wmapi.widget.textbox")
-widget.textclock   = require("wmapi.widget.textclock")
-widget.box         = require("wmapi.widget.box")
+function widget:button()
+    return require("wmapi.widget.button")()
+end
+
+function widget:checkbox(argc)
+    return require("wmapi.widget.checkbox")(argc)
+
+end
+
+function widget:graph(argc)
+    return require("wmapi.widget.graph")(argc)
+
+end
+
+function widget:imagebox(argc)
+    return require("wmapi.widget.imagebox")(argc)
+
+end
+
+function widget:launcher(argc)
+    return require("wmapi.widget.launcher")(argc)
+
+end
+
+function widget:piechart(argc)
+    return require("wmapi.widget.piechart")(argc)
+
+end
+
+function widget:popup(argc)
+    return require("wmapi.widget.popup")(argc)
+
+end
+
+function widget:progressbar(argc)
+    return require("wmapi.widget.progressbar")(argc)
+
+end
+
+function widget:separator(argc)
+    return require("wmapi.widget.separator")(argc)
+
+end
+
+function widget:slider(argc)
+    return require("wmapi.widget.slider")(argc)
+
+end
+
+function widget:textbox()
+    return require("wmapi.widget.textbox")()
+end
+
+function widget:textclock(argc)
+    return require("wmapi.widget.textclock")(argc)
+
+end
+
+function widget:box(argc)
+    return require("wmapi.widget.box")(argc)
+
+end
 
 return widget

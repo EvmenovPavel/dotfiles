@@ -19,6 +19,8 @@ local unpack                       = unpack or table.unpack
 local surface                      = cairo.ImageSurface(cairo.Format.RGB24, 20, 20)
 local cr                           = cairo.Context(surface)
 
+local resources                    = require("resources")
+
 local switcher                     = {}
 
 -- settings
@@ -40,7 +42,7 @@ switcher.settings                  = {
 
     cycle_raise_client                 = true,
 
-    client_focus_mouse                 = false,
+    client_focus_mouse                 = true,
 }
 
 -- Create a wibox to contain all the client-widgets
@@ -55,8 +57,9 @@ switcher.preview_widgets           = {}
 switcher.altTabTable               = {}
 switcher.altTabIndex               = 1
 
-switcher.source                    = string.sub(debug.getinfo(1, "S").source, 2)
-switcher.path                      = string.sub(switcher.source, 1, string.find(switcher.source, "/[^/]*$"))
+--switcher.source                    = string.sub(debug.getinfo(1, "S").source, 2)
+--switcher.path                      = string.sub(switcher.source, 1, string.find(switcher.source, "/[^/]*$"))
+switcher.path                      = capi.wmapi:path(debug.getinfo(1))
 switcher.noicon                    = switcher.path .. "noicon.png"
 
 -- simple function for counting the size of a table
@@ -419,9 +422,11 @@ function switcher:preview()
         end
 
         -- Add mouse handler
-        switcher.preview_widgets[i]:connect_signal("mouse::enter", function()
-            self:cycle(leftRightTabToAltTabIndex[i] - switcher.altTabIndex)
-        end)
+        if switcher.settings.client_focus_mouse then
+            switcher.preview_widgets[i]:connect_signal("mouse::enter", function()
+                self:cycle(leftRightTabToAltTabIndex[i] - switcher.altTabIndex)
+            end)
+        end
     end
 
     -- Spacers left and right

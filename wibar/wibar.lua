@@ -22,7 +22,7 @@ local mymainmenu    = awful.menu({
                                      }
                                  })
 
-local mylauncher    = capi.wmapi.widget.launcher({
+local mylauncher    = capi.widget:launcher({
                                                 image = res.path .. "/close.svg",
                                                 menu  = mymainmenu
                                             })
@@ -51,8 +51,6 @@ function mywibar:w_right(s)
             --widgets.clock(),
             widgets.calendar(),
             widgets.reboot(),
-            -- widgets.test(),
-            --widgets.spotify(s),
 
             layout = wibox.layout.fixed.horizontal
         }

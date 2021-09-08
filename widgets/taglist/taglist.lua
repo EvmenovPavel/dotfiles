@@ -1,8 +1,8 @@
 local awful   = require("awful")
 local wibox   = require("wibox")
 local dpi     = require("beautiful").xresources.apply_dpi
-local key     = capi.wmapi.event.key
-local mouse   = capi.wmapi.event.mouse
+local key     = capi.event.key
+local mouse   = capi.event.mouse
 
 local taglist = {}
 
@@ -130,8 +130,8 @@ function buttons()
                                   key   = key.mod,
                                   event = mouse.button_click_left,
                                   func  = function(c)
-                                      if capi.client.focus then
-                                          capi.client.focus:move_to_tag(c)
+                                      if client.focus then
+                                          client.focus:move_to_tag(c)
                                           c:view_only()
                                       end
                                   end
@@ -146,8 +146,8 @@ function buttons()
                                   key   = key.mod,
                                   event = mouse.button_click_right,
                                   func  = function(c)
-                                      if capi.client.focus then
-                                          capi.client.focus:toggle_tag(c)
+                                      if client.focus then
+                                          client.focus:toggle_tag(c)
                                       end
                                   end
                               })

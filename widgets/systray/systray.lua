@@ -27,7 +27,7 @@ function mysystray:draw(context, cr, width, height)
     -- FIX
     -- передавать сюда размер виБара, тк, иконки не по центру
     local x, y, _, _  = wbase.rect_to_device_geometry(cr, 0, 0, width, height)
-    local num_entries = capi.awesome.systray()
+    local num_entries = awesome.systray()
 
     local bg          = beautiful.bg_systray or beautiful.bg_normal or "#000000"
 
@@ -56,15 +56,15 @@ function mysystray:draw(context, cr, width, height)
         base = in_dir / num_entries
         --base = (in_dir + spacing) / num_entries - spacing
     end
-    capi.awesome.systray(context.wibox.drawin, math.ceil(x), math.ceil(y), base, is_rotated, bg, reverse, spacing)
+    awesome.systray(context.wibox.drawin, math.ceil(x), math.ceil(y), base, is_rotated, bg, reverse, spacing)
 end
 
 function mysystray:_kickout(context)
-    capi.awesome.systray(context.wibox.drawin)
+    awesome.systray(context.wibox.drawin)
 end
 
 function mysystray:fit(context, width, height)
-    local num_entries = capi.awesome.systray()
+    local num_entries = awesome.systray()
     local base        = base_size
     local spacing     = beautiful.systray_icon_spacing or 0
     if num_entries == 0 then
@@ -129,7 +129,7 @@ function mysystray:init(revers)
         ret:set_reverse(true)
     end
 
-    capi.awesome.connect_signal(
+    awesome.connect_signal(
             "systray::update",
             function()
                 ret:emit_signal("widget::layout_changed")

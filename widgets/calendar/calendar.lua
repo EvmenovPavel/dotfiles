@@ -3,8 +3,8 @@ local beautiful = require("beautiful")
 local wibox     = require("wibox")
 local gears     = require("gears")
 
-local markup    = capi.wmapi.markup
-local button    = capi.wmapi.event.signals.button
+local markup    = capi.markup
+local button    = capi.event.signals.button
 
 local calendar  = {}
 

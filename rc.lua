@@ -5,8 +5,8 @@ local theme     = require("theme")
 beautiful.init(theme)
 
 local keybinds = require("keys.keybinds")
-capi.root.keys(keybinds.globalkeys)
-capi.root.buttons(keybinds.buttonkeys)
+root.keys(keybinds.globalkeys)
+root.buttons(keybinds.buttonkeys)
 
 require("notifications")
 
@@ -37,7 +37,7 @@ awful.screen.connect_for_each_screen(
         end
 )
 
-capi.tag.connect_signal("property::layout", function(t)
+tag.connect_signal("property::layout", function(t)
     local current_layout = awful.tag.getproperty(t, "layout")
 
     if (current_layout == awful.layout.suit.max) then
@@ -47,12 +47,12 @@ capi.tag.connect_signal("property::layout", function(t)
     end
 end)
 
-capi.client.connect_signal("manage", function(c)
-    if not capi.awesome.startup then
+client.connect_signal("manage", function(c)
+    if not awesome.startup then
         awful.client.setslave(c)
     end
 
-    if capi.awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
+    if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
         awful.placement.no_offscreen(c)
     end
 end)

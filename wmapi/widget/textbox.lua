@@ -3,26 +3,26 @@ local wibox     = require("wibox")
 
 local textbox   = {}
 
-function textbox:init(args)
-    local args = args or {}
+function textbox:init()
+    self.widget = wibox.widget({
+                                   type   = "textbox",
 
-    return wibox.widget {
-        type         = "textbox",
+                                   font   = beautiful.font,
 
-        markup       = args.markup,
-        text         = args.text,
+                                   valign = "center",
+                                   align  = "left",
 
-        font         = beautiful.font,
+                                   widget = wibox.widget.textbox,
+                               })
 
-        valign       = args.valign or "center",
-        align        = args.align or "left",
-
-        forced_width = args.forced_width or 50,
-
-        widget       = wibox.widget.textbox,
-    }
+    return self
 end
 
-return setmetatable(textbox, { __call = function(_, ...)
-    return textbox:init(...)
+function textbox:set_text(text)
+    local text = text or ""
+    self.widget.text = text
+end
+
+return setmetatable(textbox, { __call = function()
+    return textbox:init()
 end })

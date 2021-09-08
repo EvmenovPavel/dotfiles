@@ -106,7 +106,7 @@ keyboardlayout.xkeyboard_country_code = {
 
 -- Callback for updating current layout.
 local function update_status (self)
-    self._current = capi.awesome.xkb_get_layout_group()
+    self._current = awesome.xkb_get_layout_group()
     local text    = ""
     if #self._layout > 0 then
         -- Please note that the group number reported by xkb_get_layout_group
@@ -123,7 +123,7 @@ end
 -- Create an array whose element is a table consisting of the four fields:
 -- vendor, file, section and group_idx, which all correspond to the
 -- xkb_symbols pattern "vendor/file(section):group_idx".
--- @tparam string group_names The string capi.awesome.xkb_get_group_names() returns.
+-- @tparam string group_names The string awesome.xkb_get_group_names() returns.
 -- @treturn table An array of tables whose keys are vendor, file, section, and group_idx.
 function keyboardlayout.get_groups_from_group_names(group_names)
     if group_names == nil then
@@ -266,17 +266,17 @@ function keyboardlayout.new()
                           "expected number from 0 to " .. #self._layout)
             return ;
         end
-        capi.awesome.xkb_set_layout_group(group_number);
+        awesome.xkb_set_layout_group(group_number);
     end
 
     update_layout(self);
 
     -- callback for processing layout changes
-    capi.awesome.connect_signal("xkb::map_changed",
+    awesome.connect_signal("xkb::map_changed",
                                 function()
                                     update_layout(self)
                                 end)
-    capi.awesome.connect_signal("xkb::group_changed",
+    awesome.connect_signal("xkb::group_changed",
                                 function()
                                     update_status(self)
                                 end);

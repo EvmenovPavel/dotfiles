@@ -3,8 +3,6 @@ local gears     = require("gears")
 --local beautiful = require("beautiful")
 --local dpi       = beautiful.xresources.apply_dpi
 
-local key       = capi.wmapi.event.key
-
 local hotkeys   = require("keys.hotkeys")
 
 local keys      = {}
@@ -64,14 +62,14 @@ keys.buttonkeys = require("keys.buttonkeys")
 --end
 
 --function keys:raise_client()
---    if capi.client.focus then
---        capi.client.focus:raise()
+--    if client.focus then
+--        client.focus:raise()
 --    end
 --end
 
 for i = 1, 9 do
     local descr_view, descr_toggle, descr_move, descr_toggle_focus
-    if i == 1 or i == ipairs(capi.root.tags()) then
+    if i == 1 or i == ipairs(root.tags()) then
         descr_view         = hotkeys.tag.view
         descr_toggle       = hotkeys.tag.toggle
         descr_move         = hotkeys.tag.move
@@ -79,7 +77,7 @@ for i = 1, 9 do
     end
 
     keys.globalkeys = gears.table.join(keys.globalkeys,
-                                       awful.key({ key.mod }, i,
+                                       awful.key({ capi.event.key.mod }, i,
                                                  function()
                                                      local screen = awful.screen.focused()
                                                      local tag    = screen.tags[i]
@@ -89,13 +87,12 @@ for i = 1, 9 do
                                                  end,
                                                  descr_view),
 
-                                       awful.key({ key.mod, key.shift }, i,
+                                       awful.key({ capi.event.key.mod, capi.event.key.shift }, i,
                                                  function()
-                                                     if capi.client.focus then
-                                                         local client = capi.client.focus.screen.tags[i]
-                                                         if client then
-                                                             capi.client.focus:move_to_tag(client)
-
+                                                     if client.focus then
+                                                         local tag = client.focus.screen.tags[i]
+                                                         if tag then
+                                                             client.focus:move_to_tag(tag)
                                                              local screen  = awful.screen.focused()
                                                              local focused = screen.tags[i]
                                                              if focused then
@@ -106,9 +103,9 @@ for i = 1, 9 do
                                                  end,
                                                  descr_move),
 
-                                       awful.key({ key.mod, key.shift }, key.ctrl, i,
+                                       awful.key({ capi.event.key.mod, capi.event.key.shift }, capi.event.key.ctrl, i,
                                                  function()
-                                                     capi.log:message("test")
+                                                     capi.log:message("keys.globalkeys = gears.table")
 
                                                      local screen  = awful.screen.focused()
                                                      local focused = screen.tags[i]
@@ -116,11 +113,11 @@ for i = 1, 9 do
                                                          focused:view_only()
                                                      end
 
-                                                     --if capi.client.focus then
-                                                     --local tag = capi.client.focus.screen.tags[i]
+                                                     --if client.focus then
+                                                     --local tag = client.focus.screen.tags[i]
                                                      --local tag = capi.screen[2].tags[9]
                                                      --if tag then
-                                                     --    capi.client.screen.focus:move_to_tag(tag)
+                                                     --    client.screen.focus:move_to_tag(tag)
 
                                                      --local screen  = awful.screen.focused()
                                                      --local focused = screen.tags[i]

@@ -23,7 +23,8 @@ function logger:message(...)
     local msg  = date
 
     for i = 1, select("#", ...) do
-        msg = msg .. "\n\t" .. tostring(select(i, ...))
+        local item = select(i, ...)
+        msg        = msg .. "\n\t" .. tostring(item)
     end
 
     local file = io.open(log_file, "a")
