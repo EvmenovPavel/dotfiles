@@ -57,26 +57,25 @@ function button:new(args)
 
     local mod_key          = capi.event.key.shift
     local key_switch       = capi.event.key.enter
-    
 
-    local release          = -- args.release or
-    function()
-        keygrabber.run(
-                function(mod, keys, event)
-                    if keys == key_switch and event == "press" then
+    local release          = args.release or
+            function()
+                keygrabber.run(
+                        function(mod, keys, event)
+                            if keys == key_switch and event == "press" then
 
-                        local fun = args.release
+                                local fun = args.release
 
-                        fun()
+                                fun()
 
-                    elseif keys == mod_key and event == "release" then
-                        keygrabber.stop()
-                    end
-                end
-        )
+                            elseif keys == mod_key and event == "release" then
+                                keygrabber.stop()
+                            end
+                        end
+                )
 
-        capi.log:message("args.release")
-    end
+                capi.log:message("args.release")
+            end
 
     local ignore_modifiers = { "Lock", "Mod2" }
 
@@ -103,7 +102,7 @@ function button:new(args)
     return ret
 end
 
-function launcher:init(args)
+function launcher:create(args)
     local args = args or {}
 
     if not args.command and not args.menu then
@@ -114,6 +113,10 @@ function launcher:init(args)
     if not w then
         return
     end
+
+    local ret  = {}
+
+    ret.widget = w
 
     local b
     if args.command then
@@ -133,9 +136,8 @@ function launcher:init(args)
     end
 
     w:buttons(b)
-    return w
+
+    return ret
 end
 
-return setmetatable(launcher, { __call = function(_, ...)
-    return launcher:init(...)
-end })
+return launcher

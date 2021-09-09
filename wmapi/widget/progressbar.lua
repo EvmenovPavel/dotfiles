@@ -2,15 +2,17 @@ local wibox       = require("wibox")
 
 local progressbar = {}
 
-function progressbar:init(args)
+function progressbar:create(args)
+    local ret  = {}
+
     local args = args or {}
 
-    return wibox.widget({
-                            type   = "progressbar",
-                            widget = wibox.widget.progressbar,
-                        })
+    ret.widget = wibox.widget({
+                                  type   = "progressbar",
+                                  widget = wibox.widget.progressbar,
+                              })
+
+    return ret
 end
 
-return setmetatable(progressbar, { __call = function(_, ...)
-    return progressbar:init(...)
-end })
+return progressbar

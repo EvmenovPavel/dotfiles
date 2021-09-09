@@ -28,10 +28,12 @@ local function infobubble(cr, width, height, corner_radius, arrow_size, arrow_po
     cr:close_path()
 end
 
-function popup:init(args)
+function popup:create(args)
     local args = args or {}
 
-    return awful.popup {
+    local ret  = {}
+
+    ret.widget = awful.popup {
         type          = "popup",
 
         ontop         = args.ontop or true,
@@ -46,8 +48,8 @@ function popup:init(args)
 
         widget        = args.widget or {}
     }
+
+    return ret
 end
 
-return setmetatable(popup, { __call = function(_, ...)
-    return popup:init(...)
-end })
+return popup

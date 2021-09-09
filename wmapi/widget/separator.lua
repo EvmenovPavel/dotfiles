@@ -2,20 +2,22 @@ local wibox     = require("wibox")
 
 local separator = {}
 
-function separator:inti(args)
+function separator:create(args)
+    local ret  = {}
+
     local args = args or {}
 
-    return wibox.widget({
-                            type          = "separator",
+    ret.widget = wibox.widget({
+                                  type          = "separator",
 
-                            orientation   = args.orientation or "horizontal",
-                            forced_height = args.forced_height or 15,
-                            color         = args.color or beautiful.bg_focus,
+                                  orientation   = args.orientation or "horizontal",
+                                  forced_height = args.forced_height or 15,
+                                  color         = args.color or beautiful.bg_focus,
 
-                            widget        = wibox.widget.separator,
-                        })
+                                  widget        = wibox.widget.separator,
+                              })
+
+    return ret
 end
 
-return setmetatable(separator, { __call = function(_, ...)
-    return separator:init(...)
-end })
+return separator

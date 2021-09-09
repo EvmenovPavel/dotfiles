@@ -2,15 +2,17 @@ local wibox    = require("wibox")
 
 local piechart = {}
 
-function piechart:init(args)
+function piechart:create(args)
     local args = args or {}
 
-    return wibox.widget({
-                            type   = "piechart",
-                            widget = wibox.widget.piechart,
-                        })
+    local ret  = {}
+
+    ret.widget = wibox.widget({
+                                  type   = "piechart",
+                                  widget = wibox.widget.piechart,
+                              })
+
+    return ret
 end
 
-return setmetatable(piechart, { __call = function(_, ...)
-    return piechart:init(...)
-end })
+return piechart

@@ -2,15 +2,17 @@ local wibox  = require("wibox")
 
 local slider = {}
 
-function slider:init(args)
+function slider:create(args)
+    local ret  = {}
+
     local args = args or {}
 
-    return wibox.widget({
-                            type   = "slider",
-                            widget = wibox.widget.slider,
-                        })
+    ret.widget = wibox.widget({
+                                  type   = "slider",
+                                  widget = wibox.widget.slider,
+                              })
+
+    return ret
 end
 
-return setmetatable(slider, { __call = function(_, ...)
-    return slider:init(...)
-end })
+return slider

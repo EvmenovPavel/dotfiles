@@ -3,19 +3,25 @@ local gears = require("gears")
 
 local box   = {}
 
-function box:init(args)
+function box:create(args)
+    local ret  = {}
+
     local args = args or {}
 
-    return wibox.widget({
-                            type   = "box",
+    ret.widget = wibox.widget({
+                                  type   = "box",
 
-                            shape  = function(cr, width, height)
-                                gears.shape.rectangle(cr, args.width or width, args.height or height)
-                            end,
-                            widget = wibox.widget.checkbox,
-                        })
+                                  shape  = function(cr, width, height)
+                                      gears.shape.rectangle(cr, args.width or width, args.height or height)
+                                  end,
+                                  widget = wibox.widget.checkbox,
+                              })
+
+    function ret:get()
+        return ret.widget
+    end
+
+    return ret
 end
 
-return setmetatable(box, { __call = function(_, ...)
-    return box:init(...)
-end })
+return box

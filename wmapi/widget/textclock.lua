@@ -2,15 +2,17 @@ local wibox     = require("wibox")
 
 local textclock = {}
 
-function textclock:init(args)
+function textclock:create(args)
+    local ret  = {}
+
     local args = args or {}
 
-    return wibox.widget({
-                            widget = wibox.widget.textclock,
-                            type   = "textclock"
-                        })
+    ret.widget = wibox.widget({
+                                  widget = wibox.widget.textclock,
+                                  type   = "textclock"
+                              })
+
+    return ret
 end
 
-return setmetatable(textclock, { __call = function(_, ...)
-    return textclock:init(...)
-end })
+return textclock
