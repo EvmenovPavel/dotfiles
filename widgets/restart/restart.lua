@@ -1,5 +1,4 @@
-local wibox     = require("wibox")
-local beautiful = require("beautiful")
+local resources = require("resources")
 
 local restart   = {}
 
@@ -12,17 +11,11 @@ function restart:init()
                           end
                       })
 
-    local image   = capi.widget:imagebox()
+    button:set_icon(resources.path .. "/restart-alert.svg")
 
-    local textbox = capi.widget:textbox()
-    textbox:set_text("BBBB1")
+    button:set_text("test")
 
-    local textbox1 = capi.widget:textbox()
-    textbox1:set_text("AAAA1")
-
-    button:set_widget(image, textbox, textbox1)
-
-    return textbox:get()
+    return button:get()
 end
 
 return setmetatable(restart, { __call = function()

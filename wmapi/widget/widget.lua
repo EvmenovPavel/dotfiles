@@ -1,7 +1,7 @@
 local widget = {}
 
-function widget:button()
-    return require("wmapi.widget.button")()
+function widget:button(argc)
+    return require("wmapi.widget.button"):create(argc)
 end
 
 function widget:checkbox(argc)
@@ -15,8 +15,7 @@ function widget:graph(argc)
 end
 
 function widget:imagebox(argc)
-    return require("wmapi.widget.imagebox")(argc)
-
+    return require("wmapi.widget.imagebox"):create(argc)
 end
 
 function widget:launcher(argc)
@@ -49,8 +48,8 @@ function widget:slider(argc)
 
 end
 
-function widget:textbox(argc)
-    return require("wmapi.widget.textbox")(argc)
+function widget.textbox(argc)
+    return require("wmapi.widget.textbox"):create(argc)
 end
 
 function widget:textclock(argc)

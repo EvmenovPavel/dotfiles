@@ -3,15 +3,21 @@ local wibox     = require("wibox")
 local gears     = require("gears")
 local beautiful = require("beautiful")
 
-local function init()
-    local button  = {}
+local button    = {}
 
-    button.widget = wibox.widget({
-                                     type   = "button",
-                                     widget = wibox.container.background(),
-                                 })
+function button:create(argc)
+    local ret  = {}
 
-    button.widget:connect_signal(
+    ret.res    = wibox.widget({
+                                  layout = wibox.layout.fixed.horizontal()
+                              })
+
+    ret.widget = wibox.widget({
+                                  type   = "button",
+                                  widget = wibox.container.background(),
+                              })
+
+    ret.widget:connect_signal(
             capi.event.signals.mouse.enter,
             function(self)
                 self.bg = beautiful.mouse_enter
@@ -23,7 +29,7 @@ local function init()
             end
     )
 
-    button.widget:connect_signal(
+    ret.widget:connect_signal(
             capi.event.signals.mouse.leave,
             function(self)
                 self.bg = beautiful.mouse_leave
@@ -34,48 +40,21 @@ local function init()
             end
     )
 
-    button.widget:connect_signal(
+    ret.widget:connect_signal(
             capi.event.signals.button.press,
             function(self)
                 self.bg = beautiful.button_press
             end
     )
 
-    button.widget:connect_signal(
+    ret.widget:connect_signal(
             capi.event.signals.button.release,
             function(self)
                 self.bg = beautiful.button_release
             end
     )
 
-    function button:set_widget(...)
-        if not button.res then
-            button.res = wibox.widget({
-                                          layout = wibox.layout.fixed.horizontal()
-                                      })
-        end
-
-        for i = 1, select("#", ...) do
-            local item = select(i, ...)
-
-            capi.log:message(item.type)
-
-            if item then
-                local widget = item.widget
-                if widget then
-                    --if LuaWidgetTypes[widget.type] then
-                    self.res:add(widget)
-                    --end
-                else
-                    self.res:add(item)
-                end
-            end
-        end
-
-        self.widget:set_widget(self.res)
-    end
-
-    function button:set_button(argc)
+    function ret:set_button(argc)
         local argc  = argc or {}
 
         local key   = argc.key or {}
@@ -95,24 +74,41 @@ local function init()
         )
     end
 
-    function button:get()
+    function ret:set_widget(...)
+        for i = 1, select("#", ...) do
+            local item = select(i, ...)
+
+            if item then
+                local widget = item.widget
+                if widget then
+                    self.res:add(widget)
+                else
+                    self.res:add(item)
+                end
+            end
+        end
+
+        self.widget:set_widget(self.res)
+    end
+
+    function ret:get()
         return self.widget
     end
 
-    function button:set_text(text)
-        --local textbox = capi.widget:textbox()
-        --textbox:set_text(text)
-        --self:set_widget(textbox)
+    function ret:set_text(text)
+        local textbox = capi.widget:textbox()
+        textbox:set_text(text)
+        self:set_widget(textbox)
     end
 
-    function button:set_icon(src)
+    function ret:set_icon(src)
         local imagebox = capi.widget:imagebox({ src = src })
         self:set_widget(imagebox)
     end
 
-    return button
+    ret:set_button(argc)
+
+    return ret
 end
 
-return setmetatable({ }, { __call = function()
-    return init()
-end })
+return button

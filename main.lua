@@ -125,3 +125,17 @@ end
 --        end
 --    end
 --end
+
+local function init(obj)
+    local obj = obj or {}
+
+    function obj:test()
+
+    end
+
+    return obj
+end
+
+local obj = init()
+
+obj.
