@@ -130,6 +130,7 @@ event.signals.mouse.move                   = "mouse::move"
 event.signals.button                       = {}
 -- release срабатывает, когда нажатие мыши отпущено
 event.signals.button.release               = "button::release"
+-- press срабатывает, когда нажал мышью
 event.signals.button.press                 = "button::press"
 
 event.signals.widget                       = {}

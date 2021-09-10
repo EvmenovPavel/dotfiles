@@ -8,6 +8,8 @@ local button    = capi.event.signals.button
 
 local calendar  = {}
 
+-- https://codepen.io/internette/pen/YqJEjY
+
 local function rounded_shape(size)
     return function(cr, width, height)
         gears.shape.rounded_rect(cr, width, height, size)

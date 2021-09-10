@@ -138,4 +138,8 @@ end
 
 local obj = init()
 
-obj.
+if type(init) == "function" then
+    print("yes")
+else
+    print("no")
+end
