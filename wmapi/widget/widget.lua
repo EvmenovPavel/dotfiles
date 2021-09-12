@@ -4,6 +4,10 @@ function widget:button(argc)
     return require("wmapi.widget.button"):create(argc)
 end
 
+function widget:textbox(text, valign, align)
+    return require("wmapi.widget.textbox"):create(text, valign, align)
+end
+
 function widget:checkbox(argc)
     return require("wmapi.widget.checkbox"):create(argc)
 end
@@ -44,10 +48,6 @@ function widget:slider(argc)
     return require("wmapi.widget.slider"):create(argc)
 end
 
-function widget.textbox(argc)
-    return require("wmapi.widget.textbox"):create(argc)
-end
-
 function widget:textclock(argc)
     return require("wmapi.widget.textclock"):create(argc)
 end
@@ -58,6 +58,22 @@ end
 
 function widget:switch(argc)
     return require("wmapi.widget.switch"):create(argc)
+end
+
+function widget:hradiobox()
+    return require("wmapi.widget.radiobox.hradiobox"):create()
+end
+
+function widget:vradiobox()
+    return require("wmapi.widget.radiobox.vradiobox"):create()
+end
+
+function widget:layout_vertical(argc)
+    return require("wmapi.widget.layout_vertical"):create(argc)
+end
+
+function widget:layout_horizontal(argc)
+    return require("wmapi.widget.layout_horizontal"):create(argc)
 end
 
 return widget

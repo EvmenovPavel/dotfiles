@@ -48,6 +48,10 @@ resources.battery           = {
     missing            = resources.path .. "/battery/battery-missing-symbolic.svg",
 }
 
+resources.checkbox          = {
+    checkbox = resources.path .. "/widgets/checkbox/checkbox.svg"
+}
+
 resources.taglist           = {
     resources.path .. "/taglist/firefox.png",
     resources.path .. "/taglist/folder.png",

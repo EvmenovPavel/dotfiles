@@ -1,39 +1,35 @@
 local wibox     = require("wibox")
 local gears     = require("gears")
 local beautiful = require("beautiful")
-local resources = require("resources")
 
-local checkbox  = {}
+local radiobox  = {}
 
-function checkbox:create(argc)
+function radiobox:create(text, func)
     local ret    = {}
 
-    ret.res      = wibox.widget({ layout = wibox.layout.fixed.horizontal })
+    ret.radiobox = wibox.widget({
+                                    checked = false,
+                                    shape   = gears.shape.circle,
+                                    widget  = wibox.widget.checkbox
+                                })
 
-    ret.imagebox = capi.widget:imagebox()
-    ret.imagebox:set_image(resources.checkbox.checkbox)
+    ret.textbox  = capi.widget:textbox(text)
 
-    ret.textbox  = capi.widget:textbox("Checkbox")
-
-    ret.checkbox = wibox.widget({
-                                    ret.imagebox.get(),
-                                    bg     = capi.color.border,
+    ret.outline  = wibox.widget({
+                                    {
+                                        ret.radiobox,
+                                        margins = 5,
+                                        widget  = wibox.container.margin,
+                                    },
+                                    shape  = gears.shape.rounded_bar,
                                     widget = wibox.container.background,
                                 })
 
     ret.bg       = wibox.widget({
-                                    {
-                                        ret.checkbox,
-                                        margins = 2,
-                                        widget  = wibox.container.margin,
-                                    },
-
-                                    shape              = function(cr, w, h)
-                                        gears.shape.rounded_rect(cr, w, h, 5)
-                                    end,
-
+                                    ret.outline,
                                     shape_border_color = capi.color.border_hover,
-                                    bg                 = capi.color.border,
+                                    bg                 = capi.color.active_inner,
+                                    shape              = gears.shape.rounded_bar,
                                     widget             = wibox.container.background,
                                 })
 
@@ -72,28 +68,22 @@ function checkbox:create(argc)
     ret.widget:connect_signal(
             capi.event.signals.button.release,
             function()
-                ret:set_checked(not ret.checked)
+                func()
             end
     )
 
-    function ret:set_checked(check)
-        ret.checked = check
-
-        if ret.checked then
-            ret.bg.bg       = capi.color.border_hover
-            ret.checkbox.bg = capi.color.border_hover
-        else
-            ret.bg.bg       = capi.color.border
-            ret.checkbox.bg = capi.color.border
-        end
+    function ret:enable()
+        ret.radiobox.bg = capi.color.active_inner
+        ret.widget.bg   = capi.color.border_hover
+        ret.outline.bg  = capi.color.border_hover
     end
 
-    function ret:get()
-        self.widget.type = "checkbox"
-        return self.widget
+    function ret:disable()
+        ret.widget.bg  = capi.color.active_inner
+        ret.outline.bg = capi.color.active_inner
     end
 
     return ret
 end
 
-return checkbox
+return radiobox

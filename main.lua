@@ -90,56 +90,59 @@
 --
 --fun(1)
 
-require 'lfs'
 
-function scandir(directory)
-    local i, t, popen = 0, {}, io.popen
-    local pfile       = popen('ls -a "' .. directory .. '"')
-    for filename in pfile:lines() do
-        i    = i + 1
-        t[i] = filename
-        --print("filename", filename)
-    end
-    pfile:close()
-    return t
-end
-
-local t    = scandir("/home/evmenov/.config/awesome/wmapi/widget/")
-
-local list = {}
-
-for _, file in ipairs(t) do
-    local length = #file - string.len(".lua")
-    local f      = string.sub(file, 1, length)
-
-    table.insert(list, f)
-end
-
---for file in lfs.dir [[/home/evmenov/.config/awesome/wmapi/widget/]] do
---    if lfs.attributes(file, "mode") == "file" then
---        print("found file, " .. file)
---    elseif lfs.attributes(file, "mode") == "directory" then
---        print("found dir, " .. file, " containing:")
---        for l in lfs.dir("/home/evmenov/.config/awesome/wmapi/widget/" .. file) do
---            print("", l)
---        end
---    end
+----function extended (child, parent)
+----    setmetatable(child, { __index = parent })
+----end
+--function extend(parent)
+--    local child = {}
+--    setmetatable(child, { __index = parent })
+--    return child
 --end
-
-local function init(obj)
-    local obj = obj or {}
-
-    function obj:test()
-
-    end
-
-    return obj
-end
-
-local obj = init()
-
-if type(init) == "function" then
-    print("yes")
-else
-    print("no")
-end
+--
+--local Person = {}
+--function Person:new(name)
+--
+--    local private = {}
+--    private.age   = 18
+--
+--    local public  = {}
+--    public.name   = name or "Вася"
+--
+--
+--    --это защищенный метод, его нельзя переопределить
+--    function public:getName()
+--        return "Person protected " .. self.name
+--    end
+--
+--    --этот метод можно переопределить
+--    function Person:getName2()
+--        return "Person " .. self.name
+--    end
+--
+--    setmetatable(public, self)
+--
+--    self.__index = self;
+--
+--    return public
+--end
+--
+----создадим класс, унаследованный от Person
+--local Woman = extend(Person)
+----extended(Woman, Person)  --не забываем про эту функцию
+--
+----переопределим метод setName
+--function Woman:getName2()
+--    return "Woman " .. self.name
+--end
+--
+--local masha = Woman:new()
+--print(masha:getName2())  --> Woman Вася
+--
+----вызываем метод родительского класса
+--print(Person.getName2(masha)) --> Person Вася
+--
+--
+--if nil then
+--    print("asd")
+--end

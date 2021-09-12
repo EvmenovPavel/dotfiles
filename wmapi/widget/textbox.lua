@@ -3,19 +3,24 @@ local wibox     = require("wibox")
 
 local textbox   = {}
 
-function textbox:create(argc)
-    local ret  = {}
+function textbox:create(text, valign, align)
+    local ret    = {}
 
-    ret.widget = wibox.widget({
-                                  type   = "textbox",
+    local valign = valign or "center"
+    local align  = align or "left"
+    local text   = text or "TextBox"
 
-                                  font   = beautiful.font,
+    ret.widget   = wibox.widget({
+                                    type   = "textbox",
 
-                                  valign = "center",
-                                  align  = "left",
+                                    text   = text,
+                                    font   = beautiful.font,
 
-                                  widget = wibox.widget.textbox,
-                              })
+                                    valign = valign,
+                                    align  = align,
+
+                                    widget = wibox.widget.textbox,
+                                })
 
     function ret:set_text(text)
         ret.widget.text = text or ""

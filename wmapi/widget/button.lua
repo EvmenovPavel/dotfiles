@@ -6,37 +6,30 @@ local beautiful = require("beautiful")
 local button    = {}
 
 function button:create(argc)
-    local ret  = {}
+    local ret    = {}
 
-    ret.res    = wibox.widget({
-                                  layout = wibox.layout.fixed.horizontal
-                              })
+    local argc   = argc or {}
+    local text   = argc.text or "PushButton"
+    local src    = argc.src or ""
 
-    ret.widget = wibox.widget({
-                                  type   = "button",
-                                  widget = wibox.container.background,
-                              })
+    ret.textbox  = capi.widget:textbox(text)
+    ret.imagebox = capi.widget:imagebox({ src = src })
 
-    function ret:set_button(argc)
-        local argc  = argc or {}
+    ret.widget   = wibox.widget({
+                                    {
+                                        {
+                                            ret.imagebox:get(),
+                                            ret.textbox:get(),
+                                            layout = wibox.layout.fixed.horizontal,
+                                        },
+                                        margins = 6,
+                                        widget  = wibox.container.margin,
+                                    },
+                                    --shape_border_color = beautiful.border_hover_color,
+                                    --shape              = gears.shape.rounded_bar,
 
-        local key   = argc.key or {}
-        local event = argc.event or capi.event.mouse.button_click_left
-        local func  = argc.func or function()
-            capi.log:message("button:init")
-        end
-
-        self.widget:buttons(
-                gears.table.join(
-                        awful.button(key,
-                                     event,
-                                     nil,
-                                     func)
-                )
-        )
-    end
-
-    ret:set_button(argc)
+                                    widget = wibox.container.background(),
+                                })
 
     function ret:set_style(bg_enter, bg_leave, bg_press, bg_release)
         local bg_enter   = bg_enter or beautiful.mouse_enter
@@ -48,6 +41,7 @@ function button:create(argc)
                 capi.event.signals.mouse.enter,
                 function(self)
                     self.bg = bg_enter
+
                     local w = _G.mouse.current_wibox
                     if w then
                         self.old_cursor, self.old_wibox = w.cursor, w
@@ -82,37 +76,40 @@ function button:create(argc)
         )
     end
 
-    function ret:set_widget(...)
-        for i = 1, select("#", ...) do
-            local item = select(i, ...)
-
-            if item then
-                local widget = item.widget
-                if widget then
-                    self.res:add(widget)
-                else
-                    self.res:add(item)
-                end
-            end
-        end
-
-        self.widget:set_widget(self.res)
-    end
-
     function ret:get()
+        self.widget.type = "button"
         return self.widget
     end
 
     function ret:set_text(text)
-        local textbox = capi.widget:textbox()
-        textbox:set_text(text)
-        self:set_widget(textbox)
+        ret.textbox:set_text(text)
     end
 
     function ret:set_image(src)
-        local imagebox = capi.widget:imagebox({ src = src })
-        self:set_widget(imagebox)
+        ret.imagebox:set_image(src)
     end
+
+    function ret:set_button(argc)
+        local argc  = argc or {}
+
+        local key   = argc.key or {}
+        local event = argc.event or capi.event.mouse.button_click_left
+        local func  = argc.func or function()
+            capi.log:message("button:init")
+        end
+
+        self.widget:buttons(
+                gears.table.join(
+                        awful.button(key,
+                                     event,
+                                     nil,
+                                     func)
+                )
+        )
+    end
+
+    ret:set_style()
+    ret:set_button(argc)
 
     return ret
 end

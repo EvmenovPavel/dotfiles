@@ -10,75 +10,71 @@ local beautiful = require("beautiful")
 local switch    = {}
 
 function switch:create()
-    local ret            = {}
+    local ret   = {}
 
-    local active         = "#275EFE"
-    local active_inner   = "#ffffff"
-    local focus          = "2px rgba(39, 94, 254, .3)"
-    local border         = "#BBC1E1"
-    local border_hover   = "#275EFE"
-    local background     = "#fff"
-    local disabled       = "#F6F8FF"
-    local disabled_inner = "#E1E6F9"
+    ret.switch  = wibox.widget({
+                                   checked = false,
+                                   bg      = capi.color.border,
+                                   shape   = gears.shape.circle,
+                                   widget  = wibox.widget.checkbox
+                               })
 
-    ret.switch           = wibox.widget({
-                                            type         = "switch",
+    ret.margin  = wibox.widget({
+                                   {
+                                       ret.switch,
+                                       margins = 3,
+                                       widget  = wibox.container.margin,
+                                   },
+                                   forced_width = 50,
+                                   left         = 0,
+                                   widget       = wibox.container.margin,
+                               })
 
-                                            checked      = false,
+    ret.outline = wibox.widget({
+                                   ret.margin,
+                                   bg     = capi.color.active_inner,
+                                   shape  = gears.shape.rounded_bar,
+                                   widget = wibox.container.background,
+                               })
 
-                                            color        = border,
-                                            bg           = active_inner,
+    ret.bg      = wibox.widget({
+                                   ret.outline,
+                                   shape_border_color = capi.color.border_hover,
+                                   shape              = gears.shape.rounded_bar,
+                                   widget             = wibox.container.background,
+                               })
 
-                                            border_width = 3,
+    ret.textbox = capi.widget:textbox("Switch")
 
-                                            shape        = gears.shape.circle,
-                                            widget       = wibox.widget.checkbox,
-                                        })
-    
-    ret.margin = wibox.widget({
-                                  {
-                                      ret.switch,
-                                      margins = 1,
-                                      widget  = wibox.container.margin,
-                                  },
-                                  forced_width = 50,
-                                  left         = 0,
-                                  widget       = wibox.container.margin,
-                              })
-
-    ret.wid    = wibox.widget({
-                                  ret.margin,
-                                  bg     = border,
-                                  shape  = gears.shape.rounded_bar,
-                                  widget = wibox.container.background,
-                              })
-
-    ret.widget = wibox.widget({
-                                  {
-                                      ret.wid,
-                                      margins = 1,
-                                      widget  = wibox.container.margin,
-                                  },
-
-                                  shape_border_color = border_hover,
-                                  bg                 = border,
-                                  shape              = gears.shape.rounded_bar,
-                                  widget             = wibox.container.background,
-                              })
+    ret.widget  = wibox.widget({
+                                   {
+                                       ret.bg,
+                                       widget = wibox.container.background,
+                                   },
+                                   {
+                                       right  = 5,
+                                       widget = wibox.container.margin,
+                                   },
+                                   {
+                                       ret.textbox:get(),
+                                       widget = wibox.container.background,
+                                   },
+                                   layout = wibox.layout.fixed.horizontal,
+                               })
 
     function ret:set_checked(check)
         ret.checked = check
 
         if ret.checked then
-            ret.margin.left  = 23
+            ret.margin.left = 22
 
-            ret.switch.color = border_hover
-            ret.wid.bg       = border_hover
+            ret.switch.bg   = capi.color.active_inner
+            ret.outline.bg  = capi.color.border_hover
         else
-            ret.margin.left  = 0
+            ret.margin.left = 0
 
-            ret.switch.color = border
-            ret.wid.bg       = border
+            ret.switch.bg   = capi.color.border
+            ret.outline.bg  = capi.color.active_inner
         end
     end
 
@@ -91,30 +87,22 @@ function switch:create()
 
     ret.widget:connect_signal(
             capi.event.signals.mouse.enter,
-            function(self)
-                self.shape_border_width = 1
-
-                --local w                       = mouse.current_wibox
-                --ret.old_cursor, ret.old_wibox = w.cursor, w
-                --w.cursor                      = "hand1"
+            function()
+                ret.bg.shape_border_width = beautiful.shape_border_width_enter
             end
     )
 
     ret.widget:connect_signal(
             capi.event.signals.mouse.leave,
-            function(self)
+            function()
                 if not ret.checked then
-                    self.shape_border_width = 0
-
-                    --if ret.old_wibox then
-                    --    ret.old_wibox.cursor = ret.old_cursor
-                    --    ret.old_wibox        = nil
-                    --end
+                    ret.bg.shape_border_width = beautiful.shape_border_width_leave
                 end
             end
     )
 
     function ret:get()
+        self.widget.type = "switch"
         return self.widget
     end
 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   viewBox="0 0 300 300"
+   role="img"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="checkbox_checked_icon_160926.svg"
+   width="300"
+   height="300"
+   style="shape-rendering:crispEdges"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1918"
+     inkscape:window-height="1024"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="1.8433021"
+     inkscape:cx="170.04643"
+     inkscape:cy="147.96248"
+     inkscape:window-x="0"
+     inkscape:window-y="29"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4"
+     inkscape:pagecheckerboard="false"
+     showborder="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <path
+     id="path2"
+     d="m 238.64181,61.358607 c -6.98015,-4e-6 -13.96067,2.662368 -19.28635,7.988049 L 115.90699,172.79596 80.644545,137.53267 c -10.651364,-10.65137 -27.921347,-10.65136 -38.572705,0 -10.651356,10.65136 -10.651361,27.92134 0,38.5727 l 54.548802,54.54881 c 10.651338,10.65141 27.921378,10.65141 38.572708,0 L 257.92816,107.91937 c 10.65136,-10.651368 10.65136,-27.921355 0,-38.572714 -5.32568,-5.325676 -12.30621,-7.988045 -19.28635,-7.988049 z"
+     style="stroke:#fff6ff;stroke-width:0.42616257;stroke-opacity:1;fill:#ffffff;fill-opacity:1"
+     inkscape:connector-curvature="0" />
+</svg>

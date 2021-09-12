@@ -2,7 +2,6 @@ local beautiful = require("beautiful")
 local awful     = require("awful")
 local wibox     = require("wibox")
 local widgets   = require("widgets")
-local res       = require("resources")
 
 local mywibar   = {}
 
@@ -12,20 +11,6 @@ function mywibar:w_left(s)
         layout = wibox.layout.fixed.horizontal
     }
 end
-
-local mymainmenu    = awful.menu({
-                                     items = {
-                                         {
-                                             "awesome",
-                                             res.path .. "/close.svg"
-                                         }
-                                     }
-                                 })
-
-local mylauncher    = capi.widget:launcher({
-                                                image = res.path .. "/close.svg",
-                                                menu  = mymainmenu
-                                            })
 
 function mywibar:w_middle(s)
     return {
@@ -37,8 +22,6 @@ end
 function mywibar:w_right(s)
     if capi.wmapi:screen_primary(s) then
         return {
-            mylauncher,
-
             widgets.systray(s),
             widgets.keyboard(),
 
@@ -59,16 +42,6 @@ function mywibar:w_right(s)
     return {
         layout = wibox.layout.fixed.horizontal
     }
-end
-
-local naughty = require("naughty")
-
-function test(text)
-    naughty:message({
-                        icon  = "battery.svg",
-                        title = text,
-                        text  = text
-                    })
 end
 
 function mywibar:init(s)

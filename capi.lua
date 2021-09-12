@@ -27,6 +27,8 @@ LuaWidgetTypes = {
     slider      = "slider",
     textbox     = "textbox",
     textclock   = "textclock",
+    switch      = "switch",
+    radiobox    = "radiobox",
 }
 
 ShapeStyle     = {

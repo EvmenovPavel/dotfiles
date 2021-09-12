@@ -1,4 +1,5 @@
 require("capi")
+require("dirtree")
 
 local beautiful = require("beautiful")
 local theme     = require("theme")

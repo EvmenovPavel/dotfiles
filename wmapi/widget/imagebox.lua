@@ -7,7 +7,7 @@ function imagebox:create(argc)
     local ret           = {}
 
     local argc          = argc or {}
-    local image         = argc.image or resources.path .. "/restart-alert.svg"
+    local image         = argc.image or ""
     local resize        = argc.resize or true
     local forced_width  = argc.forced_width or nil
     local forced_height = argc.forced_height or nil
@@ -20,7 +20,7 @@ function imagebox:create(argc)
                                            forced_width  = forced_width,
                                            forced_height = forced_height,
 
-                                           widget        = wibox.widget.imagebox,
+                                           widget        = wibox.widget.imagebox(),
                                        })
 
     function ret:set_image(src)
