@@ -261,49 +261,49 @@ function wmapi:set_widget(widget, ...)
 end
 
 function wmapi:container(widget)
-    --local widget = wibox.widget {
-    --    widget,
-    --    widget = wibox.container.background
-    --}
+    local widget = wibox.widget {
+        widget,
+        widget = wibox.container.background
+    }
 
-    --widget:connect_signal(
-    --        capi.event.signals.mouse.enter,
-    --        function(self, _, _, button)
-    --            self.bg = "#ffffff11"
-    --            local w = _G.mouse.current_wibox
-    --            if w then
-    --                self.old_cursor, self.old_wibox = w.cursor, w
-    --                w.cursor                        = "hand1"
-    --            end
-    --        end
-    --)
-    --
-    --widget:connect_signal(
-    --        capi.event.signals.mouse.leave,
-    --        function(self, _, _, button)
-    --            self.bg = "#ffffff00"
-    --            if self.old_wibox then
-    --                self.old_wibox.cursor = self.old_cursor
-    --                self.old_wibox        = nil
-    --            end
-    --        end
-    --)
-    --
-    --widget:connect_signal(
-    --        capi.event.signals.button.press,
-    --        function(self, _, _, button)
-    --            self.bg = "#ffffff22"
-    --        end
-    --)
-    --
-    --widget:connect_signal(
-    --        capi.event.signals.button.release,
-    --        function(self, _, _, button)
-    --            self.bg = "#ffffff11"
-    --        end
-    --)
+    widget:connect_signal(
+            capi.event.signals.mouse.enter,
+            function(self, _, _, button)
+                self.bg = "#ffffff11"
+                local w = _G.mouse.current_wibox
+                if w then
+                    self.old_cursor, self.old_wibox = w.cursor, w
+                    w.cursor                        = "hand1"
+                end
+            end
+    )
 
-    --return widget
+    widget:connect_signal(
+            capi.event.signals.mouse.leave,
+            function(self, _, _, button)
+                self.bg = "#ffffff00"
+                if self.old_wibox then
+                    self.old_wibox.cursor = self.old_cursor
+                    self.old_wibox        = nil
+                end
+            end
+    )
+
+    widget:connect_signal(
+            capi.event.signals.button.press,
+            function(self, _, _, button)
+                self.bg = "#ffffff22"
+            end
+    )
+
+    widget:connect_signal(
+            capi.event.signals.button.release,
+            function(self, _, _, button)
+                self.bg = "#ffffff11"
+            end
+    )
+
+    return widget
 end
 
 function wmapi:client_info(c)

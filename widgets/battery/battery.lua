@@ -1,7 +1,7 @@
-local wibox     = require("wibox")
-local awful     = require("awful")
-local naughty   = require("naughty")
-local resources = require("resources")
+local wibox       = require("wibox")
+local awful       = require("awful")
+local naughty     = require("naughty")
+local resources   = require("resources")
 
 local battery     = {}
 
@@ -46,7 +46,7 @@ function battery:updateWidgetInfo(level_acpi)
                 image = resources.battery.level_70
             elseif (value >= 80 and value < 89) then
                 image = resources.battery.level_80
-            elseif (value >= 90 and value < 99) then
+            elseif (value >= 90 and value < 100) then
                 image = resources.battery.level_90
             elseif (value == 100) then
                 image = resources.battery.level_100
@@ -70,7 +70,7 @@ function battery:updateWidgetInfo(level_acpi)
                 image = resources.battery.level_70_charging
             elseif (80 and value < 89) then
                 image = resources.battery.level_80_charging
-            elseif (90 and value < 99) then
+            elseif (90 and value < 100) then
                 image = resources.battery.level_90_charging
             elseif (100) then
                 image = resources.battery.level_100_charging
@@ -132,11 +132,11 @@ function battery:init()
                          notify = power
                      end)
 
-    local widget = wibox.widget{
-                                    wIconBox,
-                                    wTextBox,
-                                    layout = wibox.layout.align.horizontal
-                                }
+    local widget = wibox.widget {
+        wIconBox,
+        wTextBox,
+        layout = wibox.layout.align.horizontal
+    }
 
     return widget
 end

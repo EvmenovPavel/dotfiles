@@ -6,9 +6,9 @@ local textbox   = {}
 function textbox:create(text, valign, align)
     local ret    = {}
 
+    local text   = text or "TextBox"
     local valign = valign or "center"
     local align  = align or "left"
-    local text   = text or "TextBox"
 
     ret.widget   = wibox.widget({
                                     type   = "textbox",

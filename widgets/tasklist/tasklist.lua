@@ -215,14 +215,14 @@ function tasklist:init(s)
                 {
                     {
                         {
-                            id     = 'icon_role',
+                            id     = "icon_role",
                             widget = wibox.widget.imagebox,
                         },
                         margins = 2,
                         widget  = wibox.container.margin,
                     },
                     {
-                        id     = 'text_role',
+                        id     = "text_role",
                         widget = wibox.widget.textbox,
                     },
                     layout = wibox.layout.fixed.horizontal,
@@ -231,7 +231,7 @@ function tasklist:init(s)
                 right  = 10,
                 widget = wibox.container.margin
             },
-            id     = 'background_role',
+            id     = "background_role",
             widget = wibox.container.background,
         },
 
