@@ -146,3 +146,16 @@
 --if nil then
 --    print("asd")
 --end
+
+
+function signs(stdout, signs)
+    local signs = signs or ""
+    local str   = stdout:gsub("%s+", signs)
+    str         = string.gsub(str, "%s+", signs)
+
+    return str
+end
+
+s = "561%"
+
+print(s:sub(1, -2))

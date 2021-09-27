@@ -34,6 +34,24 @@ function wmapi:path(debug)
     return path
 end
 
+--- Check if a file or directory exists in this path
+function wmapi:exists(file)
+    local ok, err, code = os.rename(file, file)
+    if not ok then
+        if code == 13 then
+            -- Permission denied, but it exists
+            return true
+        end
+    end
+    return ok, err
+end
+
+--- Check if a directory exists in this path
+function wmapi:isdir(path)
+    -- "/" works on both Unix and Windows
+    return self:exists(path .. "/")
+end
+
 function wmapi:table_length(T)
     local count = 0
     for _ in pairs(T) do
@@ -47,6 +65,7 @@ function wmapi:is_empty(s)
 end
 
 function wmapi:signs(stdout, signs)
+    local signs = signs or ""
     local str = stdout:gsub("%s+", signs)
     str       = string.gsub(str, "%s+", signs)
 

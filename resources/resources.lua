@@ -39,8 +39,8 @@ resources.battery           = {
     level_70_charging  = resources.path .. "/battery/battery-level-70-charging-symbolic.svg",
     level_80_charging  = resources.path .. "/battery/battery-level-80-charging-symbolic.svg",
     level_90_charging  = resources.path .. "/battery/battery-level-90-charging-symbolic.svg",
-    level_100_charged  = resources.path .. "/battery/battery-level-100-charged-symbolic.svg",
     level_100_charging = resources.path .. "/battery/battery-level-100-charging-symbolic.svg",
+    level_100_charged  = resources.path .. "/battery/battery-level-100-charged-symbolic.svg",
 
     low_charging       = resources.path .. "/battery/battery-low-charging-symbolic.svg",
     low                = resources.path .. "/battery/battery-low-symbolic.svg",
