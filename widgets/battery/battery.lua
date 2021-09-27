@@ -21,7 +21,10 @@ local acpi_status = {
 }
 
 function battery:updateWidgetInfo(level_acpi)
+    --capi.log:message(acpi_status[level_acpi] .. " = " .. tostring(level_acpi))
     local bash_acpi_status = "acpi -b | grep '" .. acpi_status[tonumber(level_acpi)] .. "' | awk '{print $4}' | sed 's/[^0-9]//g'"
+    --capi.log:message("level_acpi: " .. tostring(level_acpi))
+    --capi.log:message("bash_acpi_status: " .. tostring(bash_acpi_status))
 
     awful.spawn.easy_async_with_shell(bash_acpi_status, function(result)
         local value = tonumber(result)
@@ -72,7 +75,7 @@ function battery:updateWidgetInfo(level_acpi)
                 image = resources.battery.level_80_charging
             elseif (90 and value < 100) then
                 image = resources.battery.level_90_charging
-            elseif (100) then
+            elseif (value == 100) then
                 image = resources.battery.level_100_charging
             end
         elseif level_acpi == 3 then
