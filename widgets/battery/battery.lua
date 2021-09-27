@@ -19,7 +19,7 @@ function battery:state_to_number(state)
         return 1
     elseif state == "charging" then
         return 2
-    elseif state == "full" then
+    elseif state == "fully-charged" then
         return 3
     end
 end
