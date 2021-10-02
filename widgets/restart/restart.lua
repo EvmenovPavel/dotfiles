@@ -18,8 +18,7 @@ local mymainmenu    = awful.menu({
                                      }
                                  })
 
-
-local map, actions = {
+local map, actions  = {
     verbs      = {
         m = "move", f = "focus", d = "delete", a = "append",
         w = "swap", p = "print", n = "new",
@@ -70,9 +69,9 @@ end
 
 function restart:init()
 
-    local s = capi.widget:switch()
+    --local s = capi.widget:switch()
 
-    return s:get()
+    --return s:get()
 
     --local widget = capi.widget:launcher({
     --                                        image = resources.checkbox.checkbox,

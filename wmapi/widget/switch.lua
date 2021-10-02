@@ -6,6 +6,9 @@
 local wibox     = require("wibox")
 local gears     = require("gears")
 local beautiful = require("beautiful")
+--local mousegrabber = require("mousegrabber")
+local awful     = require("awful")
+local naughty   = require("naughty")
 
 local switch    = {}
 
@@ -78,12 +81,14 @@ function switch:create()
         end
     end
 
-    ret.widget:connect_signal(
-            capi.event.signals.button.release,
-            function()
-                ret:set_checked(not ret.checked)
-            end
-    )
+    capi.wmapi:connect_signal({
+                                  signal = capi.event.signals.button.release,
+                                  event  = capi.event.mouse.button_click_left,
+                                  widget = ret.widget,
+                                  func   = function()
+                                      ret:set_checked(not ret.checked)
+                                  end
+                              })
 
     ret.widget:connect_signal(
             capi.event.signals.mouse.enter,

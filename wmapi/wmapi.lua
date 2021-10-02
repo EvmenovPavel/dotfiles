@@ -66,8 +66,8 @@ end
 
 function wmapi:signs(stdout, signs)
     local signs = signs or ""
-    local str = stdout:gsub("%s+", signs)
-    str       = string.gsub(str, "%s+", signs)
+    local str   = stdout:gsub("%s+", signs)
+    str         = string.gsub(str, "%s+", signs)
 
     return str
 end
@@ -249,7 +249,7 @@ function wmapi:button(args)
     local args = args or {}
 
     return awful.button(
-            { args.key },
+            { args.key or nil },
             args.event or capi.event.mouse.button_click_left,
             args.func or function()
                 capi.log:message("Error args.func = nil")
@@ -277,6 +277,34 @@ function wmapi:set_widget(widget, ...)
     end
 
     widget:set_widget(res)
+end
+
+function wmapi:connect_signal(args)
+    local args = args or nil
+    if args == nil then
+        return
+    end
+
+    local signal = args.signal or nil
+    local event  = args.event or capi.event.mouse.button_click_left
+    local widget = args.widget or nil
+    local func   = args.func or function()
+        capi.log:message("Error args.func = nil")
+    end
+
+    if widget == nil then
+        return
+    end
+
+    widget:connect_signal(
+            signal,
+            function(_, _, _, button)
+                if button == event then
+                    func()
+                end
+            end
+    )
+
 end
 
 function wmapi:container(widget)
