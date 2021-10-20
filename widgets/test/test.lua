@@ -1,36 +1,33 @@
-local wibox     = require("wibox")
-local dpi       = require("beautiful").xresources.apply_dpi
-local resources = require("resources")
+local resources     = require("resources")
+local menu          = require("menu")
 
-local mouse     = capi.event.mouse
+local test          = {}
 
-local test      = {}
+local myawesomemenu = {
+    { "restart_1",
+      function()
+          awesome.restart()
+      end
+    },
+    { "restart_2", function()
+        awesome.restart()
+    end },
+}
+
+local mymainmenu    = menu({
+                               items = {
+                                   { "awesome", myawesomemenu, resources.checkbox.checkbox },
+                                   { "open terminal", "terminal" }
+                               }
+                           })
 
 function test:init()
-    local widget = wibox.widget {
-        {
-            id     = "icon",
-            image  = resources.path .. "/test.png",
-            widget = wibox.widget.imagebox,
-            resize = true
-        },
-        layout = wibox.layout.fixed.horizontal
-    }
+    local widget = capi.widget:launcher({
+                                            image = resources.checkbox.checkbox,
+                                            menu  = mymainmenu
+                                        })
 
-    local toggle = function()
-        print(capi.mouse.coords().x)
-        -- Change the position
-        capi.mouse.coords {
-            x = 185,
-            y = 10
-        }
-    end
-
-    capi.widget:button({ widget = widget, event = mouse.button_click_left, func = toggle })
-
-    --local container = capi.wmapi:container(wibox.container.margin(widget, dpi(7), dpi(7), dpi(7), dpi(7)))
-
-    return widget --container
+    return widget
 end
 
 return setmetatable(test, { __call = function(_, ...)

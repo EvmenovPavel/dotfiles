@@ -23,3 +23,9 @@ c.floating
 тк, в rules срабатывает только тогда, когда вызываем window и все
 а все дальнейшие изменения не фиксируются
 emit_signal( ... ) ???
+
+
+
+numlockx status | sed -E 's/^.*(on|off).*$/\1/;s/on/1/;s/off/0/'
+Numlock is on
+Numlock is off
