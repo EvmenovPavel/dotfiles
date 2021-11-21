@@ -8,7 +8,8 @@ function autostart.list()
         "nm-applet",
         "blueman-applet",
         "flameshot",
-        "copyq"
+        "copyq",
+        "lxpolkit"
         --"megasync",
         --"indicator-stickynotes"
     }
