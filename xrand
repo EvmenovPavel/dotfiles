@@ -1,0 +1,15 @@
+enov@evhenii-ROG-Strix-G512LI-G512LI:~$ xrandr
+Screen 0: minimum 8 x 8, current 4480 x 1440, maximum 32767 x 32767
+DP-0 disconnected (normal left inverted right x axis y axis)
+DP-1 disconnected (normal left inverted right x axis y axis)
+HDMI-0 connected primary 2560x1440+1920+0 (normal left inverted right x axis y axis) 600mm x 340mm
+eDP-1-1 connected 1920x1080+0+0 (normal left inverted right x axis y axis) 344mm x 194mm
+
+evmenov@evhenii-ROG-Strix-G512LI-G512LI:~$ xrandr
+Screen 0: minimum 8 x 8, current 4480 x 1440, maximum 32767 x 32767
+DP-0 disconnected (normal left inverted right x axis y axis)
+DP-1 disconnected (normal left inverted right x axis y axis)
+HDMI-0 disconnected primary 2560x1440+1920+0 (normal left inverted right x axis y axis) 0mm x 0mm
+eDP-1-1 connected 1920x1080+0+0 (normal left inverted right x axis y axis) 344mm x 194mm
+
+evmenov@evhenii-ROG-Strix-G512LI-G512LI:~$

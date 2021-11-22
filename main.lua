@@ -148,6 +148,10 @@
 --end
 
 
+local stdout = {
+    buf = {},
+    out = {},
+}
 function signs(stdout, signs)
     local signs = signs or ""
     local str   = stdout:gsub("%s+", signs)
@@ -156,6 +160,10 @@ function signs(stdout, signs)
     return str
 end
 
-s = "561%"
+local s = "561%"
 
 print(s:sub(1, -2))
+
+local foggy = require("foggy")
+
+foggy.menu()

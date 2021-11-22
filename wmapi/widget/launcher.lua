@@ -5,7 +5,6 @@ local imagebox   = require("wibox.widget.imagebox")
 local widget     = require("wibox.widget.base")
 local surface    = require("gears.surface")
 local cairo      = require("lgi").cairo
-local keygrabber = require("awful.keygrabber")
 
 local launcher   = {}
 local button     = { button = button }
@@ -17,9 +16,9 @@ function button:new(args)
     local mod              = args.mod or {}
     local _button          = args._button or capi.event.mouse.button_click_left
 
-    --local press            = args.press or function()
-    --    capi.log:message("args.press")
-    --end
+    local press            = args.press or function()
+        capi.log:message("args.press")
+    end
 
     local release          = args.release or function()
         capi.log:message("args.release")
@@ -35,11 +34,11 @@ function button:new(args)
                                         modifiers = gtable.join(mod, set),
                                         button    = _button
                                     })
-        --if press then
-        --    ret[#ret]:connect_signal("press", function(_, ...)
-        --        --press(...)
-        --    end)
-        --end
+        if press then
+            ret[#ret]:connect_signal("press", function(_, ...)
+                --press(...)
+            end)
+        end
         if release then
             ret[#ret]:connect_signal("release", function(_, ...)
                 release(...)
@@ -86,26 +85,6 @@ function wbutton:new(args)
     return w
 end
 
-function launcher:show(menu)
-    --menu:toggle()
-    keygrabber.run(menu._keygrabber)
-end
-
-function launcher:close(menu)
-    --menu:toggle()
-    keygrabber.stop(menu._keygrabber)
-end
-
-function launcher:keygrabber(menu, mod, keys, event)
-    if event ~= "press" then
-        return
-    end
-
-    --if keys == mod_key and event == "release" then
-    --    self:close(args.menu)
-    --end
-end
-
 function launcher:create(args)
     local args = args or {}
 
@@ -124,27 +103,19 @@ function launcher:create(args)
 
     end
 
-    ret.widget       = w
+    ret.widget = w
 
-    local menu       = args.menu
-    menu._keygrabber = function(...)
-        self:keygrabber(menu, ...)
-    end
-
-    local key_switch = capi.event.key.alt_L
-    local mod_key    = capi.event.key.esc
-
-    local b          = gtable.join(w:buttons(),
-                                   button:new({
-                                                  release = function()
-                                                      --self:stop()
-
-                                                      --self:show(args.menu)
-                                                  end
-                                              })
+    local b    = gtable.join(w:buttons(),
+                             button:new({
+                                            release = function()
+                                                --args.menu:toggle()
+                                            end
+                                        })
     )
 
     w:buttons(b)
+
+    --args.menu:toggle()
 
     return ret
 end

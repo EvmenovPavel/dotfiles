@@ -1,33 +1,39 @@
-local resources     = require("resources")
-local menu          = require("menu")
+local wibox     = require("wibox")
+local dpi       = require("beautiful").xresources.apply_dpi
+local resources = require("resources")
 
-local test          = {}
+--local mouse     = capi.event.mouse
 
-local myawesomemenu = {
-    { "restart_1",
-      function()
-          awesome.restart()
-      end
-    },
-    { "restart_2", function()
-        awesome.restart()
-    end },
-}
-
-local mymainmenu    = menu({
-                               items = {
-                                   { "awesome", myawesomemenu, resources.checkbox.checkbox },
-                                   { "open terminal", "terminal" }
-                               }
-                           })
+local test      = {}
+local foggy     = require("foggy")
 
 function test:init()
-    local widget = capi.widget:launcher({
-                                            image = resources.checkbox.checkbox,
-                                            menu  = mymainmenu
-                                        })
+    local b = capi.widget:button()
 
-    return widget
+    local w = capi.widget:textbox("test")
+
+    --b:set_func(
+    --        function()
+    --        end
+    --)
+
+    --capi.wmapi:update(function()
+    --    local monitors = foggy.build_menu_count()
+    --    w:set_text()
+    --end, 1)
+
+    --capi.log:message(tostring(mouse.screen.index))
+
+    b:set_func(
+            function()
+                local monitors = foggy.menu()
+                b:set_text(tostring(#monitors))
+
+                --foggy.menu()
+            end
+    )
+
+    return b:get()
 end
 
 return setmetatable(test, { __call = function(_, ...)

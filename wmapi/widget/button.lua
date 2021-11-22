@@ -5,12 +5,16 @@ local beautiful = require("beautiful")
 
 local button    = {}
 
-function button:create(argc)
+function button:create(text, src, key, event, func)
     local ret    = {}
 
-    local argc   = argc or {}
-    local text   = argc.text or "PushButton"
-    local src    = argc.src or ""
+    local text   = text or "PushButton"
+    local src    = src or ""
+    local key    = key or {}
+    local event  = event or capi.event.mouse.button_click_left
+    local func   = func or function()
+        capi.log:message("button:init")
+    end
 
     ret.textbox  = capi.widget:textbox(text)
     ret.imagebox = capi.widget:imagebox({ src = src })
@@ -78,26 +82,35 @@ function button:create(argc)
 
     function ret:get()
         self.widget.type = "button"
+        self:set_button()
         return self.widget
     end
 
-    function ret:set_text(text)
+    function ret:set_text(text_)
+        text = text_
         ret.textbox:set_text(text)
     end
 
-    function ret:set_image(src)
+    function ret:set_image(src_)
+        src = src_
         ret.imagebox:set_image(src)
     end
 
-    function ret:set_button(argc)
-        local argc  = argc or {}
-
-        local key   = argc.key or {}
-        local event = argc.event or capi.event.mouse.button_click_left
-        local func  = argc.func or function()
-            capi.log:message("button:init")
+    function ret:set_func(func_)
+        if (type(func_) == "function") then
+            func = func_
+        else
+            func = function()
+                func_()
+            end
         end
+    end
 
+    function ret:set_key(event_)
+        event = event_
+    end
+
+    function ret:set_button()
         self.widget:buttons(
                 gears.table.join(
                         awful.button(key,
@@ -109,7 +122,6 @@ function button:create(argc)
     end
 
     ret:set_style()
-    ret:set_button(argc)
 
     return ret
 end

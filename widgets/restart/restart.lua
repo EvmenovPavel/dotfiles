@@ -1,4 +1,5 @@
 local awful         = require("awful")
+local gears         = require("gears")
 local resources     = require("resources")
 
 local restart       = {}
@@ -66,18 +67,27 @@ local function parse(_, stop_key, _, sequence)
     end
 end
 
-local restart = {}
-
 function restart:init()
-    local s = capi.widget:button(
-            {
-                func = function()
-                    awesome.restart()
-                end
-            }
-    )
 
-    return s:get()
+    --local s = capi.widget:switch()
+
+    --return s:get()
+
+    --local widget = capi.widget:launcher({
+    --                                        image = resources.checkbox.checkbox,
+    --                                        menu  = mymainmenu })
+
+    --return widget
+
+    --awful.keygrabber {
+    --    stop_callback   = parse,
+    --    stop_key        = gears.table.keys(map.verbs),
+    --    root_keybingins = {
+    --        { { "Mod4" }, "v" }
+    --    },
+    --}
+
+    --return w
 end
 
 return setmetatable(restart, { __call = function()
