@@ -1,7 +1,7 @@
 local widget = {}
 
-function widget:button(argc)
-    return require("wmapi.widget.button"):create(argc)
+function widget:button(text, src, key, event, func)
+    return require("wmapi.widget.button"):create(text, src, key, event, func)
 end
 
 function widget:textbox(text, valign, align)

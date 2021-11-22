@@ -219,7 +219,6 @@ local function build_menu(current_screen)
             scrn_menu[#scrn_menu + 1] = { output_name(output), screen_menu(output, false) }
         end
     end
-
     -- add connected but disabled screens
     for name, output in pairs(outputs) do
         if output.connected and (not output.on) and (not visible[name]) then
@@ -229,44 +228,11 @@ local function build_menu(current_screen)
     return scrn_menu
 end
 
-local function build_menu_count(current_screen)
-    local outputs = xrandr.info().outputs
-    local thisout = get_output(current_screen)
-    local visible = { [thisout.name] = true }
-    local monitors   = {}
-
-    if thisout.name == nil then
-    else
-        monitors[#monitors + 1] = {thisout.name}
-    end
-
-    -- iterate over outputs, not screens
-    -- otherwise menu is bugged when cloning
-    for name, output in pairs(outputs) do
-        if output.connected and output.on and output.name ~= thisout.name then
-            monitors[#monitors + 1] = {output.name}
-            --scrn_menu[#scrn_menu + 1] = { output_name(output), screen_menu(output, false) }
-        end
-    end
-
-    -- add connected but disabled screens
-    for name, output in pairs(outputs) do
-        if output.connected and (not output.on) and (not visible[name]) then
-            monitors[#monitors + 1] = {output.name}
-            --scrn_menu[#scrn_menu + 1] = { output_name(output), screen_menu(output, false) }
-        end
-    end
-    return monitors
-end
-
 function menu.menu(current_screen)
     current_screen = current_screen or mouse.screen.index
-    local thismenu = build_menu_count(current_screen)
-    --local thismenu = build_menu(current_screen)
-    --awful.menu.new({ items = thismenu,
-    --                 theme = { width = 280 } }):show()
-
-    return thismenu
+    local thismenu = build_menu(current_screen)
+    awful.menu.new({ items = thismenu,
+                     theme = { width = 280 } }):show()
 end
 
 function menu.backlight(current_screen)

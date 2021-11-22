@@ -33,8 +33,9 @@ function mywibar:w_right(s)
             widgets.memory(),
             --widgets.clock(),
             widgets.calendar(),
-            widgets.test(),
+
             widgets.reboot(),
+            widgets.test(),
 
             layout = wibox.layout.fixed.horizontal
         }

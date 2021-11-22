@@ -59,3 +59,16 @@ client.connect_signal("manage", function(c)
 end)
 
 require("awful.autofocus")
+
+local signal = require("posix.signal")
+
+signal.signal(signal.SIGINT, function(signum)
+    capi.log:message("signum: " .. tostring(signum))
+    -- put code to save some stuff here
+    --os.exit(128 + signum)
+end)
+
+
+--if [ "`systemctl is-system-running`" = "stopping" ]; then
+--# Do what you need
+--end

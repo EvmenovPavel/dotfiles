@@ -1,4 +1,4 @@
 package.preload['foggy.edid'] = function()
-    return require('edid')
+  return require('edid')
 end
 

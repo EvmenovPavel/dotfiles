@@ -80,20 +80,27 @@ function button:create(text, src, key, event, func)
         )
     end
 
-    function ret:get()
-        self.widget.type = "button"
-        self:set_button()
-        return self.widget
+    function ret:set_button()
+        self.widget:buttons(
+                gears.table.join(
+                        awful.button(key,
+                                     event,
+                                     nil,
+                                     func)
+                )
+        )
     end
 
     function ret:set_text(text_)
         text = text_
         ret.textbox:set_text(text)
+        self:set_button()
     end
 
     function ret:set_image(src_)
         src = src_
         ret.imagebox:set_image(src)
+        self:set_button()
     end
 
     function ret:set_func(func_)
@@ -104,21 +111,17 @@ function button:create(text, src, key, event, func)
                 func_()
             end
         end
+        self:set_button()
     end
 
     function ret:set_key(event_)
         event = event_
+        self:set_button()
     end
 
-    function ret:set_button()
-        self.widget:buttons(
-                gears.table.join(
-                        awful.button(key,
-                                     event,
-                                     nil,
-                                     func)
-                )
-        )
+    function ret:get()
+        self.widget.type = "button"
+        return self.widget
     end
 
     ret:set_style()

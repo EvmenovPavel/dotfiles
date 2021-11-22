@@ -148,22 +148,31 @@
 --end
 
 
-local stdout = {
-    buf = {},
-    out = {},
-}
-function signs(stdout, signs)
-    local signs = signs or ""
-    local str   = stdout:gsub("%s+", signs)
-    str         = string.gsub(str, "%s+", signs)
+--local stdout = {
+--    buf = {},
+--    out = {},
+--}
+--function signs(stdout, signs)
+--    local signs = signs or ""
+--    local str   = stdout:gsub("%s+", signs)
+--    str         = string.gsub(str, "%s+", signs)
+--
+--    return str
+--end
+--
+--local s = "561%"
+--
+--print(s:sub(1, -2))
+--
+--local foggy = require("foggy")
+--
+--foggy.menu()
 
-    return str
-end
 
-local s = "561%"
+local signal = require("posix.signal")
 
-print(s:sub(1, -2))
-
-local foggy = require("foggy")
-
-foggy.menu()
+signal.signal(signal.SIGINT, function(signum)
+    io.write("\n")
+    -- put code to save some stuff here
+    --os.exit(128 + signum)
+end)
