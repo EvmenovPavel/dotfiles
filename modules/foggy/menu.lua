@@ -1,19 +1,19 @@
-local xinerama = require('foggy.xinerama')
-local xrandr   = require('foggy.xrandr')
-local awful    = require('awful')
-local naughty  = require('naughty')
-local edid     = require('foggy.edid')
+local xinerama = require("foggy.xinerama")
+local xrandr   = require("foggy.xrandr")
+local awful    = require("awful")
+local edid     = require("foggy.edid")
 
 local menu     = { mt = {}, _NAME = "foggy.menu" }
 
 local function get_output(screen_num)
-    local heads  = xinerama.info().heads
-    local xrinfo = xrandr.info()
+    local heads      = xinerama.info().heads
+    local xrinfo     = xrandr.info()
     -- awesome always uses xinerama screen order, but 1-numbered
-    local xs     = heads[string.format("%d", screen_num - 1)]
+    local xs         = heads[string.format("%d", screen_num - 1)]
     -- probably horribly wrong on advanced setups:
     -- the current xrandr output is the one that matches current screen's resolution + offset
-    local co     = nil
+
+    local co         = nil
     for name, output in pairs(xrinfo.outputs) do
         if output.connected and output.on then
             if (output.resolution[0] == xs.resolution[0]) and (output.resolution[1] == xs.resolution[1])
@@ -22,6 +22,7 @@ local function get_output(screen_num)
             end
         end
     end
+
     return co
 end
 
@@ -45,11 +46,11 @@ local function build_transformation_menu(co)
 
     for op, available in pairs(at.rotations) do
         if available then
-            local flags = ''
+            local flags = ""
             if ct.rotations[op] then
-                flags = ' ✓'
+                flags = " ✓"
             end
-            transmenu[#transmenu + 1] = { string.format('rotate %s%s', op, flags), function()
+            transmenu[#transmenu + 1] = { string.format("rotate %s%s", op, flags), function()
                 xrandr.actions.set_rotate(co.name, op)
             end }
         end
@@ -57,11 +58,11 @@ local function build_transformation_menu(co)
 
     for op, available in pairs(at.reflections) do
         if available then
-            local flags = ''
+            local flags = ""
             if ct.reflections[op] then
-                flags = ' ✓'
+                flags = " ✓"
             end
-            transmenu[#transmenu + 1] = { string.format('reflect %s%s', op, flags), function()
+            transmenu[#transmenu + 1] = { string.format("reflect %s%s", op, flags), function()
                 xrandr.actions.set_reflect(co.name, op)
             end }
         end
@@ -71,19 +72,20 @@ local function build_transformation_menu(co)
 end
 
 local function build_resolution_menu(co)
-    local resmenu = { { '&auto', function()
+    local resmenu = { { "&auto", function()
         xrandr.actions.auto_mode(co.name)
     end } }
+
     for i, mode in ipairs(co.modes) do
-        local prefix = ' '
-        local suffix = ''
+        local prefix = " "
+        local suffix = ""
         if mode == co.current_mode then
-            prefix = '✓'
+            prefix = "✓"
         end
         if mode == co.default_mode then
-            suffix = ' *'
+            suffix = " *"
         end
-        resmenu[#resmenu + 1] = { string.format('%s%dx%d@%2.0f%s', prefix, mode[1], mode[2], mode[3], suffix), function()
+        resmenu[#resmenu + 1] = { string.format("%s%dx%d@%2.0f%s", prefix, mode[1], mode[2], mode[3], suffix), function()
             xrandr.actions.set_mode(co.name, mode)
         end }
     end
@@ -94,13 +96,14 @@ end
 local function build_position_menu(co)
     local posmenu       = {}
     local other_outputs = {}
+
     for name, _out in pairs(xrandr.info().outputs) do
         if name ~= co.name and _out.connected and _out.on then
             other_outputs[#other_outputs + 1] = name
         end
     end
 
-    for _, dir in ipairs({ "left-of", "right-of", "above", "below", 'same-as' }) do
+    for _, dir in ipairs({ "left-of", "right-of", "above", "below", "same-as" }) do
         local relmenu = {}
         for _, name in ipairs(other_outputs) do
             relmenu[#relmenu + 1] = { name, function()
@@ -127,7 +130,7 @@ local function build_backlight_menu(current_output)
     local blmenu = { }
     for pct = 100, 0, -10 do
         local v             = low + (high - low) * (pct / 100.0)
-        blmenu[#blmenu + 1] = { pct .. '%', function()
+        blmenu[#blmenu + 1] = { pct .. "%", function()
             xrandr.actions.set_backlight(thisout.name, math.floor(v))
         end }
     end
@@ -154,7 +157,7 @@ local function build_properties_menu(current_output)
 
                 for pct = 100, 0, -10 do
                     local v               = low + (high - low) * (pct / 100.0)
-                    submenu[#submenu + 1] = { pct .. '%', function()
+                    submenu[#submenu + 1] = { pct .. "%", function()
                         xrandr.actions.set_property(thisout.name, propname, math.floor(v))
                     end }
                 end
@@ -174,33 +177,33 @@ local function screen_menu(co, add_output_name)
     if co.on then
         local blmenu = build_backlight_menu(co)
         if blmenu then
-            mainmenu[#mainmenu + 1] = { '&backlight', blmenu }
+            mainmenu[#mainmenu + 1] = { "&backlight", blmenu }
         end
 
-        mainmenu[#mainmenu + 1] = { '&mode', build_resolution_menu(co) }
-        mainmenu[#mainmenu + 1] = { '&transform', build_transformation_menu(co) }
-        mainmenu[#mainmenu + 1] = { '&off', function()
+        mainmenu[#mainmenu + 1] = { "&mode", build_resolution_menu(co) }
+        mainmenu[#mainmenu + 1] = { "&transform", build_transformation_menu(co) }
+        mainmenu[#mainmenu + 1] = { "&off", function()
             xrandr.actions.off(co.name)
         end }
-        mainmenu[#mainmenu + 1] = { 'po&sition', build_position_menu(co) }
+        mainmenu[#mainmenu + 1] = { "po&sition", build_position_menu(co) }
 
         if not co.primary then
-            mainmenu[#mainmenu + 1] = { '&primary', function()
+            mainmenu[#mainmenu + 1] = { "&primary", function()
                 xrandr.actions.set_primary(co.name)
             end }
         end
-        mainmenu[#mainmenu + 1] = { 'p&roperties', build_properties_menu(co) }
+        mainmenu[#mainmenu + 1] = { "p&roperties", build_properties_menu(co) }
     else
-        mainmenu[#mainmenu + 1] = { '&on', function()
+        mainmenu[#mainmenu + 1] = { "&on", function()
             xrandr.actions.auto_mode(co.name)
         end }
     end
 
     if add_output_name then
-        table.insert(mainmenu, 1, { '[' .. output_name(co) .. ']', nil })
+        table.insert(mainmenu, 1, { "[" .. output_name(co) .. "]", nil })
     end
 
-    mainmenu[#mainmenu + 1] = { 'i&dentify', function()
+    mainmenu[#mainmenu + 1] = { "i&dentify", function()
         xrandr.actions.identify_outputs()
     end }
 
@@ -219,13 +222,29 @@ local function build_menu(current_screen)
             scrn_menu[#scrn_menu + 1] = { output_name(output), screen_menu(output, false) }
         end
     end
+
     -- add connected but disabled screens
     for name, output in pairs(outputs) do
         if output.connected and (not output.on) and (not visible[name]) then
             scrn_menu[#scrn_menu + 1] = { output_name(output), screen_menu(output, false) }
         end
     end
+
     return scrn_menu
+end
+
+function menu.build_menu_count()
+    local outputs  = xrandr.info().outputs
+    local monitors = {}
+
+    for name, output in pairs(outputs) do
+        if output.connected and (not output.on)
+        then
+            monitors[#monitors + 1] = { output.name }
+        end
+    end
+
+    return monitors
 end
 
 function menu.menu(current_screen)

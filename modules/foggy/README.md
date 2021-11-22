@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/k3rni/foggy.svg?branch=master)](https://travis-ci.org/k3rni/foggy)
 
-Foggy manages your multiple screens. It's an extension script for [Awesome](http://awesome.naquadah.org/), a tiling window manager. 
+Foggy manages your multiple screens. It's an extension script for [Awesome](http://awesome.naquadah.org/), a tiling window manager.
 
 When foggy is invoked, it displays a popup menu that allows you to manipulate display outputs via XRandR. Most XRandR features are supported:
 
@@ -39,8 +39,8 @@ Foggy should run with stock Xorg as installed on modern Linux systems. It uses s
 
 # Which version of Awesome are you using?
 
-Foggy now supports Awesome 4.0 and higher by default. If you need it to work on Awesome 3.4 or 3.5, please use the `awesome-3.5` branch. 
-Just append `-b awesome-3.5` to whichever of the commands above you're using.
+Foggy now supports Awesome 4.0 and higher by default. If you need it to work on Awesome 3.4 or 3.5, please use the `awesome-3.5` branch. Just append `-b awesome-3.5` to whichever of the commands above
+you're using.
 
 # Usage
 
@@ -50,12 +50,13 @@ Edit your rc.lua, and add the following somewhere with the other require lines:
 local foggy = require('foggy')
 ```
 
-## Keys 
+## Keys
 
-Restart your DE, or call awesome's Lua prompt (default: <kbd>Win + X</kbd>) and type <code>awesome.restart()</code>.
-Now you can invoke Foggy by calling the Lua prompt and typing <code>foggy.menu()</code>.
+Restart your DE, or call awesome's Lua prompt (default: <kbd>Win + X</kbd>) and type <code>awesome.restart()</code>. Now you can invoke Foggy by calling the Lua prompt and typing <code>
+foggy.menu()</code>.
 
-To add a keybinding, edit rc.lua and add something like the following to the global key bindings: (don't forget to add a comma if necessary). The following binding mirrors Windows' default screen-switching keybinding, which some laptops' output-switch key might emit.
+To add a keybinding, edit rc.lua and add something like the following to the global key bindings: (don't forget to add a comma if necessary). The following binding mirrors Windows' default
+screen-switching keybinding, which some laptops' output-switch key might emit.
 
 ```lua
     awful.key({ modkey }, "p",      foggy.menu)
@@ -70,14 +71,14 @@ To add a keybinding, edit rc.lua and add something like the following to the glo
 
 If the brightness keys don't work, it might be an ACPI issue, not awesome's. In that case rebind to a convenient combination, such as modkey + the function keys that show brightness symbols.
 
-Note: This'll only adjust backlight for whatever screen the cursor is currently in. If you need to adjust it across all screens, either call `inc_backlight` more than once, passing a screen number in the second parameter; or use the standalone `xbacklight` command instead.
+Note: This'll only adjust backlight for whatever screen the cursor is currently in. If you need to adjust it across all screens, either call `inc_backlight` more than once, passing a screen number in
+the second parameter; or use the standalone `xbacklight` command instead.
 
 See [Backlight on wiki](https://gitlab.com/k3rni/foggy/wikis/Backlight) for more info.
 
 ## Widgets (do-it-yourself style)
 
-To add a widget, add something similar to where the widget box is built. Replace the icon path, and background color if necessary (or just add the imagebox
-directly, without the background).
+To add a widget, add something similar to where the widget box is built. Replace the icon path, and background color if necessary (or just add the imagebox directly, without the background).
 
 ```lua
     scrnicon = wibox.widget.background(wibox.widget.imagebox('path-to-image.png'), '#313131')
@@ -93,7 +94,8 @@ Restart awesome as above. Now, clicking that icon in the bar should bring up fog
 
 # Problems?
 
-[File an issue](https://gitlab.com/k3rni/foggy/issues/new) on GitLab. Be sure to include as much diagnostic information as possible. Check [Reporting errors](https://gitlab.com/k3rni/foggy/wikis/Reporting%20errors) on where to find it.
+[File an issue](https://gitlab.com/k3rni/foggy/issues/new) on GitLab. Be sure to include as much diagnostic information as possible.
+Check [Reporting errors](https://gitlab.com/k3rni/foggy/wikis/Reporting%20errors) on where to find it.
 
 # Contributing
 

@@ -1,4 +1,4 @@
-local foggy     = require("foggy")
+local foggy     = require("modules.foggy.menu")
 
 local test      = {}
 
@@ -8,9 +8,10 @@ function test:init()
 
     b:set_func(
             function()
-                foggy.menu()
-                --local monitors = foggy.menu()
-                --b:set_text(tostring(#monitors))
+                capi.wmapi:update(function()
+                    local monitors = foggy.build_menu_count()
+                    b:set_text(tostring(#monitors))
+                end, 3)
             end
     )
 
