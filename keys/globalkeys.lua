@@ -123,6 +123,11 @@ local global    = gears.table.join(
         awful.key({ key.altL }, key.tab,
                   function()
                       switcher(key.alt_L, key.tab)
+
+                      --awful.client.focus.history.previous()
+                      --if client.focus then
+                      --    client.focus:raise()
+                      --end
                   end, hotkeys.client.previous),
 
 
