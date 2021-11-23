@@ -1,3 +1,8 @@
 [submodule "extensions"]
 	path = extensions
 	url = git@github.com:EvmenovPavel/AwesomeWM-Extensions.git
+
+[submodule "modules/foggy"]
+	path = modules/foggy
+	url = git@github.com:EvmenovPavel/foggy.git
+

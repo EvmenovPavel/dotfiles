@@ -164,15 +164,46 @@
 --
 --print(s:sub(1, -2))
 --
---local foggy = require("foggy")
+
+local foggy    = require("modules.foggy.menu")
+
+local monitors = foggy.build_menu_count()
+print(tostring(#monitors))
+
+function info()
+    local info = { screens = {}, outputs = {} }
+    local current_output
+    local last_property
+    local pats = {
+        ["^([%a]+-[%d]*[.,][%d]+) connected ([%S]-)%s*(%d+)x(%d+)+(%d+)+(%d+)$"]                                                  = function(matches)
+            -- DP-0.1 connected (normal left inverted right x axis y axis)
+            -- Match outputs that are connected but disabled
+            print("NEW")
+        end,
+    }
+
+    local s    = "DP-0.8 connected primary 2560x1440+1920+0"--  primary 2560x1440+1920+0 (normal left inverted right x axis y axis) 600mm x 340mm"
+    --local s    = "eDP-1-1 connected 1920x1080+0+0 (normal left inverted right x axis y axis) 344mm x 194mm"
+
+    for pat, func in pairs(pats) do
+        print(tostring(s))
+        local res
+        res = { s:find(pat) }
+        if #res > 0 then
+            table.remove(res, 1)
+            table.remove(res, 1)
+            func(res)
+            break
+        end
+    end
+end
+
+--info()
+
+--local signal = require("posix.signal")
 --
---foggy.menu()
-
-
-local signal = require("posix.signal")
-
-signal.signal(signal.SIGINT, function(signum)
-    io.write("\n")
-    -- put code to save some stuff here
-    --os.exit(128 + signum)
-end)
+--signal.signal(signal.SIGINT, function(signum)
+--    io.write("\n")
+--    -- put code to save some stuff here
+--    --os.exit(128 + signum)
+--end)
