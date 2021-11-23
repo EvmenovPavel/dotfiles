@@ -1,6 +1,7 @@
 local beautiful   = require("beautiful")
 local gears       = require("gears")
 local pixbuf      = require("lgi").GdkPixbuf
+local resources   = require("resources")
 
 local mywallpaper = {}
 
@@ -27,11 +28,9 @@ function mywallpaper:set_animated(surf, s)
 end
 
 function mywallpaper:init(s)
-    -- local indexWallpaper = 3
+    local file = resources.wallpapers.png_1
+    --capi.wmapi:screen_index(s)
 
-    local file = beautiful.wallpapers .. "/1.png"--ruby_rose.png"-- .. indexWallpaper .. "/" .. capi.wmapi:screen_index(s) .. ".png"
-
-    --local file           = beautiful.wallpapers .. "/wallpaper.png"
     if type(file) == "function" then
         file = file(s)
     end

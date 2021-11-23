@@ -1,6 +1,7 @@
 local resources             = {}
 
 resources.path              = capi.awesomewm .. "/resources/icons"
+resources.wallpaper         = capi.awesomewm .. "/resources/wallpapers"
 resources.awesome           = resources.path .. "/awesome.png"
 
 resources.menu_submenu_icon = resources.path .. "/submenu.png"
@@ -264,4 +265,13 @@ resources.titlebar          = {
         button_normal_inactive_press = resources.path .. "/titlebar/sticky/normal_inactive_press.png",
     },
 }
+
+resources.wallpapers        = {
+    monitor_3 = resources.wallpaper .. "/titlebar/sticky/focus_active.png",
+    png_1     = "1.png",
+    ruby_rose = "ruby_rose.png",
+    spider    = "spider-man-into.jpeg",
+    wallpaper = "wallpaper.png",
+}
+
 return resources
