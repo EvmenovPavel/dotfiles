@@ -28,8 +28,7 @@ function mywallpaper:set_animated(surf, s)
 end
 
 function mywallpaper:init(s)
-    local file = resources.wallpapers.png_1
-    --capi.wmapi:screen_index(s)
+    local file = resources.wallpapers.ruby_rose
 
     if type(file) == "function" then
         file = file(s)

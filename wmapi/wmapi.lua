@@ -118,7 +118,7 @@ function wmapi:find(cmd, str)
 end
 
 function wmapi:screen_primary(s)
-    local primary = self:primary()
+    local primary = self:primary_id()
 
     if s == screen[primary] then
         return true
@@ -127,17 +127,23 @@ function wmapi:screen_primary(s)
     return false
 end
 
-function wmapi:primary()
+function wmapi:primary_id()
     local primary = capi.primary or 1
     return primary
 end
 
+function wmapi:primary_screen()
+    local primary = capi.primary or 1
+
+    return screen[primary]
+end
+
 function wmapi:screen(index)
-    local index = index or self:primary()
+    local index = index or self:primary_id()
     local count = screen.count()
 
     if index > count or index < -1 then
-        return screen[self:primary()]
+        return screen[self:primary_id()]
     end
 
     return screen[index]
@@ -154,18 +160,18 @@ function wmapi:screen_er(index)
     return screen[index]
 end
 
-function wmapi:screen_index(screen)
-    local screen = screen
+function wmapi:screen_index(s)
+    --local screen = screen
 
-    if screen then
-        for i = 1, screen.count() do
-            if screen == screen[i] then
-                return i
-            end
+    --if screen then
+    for i = 1, screen.count() do
+        if s == screen[i] then
+            return i
         end
     end
+    --end
 
-    return 0
+    return 1
 end
 
 function wmapi:watch(command, timeout, callback)
@@ -360,7 +366,7 @@ function wmapi:client_info(c)
                          "tags:      " .. tostring(c.tags),
                          "instance:  " .. tostring(c.instance),
                          "class:     " .. tostring(c.class),
-                         "screen:    " .. tostring(c.screen),
+                         "screen:    " .. tostring(self:screen_index(c.screen)),
                          "exec_once: " .. tostring(c.exec_once),
                          "icon:      " .. tostring(c.icon),
                          "width:     " .. tostring(c.width),
@@ -370,10 +376,7 @@ function wmapi:client_info(c)
 end
 
 function wmapi:list_client()
-    local list = clients()
-
-    -- TODO
-    for i, item in ipairs(list) do
+    for i, item in ipairs(client.get()) do
         self:client_info(item)
     end
 end

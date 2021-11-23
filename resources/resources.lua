@@ -267,11 +267,10 @@ resources.titlebar          = {
 }
 
 resources.wallpapers        = {
-    monitor_3 = resources.wallpaper .. "/titlebar/sticky/focus_active.png",
-    png_1     = "1.png",
-    ruby_rose = "ruby_rose.png",
-    spider    = "spider-man-into.jpeg",
-    wallpaper = "wallpaper.png",
+    png_1     = resources.wallpaper .. "/1.png",
+    ruby_rose = resources.wallpaper .. "/ruby_rose.png",
+    spider    = resources.wallpaper .. "/spider-man-into.jpeg",
+    wallpaper = resources.wallpaper .. "/wallpaper.png",
 }
 
 return resources

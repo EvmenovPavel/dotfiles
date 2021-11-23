@@ -31,7 +31,7 @@ return {
 
     pad        = require("widgets.pad"),
 
-    test       = require("widgets.test"),
+    xrandr     = require("widgets.xrandr"),
 
     --require("widgets.bluetooth"),
     --require("widgets.wifi"),

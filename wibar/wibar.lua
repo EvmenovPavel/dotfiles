@@ -35,7 +35,7 @@ function mywibar:w_right(s)
             widgets.calendar(),
 
             widgets.reboot(),
-            widgets.test(),
+            widgets.xrandr(),
 
             layout = wibox.layout.fixed.horizontal
         }

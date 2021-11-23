@@ -84,7 +84,7 @@ function volume:init()
     local offsety = 300
 
     volume_adjust = wibox({
-                              x       = capi.wmapi:primary() * capi.wmapi:screenWidth() - offsetx,
+                              x       = capi.wmapi:primary_id() * capi.wmapi:screenWidth() - offsetx,
                               y       = capi.wmapi:screenHeight() / 2 - offsety / 2,
 
                               width   = offsetx,
