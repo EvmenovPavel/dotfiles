@@ -5,4 +5,4 @@
 [submodule "modules/foggy"]
 	path = modules/foggy
 	url = git@github.com:EvmenovPavel/foggy.git
-
+    branch = master
