@@ -129,11 +129,16 @@ end
 
 function wmapi:screen_primary_id()
     local primary = capi.primary or 1
+
+    if screen[primary] == nil then
+        return 1
+    end
+
     return primary
 end
 
 function wmapi:screen_primary()
-    local primary = capi.primary or 1
+    local primary = self:screen_primary_id()
 
     return screen[primary]
 end

@@ -41,6 +41,9 @@ awful.screen.connect_for_each_screen(
 
 require("awful.autofocus")
 
+local scripts = require("scripts")
+scripts.xrandr()
+
 local signal = require("posix.signal")
 
 signal.signal(signal.SIGINT, function(signum)

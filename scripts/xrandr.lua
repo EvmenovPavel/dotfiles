@@ -1,0 +1,32 @@
+local xrandr   = require("modules.foggy.xrandr")
+
+local s_xrandr = {}
+
+function s_xrandr:init()
+    capi.wmapi:update(function()
+        local outputs = xrandr.info().outputs
+
+        local count   = ""
+        for name, output in pairs(outputs) do
+            --if output.connected then
+            count = count .. name .. " "
+            --end
+        end
+
+        --capi.log:message(count)
+
+        --b:set_text("screens: " .. tostring(count))
+
+        --screen[2]:fake_remove()
+        --screen[2]:set_auto_dpi_enabled(1)
+        --local str = ">"
+        --for i, it in ipairs(monitors) do
+        --str = str .. tostring(it.name)
+        --end
+
+    end, 10)
+end
+
+return setmetatable(s_xrandr, { __call = function(_, ...)
+    return s_xrandr:init(...)
+end })
