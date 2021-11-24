@@ -21,20 +21,22 @@ function test:init()
 
     b:set_func(
             function()
-                local monitors = foggy.build_menu_count()
+                --local monitors = foggy.build_menu_count()
 
-                for i, c in ipairs(client.get()) do
-                    if c then
-                        if #monitors < capi.wmapi:screen_index(c.screen) then
-                            --c:move_to_tag(screen[1].tags[2])
+                --for i, c in ipairs(client.get()) do
+                --    if c then
+                --        if #monitors < capi.wmapi:screen_index(c.screen) then
+                --            --c:move_to_tag(screen[1].tags[2])
+                --
+                --            -- переносит, где активное окно
+                --            c:move_to_screen(screen[1])
+                --        end
+                --    end
+                --
+                --end
 
-                            -- переносит, где активное окно
-                            c:move_to_screen(screen[1])
-                        end
-                    end
 
-                end
-
+                screen[2]:fake_remove()
 
                 --capi.wmapi:list_client()
             end

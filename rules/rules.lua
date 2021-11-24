@@ -60,7 +60,7 @@ function rules:init(clientkeys, buttonkeys)
                 --    --capi.log:message(height)
                 --
                 --    if width < 1820 and height < 980 then
-                --    --if width < capi.wmapi:getScreenWidth() and height < capi.wmapi:getScreenHeight() - beautiful.wr_height then
+                --    --if width < capi.wmapi:getscreen_width() and height < capi.wmapi:getscreen_height() - beautiful.wr_height then
                 --        c.floating = true
                 --
                 --        --awful.client.movetoscreen(c, client.focus.screen)

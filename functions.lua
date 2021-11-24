@@ -103,7 +103,7 @@ function functions:on_floating(c)
 
 
     --local screen = capi.wmapi.screen()
-    --local geometry = capi.wmapi.screenGeometry(screen)
+    --local geometry = capi.wmapi.screen_geometry(screen)
 
     --local x     = c.x
     --local y     = c.y

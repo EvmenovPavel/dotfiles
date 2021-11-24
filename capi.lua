@@ -68,7 +68,7 @@ placement = {
 }
 
 capi      = {
-    primary    = 1, -- remove
+    primary    = 3,
 
     event      = require("wmapi.event"),
     timer      = require("wmapi.timer"),

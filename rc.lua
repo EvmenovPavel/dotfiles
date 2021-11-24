@@ -1,5 +1,6 @@
 require("capi")
 require("dirtree")
+require("signals")
 
 local beautiful = require("beautiful")
 local theme     = require("theme")
@@ -38,26 +39,6 @@ awful.screen.connect_for_each_screen(
         end
 )
 
-tag.connect_signal("property::layout", function(t)
-    local current_layout = awful.tag.getproperty(t, "layout")
-
-    if (current_layout == awful.layout.suit.max) then
-        t.gap = 0
-    else
-        t.gap = beautiful.useless_gap
-    end
-end)
-
-client.connect_signal("manage", function(c)
-    if not awesome.startup then
-        awful.client.setslave(c)
-    end
-
-    if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
-        awful.placement.no_offscreen(c)
-    end
-end)
-
 require("awful.autofocus")
 
 local signal = require("posix.signal")
@@ -67,7 +48,6 @@ signal.signal(signal.SIGINT, function(signum)
     -- put code to save some stuff here
     --os.exit(128 + signum)
 end)
-
 
 --if [ "`systemctl is-system-running`" = "stopping" ]; then
 --# Do what you need

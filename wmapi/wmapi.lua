@@ -117,8 +117,8 @@ function wmapi:find(cmd, str)
     return s
 end
 
-function wmapi:screen_primary(s)
-    local primary = self:primary_id()
+function wmapi:is_screen_primary(s)
+    local primary = self:screen_primary_id()
 
     if s == screen[primary] then
         return true
@@ -127,23 +127,23 @@ function wmapi:screen_primary(s)
     return false
 end
 
-function wmapi:primary_id()
+function wmapi:screen_primary_id()
     local primary = capi.primary or 1
     return primary
 end
 
-function wmapi:primary_screen()
+function wmapi:screen_primary()
     local primary = capi.primary or 1
 
     return screen[primary]
 end
 
 function wmapi:screen(index)
-    local index = index or self:primary_id()
+    local index = index or self:screen_primary_id()
     local count = screen.count()
 
     if index > count or index < -1 then
-        return screen[self:primary_id()]
+        return screen[self:screen_primary_id()]
     end
 
     return screen[index]
@@ -160,16 +160,12 @@ function wmapi:screen_er(index)
     return screen[index]
 end
 
-function wmapi:screen_index(s)
-    --local screen = screen
-
-    --if screen then
+function wmapi:screen_id(s)
     for i = 1, screen.count() do
         if s == screen[i] then
             return i
         end
     end
-    --end
 
     return 1
 end
@@ -217,7 +213,7 @@ function wmapi:update(callback, timeout)
     return nil
 end
 
-function wmapi:mouseCoords()
+function wmapi:mouse_coords()
     local mouse = mouse.coords()
 
     return {
@@ -226,8 +222,8 @@ function wmapi:mouseCoords()
     }
 end
 
-function wmapi:screenGeometry(index)
-    local index    = index or 1
+function wmapi:screen_geometry(index)
+    local index    = index or self:screen_primary_id()
     local screen   = screen[index]
     local geometry = screen.geometry
 
@@ -237,15 +233,15 @@ function wmapi:screenGeometry(index)
     }
 end
 
-function wmapi:screenHeight(index)
-    local index = index or 1
+function wmapi:screen_height(index)
+    local index = index or self:screen_primary_id()
     local s     = screen[index]
 
     return s.geometry.height
 end
 
-function wmapi:screenWidth(index)
-    local index = index or 1
+function wmapi:screen_width(index)
+    local index = index or self:screen_primary_id()
     local s     = screen[index]
 
     return s.geometry.width
@@ -264,13 +260,6 @@ function wmapi:button(args)
 end
 
 function wmapi:set_widget(widget, ...)
-
-    --if widget.type == nil then
-    --    capi.log:message("yes")
-    --else
-    --    capi.log:message("no")
-    --end
-
     local res = wibox.widget({
                                  layout = wibox.layout.fixed.horizontal()
                              })
@@ -287,6 +276,7 @@ end
 
 function wmapi:connect_signal(args)
     local args = args or nil
+
     if args == nil then
         return
     end
@@ -366,7 +356,7 @@ function wmapi:client_info(c)
                          "tags:      " .. tostring(c.tags),
                          "instance:  " .. tostring(c.instance),
                          "class:     " .. tostring(c.class),
-                         "screen:    " .. tostring(self:screen_index(c.screen)),
+                         "screen:    " .. tostring(self:screen_id(c.screen)),
                          "exec_once: " .. tostring(c.exec_once),
                          "icon:      " .. tostring(c.icon),
                          "width:     " .. tostring(c.width),

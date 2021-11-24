@@ -4,7 +4,7 @@ local wibox     = require("wibox")
 local myspotify = {}
 
 function myspotify:create(s)
-    if capi.wmapi:screen_primary(s) then
+    if capi.wmapi:is_screen_primary(s) then
         local spotify = awful.wibar({
                                         ontop        = false,
                                         stretch      = true,
@@ -12,7 +12,7 @@ function myspotify:create(s)
                                         border_width = 0,
                                         visible      = true,
                                         height       = 27,
-                                        width        = capi.wmapi:screenWidth() - 30,
+                                        width        = capi.wmapi:screen_width() - 30,
                                         screen       = s,
                                     })
 

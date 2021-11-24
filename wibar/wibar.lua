@@ -19,8 +19,19 @@ function mywibar:w_middle(s)
     }
 end
 
+function screen_if_test(s)
+    local w    = capi.widget.button()
+
+    local s_id = capi.wmapi:screen_id(s)
+
+    w:set_text("Screen: " .. tostring(s_id))
+    w:set_key(capi.event.mouse.button_click_left)
+
+    return w:get()
+end
+
 function mywibar:w_right(s)
-    if capi.wmapi:screen_primary(s) then
+    if capi.wmapi:is_screen_primary(s) then
         return {
             widgets.systray(s),
             widgets.keyboard(),
@@ -37,11 +48,15 @@ function mywibar:w_right(s)
             widgets.reboot(),
             widgets.xrandr(),
 
+            screen_if_test(s),
+
             layout = wibox.layout.fixed.horizontal
         }
     end
 
     return {
+        screen_if_test(s),
+
         layout = wibox.layout.fixed.horizontal
     }
 end
@@ -68,8 +83,8 @@ function mywibar:init(s)
     }
 
     local function mouse_move()
-        local id_screen = capi.wmapi:screen_index(capi.mouse.screen)
-        local coords    = capi.wmapi:mouseCoords()
+        local id_screen = capi.wmapi:screen_id(capi.mouse.screen)
+        local coords    = capi.wmapi:mouse_coords()
         local geometry  = wibar:geometry()
 
         local SIZE      = {
