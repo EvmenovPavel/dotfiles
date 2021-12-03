@@ -173,7 +173,13 @@
 --    --os.exit(128 + signum)
 --end)
 
-local programm = {
-}
 
-print(programm.rofi)
+function test(a)
+    a = 10
+end
+
+local a = 5
+
+print(a)
+test(a)
+print(a)

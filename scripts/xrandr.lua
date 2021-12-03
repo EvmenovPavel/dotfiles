@@ -8,9 +8,11 @@ function s_xrandr:init()
 
         local count   = ""
         for name, output in pairs(outputs) do
-            --if output.connected then
-            count = count .. name .. " "
-            --end
+            if output.connected then
+                count = "--on:" .. name .. "\n\t" .. count
+            else
+                count = "--off:" .. name .. "\n\t" .. count
+            end
         end
 
         --capi.log:message(count)

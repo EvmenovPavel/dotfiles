@@ -9,12 +9,12 @@ local key       = capi.event.key
 
 local global    = gears.table.join(
 --[[ AWESOME ]]--
-        awful.key({ key.shift, key.mod }, key.r,
+        awful.key({ key.mod, key.shift }, key.r,
                   function()
                       fun:on_restart()
                   end, hotkeys.awesome.restart),
 
-        awful.key({ key.shift, key.mod }, key.q,
+        awful.key({ key.mod, key.shift }, key.q,
                   function()
                       fun:on_quit()
                   end, hotkeys.awesome.quit),

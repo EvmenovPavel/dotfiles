@@ -13,6 +13,7 @@ hotkeys       = {
         maximized  = { description = "toggle maximized", group = "client" },
         minimized  = { description = "toggle maximized", group = "client" },
         kill       = { description = "toggle maximized", group = "client" },
+        sudo_kill  = { description = "toggle maximized", group = "client" },
         ontop      = { description = "toggle maximized", group = "client" },
         floating   = { description = "toggle maximized", group = "client" },
         visible    = { description = "toggle maximized", group = "client" },
