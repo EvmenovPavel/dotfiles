@@ -27,7 +27,7 @@ function pacmd:init()
 
     watch([[bash -c "pacmd list-modules | grep latency_msec=5"]], 1,
           function(widget, stdout)
-              --capi.log:message(stdout)
+              --log:debug(stdout)
 
               if capi.wmapi:is_empty(stdout) then
                   --awful.spawn("pacmd load-module module-loopback latency_msec=5", false)

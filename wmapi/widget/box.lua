@@ -3,19 +3,21 @@ local gears = require("gears")
 
 local box   = {}
 
-function box:create(args)
-    local ret  = {}
+function box:create(width, height)
+    local ret    = {}
 
-    local args = args or {}
+    local width  = width or nil
+    local height = height or nil
 
-    ret.widget = wibox.widget({
-                                  type   = "box",
+    ret.widget   = wibox.widget({
+                                    type   = "box",
 
-                                  shape  = function(cr, width, height)
-                                      gears.shape.rectangle(cr, args.width or width, args.height or height)
-                                  end,
-                                  widget = wibox.widget.checkbox,
-                              })
+                                    shape  = function(cr, width_, height_)
+                                        gears.shape.rectangle(cr, width or width_, height or height_)
+                                    end,
+
+                                    widget = wibox.widget.checkbox,
+                                })
 
     function ret:get()
         return ret.widget

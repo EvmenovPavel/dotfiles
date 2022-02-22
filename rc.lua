@@ -1,5 +1,5 @@
-require("capi")
 require("dirtree")
+require("capi")
 require("signals")
 
 local beautiful = require("beautiful")
@@ -47,7 +47,7 @@ scripts.xrandr()
 local signal = require("posix.signal")
 
 signal.signal(signal.SIGINT, function(signum)
-    capi.log:message("signum: " .. tostring(signum))
+    log:debug("signum: " .. tostring(signum))
     -- put code to save some stuff here
     --os.exit(128 + signum)
 end)

@@ -17,11 +17,11 @@ function button:new(args)
     local _button          = args._button or capi.event.mouse.button_click_left
 
     local press            = args.press or function()
-        capi.log:message("args.press")
+        log:debug("args.press")
     end
 
     local release          = args.release or function()
-        capi.log:message("args.release")
+        log:debug("args.release")
     end
 
     local ignore_modifiers = { "Lock", "Mod2" }

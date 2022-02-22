@@ -2,6 +2,8 @@ local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
 
+local lfs   = require("lfs")
+
 local spawn = require("awful.spawn")
 
 local wmapi = {}
@@ -82,7 +84,7 @@ function wmapi:set_widget(...)
     for i = 1, select("#", ...) do
         local item = select(i, ...)
 
-        capi.log:message(item.type)
+        log:debug(item.type)
 
         if item then
             local widget = item.widget
@@ -152,6 +154,35 @@ function wmapi:screen(index)
     end
 
     return screen[index]
+end
+
+function wmapi:is_dir(path)
+    -- true - error
+    return not (path:sub(-1) == "/" or lfs.attributes(path, "mode") == "directory")
+end
+
+function wmapi:is_file(path)
+    -- true - error
+    return not (path:sub(-1) == "/" or lfs.attributes(path, "mode") == "file")
+end
+
+function wmapi:is_attributes(path, attributes)
+    -- true - error
+    return not (path:sub(-1) == "/" or lfs.attributes(path, "mode") == attributes)
+end
+
+function wmapi:read_file(path)
+    local file = open(path, "rb") -- r read mode and b binary mode
+
+    if not file then
+        return nil
+    end
+
+    local content = file:read("*a")
+    -- *a or *all reads the whole file
+    file:close()
+
+    return content
 end
 
 function wmapi:screen_er(index)
@@ -259,7 +290,7 @@ function wmapi:button(args)
             { args.key or nil },
             args.event or capi.event.mouse.button_click_left,
             args.func or function()
-                capi.log:message("Error args.func = nil")
+                log:debug("Error args.func = nil")
             end
     )
 end
@@ -290,7 +321,7 @@ function wmapi:connect_signal(args)
     local event  = args.event or capi.event.mouse.button_click_left
     local widget = args.widget or nil
     local func   = args.func or function()
-        capi.log:message("Error args.func = nil")
+        log:debug("Error args.func = nil")
     end
 
     if widget == nil then
@@ -356,7 +387,7 @@ end
 
 function wmapi:client_info(c)
     if c then
-        capi.log:message(c.name,
+        log:debug(c.name,
                          "tag:       " .. tostring(c.tag),
                          "tags:      " .. tostring(c.tags),
                          "instance:  " .. tostring(c.instance),

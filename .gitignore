@@ -47,4 +47,4 @@ luac.out
 .idea
 
 # Log file
-log.file
+lualogging.log

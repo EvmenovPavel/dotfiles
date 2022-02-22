@@ -74,7 +74,7 @@ function button:new(args)
                         end
                 )
 
-                capi.log:message("args.release")
+                log:debug("args.release")
             end
 
     local ignore_modifiers = { "Lock", "Mod2" }

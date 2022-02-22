@@ -174,12 +174,30 @@
 --end)
 
 
-function test(a)
-    a = 10
-end
+--function test(a)
+--    a = 10
+--end
+--
+--local a = 5
+--
+--print(a)
+--test(a)
+--print(a)
 
-local a = 5
+--local lfs = require("lfs")
+--
+--local open = io.open
+--
+--local function read_file(path)
+--    local file = open(path, "rb") -- r read mode and b binary mode
+--    if not file then return nil end
+--    local content = file:read "*a" -- *a or *all reads the whole file
+--    file:close()
+--    return content
+--end
+--
+--local fileContent = read_file("/sys/class/backlight/intel_backlight/max_brightness");
+--print (fileContent);
 
-print(a)
-test(a)
-print(a)
+require("dirtree")
+print(package.path)

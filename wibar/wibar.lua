@@ -39,9 +39,9 @@ function mywibar:w_right(s)
             widgets.volume(),
             widgets.brightness(),
             --widgets.pacmd(),
-            widgets.cpu(),
-            widgets.battery(),
-            widgets.memory(),
+            --widgets.cpu(),
+            --widgets.battery(),
+            --widgets.memory(),
             --widgets.clock(),
             widgets.calendar(),
 

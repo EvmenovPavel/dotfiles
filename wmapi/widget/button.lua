@@ -13,7 +13,7 @@ function button:create(text, src, key, event, func)
     local key    = key or {}
     local event  = event or capi.event.mouse.button_click_left
     local func   = func or function()
-        capi.log:message("button:init")
+        log:debug("button:init")
     end
 
     ret.textbox  = capi.widget:textbox(text)

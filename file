@@ -30,19 +30,19 @@ local map, actions  = {
 
 function actions.client(action, adj)
     print("IN CLIENT!")
-    capi.log:message("IN CLIENT!")
+    log:debug("IN CLIENT!")
 end --luacheck: no unused args
 function actions.tag   (action, adj)
     print("IN TAG!")
-    capi.log:message("IN TAG!")
+    log:debug("IN TAG!")
 end --luacheck: no unused args
 function actions.screen(action, adj)
     print("IN SCREEN!")
-    capi.log:message("IN SCREEN!")
+    log:debug("IN SCREEN!")
 end --luacheck: no unused args
 function actions.layout(action, adj)
     print("IN LAYOUT!")
-    capi.log:message("IN LAYOUT!")
+    log:debug("IN LAYOUT!")
 end --luacheck: no unused args
 
 local function parse(_, stop_key, _, sequence)

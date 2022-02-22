@@ -29,7 +29,7 @@ local clientkeys = gears.table.join(
                   function(c)
                       --грубое убивание процесса
                       --fun:on_close(c)
-                      capi.log:message("sudo key.F4")
+                      log:debug("sudo key.F4")
                   end, hotkeys.client.sudo_kill),
 
         awful.key({ key.mod }, key.t,
@@ -49,13 +49,13 @@ local clientkeys = gears.table.join(
 
         awful.key({ key.mod, key.shift }, key.bracket_left,
                   function(c)
-                      capi.log:message("key.bracket_left")
+                      log:debug("key.bracket_left")
                       --fun:on_sticky(c)
                   end, hotkeys.client.floating),
 
         awful.key({ key.mod, key.shift }, key.bracket_right,
                   function(c)
-                      capi.log:message("key.bracket_right")
+                      log:debug("key.bracket_right")
                       --fun:on_sticky(c)
                   end, hotkeys.client.floating)
 )

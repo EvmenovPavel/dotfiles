@@ -2,13 +2,19 @@ local wibox                  = require("wibox")
 local awful                  = require("awful")
 local gears                  = require("gears")
 
-local resources              = require("resources")
-
 local current                = "sudo brightness -s | grep 'current_bright:' | awk -F '[][]' '{print $1}' | sed 's/[^0-9]//g'"
 local max_bright             = "sudo brightness -s | grep 'max_bright:' | awk -F '[][]' '{print $1}' | sed 's/[^0-9]//g'"
 
 local brightness             = {}
 local brightness_adjust      = {}
+
+--
+local dir_current            = ""
+
+-- dir
+local brightness_dir         = ""
+local brightness_current     = 0
+local brightness_max         = 0
 
 local w_brightness_bar       = wibox.widget {
     widget           = wibox.widget.progressbar,
@@ -17,14 +23,6 @@ local w_brightness_bar       = wibox.widget {
     background_color = "#000000",
     max_value        = 100,
     value            = 0
-}
-
-local w_brightness_icon      = wibox.widget {
-    -- TODO
-    -- поменять иконку
-    -- добавить % яркости
-    image  = resources.widgets.memory,
-    widget = wibox.widget.imagebox
 }
 
 local hide_brightness_adjust = gears.timer {
@@ -54,32 +52,65 @@ function brightness:on_brightness()
 end
 
 awesome.connect_signal("brightness_change",
-                            function(stdout)
-                                if (stdout == "+") then
-                                    awful.spawn("sudo brightness +25", false)
-                                elseif (stdout == "-") then
-                                    awful.spawn("sudo brightness -25", false)
-                                end
+                       function(stdout)
 
-                                if brightness_adjust.visible then
-                                    hide_brightness_adjust:again()
-                                else
-                                    brightness_adjust.visible = true
-                                    hide_brightness_adjust:start()
-                                    hide_brightness_adjust:again()
-                                end
 
-                                brightness:on_brightness()
-                            end
+                           if (stdout == "+") then
+                               awful.spawn("sudo brightness +25", false)
+                           elseif (stdout == "-") then
+                               awful.spawn("sudo brightness -25", false)
+                           end
+
+                           if brightness_adjust.visible then
+                               hide_brightness_adjust:again()
+                           else
+                               brightness_adjust.visible = true
+                               hide_brightness_adjust:start()
+                               hide_brightness_adjust:again()
+                           end
+
+                           brightness:on_brightness()
+                       end
 )
 
+function current_dir()
+    local dir_intel = "/sys/class/backlight/intel_backlight/"
+    local dir_amd   = "/sys/class/backlight/amdgpu_bl0/"
+
+    if not capi.wmapi:is_dir(dir_amd) then
+        dir_current = dir_amd;
+    elseif not capi.wmapi:is_dir(dir_intel) then
+        dir_current = dir_intel
+    else
+        log:debug("Error: не найдена папка ни intel_backlight и amdgpu_bl0")
+        return true
+    end
+
+    log:debug(dir_current)
+
+    return false
+end
+
+function brightness_value()
+
+end
+
 function brightness:init()
+    if current_dir() then
+        return
+    end
+
+    brightness_value()
+
     local offsetx     = 48
     local offsety     = 300
 
+    local x           = capi.wmapi:screen_width()
+    local y           = capi.wmapi:screen_height()
+
     brightness_adjust = wibox({
-                                  x       = capi.wmapi:screen_primary_id() * capi.wmapi:screen_width() - offsetx,
-                                  y       = capi.wmapi:screen_height() / 2 - offsety / 2,
+                                  x       = capi.wmapi:screen_primary_id() * x - offsetx,
+                                  y       = y / 2 - offsety / 2,
 
                                   width   = offsetx,
                                   height  = offsety,
@@ -95,17 +126,11 @@ function brightness:init()
             wibox.container.margin(
                     w_brightness_bar, 14, 20, 20, 20
             ),
-            forced_height = 300 * 0.75,
+            forced_height = offsety * 0.75,
             direction     = "east",
             layout        = wibox.container.rotate,
         },
-        wibox.container.margin(
-                w_brightness_icon,
-                7, 7, 14, 14
-        )
     }
-
-    return w_brightness_icon
 end
 
 return setmetatable(brightness, { __call = function(_, ...)

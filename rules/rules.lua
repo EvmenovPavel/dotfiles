@@ -55,9 +55,9 @@ function rules:init(clientkeys, buttonkeys)
                 --    --c.y = c.screen.geometry.y + c.screen.geometry.height* 0.04
                 --
                 --    local width    = c.width
-                --    --capi.log:message(width)
+                --    --log:debug(width)
                 --    local height   = c.height
-                --    --capi.log:message(height)
+                --    --log:debug(height)
                 --
                 --    if width < 1820 and height < 980 then
                 --    --if width < capi.wmapi:getscreen_width() and height < capi.wmapi:getscreen_height() - beautiful.wr_height then
@@ -82,7 +82,7 @@ function rules:init(clientkeys, buttonkeys)
                 --
                 --        --elseif workarea.height < height or workarea.width < width then
                 --        --    c.maximized = true
-                --        --    capi.log:message("c.maximized = true")
+                --        --    log:debug("c.maximized = true")
                 --    else
                 --        c.floating  = false
                 --        --c.maximized = true

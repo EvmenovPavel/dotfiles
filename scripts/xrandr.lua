@@ -15,7 +15,7 @@ function s_xrandr:init()
             end
         end
 
-        --capi.log:message(count)
+        --log:debug(count)
 
         --b:set_text("screens: " .. tostring(count))
 

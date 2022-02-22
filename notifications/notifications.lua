@@ -118,7 +118,7 @@ if awesome.startup_errors then
                        text   = text
                    })
 
-    capi.log:message("title: " .. title, "text: " .. text)
+    log:debug("title: " .. title, "text: " .. text)
 end
 
 do
@@ -142,7 +142,7 @@ do
                                    text   = text
                                })
 
-                capi.log:message("title: " .. title, "text: " .. text)
+                log:debug("title: " .. title, "text: " .. text)
 
                 in_error = false
             end

@@ -1,6 +1,9 @@
 local lfs        = require("lfs")
 
-local path       = capi.wmapi:path(debug.getinfo(1))
+local debug      = debug or debug
+
+local source     = string.sub(debug.getinfo(1).source, 2)
+local path       = string.sub(source, 1, string.find(source, "/[^/]*$"))
 
 local ignore_dir = { ".git", ".idea", "lib", "resources" }
 

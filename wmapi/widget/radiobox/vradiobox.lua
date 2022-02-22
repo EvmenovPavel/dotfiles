@@ -48,7 +48,7 @@ function vradiobox:create()
     function ret:add_radiobox(text, func)
         local text            = text or "Checkbox"
         local func            = func or function()
-            capi.log:message("radiobox:init (" .. text .. ")")
+            log:debug("radiobox:init (" .. text .. ")")
         end
 
         local widget_radiobox = radiobox:create(text, func)

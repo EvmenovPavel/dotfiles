@@ -105,7 +105,7 @@ for i = 1, 9 do
 
                                        awful.key({ capi.event.key.mod, capi.event.key.shift }, capi.event.key.ctrl, i,
                                                  function()
-                                                     capi.log:message("keys.globalkeys = gears.table")
+                                                     log:debug("keys.globalkeys = gears.table")
 
                                                      local screen  = awful.screen.focused()
                                                      local focused = screen.tags[i]
