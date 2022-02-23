@@ -19,7 +19,7 @@ function row(name, str)
     return row
 end
 
-function memory:init()
+function init()
     local bash                  = [[bash -c "cat /proc/meminfo"]]
 
     local wTextBox              = capi.widget:textbox()
@@ -100,5 +100,5 @@ function memory:init()
 end
 
 return setmetatable(memory, { __call = function(_, ...)
-    return memory:init(...)
+    return init(...)
 end })

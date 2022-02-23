@@ -12,7 +12,7 @@ local function starts_with(str, start)
     return str:sub(1, #start) == start
 end
 
-function cpu:init()
+function init()
     --local wTextbox = capi.widget:textbox({ forced_width = 75 })
     --local wGraph   = capi.widget:graph()
     --
@@ -114,5 +114,5 @@ function cpu:init()
 end
 
 return setmetatable(cpu, { __call = function(_, ...)
-    return cpu:init(...)
+    return init(...)
 end })

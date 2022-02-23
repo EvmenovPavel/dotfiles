@@ -2,7 +2,7 @@ local xrandr   = require("modules.foggy.xrandr")
 
 local s_xrandr = {}
 
-function s_xrandr:init()
+function init()
     capi.wmapi:update(function()
         local outputs = xrandr.info().outputs
 
@@ -30,5 +30,5 @@ function s_xrandr:init()
 end
 
 return setmetatable(s_xrandr, { __call = function(_, ...)
-    return s_xrandr:init(...)
+    return init(...)
 end })

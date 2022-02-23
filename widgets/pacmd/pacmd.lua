@@ -6,7 +6,7 @@ local watch     = require("awful.widget.watch")
 
 local pacmd     = {}
 
-function pacmd:init()
+function init()
     local pacmd_widget = wibox.widget {
         checked  = false,
         color    = "#ffffff",
@@ -62,5 +62,5 @@ function pacmd:init()
 end
 
 return setmetatable(pacmd, { __call = function(_, ...)
-    return pacmd:init(...)
+    return init(...)
 end })

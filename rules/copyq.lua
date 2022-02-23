@@ -1,7 +1,7 @@
 -- CopyQ
 local CopyQ = {}
 
-function CopyQ:init()
+function init()
     return
     {
         rule       = {
@@ -30,5 +30,5 @@ function CopyQ:init()
 end
 
 return setmetatable(CopyQ, { __call = function(_, ...)
-    return CopyQ:init(...)
+    return init(...)
 end })

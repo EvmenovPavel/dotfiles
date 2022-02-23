@@ -82,10 +82,4 @@ capi      = {
     devices    = os.getenv("HOME") .. "/.config/awesome/devices",
 }
 
-require("logging.file")
-
-log = logging.file(os.getenv("HOME") .. "/.config/awesome" .. "/lualogging.log", "%Y-%m-%d")
-
-log:info("logging.file test", "logging.file test")
-log:debug("debugging...", "logging.file test")
-log:error("error!", "logging.file test")
+log       = require("modules.logging")

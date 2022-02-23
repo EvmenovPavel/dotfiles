@@ -1,7 +1,7 @@
 -- Firefox
 local PictureInPicture = {}
 
-function PictureInPicture:init()
+function init()
     return {
         rule       = {
             class = "Firefox",
@@ -20,5 +20,5 @@ function PictureInPicture:init()
 end
 
 return setmetatable(PictureInPicture, { __call = function(_, ...)
-    return PictureInPicture:init(...)
+    return init(...)
 end })

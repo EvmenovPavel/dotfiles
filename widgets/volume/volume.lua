@@ -57,34 +57,54 @@ function volume:on_volume()
     )
 end
 
+function widget_volume_adjust()
+    if volume_adjust.visible then
+        hide_volume_adjust:again()
+    else
+        volume_adjust.visible = true
+        hide_volume_adjust:start()
+        hide_volume_adjust:again()
+    end
+
+    volume:on_volume()
+end
+
 awesome.connect_signal("volume_change",
                        function(stdout)
-                           if (stdout == "+") then
-                               awful.spawn("amixer -D pulse set Master 5%+", false)
-                           elseif (stdout == "-") then
-                               awful.spawn("amixer -D pulse set Master 5%-", false)
+                           if ((stdout == "+") or (stdout == "-")) then
+                               awful.spawn("amixer -D pulse set Master 5%" .. stdout, false)
+                               widget_volume_adjust()
                            elseif (stdout == "off") then
                                awful.spawn("amixer -D pulse set Master 1+ toggle", false)
+                               widget_volume_adjust()
+                           elseif (stdout == "disable") then
+                               volume_adjust.visible = false
                            end
-
-                           if volume_adjust.visible then
-                               hide_volume_adjust:again()
-                           else
-                               volume_adjust.visible = true
-                               hide_volume_adjust:start()
-                               hide_volume_adjust:again()
-                           end
-
-                           volume:on_volume()
                        end
 )
 
-function volume:init()
-    local offsetx = 48
-    local offsety = 300
+function init()
+    local offsetx           = 48
+    local offsety           = 300
+
+    local screen_primary_id = capi.wmapi:screen_primary_id()
+    local width             = 0
+
+    if (screen_primary_id == 1) then
+        width = capi.wmapi:screen_width(screen_primary_id)
+    else
+        for i = 1, screen.count() do
+            if screen_primary_id == i then
+                break
+            end
+
+            local s = screen[i]
+            width   = width + s.geometry.width
+        end
+    end
 
     volume_adjust = wibox({
-                              x       = capi.wmapi:screen_primary_id() * capi.wmapi:screen_width() - offsetx,
+                              x       = width - offsetx - 100,
                               y       = capi.wmapi:screen_height() / 2 - offsety / 2,
 
                               width   = offsetx,
@@ -115,5 +135,5 @@ function volume:init()
 end
 
 return setmetatable(volume, { __call = function(_, ...)
-    return volume:init(...)
+    return init(...)
 end })

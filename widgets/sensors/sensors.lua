@@ -24,7 +24,7 @@ local lists        = {
     "power1"
 }
 
-function sensors:init()
+function init()
     local wTextbox = capi.wmapi:textbox({ forced_width = 62 })
     local wGraph   = capi.wmapi:graph({})
     local popup    = capi.wmapi:popup()
@@ -96,5 +96,5 @@ function sensors:init()
 end
 
 return setmetatable(sensors, { __call = function(_, ...)
-    return sensors:init(...)
+    return init(...)
 end })

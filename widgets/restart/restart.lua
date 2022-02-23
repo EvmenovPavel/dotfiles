@@ -2,7 +2,7 @@ local funs    = require("functions")
 
 local restart = {}
 
-function restart:init()
+function init()
     local w = capi.widget.button()
 
     w:set_text("Restart")
@@ -14,6 +14,6 @@ function restart:init()
     return w:get()
 end
 
-return setmetatable(restart, {
-    __call = restart.init
-})
+return setmetatable(restart, { __call = function(_, ...)
+    return init(...)
+end })

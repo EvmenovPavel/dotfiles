@@ -2,7 +2,7 @@ local beautiful      = require("beautiful")
 
 local RulesMaximized = {}
 
-function RulesMaximized:init()
+function init()
     return {
         rule_any   = {
             class = {
@@ -22,5 +22,5 @@ function RulesMaximized:init()
 end
 
 return setmetatable(RulesMaximized, { __call = function(_, ...)
-    return RulesMaximized:init(...)
+    return init(...)
 end })

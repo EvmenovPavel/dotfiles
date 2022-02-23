@@ -132,7 +132,7 @@ end
 --technology:          lithium-ion
 --icon-name:          'battery-full-charging-symbolic'
 
-function battery:init()
+function init()
     local notify      = 0
     local state       = 0
 
@@ -245,5 +245,5 @@ function battery:init()
 end
 
 return setmetatable(battery, { __call = function(_, ...)
-    return battery:init(...)
+    return init(...)
 end })

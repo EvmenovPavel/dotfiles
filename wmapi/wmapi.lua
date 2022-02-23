@@ -2,11 +2,16 @@ local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
 
+local posix = require("posix")
+local pid   = posix.getpid("pid")
+
 local lfs   = require("lfs")
 
 local spawn = require("awful.spawn")
 
 local wmapi = {}
+
+local open  = io.open
 
 function wmapi:layout_align_horizontal(items)
     --local widget = wibox.widget({
@@ -25,6 +30,10 @@ function wmapi:layout_align_horizontal(items)
     bg.widget = widget
 
     return bg
+end
+
+function wmapi:get_pid()
+    return pid
 end
 
 function wmapi:path(debug)
@@ -388,15 +397,15 @@ end
 function wmapi:client_info(c)
     if c then
         log:debug(c.name,
-                         "tag:       " .. tostring(c.tag),
-                         "tags:      " .. tostring(c.tags),
-                         "instance:  " .. tostring(c.instance),
-                         "class:     " .. tostring(c.class),
-                         "screen:    " .. tostring(self:screen_id(c.screen)),
-                         "exec_once: " .. tostring(c.exec_once),
-                         "icon:      " .. tostring(c.icon),
-                         "width:     " .. tostring(c.width),
-                         "height:    " .. tostring(c.height)
+                  "tag:       " .. tostring(c.tag),
+                  "tags:      " .. tostring(c.tags),
+                  "instance:  " .. tostring(c.instance),
+                  "class:     " .. tostring(c.class),
+                  "screen:    " .. tostring(self:screen_id(c.screen)),
+                  "exec_once: " .. tostring(c.exec_once),
+                  "icon:      " .. tostring(c.icon),
+                  "width:     " .. tostring(c.width),
+                  "height:    " .. tostring(c.height)
         )
     end
 end
