@@ -66,6 +66,8 @@ function widget_volume_adjust()
         hide_volume_adjust:again()
     end
 
+    log:debug("1111111111111")
+
     volume:on_volume()
 end
 

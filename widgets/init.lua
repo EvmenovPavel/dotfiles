@@ -33,6 +33,8 @@ return {
 
     xrandr     = require("widgets.xrandr"),
 
+    loggingui  = require("widgets.loggingui"),
+
     --require("widgets.bluetooth"),
     --require("widgets.wifi"),
     --require("widgets.battery"),

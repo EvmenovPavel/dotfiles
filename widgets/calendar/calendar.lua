@@ -5,6 +5,7 @@ local gears     = require("gears")
 
 local markup    = capi.markup
 local button    = capi.event.signals.button
+local mouse     = capi.event.signals.mouse
 
 local calendar  = {}
 
@@ -162,25 +163,25 @@ local function init(args)
         return ret
     end
 
-    local calendarWidget = wibox.widget({
-                                            date          = os.date("*t"),
-                                            font          = beautiful.get_font(),
-                                            fn_embed      = decorate_cell,
-                                            long_weekdays = true,
-                                            widget        = wibox.widget.calendar.month
-                                        })
+    local calendarWidget = wibox.widget {
+        date          = os.date("*t"),
+        font          = beautiful.get_font(),
+        fn_embed      = decorate_cell,
+        long_weekdays = true,
+        widget        = wibox.widget.calendar.month
+    }
 
-    local popupWidget    = awful.popup({
-                                           ontop        = true,
-                                           visible      = false,
-                                           shape        = gears.shape.rounded_rect,
-                                           offset       = { y = 5 },
-                                           border_width = 1,
-                                           border_color = theme.border,
-                                           widget       = calendarWidget
-                                       })
+    local popupWidget    = awful.popup {
+        ontop        = true,
+        visible      = false,
+        shape        = gears.shape.rounded_rect,
+        offset       = { y = 5 },
+        border_width = 1,
+        border_color = theme.border,
+        widget       = calendarWidget
+    }
 
-    function toggle()
+    local function toggle()
         if popupWidget.visible then
             calendarWidget:set_date(nil)
             calendarWidget:set_date(os.date("*t"))

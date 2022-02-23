@@ -10,14 +10,28 @@ local logging          = {}
 
 local date_time_format = "%Y-%m-%d %H:%M:%S"
 local filename         = "logging.log"
+local signal           = nil
 
-function write_file(message)
+function write_file(type, msg)
     local path = os.getenv("HOME") .. "/.config/awesome/"
+    local date = os.date(date_time_format)
+    local pid  = capi.wmapi:get_pid()
+    local str  = string.format("%s, [%s] %s: %s\n", date, pid, type, msg)
+
+    if (not signal == nil) then
+        signal(msg)
+    end
 
     local file = io.open(path .. filename, "a")
-    if file then
-        file:write(message, "\n")
+    if (file) then
+        file:write(str)
+
+        --if (signal) then
+            --signal(str)
+        --end
+
         file:close()
+
         return false
     end
 
@@ -25,9 +39,8 @@ function write_file(message)
 end
 
 function message(type, ...)
-    local date = os.date(date_time_format)
-
     local msg
+
     for i = 1, select("#", ...) do
         local item = select(i, ...)
         if ((msg == nil) or (msg == "")) then
@@ -40,8 +53,7 @@ function message(type, ...)
     if ((msg == nil) or (msg == "")) then
         return true
     else
-        msg = date .. ", [" .. capi.wmapi:get_pid() .. "] " .. type .. " > " .. msg
-        return write_file(msg)
+        return write_file(type, msg)
     end
 end
 
@@ -49,7 +61,11 @@ function logging:set_format(format)
     date_time_format = format
 end
 
-function logging:file_name(name)
+function logging:set_signal(sig)
+    signal = sig
+end
+
+function logging:set_file_name(name)
     filename = name
 end
 

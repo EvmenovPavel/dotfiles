@@ -104,10 +104,6 @@ function get_brightness_value()
 
     brightness_value = tonumber(brightness_max) / 10
 
-    log:debug("brightness_current: " .. brightness_current)
-    log:debug("brightness_max: " .. brightness_max)
-    log:debug("brightness_value: " .. brightness_value)
-
     return false
 end
 

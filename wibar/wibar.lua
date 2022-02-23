@@ -46,6 +46,7 @@ function mywibar:w_right(s)
             widgets.calendar(),
 
             widgets.reboot(),
+            widgets.loggingui(),
             widgets.xrandr(),
 
             screen_if_test(s),
