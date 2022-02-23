@@ -1,7 +1,7 @@
 -- Firefox
 local PictureInPicture = {}
 
-function init()
+local function init()
     return {
         rule       = {
             class = "Firefox",

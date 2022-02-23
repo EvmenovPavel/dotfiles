@@ -2,7 +2,7 @@ local wibox = require("wibox")
 
 local pad   = {}
 
-function pad:init(size)
+local function init(size)
     local size = size or 3
     local str  = ""
     for i = 1, size do
@@ -14,5 +14,5 @@ function pad:init(size)
 end
 
 return setmetatable(pad, { __call = function(_, ...)
-    return pad:init(...)
+    return init(...)
 end })

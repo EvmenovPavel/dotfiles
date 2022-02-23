@@ -1,51 +1,56 @@
-
 --[[
 
         Licensed under GNU General Public License v2
         * (c) 2017, Greg Flynn
 
 --]]
-local awful = require("awful")
-local naughty = require("naughty")
-local dpi = require("beautiful.xresources").apply_dpi
+local awful                       = require("awful")
+local naughty                     = require("naughty")
+local dpi                         = require("beautiful.xresources").apply_dpi
 local io, next, os, string, table = io, next, os, string, table
 
 -- Google Play Music Desktop Player widget
 -- requires: curl and dkjson or lain
 
-local gpmdp = {
-    notify        = "on",
-    followtag     = false,
-    file_location = os.getenv("HOME") .. "/.config/Google Play Music Desktop Player/json_store/playback.json",
+local gpmdp                       = {
+    notify              = "on",
+    followtag           = false,
+    file_location       = os.getenv("HOME") .. "/.config/Google Play Music Desktop Player/json_store/playback.json",
     notification_preset = {
         title     = "Now playing",
         icon_size = dpi(128),
         timeout   = 6
     },
-    notification  = nil,
-    current_track = nil,
-    album_cover   = "/tmp/gpmcover"
+    notification        = nil,
+    current_track       = nil,
+    album_cover         = "/tmp/gpmcover"
 }
 
 function gpmdp.notification_on()
-    local gpm_now = gpmdp.latest
+    local gpm_now       = gpmdp.latest
     gpmdp.current_track = gpm_now.title
 
-    if gpmdp.followtag then gpmdp.notification_preset.screen = awful.screen.focused() end
-    awful.spawn.easy_async({"curl", gpm_now.cover_url, "-o", gpmdp.album_cover}, function(stdout)
+    if gpmdp.followtag then
+        gpmdp.notification_preset.screen = awful.screen.focused()
+    end
+    awful.spawn.easy_async({ "curl", gpm_now.cover_url, "-o", gpmdp.album_cover }, function(stdout)
         local old_id = nil
-        if gpmdp.notification then old_id = gpmdp.notification.id end
+        if gpmdp.notification then
+            old_id = gpmdp.notification.id
+        end
 
         gpmdp.notification = naughty.notify({
-            preset = gpmdp.notification_preset,
-            icon = gpmdp.album_cover,
-            replaces_id = old_id
-        })
+                                                preset      = gpmdp.notification_preset,
+                                                icon        = gpmdp.album_cover,
+                                                replaces_id = old_id
+                                            })
     end)
 end
 
 function gpmdp.notification_off()
-    if not gpmdp.notification then return end
+    if not gpmdp.notification then
+        return
+    end
     naughty.destroy(gpmdp.notification)
     gpmdp.notification = nil
 end
@@ -65,9 +70,11 @@ function gpmdp.get_lines(file)
     return lines
 end
 
-gpmdp.widget = awful.widget.watch({"pidof", "Google Play Music Desktop Player"}, 2, function(widget, stdout)
+gpmdp.widget = awful.widget.watch({ "pidof", "Google Play Music Desktop Player" }, 2, function(widget, stdout)
     local filelines = gpmdp.get_lines(gpmdp.file_location)
-    if not filelines then return end -- GPMDP not running?
+    if not filelines then
+        return
+    end -- GPMDP not running?
 
     gpm_now = { running = stdout ~= '' }
 
@@ -83,7 +90,7 @@ gpmdp.widget = awful.widget.watch({"pidof", "Google Play Music Desktop Player"},
         gpm_now.cover_url = dict.song.albumArt
         gpm_now.playing   = dict.playing
     end
-    gpmdp.latest = gpm_now
+    gpmdp.latest                   = gpm_now
 
     -- customize here
     gpmdp.notification_preset.text = string.format("%s (%s) - %s", gpm_now.artist, gpm_now.album, gpm_now.title)

@@ -24,7 +24,7 @@ local lists        = {
     "power1"
 }
 
-function init()
+local function init()
     local wTextbox = capi.wmapi:textbox({ forced_width = 62 })
     local wGraph   = capi.wmapi:graph({})
     local popup    = capi.wmapi:popup()
@@ -84,7 +84,7 @@ function init()
         end
     end
 
-    local widget     = wibox.widget {
+    local widget   = wibox.widget {
         wText,
         --wSensors,
         layout = wibox.layout.align.horizontal

@@ -27,7 +27,7 @@ function mywallpaper:set_animated(surf, s)
     end
 end
 
-function mywallpaper:init(s)
+local function init(s)
     local file = resources.wallpapers.ruby_rose
 
     if type(file) == "function" then
@@ -40,5 +40,5 @@ function mywallpaper:init(s)
 end
 
 return setmetatable(mywallpaper, { __call = function(_, ...)
-    return mywallpaper:init(...)
+    return init(...)
 end })

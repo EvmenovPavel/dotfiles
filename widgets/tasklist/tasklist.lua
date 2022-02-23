@@ -199,7 +199,7 @@ function tasklist:tasklist_buttons()
     )
 end
 
-function tasklist:init(s)
+local function init(s)
     return awful.widget.tasklist {
         screen          = s,
         style           = {},
@@ -208,7 +208,7 @@ function tasklist:init(s)
             layout  = wibox.layout.flex.horizontal()
         },
         filter          = awful.widget.tasklist.filter.currenttags,
-        buttons         = self:tasklist_buttons(),
+        buttons         = tasklist:tasklist_buttons(),
 
         widget_template = {
             {
@@ -240,5 +240,5 @@ function tasklist:init(s)
 end
 
 return setmetatable(tasklist, { __call = function(_, ...)
-    return tasklist:init(...)
+    return init(...)
 end })

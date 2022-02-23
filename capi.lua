@@ -82,4 +82,4 @@ capi      = {
     devices    = os.getenv("HOME") .. "/.config/awesome/devices",
 }
 
-log       = require("modules.logging")
+log       = require("modules.logging.logging")

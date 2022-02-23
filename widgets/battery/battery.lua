@@ -132,7 +132,7 @@ end
 --technology:          lithium-ion
 --icon-name:          'battery-full-charging-symbolic'
 
-function init()
+local function init()
     local notify      = 0
     local state       = 0
 

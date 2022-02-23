@@ -503,8 +503,8 @@ function switcher:close()
     keygrabber.stop()
 end
 
-function switcher:init(mod_key, key_switch)
-    self:populateAltTabTable()
+local function init(mod_key, key_switch)
+    switcher:populateAltTabTable()
 
     if #switcher.altTabTable == 0 then
         return
@@ -522,7 +522,7 @@ function switcher:init(mod_key, key_switch)
     switcher.previewDelayTimer = timer({ timeout = previewDelay })
     switcher.previewDelayTimer:connect_signal("timeout", function()
         switcher.previewDelayTimer:stop()
-        self:showPreview()
+        switcher:showPreview()
     end)
     switcher.previewDelayTimer:start()
 
@@ -531,18 +531,18 @@ function switcher:init(mod_key, key_switch)
     keygrabber.run(
             function(mod, keys, event)
                 if keys == key_switch and event == "press" then
-                    self:cycle(1)
+                    switcher:cycle(1)
                 elseif keys == mod_key and event == "release" then
-                    self:close()
+                    switcher:close()
                 end
             end
     )
 
     -- switch to next client
-    self:cycle(1)
+    switcher:cycle(1)
 
 end -- function altTab
 
 return setmetatable(switcher, { __call = function(_, ...)
-    return switcher:init(...)
+    return init(...)
 end })

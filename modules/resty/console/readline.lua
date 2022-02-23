@@ -1,15 +1,15 @@
 #!/usr/bin/env lua
 
 -- local ins = require 'inspect'
-local history_file = os.getenv('HOME') ..'/.repl-history'
-local ffi = require 'ffi'
+local history_file = os.getenv('HOME') .. '/.repl-history'
+local ffi          = require 'ffi'
 
 ffi.cdef(require 'resty.console.readline_h')
 
 local function load_readline()
     local ok, clib
     -- for linux with readline 6.x, 7.x, and macos
-    for _, suffix in ipairs({'.so.6', '.so.7', ''}) do
+    for _, suffix in ipairs({ '.so.6', '.so.7', '' }) do
         pcall(ffi.load, 'libhistory' .. suffix)
         ok, clib = pcall(ffi.load, 'libreadline' .. suffix)
         if ok then
@@ -26,10 +26,10 @@ clib.rl_initialize()
 clib.read_history(history_file)      -- read history from file
 
 -- from signal.h:
-local SIGINT = 2
-local SIG_ERR = -1
+local SIGINT         = 2
+local SIG_ERR        = -1
 
-local puts = function(text)
+local puts           = function(text)
     text = tostring(text or '') .. '\n'
     return clib.fwrite(text, #text, 1, clib.rl_outstream)
 end
@@ -43,15 +43,19 @@ end
 
 local function set_completion_func(func)
     function clib.rl_attempted_completion_function(word)
-        local prefix = ffi.string(word)
+        local prefix      = ffi.string(word)
 
         local ok, matches = pcall(func, prefix)
-        if not ok then return nil end
+        if not ok then
+            return nil
+        end
 
         -- if matches is an rl_completion_entry_function empty array,
         -- tell readline to not call default completion (file)
         clib.rl_attempted_completion_over = 1
-        pcall(function() clib.rl_completion_suppress_append = 1 end)
+        pcall(function()
+            clib.rl_completion_suppress_append = 1
+        end)
 
         -- translate matches table to C strings
         -- (there is probably more efficient ways to do it)
@@ -73,7 +77,8 @@ local function set_completion_func(func)
 end
 
 local sigint_count = 0
-local function sigint_handler() -- status
+local function sigint_handler()
+    -- status
     puts()
 
     if clib.rl_end == 0 then
@@ -95,7 +100,7 @@ end
 assert(SIG_ERR ~= ffi.C.signal(SIGINT, sigint_handler))
 
 local readline = function(...)
-    local input = clib.readline(...)
+    local input  = clib.readline(...)
     sigint_count = 0
 
     local line
@@ -107,10 +112,12 @@ local readline = function(...)
     return line
 end
 
-local _M = setmetatable({
-    puts = puts,
-    set_completion_func = set_completion_func,
-    add_to_history = add_to_history,
-}, { __call = function(_, ...) return readline(...) end })
+local _M       = setmetatable({
+                                  puts                = puts,
+                                  set_completion_func = set_completion_func,
+                                  add_to_history      = add_to_history,
+                              }, { __call = function(_, ...)
+    return readline(...)
+end })
 
 return _M

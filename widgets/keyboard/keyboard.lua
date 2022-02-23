@@ -273,13 +273,13 @@ function keyboardlayout.new()
 
     -- callback for processing layout changes
     awesome.connect_signal("xkb::map_changed",
-                                function()
-                                    update_layout(self)
-                                end)
+                           function()
+                               update_layout(self)
+                           end)
     awesome.connect_signal("xkb::group_changed",
-                                function()
-                                    update_status(self)
-                                end);
+                           function()
+                               update_status(self)
+                           end);
 
     -- Mouse bindings
     self:buttons(

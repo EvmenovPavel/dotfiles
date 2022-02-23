@@ -36,12 +36,14 @@ local global    = gears.table.join(
         awful.key({}, key.brightness.XF86MonBrightnessUp,
                   function()
                       awesome.emit_signal("brightness_change", "+")
+                      awesome.emit_signal("volume_change", "disable")
                   end,
                   { description = "Brightness +25%", group = "hotkeys" }
         ),
         awful.key({}, key.brightness.XF86MonBrightnessDown,
                   function()
                       awesome.emit_signal("brightness_change", "-")
+                      awesome.emit_signal("volume_change", "disable")
                   end,
                   { description = "Brightness -25%", group = "hotkeys" }
         ),
@@ -50,6 +52,7 @@ local global    = gears.table.join(
         awful.key({}, key.audio.XF86AudioRaiseVolume,
                   function()
                       awesome.emit_signal("volume_change", "+")
+                      awesome.emit_signal("brightness_change", "disable")
                   end,
                   { description = "volume up", group = "hotkeys" }
         ),
@@ -57,6 +60,7 @@ local global    = gears.table.join(
         awful.key({}, key.audio.XF86AudioLowerVolume,
                   function()
                       awesome.emit_signal("volume_change", "-")
+                      awesome.emit_signal("brightness_change", "disable")
                   end,
                   { description = "volume down", group = "hotkeys" }
         ),
@@ -64,6 +68,7 @@ local global    = gears.table.join(
         awful.key({}, key.audio.XF86AudioMute,
                   function()
                       awesome.emit_signal("volume_change", "off")
+                      awesome.emit_signal("brightness_change", "disable")
                   end,
                   { description = "toggle mute", group = "hotkeys" }
         ),

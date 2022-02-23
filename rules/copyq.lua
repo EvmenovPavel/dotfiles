@@ -1,7 +1,7 @@
 -- CopyQ
 local CopyQ = {}
 
-function init()
+local function init()
     return
     {
         rule       = {

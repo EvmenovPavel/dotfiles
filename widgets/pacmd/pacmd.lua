@@ -6,7 +6,7 @@ local watch     = require("awful.widget.watch")
 
 local pacmd     = {}
 
-function init()
+local function init()
     local pacmd_widget = wibox.widget {
         checked  = false,
         color    = "#ffffff",

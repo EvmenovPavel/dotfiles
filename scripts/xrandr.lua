@@ -2,7 +2,7 @@ local xrandr   = require("modules.foggy.xrandr")
 
 local s_xrandr = {}
 
-function init()
+local function init()
     capi.wmapi:update(function()
         local outputs = xrandr.info().outputs
 

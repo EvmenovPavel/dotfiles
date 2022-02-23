@@ -35,35 +35,6 @@ local calendar = {}
 --    return setmetatable({}, { __index = self }):init(args)
 --end
 
-function calendar:init(args)
-    local args          = args or {}
-
-    self.num_lines      = 0
-
-    self.today_color    = args.today_color or "#00ff00"
-    self.week_col_color = args.week_col_color or "#ffff00"
-    self.week_color     = args.week_color or "#707070"
-
-    -- first day of week: monday=1, …, sunday=7
-    self.fdow           = args.fdow or 1
-    -- notification area:
-    self.html           = args.html or '<span font_desc="monospace">\n%s</span>'
-    -- highlight current date:
-    self.today          = args.today or '<b><span color="' .. self.today_color .. '">%2i</span></b>'
-    self.anyday         = args.anyday or '%2i'
-    self.page_title     = args.page_title or '%B %Y'    -- month year
-    self.col_title      = args.col_title or '<span color="' .. self.week_col_color .. '">%a </span>'   -- weekday
-    -- Date equality check is based on day_id. We deliberately ignore the year
-    -- to highlight the same day in different years:
-    self.day_id         = args.day_id or '%m-%d'
-    self.empty_sep      = args.empty_sep or "   -"
-    self.week_col       = args.week_col or " %V"
-    self.days_style     = args.days_style or {}
-    self.position       = args.position or naughty.config.defaults.position
-
-    return self
-end
-
 function calendar:day_style(day_of_week)
     return self.days_style[day_of_week] or '%s'
 end
@@ -194,6 +165,35 @@ function calendar:attach(widget)
     ))
 end
 
+local function init(args)
+    local args          = args or {}
+
+    self.num_lines      = 0
+
+    self.today_color    = args.today_color or "#00ff00"
+    self.week_col_color = args.week_col_color or "#ffff00"
+    self.week_color     = args.week_color or "#707070"
+
+    -- first day of week: monday=1, …, sunday=7
+    self.fdow           = args.fdow or 1
+    -- notification area:
+    self.html           = args.html or '<span font_desc="monospace">\n%s</span>'
+    -- highlight current date:
+    self.today          = args.today or '<b><span color="' .. self.today_color .. '">%2i</span></b>'
+    self.anyday         = args.anyday or '%2i'
+    self.page_title     = args.page_title or '%B %Y'    -- month year
+    self.col_title      = args.col_title or '<span color="' .. self.week_col_color .. '">%a </span>'   -- weekday
+    -- Date equality check is based on day_id. We deliberately ignore the year
+    -- to highlight the same day in different years:
+    self.day_id         = args.day_id or '%m-%d'
+    self.empty_sep      = args.empty_sep or "   -"
+    self.week_col       = args.week_col or " %V"
+    self.days_style     = args.days_style or {}
+    self.position       = args.position or naughty.config.defaults.position
+
+    return self
+end
+
 return setmetatable(calendar, { __call = function(_, ...)
-    return calendar:init(...)
+    return init(...)
 end })

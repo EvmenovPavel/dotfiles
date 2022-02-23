@@ -86,34 +86,36 @@ end
 --]]
 
 
-local wibox    = require("wibox")
-local naughty  = require("naughty")
-local awful    = require("awful")
-local gears    = require("gears")
+local wibox   = require("wibox")
+local naughty = require("naughty")
+local awful   = require("awful")
+local gears   = require("gears")
 
 local function factory(args)
-    local args     = args or {}
+    local args           = args or {}
 
     local wirelessStatus = {
-        widget    = args.widget or wibox.widget.imagebox(),
-        settings  = args.settings or function(self) end,
-        timeout   = args.timeout or 10,
-        pressed   = args.pressed or function(self, button) end,
-        followtag = args.followtag or false,
+        widget              = args.widget or wibox.widget.imagebox(),
+        settings            = args.settings or function(self)
+        end,
+        timeout             = args.timeout or 10,
+        pressed             = args.pressed or function(self, button)
+        end,
+        followtag           = args.followtag or false,
         notification_preset = args.notification_preset or {},
-        showpopup = args.showpopup or "on",  -- Show notification popup while hovering above widget
-        timer     = gears.timer,
-        interface = "",
-        perc      = 0,
-        status    = "",
-        notification_text = "No connection",
+        showpopup           = args.showpopup or "on", -- Show notification popup while hovering above widget
+        timer               = gears.timer,
+        interface           = "",
+        perc                = 0,
+        status              = "",
+        notification_text   = "No connection",
     }
 
     -- Reset to default values
     function wirelessStatus:reset()
-        wirelessStatus.interface = ""
-        wirelessStatus.perc = 0
-        wirelessStatus.status = ""
+        wirelessStatus.interface         = ""
+        wirelessStatus.perc              = 0
+        wirelessStatus.status            = ""
         wirelessStatus.notification_text = "No connection"
     end
 
@@ -155,18 +157,18 @@ local function factory(args)
     -- Get name of wireless interface
     function wirelessStatus:getInterface()
         awful.spawn.easy_async_with_shell(
-            "awk 'NR==3 {printf(\"%s\\n\", $1)}' /proc/net/wireless",
-            function(stdout, exitcode)
-                -- Store interface name
-                -- Remove last character/s from string ("wlp4s0:"" -> "wlp4s0")
-                self.interface = stdout:sub(0, -3)
+                "awk 'NR==3 {printf(\"%s\\n\", $1)}' /proc/net/wireless",
+                function(stdout, exitcode)
+                    -- Store interface name
+                    -- Remove last character/s from string ("wlp4s0:"" -> "wlp4s0")
+                    self.interface = stdout:sub(0, -3)
 
-                -- Check in case interface is now equal to "" (we don't want to cause recursive
-                -- calls)
-                if self.interface ~= "" then
-                    self:update()
+                    -- Check in case interface is now equal to "" (we don't want to cause recursive
+                    -- calls)
+                    if self.interface ~= "" then
+                        self:update()
+                    end
                 end
-            end
         )
     end
 
@@ -176,39 +178,41 @@ local function factory(args)
 
     -- Get status and Quality link (convert quality link to percentages)
     wirelessStatus, wirelessStatus.timer = awful.widget.watch(
-        { 'awk', 'NR==3 {printf("%d-%.0f\\n", $2, $3*10/7)}', '/proc/net/wireless' },
-        wirelessStatus.timeout,
-        function(self, stdout, stderr, exitreason, exitcode)
-            if stdout == "" then
-                -- No output from command above -> reset internal values to default
-                self:reset()
-            else
-                -- Status and Quality link received
-                local status, perc = stdout:match("(%d)-(%d+)")
-                perc = tonumber(perc)
-                self.perc = perc
-                self.status = status
-
-                if self.interface == "" then
-                    -- Get interface name
-                    self:getInterface()
+            { 'awk', 'NR==3 {printf("%d-%.0f\\n", $2, $3*10/7)}', '/proc/net/wireless' },
+            wirelessStatus.timeout,
+            function(self, stdout, stderr, exitreason, exitcode)
+                if stdout == "" then
+                    -- No output from command above -> reset internal values to default
+                    self:reset()
                 else
-                    -- Get information about active connection
-                    local cmd_getInfo = "iw dev "..self.interface.." link"
-                    awful.spawn.easy_async_with_shell(cmd_getInfo, function(stdout, exitcode)
-                        self.notification_text = stdout
-                    end)
-                end
-            end
+                    -- Status and Quality link received
+                    local status, perc = stdout:match("(%d)-(%d+)")
+                    perc               = tonumber(perc)
+                    self.perc          = perc
+                    self.status        = status
 
-            -- Call user/theme defined function
-            self:settings()
-        end,
-        wirelessStatus  -- base_widget (passed in callback function as first parameter)
+                    if self.interface == "" then
+                        -- Get interface name
+                        self:getInterface()
+                    else
+                        -- Get information about active connection
+                        local cmd_getInfo = "iw dev " .. self.interface .. " link"
+                        awful.spawn.easy_async_with_shell(cmd_getInfo, function(stdout, exitcode)
+                            self.notification_text = stdout
+                        end)
+                    end
+                end
+
+                -- Call user/theme defined function
+                self:settings()
+            end,
+            wirelessStatus  -- base_widget (passed in callback function as first parameter)
     )
 
     -- Show notification popup while hovering above widget
-    if wirelessStatus.showpopup == "on" then wirelessStatus:attach(wirelessStatus.widget) end
+    if wirelessStatus.showpopup == "on" then
+        wirelessStatus:attach(wirelessStatus.widget)
+    end
 
     wirelessStatus.widget:connect_signal("button::press", function(c, _, _, button)
         wirelessStatus:pressed(button)

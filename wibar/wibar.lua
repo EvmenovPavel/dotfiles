@@ -61,7 +61,7 @@ function mywibar:w_right(s)
     }
 end
 
-function mywibar:init(s)
+local function init(s)
     local wibar = awful.wibar({
                                   ontop        = false,
                                   stretch      = true,
@@ -76,9 +76,9 @@ function mywibar:init(s)
                               })
 
     wibar:setup {
-        self:w_left(s),
-        self:w_middle(s),
-        self:w_right(s),
+        mywibar:w_left(s),
+        mywibar:w_middle(s),
+        mywibar:w_right(s),
         layout = wibox.layout.align.horizontal,
     }
 
@@ -110,5 +110,5 @@ function mywibar:init(s)
 end
 
 return setmetatable(mywibar, { __call = function(_, ...)
-    return mywibar:init(...)
+    return init(...)
 end })

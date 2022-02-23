@@ -1,29 +1,29 @@
 -- the REdis Serialization Protocol implementation
 -- stealing from https://github.com/fffonion/lua-resty-shdict-server
 
-local tonumber = tonumber
-local type = type
-local sub = string.sub
-local byte = string.byte
+local tonumber     = tonumber
+local type         = type
+local sub          = string.sub
+local byte         = string.byte
 local table_concat = table.concat
-local ngx_log = ngx.log
+local ngx_log      = ngx.log
 
-local ins = require 'inspect'
+local ins          = require 'inspect'
 
-local ok, new_tab = pcall(require, "table.new")
+local ok, new_tab  = pcall(require, "table.new")
 if not ok or type(new_tab) ~= "function" then
     new_tab = function()
         return {}
     end
 end
 
-local _M = new_tab(0, 54)
+local _M    = new_tab(0, 54)
 
 _M._VERSION = '0.02'
 
-local CRLF = "\r\n"
+local CRLF  = "\r\n"
 
-local mt = { __index = _M }
+local mt    = { __index = _M }
 
 function _M.new(handler)
     return setmetatable({ handler = handler }, mt)
@@ -85,7 +85,7 @@ local function _parse_redis_req(line, sock)
         end
 
         local cmd
-        local vals = new_tab(n - 1, 0)
+        local vals  = new_tab(n - 1, 0)
         local nvals = 0
         for _ = 1, n do
             local res
@@ -94,7 +94,7 @@ local function _parse_redis_req(line, sock)
                 if cmd == nil then
                     cmd = res
                 else
-                    nvals = nvals + 1
+                    nvals       = nvals + 1
                     vals[nvals] = res
                 end
 
@@ -106,7 +106,7 @@ local function _parse_redis_req(line, sock)
                 if cmd == nil then
                     cmd = res
                 else
-                    nvals = nvals + 1
+                    nvals       = nvals + 1
                     vals[nvals] = { false, err }
                 end
             end
@@ -186,7 +186,8 @@ function _M.serve(self, sock)
             end
         else
             prefix = byte(line)
-            if prefix == 42 then     -- char '*'
+            if prefix == 42 then
+                -- char '*'
                 typ, args = _parse_redis_req(line, sock)
                 if typ == nil then
                     sock:send(output_redis({ ["err"] = args }))

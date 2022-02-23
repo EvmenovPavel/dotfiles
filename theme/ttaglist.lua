@@ -2,7 +2,7 @@ local resources = require("resources")
 
 local taglist   = {}
 
-function taglist:init(theme)
+local function init(theme)
     theme.taglist_disable_icon = false
 
     theme.taglist_count        = 10
@@ -20,5 +20,5 @@ function taglist:init(theme)
 end
 
 return setmetatable(taglist, { __call = function(_, ...)
-    return taglist:init(...)
+    return init(...)
 end })

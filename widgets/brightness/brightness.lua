@@ -111,7 +111,7 @@ function get_brightness_value()
     return false
 end
 
-function init()
+local function init()
     if (get_current_dir()) then
         return
     end

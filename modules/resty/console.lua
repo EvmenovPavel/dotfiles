@@ -1,18 +1,18 @@
-local resp_module = require 'resty.console.resp'
-local new_binding = require 'resty.console.binding'.new
+local resp_module   = require 'resty.console.resp'
+local new_binding   = require 'resty.console.binding'.new
 local new_completer = require 'resty.console.completer'.new
-local consts = require 'resty.console.consts'
-local ngx_log = ngx.log
-local ins = require 'inspect'
+local consts        = require 'resty.console.consts'
+local ngx_log       = ngx.log
+local ins           = require 'inspect'
 
-local ok, new_tab = pcall(require, "table.new")
+local ok, new_tab   = pcall(require, "table.new")
 if not ok or type(new_tab) ~= "function" then
     new_tab = function()
         return {}
     end
 end
 
-local _M = {}
+local _M      = {}
 
 local context = function()
     if _G.ngx and _G.ngx.get_phase then
@@ -21,7 +21,7 @@ local context = function()
         return 'lua(main)'
     end
 end
-_M.context = context
+_M.context    = context
 
 local function handler(type, arg)
     local ret = new_tab(0, 2)
@@ -57,10 +57,10 @@ local function start()
     ngx_log(ngx.DEBUG, 'start repl')
 
     local caller_info = debug.getinfo(2)
-    _M.binding = new_binding(caller_info)
-    _M.completer = new_completer(_M.binding)
+    _M.binding        = new_binding(caller_info)
+    _M.completer      = new_completer(_M.binding)
 
-    local resp = resp_module.new(handler)
+    local resp        = resp_module.new(handler)
     resp:serve()
 
     ngx_log(ngx.DEBUG, 'done')

@@ -503,7 +503,7 @@ function languish:close()
     keygrabber.stop()
 end
 
-function languish:init(mod_key, key_switch)
+local function init(mod_key, key_switch)
     self:populateAltTabTable()
 
     if #languish.altTabTable == 0 then
@@ -544,5 +544,5 @@ function languish:init(mod_key, key_switch)
 end -- function altTab
 
 return setmetatable(languish, { __call = function(_, ...)
-    return languish:init(...)
+    return init(...)
 end })

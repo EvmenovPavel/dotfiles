@@ -1,7 +1,7 @@
 -- lua Readline completer
 
-local safe_match = require('resty.console.utils').safe_match
-local _M = {}
+local safe_match  = require('resty.console.utils').safe_match
+local _M          = {}
 
 local property_re = '^(.+)[:.]$'
 
@@ -20,7 +20,7 @@ function _M:smart_completion(result)
         result = result[1]
     end
 
-    local prop = self:eval(result)
+    local prop      = self:eval(result)
     local prop_type = type(prop)
 
     if 'function' == prop_type then
@@ -32,7 +32,7 @@ end
 
 function _M:find_matches_var(word)
     local result = {}
-    local re = '^' .. word
+    local re     = '^' .. word
 
     -- locals
     for _, k in ipairs(self.binding:find_local_var(re, true) or {}) do
@@ -82,8 +82,8 @@ end
 
 function _M.find_prop_in_object(object, options)
     local prop_prefix = options.prop_prefix
-    local word = options.word
-    local result = {}
+    local word        = options.word
+    local result      = {}
 
     -- search for own methods
     for k, v in pairs(object) do
@@ -115,7 +115,7 @@ function _M.find_prop_in_object(object, options)
     -- filter by property prefix
     if prop_prefix then
         local not_filterd = result
-        result = {}
+        result            = {}
         for _, key_value_pair in ipairs(not_filterd) do
             if safe_match(key_value_pair[1], '^' .. prop_prefix) then
                 table.insert(result, key_value_pair)
@@ -127,7 +127,7 @@ function _M.find_prop_in_object(object, options)
     if word:match ':$' then
         -- completing method name
         local not_filterd = result
-        result = {}
+        result            = {}
         for _, key_value_pair in ipairs(not_filterd) do
             if key_value_pair[2] == 'function' then
                 table.insert(result, key_value_pair)
@@ -147,7 +147,7 @@ function _M:find_matches_prop(word, prop_prefix)
     ngx.log(ngx.DEBUG, 'prop:', word, ' prefix:', prop_prefix)
     if safe_match(word, property_re) then
         local base_obj_str = safe_match(word, property_re)
-        local base_obj = self:eval(base_obj_str)
+        local base_obj     = self:eval(base_obj_str)
         if not base_obj then
             return
         end
@@ -164,7 +164,7 @@ function _M:find_matches_prop(word, prop_prefix)
 
         local result = self.find_prop_in_object(base_obj, {
             prop_prefix = prop_prefix,
-            word = word,
+            word        = word,
         })
 
         return self:smart_completion(result)
@@ -192,8 +192,8 @@ end
 
 function _M.new(binding)
     return setmetatable({
-        binding = binding,
-    }, { __index = _M })
+                            binding = binding,
+                        }, { __index = _M })
 end
 
 return _M

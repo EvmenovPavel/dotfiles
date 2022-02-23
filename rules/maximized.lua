@@ -2,7 +2,7 @@ local beautiful      = require("beautiful")
 
 local RulesMaximized = {}
 
-function init()
+local function init()
     return {
         rule_any   = {
             class = {

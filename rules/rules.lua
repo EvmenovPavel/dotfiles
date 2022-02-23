@@ -3,7 +3,7 @@ local beautiful = require("beautiful")
 
 local rules     = {}
 
-function rules:init(clientkeys, buttonkeys)
+local function init(clientkeys, buttonkeys)
     return {
         rule_any   = {
             type = {
@@ -93,5 +93,5 @@ function rules:init(clientkeys, buttonkeys)
 end
 
 return setmetatable(rules, { __call = function(_, ...)
-    return rules:init(...)
+    return init(...)
 end })

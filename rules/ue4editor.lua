@@ -1,7 +1,7 @@
 -- UE4Editor
 local UE4Editor = {}
 
-function init()
+local function init()
     return {
         rule       = {
             class = "UE4Editor"

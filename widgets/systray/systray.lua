@@ -120,7 +120,7 @@ function mysystray:set_screen(s)
     end
 end
 
-function mysystray:init(revers)
+local function init(revers)
     local ret = wbase.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, mysystray, true)
@@ -142,5 +142,5 @@ function mysystray:init(revers)
 end
 
 return setmetatable(mysystray, { __call = function(_, ...)
-    return mysystray:init(...)
+    return init(...)
 end })

@@ -12,7 +12,7 @@ local function starts_with(str, start)
     return str:sub(1, #start) == start
 end
 
-function init()
+local function init()
     --local wTextbox = capi.widget:textbox({ forced_width = 75 })
     --local wGraph   = capi.widget:graph()
     --

@@ -12,9 +12,9 @@ local date_time_format = "%Y-%m-%d %H:%M:%S"
 local filename         = "logging.log"
 
 function write_file(message)
-    local path     = os.getenv("HOME") .. "/.config/awesome/"
+    local path = os.getenv("HOME") .. "/.config/awesome/"
 
-    local file     = io.open(path .. filename, "a")
+    local file = io.open(path .. filename, "a")
     if file then
         file:write(message, "\n")
         file:close()
@@ -78,7 +78,7 @@ function logging:fatal(...)
     message(TypeLog.FATAL, ...)
 end
 
-function init(...)
+local function init(...)
     return logging
 end
 

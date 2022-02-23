@@ -174,7 +174,7 @@ function widget_template()
     }
 end
 
-function taglist:init(s)
+local function init(s)
     return awful.widget.taglist {
         screen          = s,
         filter          = awful.widget.taglist.filter.all,
@@ -203,5 +203,5 @@ function taglist:init(s)
 end
 
 return setmetatable(taglist, { __call = function(_, ...)
-    return taglist:init(...)
+    return init(...)
 end })

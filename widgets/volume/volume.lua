@@ -83,7 +83,7 @@ awesome.connect_signal("volume_change",
                        end
 )
 
-function init()
+local function init()
     local offsetx           = 48
     local offsety           = 300
 

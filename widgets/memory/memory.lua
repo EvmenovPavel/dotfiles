@@ -19,7 +19,7 @@ function row(name, str)
     return row
 end
 
-function init()
+local function init()
     local bash                  = [[bash -c "cat /proc/meminfo"]]
 
     local wTextBox              = capi.widget:textbox()
@@ -84,9 +84,9 @@ function init()
 
     --local wText = wibox.container.margin(wibox.container.mirror(wTextBox:get(), { horizontal = false }), 2, 2, 2, 2)
     --wText
-    local w     = capi.widget:button()
+    local w    = capi.widget:button()
 
-    local func  = function()
+    local func = function()
         if popup.visible then
             popup.visible = not popup.visible
         else

@@ -4,9 +4,11 @@
 ---
 
 function string:split(sep)
-    local tokens = {}
+    local tokens  = {}
     local pattern = string.format("([^%s]+)", sep or ':')
-    self:gsub(pattern, function(c) table.insert(tokens, c) end)
+    self:gsub(pattern, function(c)
+        table.insert(tokens, c)
+    end)
     return tokens
 end
 
@@ -23,7 +25,6 @@ local function self_path()
     -- trim the leading @ and the last component (file part)
     return path:gsub('^"?@(.*)/[^/]+$', '%1')
 end
-
 
 local function parse_endpoint(arg)
     -- unix socket
@@ -44,8 +45,8 @@ end
 
 local function parse_args()
     local argparse = require "argparse"
-    local parser = argparse("resty-cli", "Interactive console (REPL) for Openresty" ..
-        " to inspect Lua VM internals, to run lua code, to invoke functions and more")
+    local parser   = argparse("resty-cli", "Interactive console (REPL) for Openresty" ..
+            " to inspect Lua VM internals, to run lua code, to invoke functions and more")
     parser:argument("endpoint", "host:port to connect to", "localhost:8000")
     parser:option("-e --chunk", "chunk of lua code to run on backend")
     parser:option("-f --file", "lua file to run on backend")
@@ -55,8 +56,8 @@ local function parse_args()
 end
 
 return {
-    parse_args = parse_args,
+    parse_args     = parse_args,
     parse_endpoint = parse_endpoint,
-    self_path = self_path,
-    safe_match = safe_match
+    self_path      = self_path,
+    safe_match     = safe_match
 }

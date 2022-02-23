@@ -1,19 +1,19 @@
 -- lua REPL runtime binding
 
-local _M = {}
+local _M              = {}
 
-local safe_match = require 'resty.console.utils'.safe_match
-local ins = require 'inspect'
+local safe_match      = require 'resty.console.utils'.safe_match
+local ins             = require 'inspect'
 local InstanceMethods = {}
 
-local _ok, new_tab = pcall(require, "table.new")
+local _ok, new_tab    = pcall(require, "table.new")
 if not _ok or type(new_tab) ~= "function" then
     new_tab = function()
         return {}
     end
 end
 
-local result_mt = {}
+local result_mt   = {}
 result_mt.__index = result_mt
 function result_mt:inspect()
     if not self.ok then
@@ -45,20 +45,20 @@ function result_mt:inspect()
     return tostring(value)
 end
 
-local make_result = function(ok, ...)
-    local val = {...}
-    local n = select('#', ...)
+local make_result        = function(ok, ...)
+    local val = { ... }
+    local n   = select('#', ...)
     --ngx.log(ngx.DEBUG, 'res:', inspect(val))
     if n < 2 then
         val = val[1]
     end
     return setmetatable({ ok = ok, val = val, n = n }, result_mt)
 end
-_M.make_result = make_result
+_M.make_result           = make_result
 
 local get_function_index = function(func)
     local caller_index = 1
-    local i = caller_index
+    local i            = caller_index
 
     while true do
         local info = debug.getinfo(i)
@@ -75,7 +75,9 @@ local get_function_index = function(func)
 end
 
 local function compile(code)
-    if not code then code = '' end
+    if not code then
+        code = ''
+    end
 
     -- first, try to load function that returns value
     local code_function, err = loadstring('return ' .. code)
@@ -120,8 +122,8 @@ function InstanceMethods:find_local_var(name, match)
         return
     end
 
-    local index = function_index - 1
-    local i = 1
+    local index     = function_index - 1
+    local i         = 1
     local all_names = {}
 
     while true do
@@ -161,7 +163,7 @@ function InstanceMethods:find_upvalue(name, match)
         return
     end
 
-    local i = 1
+    local i         = 1
     local all_names = {}
 
     while true do
@@ -185,7 +187,7 @@ function InstanceMethods:find_upvalue(name, match)
 end
 
 function InstanceMethods:set_upvalue(name, new_value)
-    local func = self.info.func
+    local func                = self.info.func
     local ok, _, _, var_index = self:find_upvalue(name)
 
     if ok then
@@ -196,7 +198,7 @@ end
 
 function InstanceMethods:get_fenv()
     return setmetatable({}, {
-        __index = function(_, key)
+        __index    = function(_, key)
             local found_local, _, local_value = self:find_local_var(key)
             if found_local then
                 return local_value
@@ -229,9 +231,9 @@ end
 
 function _M.new(caller_info)
     return setmetatable({
-        info = caller_info,
-        env = getfenv(caller_info.func)
-    }, { __index = InstanceMethods })
+                            info = caller_info,
+                            env  = getfenv(caller_info.func)
+                        }, { __index = InstanceMethods })
 end
 
 return _M

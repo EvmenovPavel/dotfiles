@@ -10,7 +10,7 @@ local wibox  = require("wibox")
 
 local margin = {}
 
-function margin:init(args)
+local function init(args)
     local args = args or {}
 
     return wibox.widget {
@@ -26,5 +26,5 @@ function margin:init(args)
 end
 
 return setmetatable(margin, { __call = function(_, ...)
-    return margin:init(...)
+    return init(...)
 end })

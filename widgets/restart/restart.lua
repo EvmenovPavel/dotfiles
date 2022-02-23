@@ -2,7 +2,7 @@ local funs    = require("functions")
 
 local restart = {}
 
-function init()
+local function init()
     local w = capi.widget.button()
 
     w:set_text("Restart")

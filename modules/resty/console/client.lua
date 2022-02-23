@@ -5,17 +5,17 @@
 --- DateTime: 1/7/19 5:15 PM
 ---
 
-local ffi = require 'ffi'
-local hiredis = require 'hiredis'
-local readline = require 'resty.console.readline'
-local consts = require 'resty.console.consts'
-local utils = require 'resty.console.utils'
-local HTTP_LINE = 'GET /console\r\n'
+local ffi        = require 'ffi'
+local hiredis    = require 'hiredis'
+local readline   = require 'resty.console.readline'
+local consts     = require 'resty.console.consts'
+local utils      = require 'resty.console.utils'
+local HTTP_LINE  = 'GET /console\r\n'
 
 -- local ins = require "inspect"
 
 
-local args = utils.parse_args()
+local args       = utils.parse_args()
 local HOST, PORT = utils.parse_endpoint(args.endpoint)
 -- print(ins(args))
 
@@ -44,7 +44,7 @@ local function prompt_line(rclient, line_count)
     -- local context = rclient:command(consts.REPL_TYPE_COMMAND)
 
     if context then
-        return '[' .. line_count .. '] ' .. context.name  .. '> '
+        return '[' .. line_count .. '] ' .. context.name .. '> '
     else
         return nil
     end
@@ -71,7 +71,7 @@ local main = function()
     ffi.C.write(conn_ctx.fd, HTTP_LINE, #HTTP_LINE)
 
     if args.chunk or args.file then
-        local code = args.chunk or io.input(args.file):read('*a')
+        local code   = args.chunk or io.input(args.file):read('*a')
         local output = rclient:command(consts.REPL_TYPE_COMMAND, code)
         if output then
             readline.puts('=> ' .. output.name)
@@ -99,7 +99,7 @@ local main = function()
 
         if input then
             if #input > 0 then
-                line_count = line_count + 1
+                line_count   = line_count + 1
                 local output = rclient:command(consts.REPL_TYPE_COMMAND, input)
                 if output then
                     readline.puts('=> ' .. output.name)
@@ -117,7 +117,7 @@ local main = function()
         end
     end
 
-    log('Connection to '.. HOST .. ( PORT and ':' .. PORT or '') .. ' closed')
+    log('Connection to ' .. HOST .. (PORT and ':' .. PORT or '') .. ' closed')
 end
 
 main()

@@ -110,7 +110,7 @@ function mywibar:align(wb, align, screen)
     end
 end
 
-function mywibar:init(args)
+local function init(args)
     args                 = args or {}
     local position       = args.position or "top"
     local has_to_stretch = true
@@ -182,5 +182,5 @@ function mywibar:init(args)
 end
 
 return setmetatable(mywibar, { __call = function(_, ...)
-    return mywibar:init(...)
+    return init(...)
 end })

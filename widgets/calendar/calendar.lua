@@ -75,7 +75,7 @@ local placement       = {
     top_left  = "top_left"
 }
 
-function calendar:init(args)
+local function init(args)
     local args      = args or {}
 
     local theme     = args.theme or calendar_themes.dark
@@ -241,5 +241,5 @@ function calendar:init(args)
 end
 
 return setmetatable(calendar, { __call = function(_, ...)
-    return calendar:init(...)
+    return init(...)
 end })
