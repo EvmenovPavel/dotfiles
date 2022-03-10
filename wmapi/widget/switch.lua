@@ -1,14 +1,6 @@
--- это
--- https://codepen.io/aaroniker/pen/ZEpEvdz
--- https://codepen.io/aaroniker/pen/ZEYoxEY
-
-
 local wibox     = require("wibox")
 local gears     = require("gears")
 local beautiful = require("beautiful")
---local mousegrabber = require("mousegrabber")
-local awful     = require("awful")
-local naughty   = require("naughty")
 
 local switch    = {}
 
@@ -65,10 +57,14 @@ function switch:create()
                                    layout = wibox.layout.fixed.horizontal,
                                })
 
-    function ret:set_checked(check)
-        ret.checked = check
+    function ret:set_text(text)
+        self.textbox = text or ""
+    end
 
-        if ret.checked then
+    function ret:set_checked(checked)
+        ret.checked = checked
+
+        if checked then
             ret.margin.left = 22
 
             ret.switch.bg   = capi.color.active_inner
@@ -81,14 +77,14 @@ function switch:create()
         end
     end
 
-    capi.wmapi:connect_signal({
-                                  signal = capi.event.signals.button.release,
-                                  event  = capi.event.mouse.button_click_left,
-                                  widget = ret.widget,
-                                  func   = function()
-                                      ret:set_checked(not ret.checked)
-                                  end
-                              })
+    capi.wmapi:connect_signal(
+            ret.widget,
+            capi.event.signals.button.release,
+            capi.event.mouse.button_click_left,
+            function()
+                ret:set_checked(not ret.checked)
+            end
+    )
 
     ret.widget:connect_signal(
             capi.event.signals.mouse.enter,

@@ -4,7 +4,7 @@ local wibox     = require("wibox")
 local gears     = require("gears")
 
 local markup    = capi.markup
-local button    = capi.event.signals.button
+--local button    = capi.event.signals.button
 
 local calendar  = {}
 
@@ -199,43 +199,46 @@ function calendar:init(args)
             end
 
             popupWidget.visible = true
-
         end
     end
 
-    local textclock = wibox.widget {
-        wibox.widget.textclock(markup.font(beautiful.font, beautiful.datetime), 1),
-        widget = wibox.layout.fixed.horizontal,
-    }
+    local textclock = wibox.widget({
+                                       wibox.widget.textclock(markup.font(beautiful.font, beautiful.datetime), 1),
+                                       widget = wibox.layout.fixed.horizontal,
+                                   })
 
-    textclock:connect_signal(button.release,
-                             function()
-                                 toggle()
-                             end)
-
-    textclock:buttons(
-            awful.util.table.join(
-                    capi.wmapi:button({
-                                          event = mouse.button_click_scroll_down,
-                                          func  = function()
-                                              local a = calendarWidget:get_date()
-                                              a.month = a.month + 1
-                                              calendarWidget:set_date(nil)
-                                              calendarWidget:set_date(a)
-                                              popupWidget:set_widget(calendarWidget)
-                                          end
-                                      }),
-                    capi.wmapi:button({ event = mouse.button_click_scroll,
-                                        func  = function()
-                                            local a = calendarWidget:get_date()
-                                            a.month = a.month - 1
-                                            calendarWidget:set_date(nil)
-                                            calendarWidget:set_date(a)
-                                            popupWidget:set_widget(calendarWidget)
-                                        end
-                                      })
-            )
+    textclock:connect_signal(
+            capi.event.signals.button.release,
+            function(_, _, _, button)
+                if button == capi.event.mouse.button_click_left then
+                    toggle()
+                end
+            end
     )
+
+    --textclock:buttons(
+    --        awful.util.table.join(
+    --                capi.wmapi:button({
+    --                                      event = capi.event.mouse.button_click_scroll_down,
+    --                                      func  = function()
+    --                                          local a = calendarWidget:get_date()
+    --                                          a.month = a.month + 1
+    --                                          calendarWidget:set_date(nil)
+    --                                          calendarWidget:set_date(a)
+    --                                          popupWidget:set_widget(calendarWidget)
+    --                                      end
+    --                                  }),
+    --                capi.wmapi:button({ event = capi.event.mouse.button_click_scroll,
+    --                                    func  = function()
+    --                                        local a = calendarWidget:get_date()
+    --                                        a.month = a.month - 1
+    --                                        calendarWidget:set_date(nil)
+    --                                        calendarWidget:set_date(a)
+    --                                        popupWidget:set_widget(calendarWidget)
+    --                                    end
+    --                                  })
+    --        )
+    --)
 
     return textclock
 end

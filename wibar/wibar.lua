@@ -48,6 +48,8 @@ function mywibar:w_right(s)
             widgets.reboot(),
             widgets.xrandr(),
 
+            capi.widget:checkbox():get(),
+
             screen_if_test(s),
 
             layout = wibox.layout.fixed.horizontal

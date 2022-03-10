@@ -8,8 +8,8 @@ function widget:textbox(text, valign, align)
     return require("wmapi.widget.textbox"):create(text, valign, align)
 end
 
-function widget:checkbox(argc)
-    return require("wmapi.widget.checkbox"):create(argc)
+function widget:checkbox()
+    return require("wmapi.widget.checkbox"):create()
 end
 
 function widget:combobox(argc)

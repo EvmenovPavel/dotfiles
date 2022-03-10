@@ -268,7 +268,7 @@ resources.titlebar          = {
 
 resources.wallpapers        = {
     png_1     = resources.wallpaper .. "/1.png",
-    ruby_rose = resources.wallpaper .. "/ruby_rose.png",
+    ruby_rose = resources.wallpaper .. "/2.png",
     spider    = resources.wallpaper .. "/spider-man-into.jpeg",
     wallpaper = resources.wallpaper .. "/wallpaper.png",
 }
