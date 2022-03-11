@@ -236,7 +236,7 @@ function wmapi:easy_async_with_shell(bash)
 
     awful.spawn.easy_async_with_shell(bash, function(result)
         last_result = result
-        --free_memory_tooltip:set_markup(last_result)
+        capi.log:message(tostring(last_result))
     end)
 
     return last_result
@@ -319,22 +319,32 @@ function wmapi:set_widget(widget, ...)
     widget:set_widget(res)
 end
 
-function wmapi:connect_signal(args)
-    local args = args or nil
+-- сигнал для виджета
+-- когда подводишь мышкой к виджету
+-- и начинаешь скролить, то, срабатывает евент
 
-    if args == nil then
-        return
-    end
+--[[
+    --capi.wmapi:connect_signal(
+    --        ret.widget,
+    --        capi.event.signals.button.release,
+    --        capi.event.mouse.button_click_left,
+    --        function()
+    --            ret:set_checked(not ret.checked)
+    --        end
+    --)
+]]
 
-    local signal = args.signal or nil
-    local event  = args.event or capi.event.mouse.button_click_left
-    local widget = args.widget or nil
-    local func   = args.func or function()
-        log:debug("Error args.func = nil")
-    end
-
+function wmapi:connect_signal(widget, signal, event, func)
     if widget == nil then
         return
+    end
+
+    local signal = signal or capi.event.signals.button.release
+    local event  = event or capi.event.mouse.button_click_left
+    local widget = widget or nil
+
+    local func   = func or function()
+        log:debug("Error args.func = nil")
     end
 
     widget:connect_signal(

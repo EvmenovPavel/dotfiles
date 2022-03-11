@@ -27,7 +27,8 @@ function textbox:create(text, valign, align)
     end
 
     function ret:get()
-        return ret.widget
+        self.widget.type = "textbox"
+        return self.widget
     end
 
     return ret

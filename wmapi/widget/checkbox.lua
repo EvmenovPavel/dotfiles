@@ -5,53 +5,53 @@ local resources = require("resources")
 
 local checkbox  = {}
 
-function checkbox:create(argc)
-    local ret    = {}
+function checkbox:create()
+    local ret      = {}
 
-    ret.res      = wibox.widget({ layout = wibox.layout.fixed.horizontal })
+    ret.res        = wibox.widget({ layout = wibox.layout.fixed.horizontal })
 
-    ret.imagebox = capi.widget:imagebox()
-    ret.imagebox:set_image(resources.checkbox.checkbox)
+    local imagebox = capi.widget:imagebox()
+    imagebox:set_image(resources.checkbox.checkbox)
 
-    ret.textbox  = capi.widget:textbox("Checkbox")
+    local textbox = capi.widget:textbox("Checkbox")
 
-    ret.checkbox = wibox.widget({
-                                    ret.imagebox.get(),
-                                    bg     = capi.color.border,
-                                    widget = wibox.container.background,
-                                })
+    ret.checkbox  = wibox.widget({
+                                     imagebox:get(),
+                                     bg     = capi.color.border,
+                                     widget = wibox.container.background,
+                                 })
 
-    ret.bg       = wibox.widget({
-                                    {
-                                        ret.checkbox,
-                                        margins = 2,
-                                        widget  = wibox.container.margin,
-                                    },
+    ret.bg        = wibox.widget({
+                                     {
+                                         ret.checkbox,
+                                         margins = 2,
+                                         widget  = wibox.container.margin,
+                                     },
 
-                                    shape              = function(cr, w, h)
-                                        gears.shape.rounded_rect(cr, w, h, 5)
-                                    end,
+                                     shape              = function(cr, w, h)
+                                         gears.shape.rounded_rect(cr, w, h, 5)
+                                     end,
 
-                                    shape_border_color = capi.color.border_hover,
-                                    bg                 = capi.color.border,
-                                    widget             = wibox.container.background,
-                                })
+                                     shape_border_color = capi.color.border_hover,
+                                     bg                 = capi.color.border,
+                                     widget             = wibox.container.background,
+                                 })
 
-    ret.widget   = wibox.widget({
-                                    {
-                                        ret.bg,
-                                        widget = wibox.container.background,
-                                    },
-                                    {
-                                        right  = 5,
-                                        widget = wibox.container.margin,
-                                    },
-                                    {
-                                        ret.textbox:get(),
-                                        widget = wibox.container.background,
-                                    },
-                                    layout = wibox.layout.fixed.horizontal,
-                                })
+    ret.widget    = wibox.widget({
+                                     {
+                                         ret.bg,
+                                         widget = wibox.container.background,
+                                     },
+                                     {
+                                         right  = 5,
+                                         widget = wibox.container.margin,
+                                     },
+                                     {
+                                         textbox:get(),
+                                         widget = wibox.container.background,
+                                     },
+                                     layout = wibox.layout.fixed.horizontal,
+                                 })
 
     ret.widget:connect_signal(
             capi.event.signals.mouse.enter,
@@ -71,8 +71,10 @@ function checkbox:create(argc)
 
     ret.widget:connect_signal(
             capi.event.signals.button.release,
-            function()
-                ret:set_checked(not ret.checked)
+            function(_, _, _, button)
+                if button == capi.event.mouse.button_click_left then
+                    ret:set_checked(not ret.checked)
+                end
             end
     )
 

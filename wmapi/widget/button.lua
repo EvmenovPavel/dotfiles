@@ -8,7 +8,7 @@ local button    = {}
 function button:create(text, src, key, event, func)
     local ret    = {}
 
-    local text   = text or "PushButton"
+    local text   = text or "button"
     local src    = src or ""
     local key    = key or {}
     local event  = event or capi.event.mouse.button_click_left

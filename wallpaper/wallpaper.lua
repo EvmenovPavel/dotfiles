@@ -1,4 +1,3 @@
-local beautiful   = require("beautiful")
 local gears       = require("gears")
 local pixbuf      = require("lgi").GdkPixbuf
 local resources   = require("resources")

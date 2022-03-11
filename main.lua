@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ----local switch = function(param, case_table)
 ----    local case = case_table[param]
 ----
@@ -183,3 +184,5 @@ l1:set(10)
 
 print(l1:get())
 print(l2:get())
+=======
+>>>>>>> dev_laptop
