@@ -27,7 +27,7 @@ function write_file(type, msg)
         file:write(str)
 
         --if (signal) then
-            --signal(str)
+        --    signal(str)
         --end
 
         file:close()
