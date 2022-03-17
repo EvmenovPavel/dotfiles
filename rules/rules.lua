@@ -31,7 +31,7 @@ local function init(clientkeys, buttonkeys)
 
                 --local client = c
 
-                --capi.wmapi:client_info(client)
+                --wmapi:client_info(client)
 
 
                 --c:deny("autofocus", "mouse_enter")
@@ -60,7 +60,7 @@ local function init(clientkeys, buttonkeys)
                 --    --log:debug(height)
                 --
                 --    if width < 1820 and height < 980 then
-                --    --if width < capi.wmapi:getscreen_width() and height < capi.wmapi:getscreen_height() - beautiful.wr_height then
+                --    --if width < wmapi:getscreen_width() and height < wmapi:getscreen_height() - beautiful.wr_height then
                 --        c.floating = true
                 --
                 --        --awful.client.movetoscreen(c, client.focus.screen)

@@ -10,14 +10,14 @@ function checkbox:create()
 
     ret.res        = wibox.widget({ layout = wibox.layout.fixed.horizontal })
 
-    local imagebox = capi.widget:imagebox()
+    local imagebox = widget:imagebox()
     imagebox:set_image(resources.checkbox.checkbox)
 
-    local textbox = capi.widget:textbox("Checkbox")
+    local textbox = widget:textbox("Checkbox")
 
     ret.checkbox  = wibox.widget({
                                      imagebox:get(),
-                                     bg     = capi.color.border,
+                                     bg     = theme.color.border,
                                      widget = wibox.container.background,
                                  })
 
@@ -32,8 +32,8 @@ function checkbox:create()
                                          gears.shape.rounded_rect(cr, w, h, 5)
                                      end,
 
-                                     shape_border_color = capi.color.border_hover,
-                                     bg                 = capi.color.border,
+                                     shape_border_color = theme.color.border_hover,
+                                     bg                 = theme.color.border,
                                      widget             = wibox.container.background,
                                  })
 
@@ -54,14 +54,14 @@ function checkbox:create()
                                  })
 
     ret.widget:connect_signal(
-            capi.event.signals.mouse.enter,
+            signals.mouse.enter,
             function()
                 ret.bg.shape_border_width = beautiful.shape_border_width_enter
             end
     )
 
     ret.widget:connect_signal(
-            capi.event.signals.mouse.leave,
+            signals.mouse.leave,
             function()
                 if not ret.checked then
                     ret.bg.shape_border_width = beautiful.shape_border_width_leave
@@ -70,9 +70,9 @@ function checkbox:create()
     )
 
     ret.widget:connect_signal(
-            capi.event.signals.button.release,
+            signals.button.release,
             function(_, _, _, button)
-                if button == capi.event.mouse.button_click_left then
+                if button == mouse.button_click_left then
                     ret:set_checked(not ret.checked)
                 end
             end
@@ -82,11 +82,11 @@ function checkbox:create()
         ret.checked = check
 
         if ret.checked then
-            ret.bg.bg       = capi.color.border_hover
-            ret.checkbox.bg = capi.color.border_hover
+            ret.bg.bg       = theme.color.border_hover
+            ret.checkbox.bg = theme.color.border_hover
         else
-            ret.bg.bg       = capi.color.border
-            ret.checkbox.bg = capi.color.border
+            ret.bg.bg       = theme.color.border
+            ret.checkbox.bg = theme.color.border
         end
     end
 

@@ -59,7 +59,7 @@ languish.altTabIndex               = 1
 
 --switcher.source                    = string.sub(debug.getinfo(1, "S").source, 2)
 --switcher.path                      = string.sub(switcher.source, 1, string.find(switcher.source, "/[^/]*$"))
-languish.path                      = capi.wmapi:path(debug.getinfo(1))
+languish.path                      = wmapi:path(debug.getinfo(1))
 languish.noicon                    = languish.path .. "noicon.png"
 
 -- simple function for counting the size of a table

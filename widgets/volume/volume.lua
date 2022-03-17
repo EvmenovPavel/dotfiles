@@ -57,7 +57,7 @@ function volume:on_volume()
     )
 end
 
-function widget_volume_adjust()
+local function widget_volume_adjust()
     if volume_adjust.visible then
         hide_volume_adjust:again()
     else
@@ -65,8 +65,6 @@ function widget_volume_adjust()
         hide_volume_adjust:start()
         hide_volume_adjust:again()
     end
-
-    log:debug("1111111111111")
 
     volume:on_volume()
 end
@@ -89,11 +87,11 @@ local function init()
     local offsetx           = 48
     local offsety           = 300
 
-    local screen_primary_id = capi.wmapi:screen_primary_id()
+    local screen_primary_id = wmapi:screen_primary_id()
     local width             = 0
 
     if (screen_primary_id == 1) then
-        width = capi.wmapi:screen_width(screen_primary_id)
+        width = wmapi:screen_width(screen_primary_id)
     else
         for i = 1, screen.count() do
             if screen_primary_id == i then
@@ -107,7 +105,7 @@ local function init()
 
     volume_adjust = wibox({
                               x       = width - offsetx - 100,
-                              y       = capi.wmapi:screen_height() / 2 - offsety / 2,
+                              y       = wmapi:screen_height() / 2 - offsety / 2,
 
                               width   = offsetx,
                               height  = offsety,

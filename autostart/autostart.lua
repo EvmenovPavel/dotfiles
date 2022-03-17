@@ -2,7 +2,7 @@ local autostart = {}
 
 local awful     = require("awful")
 
-function autostart:list()
+local function list()
     return {
         "gxkb",
         "nm-applet",
@@ -16,7 +16,7 @@ function autostart:list()
 end
 
 function autostart:start()
-    for i, it in pairs(autostart:list()) do
+    for i, it in pairs(list()) do
         local cmd        = tostring(it)
         local findme     = cmd
         local firstspace = cmd:find(" ")

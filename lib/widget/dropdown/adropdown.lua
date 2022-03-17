@@ -52,11 +52,11 @@ function button:new(args)
     local args             = args or {}
 
     local mod              = args.mod or {}
-    local _button          = args._button or capi.event.mouse.button_click_left
+    local _button          = args._button or mouse.button_click_left
     local press            = args.press or nil
 
-    local mod_key          = capi.event.key.shift
-    local key_switch       = capi.event.key.enter
+    local mod_key          = key.shift
+    local key_switch       = key.enter
 
     local release          = args.release or
             function()

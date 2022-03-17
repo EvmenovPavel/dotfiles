@@ -25,21 +25,21 @@ local lists        = {
 }
 
 local function init()
-    local wTextbox = capi.wmapi:textbox({ forced_width = 62 })
-    local wGraph   = capi.wmapi:graph({})
-    local popup    = capi.wmapi:popup()
+    local wTextbox = wmapi:textbox({ forced_width = 62 })
+    local wGraph   = wmapi:graph({})
+    local popup    = wmapi:popup()
 
     local bash     = [[bash -c "sensors"]]
     awful.widget.watch(bash, 3,
                        function(widget, stdout)
                            for i, name in ipairs(lists) do
                                for line in stdout:gmatch("[^\r\n]+") do
-                                   local str = capi.wmapi:find(line, name)
+                                   local str = wmapi:find(line, name)
 
-                                   if not capi.wmapi:is_empty(str) then
+                                   if not wmapi:is_empty(str) then
                                        local row = wibox.widget {
-                                           capi.wmapi:textbox({ markup = name }),
-                                           capi.wmapi:textbox({ markup = str }),
+                                           wmapi:textbox({ markup = name }),
+                                           wmapi:textbox({ markup = str }),
                                            layout = wibox.layout.ratio.horizontal
                                        }
 
@@ -90,7 +90,7 @@ local function init()
         layout = wibox.layout.align.horizontal
     }
 
-    capi.wmapi:buttons({ widget = widget, func = func })
+    wmapi:buttons({ widget = widget, func = func })
 
     return widget
 end

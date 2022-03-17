@@ -12,7 +12,7 @@ local lfs     = require("lfs")
 
 local spawn   = require("awful.spawn")
 
-local wmapi   = {}
+wmapi         = {}
 
 function wmapi:layout_align_horizontal(items)
     --local widget = wibox.widget({
@@ -164,6 +164,31 @@ function wmapi:screen(index)
     end
 
     return screen[index]
+end
+
+local clock = os.clock
+
+function wmapi:sleep(sec)
+    --local t = os.clock()
+    --while os.clock() - t <= n do
+    -- nothing
+    --end
+
+    --local ntime = os.time() + sec
+    --repeat until os.time() > ntime
+
+    --local ntime = os.clock() + sec / 10
+    --repeat until os.clock() > ntime
+
+    local t0 = clock()
+    while clock() - t0 <= sec do end
+
+    --socket.sleep(sec)
+    --lsocket.select(sec)
+
+    --sleep(0.2)
+
+    --posix.sleep(n)
 end
 
 function wmapi:is_dir(path)

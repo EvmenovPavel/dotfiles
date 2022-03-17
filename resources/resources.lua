@@ -1,7 +1,7 @@
 local resources             = {}
 
-resources.path              = capi.awesomewm .. "/resources/icons"
-resources.wallpaper         = capi.awesomewm .. "/resources/wallpapers"
+resources.path              = dir.awesomewm .. "/resources/icons"
+resources.wallpaper         = dir.awesomewm .. "/resources/wallpapers"
 resources.awesome           = resources.path .. "/awesome.png"
 
 resources.menu_submenu_icon = resources.path .. "/submenu.png"

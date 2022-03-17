@@ -1,30 +1,27 @@
 local cairo                        = require("lgi").cairo
-local mouse                        = mouse
-local screen                       = screen
 local wibox                        = require("wibox")
-local table                        = table
-local keygrabber                   = keygrabber
 local math                         = require("math")
 local awful                        = require("awful")
 local gears                        = require("gears")
-local timer                        = gears.timer
-local client                       = client
-awful.client                       = require("awful.client")
 
-local string                       = string
+local timer                        = gears.timer
+local unpack                       = table.unpack
 local debug                        = debug
 local pairs                        = pairs
-local unpack                       = unpack or table.unpack
+
+local capi                         = {
+    mouse      = mouse,
+    screen     = screen,
+    keygrabber = keygrabber,
+    client     = client,
+}
 
 local surface                      = cairo.ImageSurface(cairo.Format.RGB24, 20, 20)
 local cr                           = cairo.Context(surface)
 
-local resources                    = require("resources")
-
 local switcher                     = {}
 
 -- settings
-
 switcher.settings                  = {
     preview_box                        = true,
     preview_box_bg                     = "#ddddddaa",
@@ -46,7 +43,7 @@ switcher.settings                  = {
 }
 
 -- Create a wibox to contain all the client-widgets
-switcher.preview_wbox              = wibox({ width = screen[mouse.screen].geometry.width })
+switcher.preview_wbox              = wibox({ width = capi.screen[capi.mouse.screen].geometry.width })
 switcher.preview_wbox.border_width = 3
 switcher.preview_wbox.ontop        = true
 switcher.preview_wbox.visible      = false
@@ -59,7 +56,7 @@ switcher.altTabIndex               = 1
 
 --switcher.source                    = string.sub(debug.getinfo(1, "S").source, 2)
 --switcher.path                      = string.sub(switcher.source, 1, string.find(switcher.source, "/[^/]*$"))
-switcher.path                      = capi.wmapi:path(debug.getinfo(1))
+switcher.path                      = wmapi:path(debug.getinfo(1))
 switcher.noicon                    = switcher.path .. "noicon.png"
 
 -- simple function for counting the size of a table
@@ -76,7 +73,7 @@ function switcher:getClients()
     local clients  = {}
 
     -- Get focus history for current tag
-    local m_screen = mouse.screen;
+    local m_screen = capi.mouse.screen;
     local idx      = 0
     local c        = awful.client.focus.history.get(m_screen, idx)
 
@@ -93,7 +90,7 @@ function switcher:getClients()
     -- This will preserve the history AND enable you to focus on minimized clients
 
     local t   = m_screen.selected_tag
-    local all = client.get(m_screen)
+    local all = capi.client.get(m_screen)
 
     for i = 1, #all do
         local c            = all[i]
@@ -187,13 +184,13 @@ function switcher:clientOpacity()
         data.client.opacity = opacity
     end
 
-    if client.focus == switcher.altTabTable[switcher.altTabIndex].client then
+    if capi.client.focus == switcher.altTabTable[switcher.altTabIndex].client then
         -- Let"s normalize the value up to 1.
         local opacityFocusSelected = switcher.settings.client_opacity_value_selected + switcher.settings.client_opacity_value_in_focus
         if opacityFocusSelected > 1 then
             opacityFocusSelected = 1
         end
-        client.focus.opacity = opacityFocusSelected
+        capi.client.focus.opacity = opacityFocusSelected
     else
         -- Let"s normalize the value up to 1.
         local opacityFocus = switcher.settings.client_opacity_value_in_focus
@@ -205,7 +202,7 @@ function switcher:clientOpacity()
             opacitySelected = 1
         end
 
-        client.focus.opacity                                      = opacityFocus
+        capi.client.focus.opacity                                 = opacityFocus
         switcher.altTabTable[switcher.altTabIndex].client.opacity = opacitySelected
     end
 end
@@ -238,7 +235,7 @@ function switcher:cycle(dir)
     switcher.altTabTable[switcher.altTabIndex].client.minimized = false
 
     if not switcher.settings.preview_box and not switcher.settings.client_opacity then
-        client.focus = switcher.altTabTable[switcher.altTabIndex].client
+        capi.client.focus = switcher.altTabTable[switcher.altTabIndex].client
     end
 
     if switcher.settings.client_opacity and switcher.preview_wbox.visible then
@@ -261,13 +258,13 @@ function switcher:preview()
 
     -- Make the wibox the right size, based on the number of clients
     local n                            = math.max(7, #switcher.altTabTable)
-    local W                            = screen[mouse.screen].geometry.width -- + 2 * _M.preview_wbox.border_width
+    local W                            = capi.screen[capi.mouse.screen].geometry.width -- + 2 * _M.preview_wbox.border_width
     local w                            = W / n -- widget width
     local h                            = w * 0.75  -- widget height
     local textboxHeight                = w * 0.125
 
-    local x                            = screen[mouse.screen].geometry.x - switcher.preview_wbox.border_width
-    local y                            = screen[mouse.screen].geometry.y + (screen[mouse.screen].geometry.height - h - textboxHeight) / 2
+    local x                            = capi.screen[capi.mouse.screen].geometry.x - switcher.preview_wbox.border_width
+    local y                            = capi.screen[capi.mouse.screen].geometry.y + (capi.screen[capi.mouse.screen].geometry.height - h - textboxHeight) / 2
     switcher.preview_wbox:geometry({ x = x, y = y, width = W, height = h + textboxHeight })
 
     -- create a list that holds the clients to preview, from left to right
@@ -332,6 +329,7 @@ function switcher:preview()
         switcher.preview_widgets[i].fit  = function(preview_widget, width, height)
             return w, h
         end
+
         local c                          = leftRightTab[i]
         switcher.preview_widgets[i].draw = function(preview_widget, preview_wbox, cr, width, height)
             if width ~= 0 and height ~= 0 then
@@ -434,6 +432,7 @@ function switcher:preview()
     spacer.fit           = function(leftSpacer, width, height)
         return (W - w * #switcher.altTabTable) / 2, switcher.preview_wbox.height
     end
+
     spacer.draw          = function(preview_widget, preview_wbox, cr, width, height)
     end
 
@@ -480,7 +479,7 @@ function switcher:close()
         c = switcher.altTabTable[switcher.altTabIndex - i].client
         if not switcher.altTabTable[i].minimized then
             c:raise()
-            client.focus = c
+            capi.client.focus = c
         end
     end
 
@@ -489,7 +488,9 @@ function switcher:close()
 
     if c then
         c:raise()
-        client.focus = c
+        capi.client.focus = c
+    else
+        return
     end
 
     -- restore minimized clients
@@ -500,7 +501,7 @@ function switcher:close()
         switcher.altTabTable[i].client.opacity = switcher.altTabTable[i].opacity
     end
 
-    keygrabber.stop()
+    capi.keygrabber.stop()
 end
 
 local function init(mod_key, key_switch)
@@ -528,7 +529,7 @@ local function init(mod_key, key_switch)
 
     -- Now that we have collected all windows, we should run a keygrabber
     -- as long as the user is alt-tabbing:
-    keygrabber.run(
+    capi.keygrabber.run(
             function(mod, keys, event)
                 if keys == key_switch and event == "press" then
                     switcher:cycle(1)

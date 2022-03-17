@@ -1,15 +1,15 @@
 return {
-    battery    = require("widgets.battery"),
-
+    --battery    = require("widgets.battery"),
+    --
     systray    = require("widgets.systray"),
 
     keyboard   = require("widgets.keyboard"),
 
-    cpu        = require("widgets.cpu"),
-
-    memory     = require("widgets.memory"),
-
-    clock      = require("widgets.calendar"),
+    --cpu        = require("widgets.cpu"),
+    --
+    --memory     = require("widgets.memory"),
+    --
+    --clock      = require("widgets.calendar"),
 
     calendar   = require("widgets.calendar"),
 
@@ -17,23 +17,23 @@ return {
 
     brightness = require("widgets.brightness"),
 
-    tasklist   = require("widgets.tasklist"),
+    tasklist = require("widgets.tasklist"),
 
-    taglist    = require("widgets.taglist"),
+    taglist  = require("widgets.taglist"),
 
-    reboot     = require("widgets.restart"),
-
-    pacmd      = require("widgets.pacmd"),
-
-    --sensors    = require("widgets.sensors"),
-
-    --spotify  = require("widgets.spotify"),
-
-    pad        = require("widgets.pad"),
-
-    xrandr     = require("widgets.xrandr"),
-
-    loggingui  = require("widgets.loggingui"),
+    reboot   = require("widgets.restart"),
+    --
+    --pacmd      = require("widgets.pacmd"),
+    --
+    ----sensors    = require("widgets.sensors"),
+    --
+    ----spotify  = require("widgets.spotify"),
+    --
+    --pad        = require("widgets.pad"),
+    --
+    --xrandr     = require("widgets.xrandr"),
+    --
+    --loggingui  = require("widgets.loggingui"),
 
     --require("widgets.bluetooth"),
     --require("widgets.wifi"),

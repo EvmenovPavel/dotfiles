@@ -1,8 +1,9 @@
 local awful   = require("awful")
 local wibox   = require("wibox")
 local dpi     = require("beautiful").xresources.apply_dpi
-local key     = capi.event.key
-local mouse   = capi.event.mouse
+
+local key     = require("lib.event").key
+local mouse   = require("lib.event").mouse
 
 local taglist = {}
 
@@ -76,7 +77,7 @@ function update_callback(w, buttons, label, data, objects)
             tbm           = wibox.container.margin(tb, dpi(4), dpi(16))
             ibm           = wibox.container.margin(ib, dpi(icondpi), dpi(icondpi), dpi(icondpi), dpi(icondpi))
             l             = wibox.layout.fixed.horizontal()
-            bg_clickable  = capi.wmapi:container()
+            bg_clickable  = wmapi:container()
 
             l:fill_space(true)
             l:add(ibm)
@@ -119,38 +120,38 @@ end
 
 function buttons()
     return awful.util.table.join(
-            capi.wmapi:button({
-                                  event = mouse.button_click_left,
-                                  func  = function(c)
-                                      c:view_only()
-                                  end
-                              }),
+            awful.button({
+                             event = mouse.button_click_left,
+                             func  = function(c)
+                                 c:view_only()
+                             end
+                         }),
 
-            capi.wmapi:button({
-                                  key   = key.mod,
-                                  event = mouse.button_click_left,
-                                  func  = function(c)
-                                      if client.focus then
-                                          client.focus:move_to_tag(c)
-                                          c:view_only()
-                                      end
-                                  end
-                              }),
+            awful.button({
+                             key   = key.mod,
+                             event = mouse.button_click_left,
+                             func  = function(c)
+                                 if client.focus then
+                                     client.focus:move_to_tag(c)
+                                     c:view_only()
+                                 end
+                             end
+                         }),
 
-            capi.wmapi:button({
-                                  event = mouse.button_click_right,
-                                  func  = awful.tag.viewtoggle
-                              }),
+            awful.button({
+                             event = mouse.button_click_right,
+                             func  = awful.tag.viewtoggle
+                         }),
 
-            capi.wmapi:button({
-                                  key   = key.mod,
-                                  event = mouse.button_click_right,
-                                  func  = function(c)
-                                      if client.focus then
-                                          client.focus:toggle_tag(c)
-                                      end
-                                  end
-                              })
+            awful.button({
+                             key   = key.mod,
+                             event = mouse.button_click_right,
+                             func  = function(c)
+                                 if client.focus then
+                                     client.focus:toggle_tag(c)
+                                 end
+                             end
+                         })
     )
 end
 
@@ -174,7 +175,7 @@ function widget_template()
     }
 end
 
-local function init(s)
+function taglist:init(s)
     return awful.widget.taglist {
         screen          = s,
         filter          = awful.widget.taglist.filter.all,
@@ -203,5 +204,5 @@ local function init(s)
 end
 
 return setmetatable(taglist, { __call = function(_, ...)
-    return init(...)
+    return taglist:init(...)
 end })

@@ -102,8 +102,8 @@ function functions:on_floating(c)
     -- узнаем размер экрана и делаем виджет по центру
 
 
-    --local screen = capi.wmapi.screen()
-    --local geometry = capi.wmapi.screen_geometry(screen)
+    --local screen = wmapi.screen()
+    --local geometry = wmapi.screen_geometry(screen)
 
     --local x     = c.x
     --local y     = c.y

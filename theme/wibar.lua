@@ -1,10 +1,10 @@
 local wibar = {}
 
-local function init(theme)
+function wibar:init(theme)
     theme.wr_height   = 27
     theme.wr_position = theme.position.top
 end
 
 return setmetatable(wibar, { __call = function(_, ...)
-    return init(...)
+    return wibar:init(...)
 end })

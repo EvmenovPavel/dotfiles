@@ -9,7 +9,7 @@ function switch:create()
 
     ret.switch  = wibox.widget({
                                    checked = false,
-                                   bg      = capi.color.border,
+                                   bg      = theme.color.border,
                                    shape   = gears.shape.circle,
                                    widget  = wibox.widget.checkbox
                                })
@@ -27,19 +27,19 @@ function switch:create()
 
     ret.outline = wibox.widget({
                                    ret.margin,
-                                   bg     = capi.color.active_inner,
+                                   bg     = theme.color.active_inner,
                                    shape  = gears.shape.rounded_bar,
                                    widget = wibox.container.background,
                                })
 
     ret.bg      = wibox.widget({
                                    ret.outline,
-                                   shape_border_color = capi.color.border_hover,
+                                   shape_border_color = theme.color.border_hover,
                                    shape              = gears.shape.rounded_bar,
                                    widget             = wibox.container.background,
                                })
 
-    ret.textbox = capi.widget:textbox("Switch")
+    ret.textbox = widget:textbox("Switch")
 
     ret.widget  = wibox.widget({
                                    {
@@ -67,34 +67,34 @@ function switch:create()
         if checked then
             ret.margin.left = 22
 
-            ret.switch.bg   = capi.color.active_inner
-            ret.outline.bg  = capi.color.border_hover
+            ret.switch.bg   = theme.color.active_inner
+            ret.outline.bg  = theme.color.border_hover
         else
             ret.margin.left = 0
 
-            ret.switch.bg   = capi.color.border
-            ret.outline.bg  = capi.color.active_inner
+            ret.switch.bg   = theme.color.border
+            ret.outline.bg  = theme.color.active_inner
         end
     end
 
-    capi.wmapi:connect_signal(
+    wmapi:connect_signal(
             ret.widget,
-            capi.event.signals.button.release,
-            capi.event.mouse.button_click_left,
+            signals.button.release,
+            mouse.button_click_left,
             function()
                 ret:set_checked(not ret.checked)
             end
     )
 
     ret.widget:connect_signal(
-            capi.event.signals.mouse.enter,
+            signals.mouse.enter,
             function()
                 ret.bg.shape_border_width = beautiful.shape_border_width_enter
             end
     )
 
     ret.widget:connect_signal(
-            capi.event.signals.mouse.leave,
+            signals.mouse.leave,
             function()
                 if not ret.checked then
                     ret.bg.shape_border_width = beautiful.shape_border_width_leave

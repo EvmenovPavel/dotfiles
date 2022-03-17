@@ -1,5 +1,8 @@
 local awful     = require("awful")
 local gears     = require("gears")
+
+local event     = require("lib.event")
+
 --local beautiful = require("beautiful")
 --local dpi       = beautiful.xresources.apply_dpi
 
@@ -77,7 +80,7 @@ for i = 1, 9 do
     end
 
     keys.globalkeys = gears.table.join(keys.globalkeys,
-                                       awful.key({ capi.event.key.mod }, i,
+                                       awful.key({ event.key.mod }, i,
                                                  function()
                                                      local screen = awful.screen.focused()
                                                      local tag    = screen.tags[i]
@@ -87,7 +90,7 @@ for i = 1, 9 do
                                                  end,
                                                  descr_view),
 
-                                       awful.key({ capi.event.key.mod, capi.event.key.shift }, i,
+                                       awful.key({ event.key.mod, event.key.shift }, i,
                                                  function()
                                                      if client.focus then
                                                          local tag = client.focus.screen.tags[i]
@@ -103,7 +106,7 @@ for i = 1, 9 do
                                                  end,
                                                  descr_move),
 
-                                       awful.key({ capi.event.key.mod, capi.event.key.shift }, capi.event.key.ctrl, i,
+                                       awful.key({ event.key.mod, event.key.shift }, event.key.ctrl, i,
                                                  function()
                                                      log:debug("keys.globalkeys = gears.table")
 

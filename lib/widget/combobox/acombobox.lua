@@ -35,7 +35,7 @@ function combobox:create()
     --local bg_release = beautiful.button_release
     --
     --ret.widget:connect_signal(
-    --        capi.event.signals.mouse.enter,
+    --        signals.mouse.enter,
     --        function(self)
     --            self.bg = bg_press
     --            local w = _G.mouse.current_wibox
@@ -47,7 +47,7 @@ function combobox:create()
     --)
     --
     --ret.widget:connect_signal(
-    --        capi.event.signals.mouse.leave,
+    --        signals.mouse.leave,
     --        function(self)
     --            self.bg = bg_release
     --            if self.old_wibox then
@@ -58,7 +58,7 @@ function combobox:create()
     --)
     --
     --ret.widget:connect_signal(
-    --        capi.event.signals.button.release,
+    --        signals.button.release,
     --        function(self)
     --            self.bg            = beautiful.button_release
     --            ret.widget.checked = not ret.widget.checked

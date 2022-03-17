@@ -2,7 +2,7 @@ local resources = require("resources")
 
 local titlebar  = {}
 
-local function init(theme)
+function titlebar:init(theme)
     theme.titlebars_enabled                               = true
 
     theme.titlebars_size                                  = 25
@@ -106,5 +106,5 @@ local function init(theme)
 end
 
 return setmetatable(titlebar, { __call = function(_, ...)
-    return init(...)
+    return titlebar:init(...)
 end })

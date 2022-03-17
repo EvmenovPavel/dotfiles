@@ -16,7 +16,7 @@ local shape    = {
     end
 }
 
-local function init(theme)
+function tasklist:init(theme)
     theme.tasklist_disable_icon      = false
     theme.tasklist_disable_task_name = false
 
@@ -50,5 +50,5 @@ local function init(theme)
 end
 
 return setmetatable(tasklist, { __call = function(_, ...)
-    return init(...)
+    return tasklist:init(...)
 end })

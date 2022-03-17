@@ -14,7 +14,7 @@ function button:new(args)
     local args             = args or {}
 
     local mod              = args.mod or {}
-    local _button          = args._button or capi.event.mouse.button_click_left
+    local _button          = args._button or mouse.button_click_left
 
     local press            = args.press or function()
         log:debug("args.press")

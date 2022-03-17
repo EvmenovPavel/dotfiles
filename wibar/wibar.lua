@@ -3,6 +3,8 @@ local awful     = require("awful")
 local wibox     = require("wibox")
 local widgets   = require("widgets")
 
+local mouse     = require("lib.event").mouse
+
 local mywibar   = {}
 
 function mywibar:w_left(s)
@@ -22,16 +24,16 @@ end
 function screen_if_test(s)
     local w    = capi.widget.button()
 
-    local s_id = capi.wmapi:screen_id(s)
+    local s_id = wmapi:screen_id(s)
 
     w:set_text("Screen: " .. tostring(s_id))
-    w:set_key(capi.event.mouse.button_click_left)
+    w:set_key(mouse.button_click_left)
 
     return w:get()
 end
 
 function mywibar:w_right(s)
-    if capi.wmapi:is_screen_primary(s) then
+    if wmapi:is_screen_primary(s) then
         return {
             widgets.systray(s),
             widgets.keyboard(),
@@ -46,22 +48,22 @@ function mywibar:w_right(s)
             widgets.calendar(),
 
             widgets.reboot(),
-            widgets.loggingui(),
-            widgets.xrandr(),
+            --widgets.loggingui(),
+            --widgets.xrandr(),
 
-            capi.widget:checkbox():get(),
+            --widget:checkbox():get(),
 
+            --screen_if_test(s),
+
+            layout = wibox.layout.fixed.horizontal
+        }
+    else
+        return {
             screen_if_test(s),
 
             layout = wibox.layout.fixed.horizontal
         }
     end
-
-    return {
-        screen_if_test(s),
-
-        layout = wibox.layout.fixed.horizontal
-    }
 end
 
 local function init(s)
@@ -85,29 +87,29 @@ local function init(s)
         layout = wibox.layout.align.horizontal,
     }
 
-    local function mouse_move()
-        local id_screen = capi.wmapi:screen_id(capi.mouse.screen)
-        local coords    = capi.wmapi:mouse_coords()
-        local geometry  = wibar:geometry()
-
-        local SIZE      = {
-            x = -1,
-            y = 5
-        }
-
-        local x         = coords.x - geometry.width * id_screen
-
-        if (x > SIZE.x) and (SIZE.y > coords.y) then
-            capi.mouse.coords {
-                x = geometry.width * id_screen + SIZE.x,
-                y = coords.y
-            }
-        end
-
-    end
+    --local function mouse_move()
+    --    local id_screen = wmapi:screen_id(capi.mouse.screen)
+    --    local coords    = wmapi:mouse_coords()
+    --    local geometry  = wibar:geometry()
+    --
+    --    local SIZE      = {
+    --        x = -1,
+    --        y = 5
+    --    }
+    --
+    --    local x         = coords.x - geometry.width * id_screen
+    --
+    --    if (x > SIZE.x) and (SIZE.y > coords.y) then
+    --        capi.mouse.coords {
+    --            x = geometry.width * id_screen + SIZE.x,
+    --            y = coords.y
+    --        }
+    --    end
+    --
+    --end
 
     --wibar:connect_signal("mouse::move", mouse_move)
-    --capi.wmapi:update(mouse_move, 0.01)
+    --wmapi:update(mouse_move, 0.01)
 
     return mywibar
 end

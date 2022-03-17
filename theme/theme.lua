@@ -19,11 +19,11 @@ theme.position        = {
     right  = "right",
 }
 
-require("theme.ttitlebar")(theme)
-require("theme.ttaglist")(theme)
-require("theme.ttasklist")(theme)
-require("theme.tmenu")(theme)
-require("theme.twibar")(theme)
+require("theme.titlebar")(theme)
+require("theme.taglist")(theme)
+require("theme.tasklist")(theme)
+require("theme.menu")(theme)
+require("theme.wibar")(theme)
 
 
 -- ### Background ### --
@@ -65,15 +65,15 @@ theme.border_normal            = theme.bg_normal
 theme.border_focusw            = "#ff8a65"
 theme.border_marked            = theme.fg_urgent
 
-capi.color                     = {
+theme.color                    = {
     active         = "#275EFE",
     active_inner   = "#ffffff",
     focus          = "#becfff",
     border         = "#BBC1E1",
     border_hover   = "#275EFE",
-    background     = "#ffffff";
-    disabled       = "#F6F8FF";
-    disabled_inner = "#E1E6F9";
+    background     = "#ffffff",
+    disabled       = "#F6F8FF",
+    disabled_inner = "#E1E6F9",
 }
 
 theme.shape_border_width_enter = 1

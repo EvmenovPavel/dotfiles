@@ -13,7 +13,7 @@ function radiobox:create(text, func)
                                     widget  = wibox.widget.checkbox
                                 })
 
-    ret.textbox  = capi.widget:textbox(text)
+    ret.textbox  = widget:textbox(text)
 
     ret.outline  = wibox.widget({
                                     {
@@ -27,8 +27,8 @@ function radiobox:create(text, func)
 
     ret.bg       = wibox.widget({
                                     ret.outline,
-                                    shape_border_color = capi.color.border_hover,
-                                    bg                 = capi.color.active_inner,
+                                    shape_border_color = theme.color.border_hover,
+                                    bg                 = theme.color.active_inner,
                                     shape              = gears.shape.rounded_bar,
                                     widget             = wibox.container.background,
                                 })
@@ -50,14 +50,14 @@ function radiobox:create(text, func)
                                 })
 
     ret.widget:connect_signal(
-            capi.event.signals.mouse.enter,
+            signals.mouse.enter,
             function()
                 ret.bg.shape_border_width = beautiful.shape_border_width_enter
             end
     )
 
     ret.widget:connect_signal(
-            capi.event.signals.mouse.leave,
+            signals.mouse.leave,
             function()
                 if not ret.checked then
                     ret.bg.shape_border_width = beautiful.shape_border_width_leave
@@ -66,21 +66,21 @@ function radiobox:create(text, func)
     )
 
     ret.widget:connect_signal(
-            capi.event.signals.button.release,
+            signals.button.release,
             function()
                 func()
             end
     )
 
     function ret:enable()
-        ret.radiobox.bg = capi.color.active_inner
-        ret.widget.bg   = capi.color.border_hover
-        ret.outline.bg  = capi.color.border_hover
+        ret.radiobox.bg = theme.color.active_inner
+        ret.widget.bg   = theme.color.border_hover
+        ret.outline.bg  = theme.color.border_hover
     end
 
     function ret:disable()
-        ret.widget.bg  = capi.color.active_inner
-        ret.outline.bg = capi.color.active_inner
+        ret.widget.bg  = theme.color.active_inner
+        ret.outline.bg = theme.color.active_inner
     end
 
     return ret

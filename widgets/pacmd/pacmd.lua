@@ -29,7 +29,7 @@ local function init()
           function(widget, stdout)
               --log:debug(stdout)
 
-              if capi.wmapi:is_empty(stdout) then
+              if wmapi:is_empty(stdout) then
                   --awful.spawn("pacmd load-module module-loopback latency_msec=5", false)
                   widget.checked = false
               else

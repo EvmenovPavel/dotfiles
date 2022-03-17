@@ -1,8 +1,8 @@
-local wibox           = require("wibox")
+local wibox          = require("wibox")
 
-local layout_vertical = {}
+local verticallayout = {}
 
-function layout_vertical:create()
+function verticallayout:create()
     local layout  = {}
 
     layout.widget = wibox.widget({
@@ -49,4 +49,4 @@ function layout_vertical:create()
     return layout
 end
 
-return layout_vertical
+return verticallayout

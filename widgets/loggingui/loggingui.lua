@@ -3,16 +3,10 @@ local wibox         = require("wibox")
 local gears         = require("gears")
 local resources     = require("resources")
 
-local mouse         = capi.event.signals.mouse
-local button        = capi.event.signals.button
+--local mouse         = signals.mouse
+--local button        = signals.button
 
 local loggingui     = {}
-
-local placement     = {
-    top       = "top",
-    top_right = "top_right",
-    top_left  = "top_left"
-}
 
 local w_volume_icon = wibox.widget {
     image  = resources.widgets.volume.on,
@@ -25,11 +19,11 @@ function loggingui:toggle(popupWidget, calendarWidget)
         popupWidget:set_widget(calendarWidget)
         popupWidget.visible = not popupWidget.visible
     else
-        if placement == "top" then
+        if placement.top == "top" then
             awful.placement.top(popupWidget, { margins = { top = 30 }, parent = awful.screen.focused() })
-        elseif placement == "top_right" then
+        elseif placement.top_right == "top_right" then
             awful.placement.top_right(popupWidget, { margins = { top = 30, right = 10 }, parent = awful.screen.focused() })
-        elseif placement == "bottom_right" then
+        elseif placement.bottom_right == "bottom_right" then
             awful.placement.bottom_right(popupWidget, { margins = { bottom = 30, right = 10 }, parent = awful.screen.focused() })
         else
             awful.placement.top(popupWidget, { margins = { top = 30 }, parent = awful.screen.focused() })
@@ -50,8 +44,6 @@ local function emit_signal(stdout)
 end
 
 function loggingui:init()
-    local placement       = placement.top_right
-
     local calendarWidget  = wibox.widget {
         date          = os.date("*t"),
         long_weekdays = true,
@@ -76,17 +68,17 @@ function loggingui:init()
 
     w_volume_icon:buttons(
             awful.util.table.join(
-                    capi.wmapi:button({
-                                          event = mouse.button_click_scroll_down,
-                                          func  = function()
-                                              popupWidget:set_widget(calendarWidget)
-                                          end
-                                      }),
-                    capi.wmapi:button({ event = mouse.button_click_scroll,
-                                        func  = function()
-                                            popupWidget:set_widget(calendarWidget)
-                                        end
-                                      })
+                    wmapi:button({
+                                     event = mouse.button_click_scroll_down,
+                                     func  = function()
+                                         popupWidget:set_widget(calendarWidget)
+                                     end
+                                 }),
+                    wmapi:button({ event = mouse.button_click_scroll,
+                                   func  = function()
+                                       popupWidget:set_widget(calendarWidget)
+                                   end
+                                 })
             )
     )
 

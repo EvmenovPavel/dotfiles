@@ -1,7 +1,8 @@
 local awful                   = require("awful")
 local wibox                   = require("wibox")
 local beautiful               = require("beautiful")
-local mouse                   = capi.event.mouse
+
+local event                   = require("lib.event")
 
 local fun                     = require("functions")
 
@@ -208,13 +209,13 @@ client.connect_signal("request::titlebars",
                           end
 
                           local buttons  = awful.util.table.join(
-                                  awful.button({}, capi.event.mouse.button_click_left,
+                                  awful.button({}, event.mouse.button_click_left,
                                                function()
                                                    client.focus = c
                                                    c:raise()
                                                    awful.mouse.client.move(c)
                                                end),
-                                  awful.button({}, mouse.button_click_right,
+                                  awful.button({}, event.mouse.button_click_right,
                                                function()
                                                    if c.floating then
                                                        client.focus = c

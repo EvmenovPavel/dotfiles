@@ -3,7 +3,8 @@ local beautiful = require("beautiful")
 local wibox     = require("wibox")
 local gears     = require("gears")
 
-local markup    = capi.markup
+local mouse     = require("lib.event").mouse
+local signals   = require("lib.event").signals
 
 local calendar  = {}
 
@@ -66,12 +67,6 @@ local calendar_themes = {
         header_fg      = "#F92672",
         border         = "#75715E"
     }
-}
-
-local placement       = {
-    top       = "top",
-    top_right = "top_right",
-    top_left  = "top_left"
 }
 
 local function init(args)
@@ -202,14 +197,14 @@ local function init(args)
     end
 
     local textclock = wibox.widget({
-                                       wibox.widget.textclock(markup.font(beautiful.font, beautiful.datetime), 1),
+                                       wibox.widget.textclock(beautiful.datetime, 1),
                                        widget = wibox.layout.fixed.horizontal,
                                    })
 
     textclock:connect_signal(
-            capi.event.signals.button.release,
+            signals.button.release,
             function(_, _, _, button)
-                if button == capi.event.mouse.button_click_left then
+                if button == mouse.button_click_left then
                     toggle()
                 end
             end
@@ -217,8 +212,8 @@ local function init(args)
 
     --textclock:buttons(
     --        awful.util.table.join(
-    --                capi.wmapi:button({
-    --                                      event = capi.event.mouse.button_click_scroll_down,
+    --                wmapi:button({
+    --                                      event = mouse.button_click_scroll_down,
     --                                      func  = function()
     --                                          local a = calendarWidget:get_date()
     --                                          a.month = a.month + 1
@@ -227,7 +222,7 @@ local function init(args)
     --                                          popupWidget:set_widget(calendarWidget)
     --                                      end
     --                                  }),
-    --                capi.wmapi:button({ event = capi.event.mouse.button_click_scroll,
+    --                wmapi:button({ event = mouse.button_click_scroll,
     --                                    func  = function()
     --                                        local a = calendarWidget:get_date()
     --                                        a.month = a.month - 1

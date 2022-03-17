@@ -3,6 +3,9 @@ local wibox     = require("wibox")
 local gears     = require("gears")
 local resources = require("resources")
 
+local mouse     = require("lib.event").mouse
+local signals   = require("lib.event").signals
+
 local tasklist  = {}
 
 local function create_buttons(buttons, object)
@@ -47,7 +50,7 @@ local function list_update(widget, buttons, label, data, objects)
             w_text    = cache.tt
         else
             -- CLOSE
-            w_bm_close = capi.wmapi:container()
+            w_bm_close = wmapi:container()
             w_bm_close:set_widget(wibox.widget {
                 {
                     widget = wibox.widget.imagebox,
@@ -62,7 +65,7 @@ local function list_update(widget, buttons, label, data, objects)
             w_bm_close       = wibox.container.margin(w_bm_close, 4, 4, 4, 4)
 
             w_bm_close:buttons(gears.table.join(
-                    awful.button({}, capi.event.mouse.button_click_left, nil,
+                    awful.button({}, mouse.button_click_left, nil,
                                  function()
                                      o.kill(o)
                                  end))
@@ -101,7 +104,7 @@ local function list_update(widget, buttons, label, data, objects)
 
 
             -- WIDGET
-            bg_clickable = capi.wmapi:container()
+            bg_clickable = wmapi:container()
             bg_clickable:set_widget(wibox.widget {
                 w_bm_icon,
                 w_bm_text,
@@ -175,31 +178,31 @@ end
 
 function tasklist:tasklist_buttons()
     return awful.util.table.join(
-            capi.wmapi:button({
-                                  event = capi.event.mouse.button_click_left,
-                                  func  = function(c)
-                                      if c == client.focus then
-                                          c.minimized = true
-                                      else
-                                          c.minimized = false
-                                          if not c:isvisible() and c.first_tag then
-                                              c.first_tag:view_only()
-                                          end
+            wmapi:button({
+                             event = mouse.button_click_left,
+                             func  = function(c)
+                                 if c == client.focus then
+                                     c.minimized = true
+                                 else
+                                     c.minimized = false
+                                     if not c:isvisible() and c.first_tag then
+                                         c.first_tag:view_only()
+                                     end
 
-                                          client.focus = c
-                                          c:raise()
-                                      end
-                                  end }),
+                                     client.focus = c
+                                     c:raise()
+                                 end
+                             end }),
 
-            capi.wmapi:button({
-                                  event = capi.event.mouse.button_click_right,
-                                  func  = function()
-                                      awful.menu.client_list({ theme = { width = 250 } })
-                                  end })
+            wmapi:button({
+                             event = mouse.button_click_right,
+                             func  = function()
+                                 awful.menu.client_list({ theme = { width = 250 } })
+                             end })
     )
 end
 
-local function init(s)
+function tasklist:init(s)
     return awful.widget.tasklist {
         screen          = s,
         style           = {},
@@ -240,5 +243,5 @@ local function init(s)
 end
 
 return setmetatable(tasklist, { __call = function(_, ...)
-    return init(...)
+    return tasklist:init(...)
 end })

@@ -2,7 +2,7 @@ local resources = require("resources")
 
 local menu      = {}
 
-local function init(theme)
+function menu:init(theme)
     theme.menu_submenu_icon = resources.awesome
     theme.menu_height       = 40
     theme.menu_width        = 140
@@ -17,5 +17,5 @@ local function init(theme)
 end
 
 return setmetatable(menu, { __call = function(_, ...)
-    return init(...)
+    return menu:init(...)
 end })

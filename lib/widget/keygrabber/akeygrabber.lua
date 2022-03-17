@@ -44,8 +44,8 @@ function keygrabber:toggle(args)
 end
 
 function keygrabber:create()
-    self.mod_key    = capi.event.key.esc
-    self.key_switch = capi.event.key.tab
+    self.mod_key    = key.esc
+    self.key_switch = key.tab
 
     self.is_active  = false
 

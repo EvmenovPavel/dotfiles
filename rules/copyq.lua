@@ -15,7 +15,7 @@ local function init()
             height            = 290,
 
             callback          = function(c)
-                local coords = capi.wmapi:mouse_coords()
+                local coords = wmapi:mouse_coords()
 
                 if (coords.y - c.height < 0) then
                     c.x = coords.x

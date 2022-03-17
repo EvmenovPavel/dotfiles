@@ -13,10 +13,10 @@ local function starts_with(str, start)
 end
 
 local function init()
-    --local wTextbox = capi.widget:textbox({ forced_width = 75 })
-    --local wGraph   = capi.widget:graph()
+    --local wTextbox = widget:textbox({ forced_width = 75 })
+    --local wGraph   = widget:graph()
     --
-    --local popup    = capi.widget:popup()
+    --local popup    = widget:popup()
     --
     --local toggle   = function()
     --    if popup.visible then
@@ -29,7 +29,7 @@ local function init()
     --local l_cpu    = {}
     --local bash     = [[bash -c "cat /proc/stat | grep "^cpu." ; ps -eo "%p|%c|%C|" -o "%mem" -o "|%a" --sort=-%cpu | head -11 | tail -n +2"]]
     --
-    --capi.wmapi:watch(bash, 3,
+    --wmapi:watch(bash, 3,
     --                 function(stdout)
     --                     local i = 1
     --                     for line in stdout:gmatch("[^\r\n]+") do
@@ -55,7 +55,7 @@ local function init()
     --                             end
     --
     --                             local row = wibox.widget {
-    --                                 capi.widget:textbox {
+    --                                 widget:textbox {
     --                                     markup = name .. "  [" .. math.modf(diff_usage) .. "%]"
     --                                 },
     --                                 {
@@ -104,9 +104,9 @@ local function init()
     --    layout = wibox.layout.align.horizontal
     --}
     --
-    ----capi.widget:button({
+    ----widget:button({
     --                       --widget = w,
-    --                       --event  = capi.event.mouse.button_click_left,
+    --                       --event  = mouse.button_click_left,
     --                       --func   = toggle
     --                   --})
     --

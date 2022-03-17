@@ -1,0 +1,70 @@
+================================================================================
+                                                                 *sqlite.readme*
+
+SQLite/LuaJIT binding and highly opinionated wrapper for storing, retrieving,
+caching, persisting, querying, and connecting to SQLite databases.
+
+To find out more visit https://github.com/tami5/sqlite.lua
+
+Help usage in neovim: ignore ||
+  :h |sqlite.readme|         | open help readme
+  :h |sqlite_schema_key|     | open a class or type
+  :h |sqlite.tbl|            | show help for sqlite_tbl.
+  :h |sqlite.db|             | show help for sqlite_tbl.
+  :h sqlite.db:...           | show help for a sqlite_db method.
+  :h sqlite.tbl:...          | show help for a sqlite_tbl method.
+
+sqlite.lua types:
+
+sqlite_schema_key                                          *sqlite_schema_key*
+    Sqlite schema key fileds. {name} is the only required field.
+
+    Fields: ~
+        {cid}       (number)                  column index.
+        {name}      (string)                  column key.
+        {type}      (string)                  column type.
+        {required}  (boolean)                 whether it's required.
+        {primary}   (boolean)                 whether it's a primary key.
+        {default}   (string)                  default value when null.
+        {reference} (string)                  "table_name.column_key"
+        {on_delete} (sqlite_trigger)          trigger on row delete.
+        {on_update} ( table<string, string>)
+
+
+sqlite_opts                                                      *sqlite_opts*
+    Sqlite3 Options (TODO: add sqlite option fields and description)
+
+
+sqlite_query_update                                      *sqlite_query_update*
+    Query fileds used when calling |sqlite:update| or |sqlite_tbl:update|
+
+    Fields: ~
+        {where} (table)  filter down values using key values.
+        {set}   (table)  key and value to updated.
+
+
+sqlite_query_select                                      *sqlite_query_select*
+    Query fileds used when calling |sqlite:select| or |sqlite_tbl:get|
+
+    Fields: ~
+        {where}    (table)   filter down values using key values.
+        {keys}     (table)   keys to include. (default all)
+        {join}     (table)   (TODO: support)
+        {order_by} (table)   { asc = "key", dsc = {"key", "another_key"} }
+        {limit}    (number)  the number of result to limit by
+        {contains} (table)   for sqlite glob ex. { title = "fix*" }
+
+
+sqlite_flags                                                    *sqlite_flags*
+    Sqlite3 Error Flags (TODO: add sqlite error flags value and description)
+
+
+sqlite_db_status                                            *sqlite_db_status*
+    Status returned from |sqlite:status()|
+
+    Fields: ~
+        {msg}  (string)
+        {code} (sqlite_flags)
+
+
+

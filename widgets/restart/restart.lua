@@ -1,19 +1,19 @@
-local funs    = require("functions")
+local widget  = require("lib.widget")
 
 local restart = {}
 
-local function init()
-    local w = capi.widget.button()
+function restart:init()
+    local w = widget:button()
 
     w:set_text("Restart")
-    w:set_key(capi.event.mouse.button_click_left)
+    w:set_key(mouse.button_click_left)
     w:set_func(function()
-        funs:on_restart()
+        awesome.restart()
     end)
 
     return w:get()
 end
 
 return setmetatable(restart, { __call = function(_, ...)
-    return init(...)
+    return restart:init(...)
 end })

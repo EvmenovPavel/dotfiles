@@ -26,7 +26,7 @@ function hradiobox:create()
                 end
 
                 widget:connect_signal(
-                        capi.event.signals.button.release,
+                        signals.button.release,
                         function()
                             for _, item in ipairs(ret.table) do
                                 item:disable()

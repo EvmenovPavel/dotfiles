@@ -1,79 +1,79 @@
 local widget = {}
 
 function widget:button(text, src, key, event, func)
-    return require("wmapi.widget.button"):create(text, src, key, event, func)
+    return require("lib.widget.button.abutton"):create(text, src, key, event, func)
 end
 
 function widget:textbox(text, valign, align)
-    return require("wmapi.widget.textbox"):create(text, valign, align)
+    return require("lib.widget.textbox.atextbox"):create(text, valign, align)
 end
 
 function widget:checkbox()
-    return require("wmapi.widget.checkbox"):create()
+    return require("lib.widget.checkbox.acheckbox"):create()
 end
 
 function widget:combobox(argc)
-    return require("wmapi.widget.combobox"):create(argc)
+    return require("lib.widget.combobox.acombobox"):create(argc)
 end
 
 function widget:graph(argc)
-    return require("wmapi.widget.graph"):create(argc)
+    return require("lib.widget.graph.agraph"):create(argc)
 end
 
 function widget:imagebox(argc)
-    return require("wmapi.widget.imagebox"):create(argc)
+    return require("lib.widget.imagebox.aimagebox"):create(argc)
 end
 
 function widget:launcher(argc)
-    return require("wmapi.widget.launcher"):create(argc)
+    return require("lib.widget.launcher.alauncher"):create(argc)
 end
 
 function widget:piechart(argc)
-    return require("wmapi.widget.piechart"):create(argc)
+    return require("lib.widget.piechart.apiechart"):create(argc)
 end
 
 function widget:popup(argc)
-    return require("wmapi.widget.popup"):create(argc)
+    return require("lib.widget.popup.apopup"):create(argc)
 end
 
 function widget:progressbar(argc)
-    return require("wmapi.widget.progressbar"):create(argc)
+    return require("lib.widget.progressbar.aprogressbar"):create(argc)
 end
 
 function widget:separator(argc)
-    return require("wmapi.widget.separator"):create(argc)
+    return require("lib.widget.separator.aseparator"):create(argc)
 end
 
 function widget:slider(argc)
-    return require("wmapi.widget.slider"):create(argc)
+    return require("lib.widget.slider.aslider"):create(argc)
 end
 
 function widget:textclock(argc)
-    return require("wmapi.widget.textclock"):create(argc)
+    return require("lib.widget.textclock.atextclock"):create(argc)
 end
 
 function widget:box(argc)
-    return require("wmapi.widget.box"):create(argc)
+    return require("lib.widget.box.abox"):create(argc)
 end
 
 function widget:switch(argc)
-    return require("wmapi.widget.switch"):create(argc)
+    return require("lib.widget.switch.aswitch"):create(argc)
 end
 
 function widget:hradiobox()
-    return require("wmapi.widget.radiobox.hradiobox"):create()
+    return require("lib.widget.hradiobox.ahradiobox"):create()
 end
 
 function widget:vradiobox()
-    return require("wmapi.widget.radiobox.vradiobox"):create()
+    return require("lib.widget.vradiobox.avradiobox"):create()
 end
 
-function widget:layout_vertical(argc)
-    return require("wmapi.widget.layout_vertical"):create(argc)
+function widget:verticallayout(argc)
+    return require("lib.widget.verticallayout.averticallayout"):create(argc)
 end
 
-function widget:layout_horizontal(argc)
-    return require("wmapi.widget.layout_horizontal"):create(argc)
+function widget:horizontallayout(argc)
+    return require("lib.widget.horizontallayout.ahorizontallayout"):create(argc)
 end
 
 return widget

@@ -49,37 +49,39 @@ function brightness:on_brightness()
     )
 end
 
+function brightness:widget_brightness_adjust()
+    if brightness_adjust.visible then
+        hide_brightness_adjust:again()
+    else
+        brightness_adjust.visible = true
+        hide_brightness_adjust:start()
+        hide_brightness_adjust:again()
+    end
+
+    --local value            = w_brightness_bar.value
+    --w_brightness_bar.value = tonumber(value) .. math.modf(tostring(brightness_value))
+end
+
 awesome.connect_signal("brightness_change",
                        function(stdout)
-
                            if ((stdout == "+") or (stdout == "-")) then
-                               local l = "sudo brightness " .. stdout .. tostring(brightness_value)
-                               log:debug("sudo brightness: " .. l)
-
-                               awful.spawn(l, false)
-
-                               if brightness_adjust.visible then
-                                   hide_brightness_adjust:again()
-                               else
-                                   brightness_adjust.visible = true
-                                   hide_brightness_adjust:start()
-                                   hide_brightness_adjust:again()
-                               end
-
-                               brightness:on_brightness()
+                               awful.spawn("sudo brightness " .. stdout .. math.modf(tostring(brightness_value)), false)
+                               --brightness:update_brightness_value()
+                               --wmapi:sleep(0.2)
+                               brightness:widget_brightness_adjust()
                            elseif (stdout == "disable") then
                                brightness_adjust.visible = false
                            end
                        end
 )
 
-function get_current_dir()
+function brightness:get_current_dir()
     local dir_intel = "/sys/class/backlight/intel_backlight"
     local dir_amd   = "/sys/class/backlight/amdgpu_bl0"
 
-    if (not capi.wmapi:is_dir(dir_amd)) then
+    if (not wmapi:is_dir(dir_amd)) then
         brightness_dir = dir_amd;
-    elseif (not capi.wmapi:is_dir(dir_intel)) then
+    elseif (not wmapi:is_dir(dir_intel)) then
         brightness_dir = dir_intel
     else
         log:debug("Error: не найдена папка ни intel_backlight и amdgpu_bl0")
@@ -89,41 +91,47 @@ function get_current_dir()
     return false
 end
 
-function get_brightness_value()
-    brightness_current = capi.wmapi:read_file(brightness_dir .. "/brightness")
+function brightness:update_brightness_value()
+    brightness_current = wmapi:read_file(brightness_dir .. "/brightness")
     if (brightness_current == nil) then
         return true
     end
     brightness_current = tonumber(brightness_current)
 
-    brightness_max     = capi.wmapi:read_file(brightness_dir .. "/max_brightness")
+    brightness_max     = wmapi:read_file(brightness_dir .. "/max_brightness")
     if (brightness_max == nil) then
         return true
     end
-    brightness_max   = tonumber(brightness_max)
+    brightness_max         = tonumber(brightness_max)
 
-    brightness_value = tonumber(brightness_max) / 10
+    brightness_value       = tonumber(brightness_max) / 10
+
+    w_brightness_bar.value = brightness_current
 
     return false
 end
 
-local function init()
-    if (get_current_dir()) then
+function brightness:init()
+    if (self:get_current_dir()) then
         return
     end
 
-    if (get_brightness_value()) then
+    if (self:update_brightness_value()) then
         return
     end
+
+    wmapi:update(function()
+        self:update_brightness_value()
+    end, 0.2)
 
     local offsetx           = 48
     local offsety           = 300
 
-    local screen_primary_id = capi.wmapi:screen_primary_id()
+    local screen_primary_id = wmapi:screen_primary_id()
     local width             = 0
 
     if (screen_primary_id == 1) then
-        width = capi.wmapi:screen_width(screen_primary_id)
+        width = wmapi:screen_width(screen_primary_id)
     else
         for i = 1, screen.count() do
             if screen_primary_id == i then
@@ -137,7 +145,7 @@ local function init()
 
     brightness_adjust = wibox({
                                   x       = width - offsetx - 10,
-                                  y       = capi.wmapi:screen_height() / 2 - offsety / 2,
+                                  y       = wmapi:screen_height() / 2 - offsety / 2,
 
                                   width   = offsetx,
                                   height  = offsety,
@@ -161,5 +169,5 @@ local function init()
 end
 
 return setmetatable(brightness, { __call = function(_, ...)
-    return init(...)
+    return brightness:init(...)
 end })

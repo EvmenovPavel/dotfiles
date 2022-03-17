@@ -1,11 +1,13 @@
 local awful     = require("awful")
 local gears     = require("gears")
+
 local programms = require("programms")
+
 local hotkeys   = require("keys.hotkeys")
 local switcher  = require("widgets.switcher")
 local fun       = require("functions")
 
-local key       = capi.event.key
+local key       = require("lib.event").key
 
 local global    = gears.table.join(
 --[[ AWESOME ]]--
@@ -26,7 +28,6 @@ local global    = gears.table.join(
 
         awful.key({ key.win, key.shift }, key.v,
                   function()
-                      --capi.undermouse = true
                       awful.util.spawn("copyq show")
                   end,
                   { description = "+10%", group = "hotkeys" }
@@ -173,19 +174,20 @@ local global    = gears.table.join(
         awful.key({ key.win, key.shift }, key.p,
                   function()
                       fun:on_run(programms.terminal .. " xev | grep 'keycode'")
-                  end),
+                  end)
+--,
 
 
 -- Test key
-        awful.key({ }, key.test.XF86Search,
-                  function()
-                      fun:on_run(programms.htop)
-                  end, hotkeys.command.htop),
-
-        awful.key({ }, key.test.XF86Favorites,
-                  function()
-                      fun:on_run(programms.htop)
-                  end, hotkeys.command.htop)
+--        awful.key({ }, key.test.XF86Search,
+--                  function()
+--                      fun:on_run(programms.htop)
+--                  end, hotkeys.command.htop),
+--
+--        awful.key({ }, key.test.XF86Favorites,
+--                  function()
+--                      fun:on_run(programms.htop)
+--                  end, hotkeys.command.htop)
 
 )
 
