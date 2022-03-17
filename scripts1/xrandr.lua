@@ -1,21 +1,21 @@
-local xrandr   = require("modules.foggy.xrandr")
+--local xrandr   = require("modules.foggy.xrandr")
 
 local s_xrandr = {}
 
 local function init()
     capi.wmapi:update(function()
-        local outputs = xrandr.info().outputs
+        --local outputs = xrandr.info().outputs
+        --
+        --local count   = ""
+        --for name, output in pairs(outputs) do
+        --    if output.connected then
+        --        count = "--on:" .. name .. "\n\t" .. count
+        --    else
+        --        count = "--off:" .. name .. "\n\t" .. count
+        --    end
+        --end
 
-        local count   = ""
-        for name, output in pairs(outputs) do
-            if output.connected then
-                count = "--on:" .. name .. "\n\t" .. count
-            else
-                count = "--off:" .. name .. "\n\t" .. count
-            end
-        end
-
-        --log:debug(count)
+        ---- log:debug(count)
 
         --b:set_text("screens: " .. tostring(count))
 

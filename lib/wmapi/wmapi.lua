@@ -1,17 +1,18 @@
-local awful = require("awful")
-local wibox = require("wibox")
-local gears = require("gears")
+local awful   = require("awful")
+local wibox   = require("wibox")
+local gears   = require("gears")
 
-local posix = require("posix")
-local pid   = posix.getpid("pid")
+local mouse   = require("lib.event").mouse
+local signals = require("lib.event").signals
 
-local lfs   = require("lfs")
+local posix   = require("posix")
+local pid     = posix.getpid("pid")
 
-local spawn = require("awful.spawn")
+local lfs     = require("lfs")
 
-local wmapi = {}
+local spawn   = require("awful.spawn")
 
-local open  = io.open
+local wmapi   = {}
 
 function wmapi:layout_align_horizontal(items)
     --local widget = wibox.widget({
@@ -139,7 +140,7 @@ function wmapi:is_screen_primary(s)
 end
 
 function wmapi:screen_primary_id()
-    local primary = capi.primary or 1
+    local primary = 1
 
     if screen[primary] == nil then
         return 1
@@ -181,7 +182,7 @@ function wmapi:is_attributes(path, attributes)
 end
 
 function wmapi:read_file(path)
-    local file = open(path, "rb") -- r read mode and b binary mode
+    local file = io.open(path, "rb") -- r read mode and b binary mode
 
     if not file then
         return nil
@@ -236,7 +237,7 @@ function wmapi:easy_async_with_shell(bash)
 
     awful.spawn.easy_async_with_shell(bash, function(result)
         last_result = result
-        capi.log:message(tostring(last_result))
+        log:message(tostring(last_result))
     end)
 
     return last_result
@@ -297,7 +298,7 @@ function wmapi:button(args)
 
     return awful.button(
             { args.key or nil },
-            args.event or capi.event.mouse.button_click_left,
+            args.event or mouse.button_click_left,
             args.func or function()
                 log:debug("Error args.func = nil")
             end
@@ -324,10 +325,10 @@ end
 -- и начинаешь скролить, то, срабатывает евент
 
 --[[
-    --capi.wmapi:connect_signal(
+    --wmapi:connect_signal(
     --        ret.widget,
-    --        capi.event.signals.button.release,
-    --        capi.event.mouse.button_click_left,
+    --        signals.button.release,
+    --        mouse.button_click_left,
     --        function()
     --            ret:set_checked(not ret.checked)
     --        end
@@ -339,8 +340,8 @@ function wmapi:connect_signal(widget, signal, event, func)
         return
     end
 
-    local signal = signal or capi.event.signals.button.release
-    local event  = event or capi.event.mouse.button_click_left
+    local signal = signal or signals.button.release
+    local event  = event or mouse.button_click_left
     local widget = widget or nil
 
     local func   = func or function()
@@ -365,7 +366,7 @@ function wmapi:container(widget)
     }
 
     widget:connect_signal(
-            capi.event.signals.mouse.enter,
+            signals.mouse.enter,
             function(self, _, _, button)
                 self.bg = "#ffffff11"
                 local w = _G.mouse.current_wibox
@@ -377,7 +378,7 @@ function wmapi:container(widget)
     )
 
     widget:connect_signal(
-            capi.event.signals.mouse.leave,
+            signals.mouse.leave,
             function(self, _, _, button)
                 self.bg = "#ffffff00"
                 if self.old_wibox then
@@ -388,14 +389,14 @@ function wmapi:container(widget)
     )
 
     widget:connect_signal(
-            capi.event.signals.button.press,
+            signals.button.press,
             function(self, _, _, button)
                 self.bg = "#ffffff22"
             end
     )
 
     widget:connect_signal(
-            capi.event.signals.button.release,
+            signals.button.release,
             function(self, _, _, button)
                 self.bg = "#ffffff11"
             end
