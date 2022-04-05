@@ -6,7 +6,7 @@ local gears                        = require("gears")
 
 local timer                        = gears.timer
 local unpack                       = table.unpack
-local debug                        = debug
+--local debug                        = debug
 local pairs                        = pairs
 
 local capi                         = {
@@ -56,6 +56,7 @@ switcher.altTabIndex               = 1
 
 --switcher.source                    = string.sub(debug.getinfo(1, "S").source, 2)
 --switcher.path                      = string.sub(switcher.source, 1, string.find(switcher.source, "/[^/]*$"))
+--switcher.path                      = wmapi:path(debug.getinfo(1))
 switcher.path                      = wmapi:path(debug.getinfo(1))
 switcher.noicon                    = switcher.path .. "error.png"
 

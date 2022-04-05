@@ -1,0 +1,25 @@
+[Fonts]
+Interface Text (Font|Size)
+Document Text (Font|Size)
+Monospace Text (Font|Size)
+Legace Window Titles (Font|Size)
+
+Hinting (Full|Medium|Slight|None)
+
+Scaling Factor [0.50-3.00]
+
+
+>> Appearance
+[Themes]
+Applications [name]
+Cursor [name]
+Icons [name]
+Sound [name]
+
+[Background]
+Image [name]
+Adjustment [Centered|None|Scaled|Spanned|Stretched|Wallpaper|Zoom]
+
+[Lock Screen]
+Image [name]
+Adjustment [Centered|None|Scaled|Spanned|Stretched|Wallpaper|Zoom]

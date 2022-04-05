@@ -1,0 +1,167 @@
+#include "DebugLog.hpp"
+
+#include "utils/utils.hpp"
+
+#include <cassert>
+
+#include <QMessageBox>
+
+#ifdef _WIN32
+
+    #include <process.h>
+
+#elif __linux
+    #include <unistd.h>
+#endif
+
+using namespace Logger;
+
+enum ws_log_level
+{
+    LOG_LEVEL_NONE,       /* not user facing */
+    LOG_LEVEL_NOISY,      /* extra verbose debugging */
+    LOG_LEVEL_DEBUG,      /* normal debugging level */
+    LOG_LEVEL_INFO,       /* chatty status but not debug */
+    LOG_LEVEL_MESSAGE,    /* default level, doesn't show file/function name */
+    LOG_LEVEL_WARNING,    /* can be set to fatal */
+    LOG_LEVEL_CRITICAL,   /* always enabled, can be set to fatal */
+    LOG_LEVEL_ERROR,      /* "error" is always fatal (aborts) */
+    LOG_LEVEL_LAST
+};
+
+#define SIZE_LOG_FILE       (1024 * 1024 * 5)
+#define DEFAULT_PROGNAME    "PID"
+QString logPath;
+
+#define LOG_DOMAIN_QTUI       "GUI"
+
+const QString ws_log_level_to_string(enum ws_log_level level)
+{
+    switch (level)
+    {
+        case LOG_LEVEL_NONE:
+            return "(zero)";
+        case LOG_LEVEL_ERROR:
+            return "ERROR";
+        case LOG_LEVEL_CRITICAL:
+            return "CRITICAL";
+        case LOG_LEVEL_WARNING:
+            return "WARNING";
+        case LOG_LEVEL_MESSAGE:
+            return "MESSAGE";
+        case LOG_LEVEL_INFO:
+            return "INFO";
+        case LOG_LEVEL_DEBUG:
+            return "DEBUG";
+        case LOG_LEVEL_NOISY:
+            return "NOISY";
+        default:
+            return "(BOGUS LOG LEVEL)";
+    }
+}
+
+void createNewFile()
+{
+    utils::createDir("logs", utils::baseAppData);
+
+    const QDateTime &dt = QDateTime::currentDateTime();
+    logPath = utils::baseAppData + "/logs/" + "logs_" + dt.date().toString("dd.MM.yyyy") + "_" + dt.time().toString(
+    "hh.mm.ss") + ".log";
+}
+
+void log_write_dispatch(const QString &domain, enum ws_log_level level, const QMessageLogContext &context,
+                               const QString &msg)
+{
+    auto dt = QDateTime::currentDateTime();
+
+    QString msg_;
+    msg_ += " ** (noinit) ** (";
+    msg_ += DEFAULT_PROGNAME;
+    msg_ += QString::number(getpid());
+    msg_ += ") [" + dt.date().toString() + " " + dt.time().toString() + "]";
+    msg_ += "[" + ws_log_level_to_string(level) + "]  -- ";
+    msg_ += msg;
+    msg_ += "\n";
+
+    #ifndef NDEBUG
+    msg_ += QString{context.file};
+    msg_ += " [" + QString::number(context.line) + "]\n";
+    msg_ += QString{context.function};
+    msg_ += "\n";
+    #endif
+
+    #ifndef NDEBUG
+    switch (level)
+    {
+        case LOG_LEVEL_NONE:
+        case LOG_LEVEL_NOISY:
+        case LOG_LEVEL_DEBUG:
+        case LOG_LEVEL_MESSAGE:
+        case LOG_LEVEL_LAST:
+            qDebug() << msg_;
+            break;
+        case LOG_LEVEL_INFO:
+            qInfo() << msg_;
+            break;
+        case LOG_LEVEL_WARNING:
+            qWarning() << msg_;
+            break;
+        case LOG_LEVEL_CRITICAL:
+            // qFatal() << msg_;
+            // break;
+        case LOG_LEVEL_ERROR:
+            qCritical() << msg_;
+            break;
+    }
+    #endif
+
+    QFile file(logPath);
+    if (file.open(QIODevice::Append))
+    {
+        QTextStream stream(&file);
+        stream << msg_.toStdString().c_str();
+    }
+
+    file.close();
+}
+
+void platformMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QFile file(logPath);
+    if (file.size() > SIZE_LOG_FILE)
+    {
+        createNewFile();
+    }
+
+    enum ws_log_level level = LOG_LEVEL_DEBUG;
+
+    switch (type)
+    {
+        case QtInfoMsg:
+            level = LOG_LEVEL_INFO;
+            break;
+            // We want qDebug() messages to show up at our default log level.
+        case QtDebugMsg:
+            level = LOG_LEVEL_DEBUG;
+            break;
+        case QtWarningMsg:
+            level = LOG_LEVEL_WARNING;
+            break;
+        case QtCriticalMsg:
+            level = LOG_LEVEL_CRITICAL;
+            break;
+        case QtFatalMsg:
+            level = LOG_LEVEL_ERROR;
+            break;
+        default:
+            break;
+    }
+
+    log_write_dispatch(LOG_DOMAIN_QTUI, level, context, qUtf8Printable(msg));
+}
+
+void Logger::init()
+{
+    createNewFile();
+    qInstallMessageHandler(platformMessageHandler);
+}

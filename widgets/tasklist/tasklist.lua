@@ -4,7 +4,6 @@ local gears     = require("gears")
 local resources = require("resources")
 
 local mouse     = require("lib.event").mouse
-local signals   = require("lib.event").signals
 
 local tasklist  = {}
 

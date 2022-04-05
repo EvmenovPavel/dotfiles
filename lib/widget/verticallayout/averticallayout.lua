@@ -25,7 +25,7 @@ function verticallayout:create()
         -- 3) высота
         -- 4) длина
 
-        if LuaWidgetTypes[widget:get().type] then
+        if WidgetType[widget:get().type] then
             widget = widget:get()
         else
             widget = widget

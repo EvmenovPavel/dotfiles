@@ -1,4 +1,4 @@
-dir     = {}
+local dir     = {}
 
 dir.home      = os.getenv("HOME")
 dir.awesomewm = os.getenv("HOME") .. "/.config/awesome"

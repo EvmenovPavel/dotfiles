@@ -42,7 +42,7 @@ function mywibar:w_right(s)
             widgets.brightness(),
             --widgets.pacmd(),
             --widgets.cpu(),
-            --widgets.battery(),
+            widgets.battery(),
             --widgets.memory(),
             --widgets.clock(),
             widgets.calendar(),

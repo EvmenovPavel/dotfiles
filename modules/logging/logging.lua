@@ -1,10 +1,11 @@
-local TypeLog          = {
-    DEBUG   = "DEBUG",
-    INFO    = "INFO",
-    WARNING = "WARNING",
-    ERROR   = "ERROR",
-    FATAL   = "FATAL",
-}
+local log_level        = {
+    LOG_LEVEL_DEBUG    = "DEBUG", -- /* normal debugging level */
+    LOG_LEVEL_INFO     = "INFO", -- /* chatty status but not debug */
+    LOG_LEVEL_WARNING  = "WARNING", -- /* can be set to fatal */
+    LOG_LEVEL_CRITICAL = "CRITICAL", -- /* always enabled, can be set to fatal */
+    LOG_LEVEL_ERROR    = "ERROR", -- /* "error" is always fatal (aborts) */
+    LOG_LEVEL_FATAL    = "FATAL",
+};
 
 local logging          = {}
 
@@ -12,7 +13,7 @@ local date_time_format = "%Y-%m-%d %H:%M:%S"
 local filename         = "logging.log"
 local signal           = nil
 
-function write_file(type, msg)
+local function write_file(type, msg)
     local path = os.getenv("HOME") .. "/.config/awesome/"
     local date = os.date(date_time_format)
     local pid  = wmapi:get_pid()
@@ -38,7 +39,7 @@ function write_file(type, msg)
     return true
 end
 
-function message(type, ...)
+local function message(type, ...)
     local msg
 
     for i = 1, select("#", ...) do
@@ -71,27 +72,32 @@ end
 
 -- Logs a message with DEBUG level.
 function logging:debug(...)
-    message(TypeLog.DEBUG, ...)
+    message(log_level.LOG_LEVEL_DEBUG, ...)
 end
 
 -- Logs a message with INFO level.
 function logging:info(...)
-    message(TypeLog.INFO, ...)
+    message(log_level.LOG_LEVEL_INFO, ...)
 end
 
 -- Logs a message with WARNING level.
 function logging:warning(...)
-    message(TypeLog.WARNING, ...)
+    message(log_level.LOG_LEVEL_WARNING, ...)
+end
+
+-- Logs a message with CRITICAL level.
+function logging:critical(...)
+    message(log_level.LOG_LEVEL_CRITICAL, ...)
 end
 
 -- Logs a message with ERROR level.
 function logging:error(...)
-    message(TypeLog.ERROR, ...)
+    message(log_level.LOG_LEVEL_ERROR, ...)
 end
 
 -- Logs a message with FATAL level.
 function logging:fatal(...)
-    message(TypeLog.FATAL, ...)
+    message(log_level.LOG_LEVEL_FATAL, ...)
 end
 
 local function init(...)

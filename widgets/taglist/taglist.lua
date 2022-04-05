@@ -7,7 +7,7 @@ local mouse   = require("lib.event").mouse
 
 local taglist = {}
 
-function create_callback(self, c3, index, objects)
+local function create_callback(self, c3, index, objects)
     local old_cursor, old_wibox
 
     --mouse::enter
@@ -58,7 +58,7 @@ function create_callback(self, c3, index, objects)
     --)
 end
 
-function update_callback(w, buttons, label, data, objects)
+local function update_callback(w, buttons, label, data, objects)
     w:reset()
     for i, o in ipairs(objects) do
         local cache = data[o]
@@ -118,7 +118,7 @@ function update_callback(w, buttons, label, data, objects)
     end
 end
 
-function buttons()
+local function buttons()
     return awful.util.table.join(
             awful.button({
                              event = mouse.button_click_left,
@@ -155,7 +155,7 @@ function buttons()
     )
 end
 
-function widget_template()
+local function widget_template()
     return {
         {
             {

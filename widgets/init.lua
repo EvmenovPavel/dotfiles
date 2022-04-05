@@ -1,6 +1,6 @@
 return {
-    --battery    = require("widgets.battery"),
-    --
+    battery    = require("widgets.battery"),
+
     systray    = require("widgets.systray"),
 
     keyboard   = require("widgets.keyboard"),

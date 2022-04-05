@@ -121,34 +121,6 @@ if awesome.startup_errors then
     log:debug("title: " .. title, "text: " .. text)
 end
 
-do
-    local in_error = false
-    awesome.connect_signal(
-            "debug::error",
-            function(err)
-                if in_error then
-                    return
-                end
-
-                in_error     = true
-
-                local preset = naughty.config.presets.critical
-                local title  = "Oops, an error happened!"
-                local text   = tostring(err)
-
-                naughty.notify({
-                                   preset = preset,
-                                   title  = title,
-                                   text   = text
-                               })
-
-                log:debug("title: " .. title, "text: " .. text)
-
-                in_error = false
-            end
-    )
-end
-
 function naughty:message(args)
     local args = args or {}
 

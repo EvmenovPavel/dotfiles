@@ -65,10 +65,11 @@ end
 awesome.connect_signal("brightness_change",
                        function(stdout)
                            if ((stdout == "+") or (stdout == "-")) then
-                               awful.spawn("sudo brightness " .. stdout .. math.modf(tostring(brightness_value)), false)
                                --brightness:update_brightness_value()
-                               --wmapi:sleep(0.2)
-                               brightness:widget_brightness_adjust()
+                               awful.spawn("sudo brightness " .. stdout .. math.modf(tostring(brightness_value)), false)
+                               brightness:update_brightness_value()
+
+                               --brightness:widget_brightness_adjust()
                            elseif (stdout == "disable") then
                                brightness_adjust.visible = false
                            end
@@ -97,12 +98,14 @@ function brightness:update_brightness_value()
         return true
     end
     brightness_current = tonumber(brightness_current)
+    log:debug("brightness_current:", brightness_current)
 
-    brightness_max     = wmapi:read_file(brightness_dir .. "/max_brightness")
+    brightness_max = wmapi:read_file(brightness_dir .. "/max_brightness")
     if (brightness_max == nil) then
         return true
     end
-    brightness_max         = tonumber(brightness_max)
+    brightness_max = tonumber(brightness_max)
+    log:debug("brightness_max:", brightness_max)
 
     brightness_value       = tonumber(brightness_max) / 10
 
@@ -120,9 +123,9 @@ function brightness:init()
         return
     end
 
-    wmapi:update(function()
-        self:update_brightness_value()
-    end, 0.2)
+    --wmapi:update(function()
+    --    self:update_brightness_value()
+    --end, 0.2)
 
     local offsetx           = 48
     local offsety           = 300

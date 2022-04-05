@@ -20,7 +20,7 @@ function horizontallayout:create()
     layout.col_size = 1
 
     function layout:add_widget_at(widget, height, width)
-        if LuaWidgetTypes[widget:get().type] then
+        if WidgetType[widget:get().type] then
             widget = widget:get()
         else
             widget = widget

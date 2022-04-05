@@ -12,7 +12,7 @@ local lfs     = require("lfs")
 
 local spawn   = require("awful.spawn")
 
-wmapi         = {}
+local wmapi   = {}
 
 function wmapi:layout_align_horizontal(items)
     --local widget = wibox.widget({
@@ -37,8 +37,10 @@ function wmapi:get_pid()
     return pid
 end
 
+local debug_ = debug
+
 function wmapi:path(debug)
-    local debug  = debug or debug
+    local debug  = debug or debug_
 
     local source = string.sub(debug.source, 2)
     local path   = string.sub(source, 1, string.find(source, "/[^/]*$"))
@@ -99,7 +101,7 @@ function wmapi:set_widget(...)
         if item then
             local widget = item.widget
             if widget then
-                if LuaWidgetTypes[widget.type] then
+                if WidgetType[widget.type] then
                     self.res:add(widget)
                 end
             else
@@ -111,8 +113,34 @@ function wmapi:set_widget(...)
     self.widget:set_widget(self.res)
 end
 
-function wmapi:sub(stdout, length)
-    return string.sub(stdout, 0, length)
+function wmapi:remove_space(str, symbol)
+    local str    = str
+    local symbol = symbol or " "
+    local index  = 0
+
+    for i = 1, #str do
+        local c = str:sub(i, i)
+        if (c == symbol) then
+        else
+            index = i
+            break
+        end
+    end
+
+    str = str:sub(index, #str)
+
+    for i = #str, 1, -1 do
+        local c = str:sub(i, i)
+        if (c == symbol) then
+        else
+            index = i
+            break
+        end
+    end
+
+    str = str:sub(1, index)
+
+    return str
 end
 
 function wmapi:find(cmd, str)
@@ -166,6 +194,10 @@ function wmapi:screen(index)
     return screen[index]
 end
 
+function wmapi:traceback()
+    log:debug("test")
+end
+
 local clock = os.clock
 
 function wmapi:sleep(sec)
@@ -207,8 +239,13 @@ function wmapi:is_attributes(path, attributes)
 end
 
 function wmapi:read_file(path)
-    local file = io.open(path, "rb") -- r read mode and b binary mode
+    local path = string.gsub(path, "//", "/")
 
+    if (self:is_file(path)) then
+        return nil
+    end
+
+    local file = io.open(path, "rb") -- r read mode and b binary mode
     if not file then
         return nil
     end
