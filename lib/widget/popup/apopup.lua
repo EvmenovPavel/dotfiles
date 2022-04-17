@@ -28,7 +28,7 @@ local function infobubble(cr, width, height, corner_radius, arrow_size, arrow_po
     cr:close_path()
 end
 
-function popup:create(args)
+function popup:init(args)
     local args = args or {}
 
     local ret  = {}

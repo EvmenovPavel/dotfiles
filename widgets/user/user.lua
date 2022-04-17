@@ -1,6 +1,5 @@
 local wibox     = require("wibox")
 local wmapi     = require("wmapi")
-local resources = require("resources")
 
 return function()
     local icon   = wmapi:imagebox(resources.widgets.user)

@@ -3,40 +3,45 @@ local awful     = require("awful")
 local wibox     = require("wibox")
 local widgets   = require("widgets")
 
-local mouse     = require("lib.event").mouse
-
 local mywibar   = {}
 
 function mywibar:w_left(s)
     return {
-        widgets.taglist(s),
+        require("modules.taglist")(s),
+        --widgets.taglist(s),
         layout = wibox.layout.fixed.horizontal
     }
 end
 
 function mywibar:w_middle(s)
     return {
-        widgets.tasklist(s),
+        require("modules.tasklist")(s),
+        --widgets.tasklist(s),
         layout = wibox.layout.fixed.horizontal
     }
 end
 
-function screen_if_test(s)
-    local w    = capi.widget.button()
+--function screen_if_test(s)
+--    local w    = widget.button()
+--
+--    local s_id = wmapi:screen_id(s)
+--
+--    w:set_text("Screen: " .. tostring(s_id))
+--    w:set_key(event.mouse.button_click_left)
+--
+--    return w:get()
+--end
 
-    local s_id = wmapi:screen_id(s)
-
-    w:set_text("Screen: " .. tostring(s_id))
-    w:set_key(mouse.button_click_left)
-
-    return w:get()
-end
+local c = require("widgets.calendar.test3")
 
 function mywibar:w_right(s)
     if wmapi:is_screen_primary(s) then
         return {
+
             widgets.systray(s),
             widgets.keyboard(),
+
+
 
             widgets.volume(),
             widgets.brightness(),
@@ -45,7 +50,8 @@ function mywibar:w_right(s)
             widgets.battery(),
             --widgets.memory(),
             --widgets.clock(),
-            widgets.calendar(),
+            --widgets.calendar(),
+            c(),
 
             widgets.reboot(),
             --widgets.loggingui(),

@@ -2,7 +2,7 @@ local wibox       = require("wibox")
 
 local progressbar = {}
 
-function progressbar:create(args)
+function progressbar:init(args)
     local ret  = {}
 
     local args = args or {}

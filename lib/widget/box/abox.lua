@@ -3,7 +3,7 @@ local gears = require("gears")
 
 local box   = {}
 
-function box:create(width, height)
+function box:init(width, height)
     local ret    = {}
 
     local width  = width or nil

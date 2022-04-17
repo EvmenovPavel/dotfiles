@@ -27,8 +27,8 @@ function radiobox:create(text, func)
 
     ret.bg       = wibox.widget({
                                     ret.outline,
-                                    shape_border_color = theme.color.border_hover,
-                                    bg                 = theme.color.active_inner,
+                                    shape_border_color = color.border_hover,
+                                    bg                 = color.active_inner,
                                     shape              = gears.shape.rounded_bar,
                                     widget             = wibox.container.background,
                                 })
@@ -73,14 +73,14 @@ function radiobox:create(text, func)
     )
 
     function ret:enable()
-        ret.radiobox.bg = theme.color.active_inner
-        ret.widget.bg   = theme.color.border_hover
-        ret.outline.bg  = theme.color.border_hover
+        ret.radiobox.bg = color.active_inner
+        ret.widget.bg   = color.border_hover
+        ret.outline.bg  = color.border_hover
     end
 
     function ret:disable()
-        ret.widget.bg  = theme.color.active_inner
-        ret.outline.bg = theme.color.active_inner
+        ret.widget.bg  = color.active_inner
+        ret.outline.bg = color.active_inner
     end
 
     return ret

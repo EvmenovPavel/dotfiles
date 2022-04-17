@@ -2,7 +2,7 @@ local theme           = {}
 
 theme.focus           = false
 theme.shape           = false
-theme.borderWidth     = true
+--theme.border_width     = true
 
 theme.font_size       = 10
 theme.font            = "SF Pro Text " .. tostring(theme.font_size)
@@ -64,17 +64,6 @@ theme.border_width             = 1
 theme.border_normal            = theme.bg_normal
 theme.border_focusw            = "#ff8a65"
 theme.border_marked            = theme.fg_urgent
-
-theme.color                    = {
-    active         = "#275EFE",
-    active_inner   = "#ffffff",
-    focus          = "#becfff",
-    border         = "#BBC1E1",
-    border_hover   = "#275EFE",
-    background     = "#ffffff",
-    disabled       = "#F6F8FF",
-    disabled_inner = "#E1E6F9",
-}
 
 theme.shape_border_width_enter = 1
 theme.shape_border_width_leave = 0

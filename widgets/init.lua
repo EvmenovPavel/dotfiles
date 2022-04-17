@@ -17,10 +17,6 @@ return {
 
     brightness = require("widgets.brightness"),
 
-    tasklist = require("widgets.tasklist"),
-
-    taglist  = require("widgets.taglist"),
-
     reboot   = require("widgets.restart"),
     --
     --pacmd      = require("widgets.pacmd"),

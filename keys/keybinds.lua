@@ -1,11 +1,6 @@
 local awful     = require("awful")
 local gears     = require("gears")
 
-local event     = require("lib.event")
-
---local beautiful = require("beautiful")
---local dpi       = beautiful.xresources.apply_dpi
-
 local hotkeys   = require("keys.hotkeys")
 
 local keys      = {}

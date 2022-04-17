@@ -1,6 +1,5 @@
 local gears       = require("gears")
 local pixbuf      = require("lgi").GdkPixbuf
-local resources   = require("resources")
 
 local mywallpaper = {}
 

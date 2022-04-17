@@ -3,8 +3,6 @@ local awful      = require("awful")
 local hotkeys    = require("keys.hotkeys")
 local fun        = require("functions")
 
-local event      = require("lib.event")
-
 local clientkeys = gears.table.join(
         awful.key({ event.key.mod, event.key.shift }, event.key.f,
                   function(c)

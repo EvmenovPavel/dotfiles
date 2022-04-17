@@ -2,8 +2,6 @@ local naughty                        = require("naughty")
 local beautiful                      = require("beautiful")
 local gears                          = require("gears")
 
-local icon_notification              = dir.awesomewm .. "/notification/plugin-notification.svg"
-
 naughty.config.defaults.ontop        = true
 naughty.config.defaults.icon_size    = 32
 
@@ -68,18 +66,18 @@ naughty.config.presets.critical      = {
     text          = "Text critical",
 }
 
-naughty.config.presets.ok            = {
-    fg            = beautiful.fg_normal,
-    bg            = "#7FFFFF",
-
-    level         = 1,
-
-    timeout       = 5,
-    hover_timeout = 5,
-
-    title         = "Title normal",
-    text          = "Text normal",
-}
+--naughty.config.presets.ok            = {
+--    fg            = beautiful.fg_normal,
+--    bg            = "#7FFFFF",
+--
+--    level         = 1,
+--
+--    timeout       = 5,
+--    hover_timeout = 5,
+--
+--    title         = "Title normal",
+--    text          = "Text normal",
+--}
 
 naughty.config.presets.info          = {
     fg            = beautiful.fg_normal,
@@ -90,8 +88,8 @@ naughty.config.presets.info          = {
     timeout       = 5,
     hover_timeout = 5,
 
-    title         = "Title normal",
-    text          = "Text normal",
+    title         = "Title info",
+    text          = "Text info",
 }
 
 naughty.config.presets.warn          = {
@@ -103,8 +101,8 @@ naughty.config.presets.warn          = {
     timeout       = 10,
     hover_timeout = 10,
 
-    title         = "Title critical",
-    text          = "Text critical",
+    title         = "Title warn",
+    text          = "Text warn",
 }
 
 if awesome.startup_errors then
@@ -112,47 +110,14 @@ if awesome.startup_errors then
     local title  = "Oops, there were errors during startup!"
     local text   = awesome.startup_errors
 
+    log:debug("title: " .. title, "text: " .. text)
+
     naughty.notify({
                        preset = preset,
                        title  = title,
                        text   = text
                    })
 
-    log:debug("title: " .. title, "text: " .. text)
-end
-
-function naughty:message(args)
-    local args = args or {}
-
-    if naughty.config.notify_callback then
-        args = naughty.config.notify_callback(args)
-        if not args then
-            return
-        end
-    end
-
-    local preset        = args.preset or naughty.config.presets.info
-
-    local timeout       = args.timeout or preset.timeout
-    local hover_timeout = args.hover_timeout or preset.hover_timeout
-
-    local icon          = args.icon or icon_notification
-
-    local title         = args.title or preset.title
-    local text          = args.text or preset.text
-
-    --if not notification.panel_notification.visible then
-    naughty.notify {
-        preset        = preset,
-
-        icon          = icon,
-        title         = title,
-        text          = text,
-
-        timeout       = timeout,
-        hover_timeout = hover_timeout,
-    }
-    --end
 end
 
 return naughty

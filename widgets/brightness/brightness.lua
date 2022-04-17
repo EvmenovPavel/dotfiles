@@ -98,14 +98,14 @@ function brightness:update_brightness_value()
         return true
     end
     brightness_current = tonumber(brightness_current)
-    log:debug("brightness_current:", brightness_current)
+    --log:debug("brightness_current:", brightness_current)
 
     brightness_max = wmapi:read_file(brightness_dir .. "/max_brightness")
     if (brightness_max == nil) then
         return true
     end
     brightness_max = tonumber(brightness_max)
-    log:debug("brightness_max:", brightness_max)
+    --log:debug("brightness_max:", brightness_max)
 
     brightness_value       = tonumber(brightness_max) / 10
 

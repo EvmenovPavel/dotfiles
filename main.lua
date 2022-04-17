@@ -12,7 +12,7 @@ awful.rules.rules = require("rules")(keybinds.clientkeys, keybinds.buttonkeys)
 local apps        = require("autostart")
 apps:start()
 
-require("widgets.titlebar")
+require("modules.titlebar")
 local wibar     = require("wibar")
 local wallpaper = require("modules.wallpaper")
 
@@ -38,13 +38,13 @@ require("awful.autofocus")
 --local scripts = require("scripts")
 --scripts.xrandr()
 
-local signal = require("posix.signal")
+--local signal = require("posix.signal")
 
-signal.signal(signal.SIGINT, function(signum)
-    log:debug("signum: " .. tostring(signum))
-    -- put code to save some stuff here
-    --os.exit(128 + signum)
-end)
+--signal.signal(signal.SIGINT, function(signum)
+--    log:debug("signum: " .. tostring(signum))
+--    -- put code to save some stuff here
+--    --os.exit(128 + signum)
+--end)
 
 --if [ "`systemctl is-system-running`" = "stopping" ]; then
 --# Do what you need

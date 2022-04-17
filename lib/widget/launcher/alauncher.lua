@@ -85,7 +85,7 @@ function wbutton:new(args)
     return w
 end
 
-function launcher:create(args)
+function launcher:init(args)
     local args = args or {}
 
     if not args.menu then

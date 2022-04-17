@@ -2,7 +2,7 @@ local wibox    = require("wibox")
 
 local piechart = {}
 
-function piechart:create(args)
+function piechart:init(args)
     local args = args or {}
 
     local ret  = {}

@@ -3,7 +3,7 @@ local radiobox  = require("radiobox")
 
 local hradiobox = {}
 
-function hradiobox:create()
+function hradiobox:init()
     local ret  = {}
 
     ret.res    = wibox.widget({

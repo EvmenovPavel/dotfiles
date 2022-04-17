@@ -3,11 +3,10 @@ local wibox                        = require("wibox")
 local math                         = require("math")
 local awful                        = require("awful")
 local gears                        = require("gears")
-
 local timer                        = gears.timer
-local unpack                       = table.unpack
---local debug                        = debug
 local pairs                        = pairs
+awful.client                       = require("awful.client")
+local unpack                       = unpack or table.unpack
 
 local capi                         = {
     mouse      = mouse,
@@ -56,7 +55,6 @@ switcher.altTabIndex               = 1
 
 --switcher.source                    = string.sub(debug.getinfo(1, "S").source, 2)
 --switcher.path                      = string.sub(switcher.source, 1, string.find(switcher.source, "/[^/]*$"))
---switcher.path                      = wmapi:path(debug.getinfo(1))
 switcher.path                      = wmapi:path(debug.getinfo(1))
 switcher.noicon                    = switcher.path .. "error.png"
 
@@ -505,7 +503,7 @@ function switcher:close()
     capi.keygrabber.stop()
 end
 
-local function init(mod_key, key_switch)
+function switcher:init(mod_key, key_switch)
     switcher:populateAltTabTable()
 
     if #switcher.altTabTable == 0 then
@@ -546,5 +544,5 @@ local function init(mod_key, key_switch)
 end -- function altTab
 
 return setmetatable(switcher, { __call = function(_, ...)
-    return init(...)
+    return switcher:init(...)
 end })

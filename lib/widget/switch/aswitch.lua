@@ -4,12 +4,12 @@ local beautiful = require("beautiful")
 
 local switch    = {}
 
-function switch:create()
+function switch:init()
     local ret   = {}
 
     ret.switch  = wibox.widget({
                                    checked = false,
-                                   bg      = theme.color.border,
+                                   bg      = color.border,
                                    shape   = gears.shape.circle,
                                    widget  = wibox.widget.checkbox
                                })
@@ -27,14 +27,14 @@ function switch:create()
 
     ret.outline = wibox.widget({
                                    ret.margin,
-                                   bg     = theme.color.active_inner,
+                                   bg     = color.active_inner,
                                    shape  = gears.shape.rounded_bar,
                                    widget = wibox.container.background,
                                })
 
     ret.bg      = wibox.widget({
                                    ret.outline,
-                                   shape_border_color = theme.color.border_hover,
+                                   shape_border_color = color.border_hover,
                                    shape              = gears.shape.rounded_bar,
                                    widget             = wibox.container.background,
                                })
@@ -67,20 +67,20 @@ function switch:create()
         if checked then
             ret.margin.left = 22
 
-            ret.switch.bg   = theme.color.active_inner
-            ret.outline.bg  = theme.color.border_hover
+            ret.switch.bg   = color.active_inner
+            ret.outline.bg  = color.border_hover
         else
             ret.margin.left = 0
 
-            ret.switch.bg   = theme.color.border
-            ret.outline.bg  = theme.color.active_inner
+            ret.switch.bg   = color.border
+            ret.outline.bg  = color.active_inner
         end
     end
 
     wmapi:connect_signal(
             ret.widget,
-            signals.button.release,
-            mouse.button_click_left,
+            event.signals.button.release,
+            event.mouse.button_click_left,
             function()
                 ret:set_checked(not ret.checked)
             end

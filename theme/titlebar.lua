@@ -1,5 +1,3 @@
-local resources = require("resources")
-
 local titlebar  = {}
 
 function titlebar:init(theme)

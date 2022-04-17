@@ -1,4 +1,4 @@
-local resources             = {}
+resources             = {}
 
 resources.path              = dir.awesomewm .. "/resources/icons"
 resources.wallpaper         = dir.awesomewm .. "/resources/wallpapers"
@@ -273,4 +273,7 @@ resources.wallpapers        = {
     wallpaper = resources.wallpaper .. "/wallpaper.png",
 }
 
-return resources
+resources.calendar          = {
+    next = resources.path .. "/go-next.png",
+    prev = resources.path .. "/go-previous.png",
+}

@@ -1,5 +1,3 @@
-local resources = require("resources")
-
 local menu      = {}
 
 function menu:init(theme)

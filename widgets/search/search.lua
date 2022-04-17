@@ -1,7 +1,6 @@
 local wibox     = require("lib.wibox")
 
 local wmapi     = require("wmapi")
-local resources = require("resources")
 local signals   = require("device.signals")
 local programms = require("device.programms")
 

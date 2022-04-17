@@ -1,11 +1,10 @@
 local wibox     = require("wibox")
 local gears     = require("gears")
 local beautiful = require("beautiful")
-local resources = require("resources")
 
 local checkbox  = {}
 
-function checkbox:create()
+function checkbox:init(text, src, key, event, func)
     local ret      = {}
 
     ret.res        = wibox.widget({ layout = wibox.layout.fixed.horizontal })
@@ -17,7 +16,7 @@ function checkbox:create()
 
     ret.checkbox  = wibox.widget({
                                      imagebox:get(),
-                                     bg     = theme.color.border,
+                                     bg     = color.border,
                                      widget = wibox.container.background,
                                  })
 
@@ -32,8 +31,8 @@ function checkbox:create()
                                          gears.shape.rounded_rect(cr, w, h, 5)
                                      end,
 
-                                     shape_border_color = theme.color.border_hover,
-                                     bg                 = theme.color.border,
+                                     shape_border_color = color.border_hover,
+                                     bg                 = color.border,
                                      widget             = wibox.container.background,
                                  })
 
@@ -82,11 +81,11 @@ function checkbox:create()
         ret.checked = check
 
         if ret.checked then
-            ret.bg.bg       = theme.color.border_hover
-            ret.checkbox.bg = theme.color.border_hover
+            ret.bg.bg       = color.border_hover
+            ret.checkbox.bg = color.border_hover
         else
-            ret.bg.bg       = theme.color.border
-            ret.checkbox.bg = theme.color.border
+            ret.bg.bg       = color.border
+            ret.checkbox.bg = color.border
         end
     end
 

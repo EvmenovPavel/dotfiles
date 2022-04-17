@@ -9,26 +9,24 @@ local fun            = require("functions")
 
 local keyboardlayout = require("keyboardlayout")
 
-local key            = require("lib.event").key
-
-local global         = gears.table.join(
+local global    = gears.table.join(
 --[[ AWESOME ]]--
-        awful.key({ key.mod, key.shift }, key.r,
+        awful.key({ event.key.mod, event.key.shift }, event.key.r,
                   function()
                       fun:on_restart()
                   end, hotkeys.awesome.restart),
 
-        awful.key({ key.mod, key.shift }, key.q,
+        awful.key({ event.key.mod, event.key.shift }, event.key.q,
                   function()
                       fun:on_quit()
                   end, hotkeys.awesome.quit),
 
-        awful.key({ key.mod }, key.s,
+        awful.key({ event.key.mod }, event.key.s,
                   function()
                       fun:on_show_help()
                   end, hotkeys.awesome.help),
 
-        awful.key({ key.win, key.shift }, key.v,
+        awful.key({ event.key.win, event.key.shift }, event.key.v,
                   function()
                       awful.util.spawn("copyq show")
                   end,
@@ -36,14 +34,14 @@ local global         = gears.table.join(
         ),
 
 -- Brightness
-        awful.key({}, key.brightness.XF86MonBrightnessUp,
+        awful.key({}, event.key.brightness.XF86MonBrightnessUp,
                   function()
                       awesome.emit_signal("brightness_change", "+")
                       awesome.emit_signal("volume_change", "disable")
                   end,
                   { description = "Brightness +25%", group = "hotkeys" }
         ),
-        awful.key({}, key.brightness.XF86MonBrightnessDown,
+        awful.key({}, event.key.brightness.XF86MonBrightnessDown,
                   function()
                       awesome.emit_signal("brightness_change", "-")
                       awesome.emit_signal("volume_change", "disable")
@@ -52,7 +50,7 @@ local global         = gears.table.join(
         ),
 
 -- ALSA volume control
-        awful.key({}, key.audio.XF86AudioRaiseVolume,
+        awful.key({}, event.key.audio.XF86AudioRaiseVolume,
                   function()
                       awesome.emit_signal("volume_change", "+")
                       awesome.emit_signal("brightness_change", "disable")
@@ -60,7 +58,7 @@ local global         = gears.table.join(
                   { description = "volume up", group = "hotkeys" }
         ),
 
-        awful.key({}, key.audio.XF86AudioLowerVolume,
+        awful.key({}, event.key.audio.XF86AudioLowerVolume,
                   function()
                       awesome.emit_signal("volume_change", "-")
                       awesome.emit_signal("brightness_change", "disable")
@@ -68,7 +66,7 @@ local global         = gears.table.join(
                   { description = "volume down", group = "hotkeys" }
         ),
 
-        awful.key({}, key.audio.XF86AudioMute,
+        awful.key({}, event.key.audio.XF86AudioMute,
                   function()
                       awesome.emit_signal("volume_change", "off")
                       awesome.emit_signal("brightness_change", "disable")
@@ -76,21 +74,21 @@ local global         = gears.table.join(
                   { description = "toggle mute", group = "hotkeys" }
         ),
 
-        awful.key({}, key.audio.XF86AudioNext,
+        awful.key({}, event.key.audio.XF86AudioNext,
                   function()
                       awful.spawn("playerctl next", false)
                   end,
                   { description = "next music", group = "hotkeys" }
         ),
 
-        awful.key({}, key.audio.XF86AudioPrev,
+        awful.key({}, event.key.audio.XF86AudioPrev,
                   function()
                       awful.spawn("playerctl previous", false)
                   end,
                   { description = "previous music", group = "hotkeys" }
         ),
 
-        awful.key({}, key.audio.XF86AudioPlay,
+        awful.key({}, event.key.audio.XF86AudioPlay,
                   function()
                       awful.spawn("playerctl play-pause", false)
                       awesome.emit_signal("spotify_change")
@@ -99,38 +97,38 @@ local global         = gears.table.join(
         ),
 
 --[[ COMMAND ]]--
-        awful.key({ key.ctrl, key.altL }, key.delete,
+        awful.key({ event.key.ctrl, event.key.altL }, event.key.delete,
                   function()
                       fun:on_run(programms.htop)
                   end, hotkeys.command.htop),
 
-        awful.key({ }, key.print,
+        awful.key({ }, event.key.print,
                   function()
                       fun:on_run(programms.screenshot)
                   end, hotkeys.command.printscreen),
 
 
 -- Tag browsing
-        awful.key({ key.mod }, key.bracket_left,
+        awful.key({ event.key.mod }, event.key.bracket_left,
                   function()
                       awful.tag.viewprev()
                   end, hotkeys.tag.previous),
 
-        awful.key({ key.mod }, key.bracket_right,
+        awful.key({ event.key.mod }, event.key.bracket_right,
                   function()
                       awful.tag.viewnext()
                   end, hotkeys.tag.next),
 
 
-        awful.key({ key.mod }, key.tab,
+        awful.key({ event.key.mod }, event.key.tab,
                   function()
                       awful.tag.history.restore()
                   end, hotkeys.tag.restore),
 
 
-        awful.key({ key.altL }, key.tab,
+        awful.key({ event.key.altL }, event.key.tab,
                   function()
-                      switcher(key.alt_L, key.tab)
+                      switcher(event.key.alt_L, event.key.tab)
 
                       --awful.client.focus.history.previous()
                       --if client.focus then
@@ -140,12 +138,12 @@ local global         = gears.table.join(
 
 
 --[[ Programms ]]--
-        awful.key({ key.mod }, key.e,
+        awful.key({ event.key.mod }, event.key.e,
                   function()
                       fun:on_run(programms.manager)
                   end, hotkeys.programm.manager),
 
-        awful.key({ key.mod }, key.r,
+        awful.key({ event.key.mod }, event.key.r,
                   function()
                       if ("ru" == keyboardlayout:name()) then
                           
@@ -154,19 +152,19 @@ local global         = gears.table.join(
                       fun:on_run(programms.rofi)
                   end, hotkeys.programm.run),
 
-        awful.key({ key.ctrl, key.altL }, key.t,
+        awful.key({ event.key.ctrl, event.key.altL }, event.key.t,
                   function()
                       fun:on_run(programms.terminal)
                   end, hotkeys.programm.terminal),
 
-        awful.key({ key.mod }, key.l,
+        awful.key({ event.key.mod }, event.key.l,
                   function()
                       fun:on_run(programms.lockscreen)
                   end, hotkeys.programm.lockscreen),
 
 
 -- Device button
-        awful.key({ }, key.system.poweroff,
+        awful.key({ }, event.key.system.poweroff,
                   function()
                       -- TODO
                       -- добавить сохранение данных
@@ -177,7 +175,7 @@ local global         = gears.table.join(
 
 
 -- Test key
-        awful.key({ key.win, key.shift }, key.p,
+        awful.key({ event.key.win, event.key.shift }, event.key.p,
                   function()
                       fun:on_run(programms.terminal .. " xev | grep 'keycode'")
                   end)

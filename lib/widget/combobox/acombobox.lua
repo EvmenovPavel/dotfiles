@@ -4,7 +4,7 @@ local beautiful = require("beautiful")
 
 local combobox  = {}
 
-function combobox:create()
+function combobox:init()
     local ret  = {}
 
     ret.widget = wibox.widget({

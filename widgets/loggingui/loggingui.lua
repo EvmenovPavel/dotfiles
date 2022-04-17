@@ -1,7 +1,6 @@
 local awful         = require("awful")
 local wibox         = require("wibox")
 local gears         = require("gears")
-local resources     = require("resources")
 
 --local mouse         = signals.mouse
 --local button        = signals.button
@@ -68,13 +67,13 @@ function loggingui:init()
 
     w_volume_icon:buttons(
             awful.util.table.join(
-                    wmapi:button({
-                                     event = mouse.button_click_scroll_down,
+                    awful.button({
+                                     event = event.mouse.button_click_scroll_down,
                                      func  = function()
                                          popupWidget:set_widget(calendarWidget)
                                      end
                                  }),
-                    wmapi:button({ event = mouse.button_click_scroll,
+                    awful.button({ event = event.mouse.button_click_scroll,
                                    func  = function()
                                        popupWidget:set_widget(calendarWidget)
                                    end

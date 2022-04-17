@@ -11,4 +11,4 @@ threads.safe      = require('lib.threads.safe')
 -- only for backward compatibility (boo)
 setmetatable(threads, getmetatable(threads.Threads))
 
---return threads
+return threads

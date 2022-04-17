@@ -2,8 +2,6 @@ local wibox              = require("wibox")
 local awful              = require("awful")
 local gears              = require("gears")
 
-local resources          = require("resources")
-
 local amixer_volume      = "amixer -D pulse sget Master | grep 'Left:' | awk -F '[][]' '{print $2}' | sed 's/[^0-9]//g'"
 local amixer_active      = "amixer -D pulse sget Master | grep 'Left:' | awk -F '[][]' '{print $4}'"
 

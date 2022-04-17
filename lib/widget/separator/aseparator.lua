@@ -3,7 +3,7 @@ local beautiful = require("beautiful")
 
 local separator = {}
 
-function separator:create(args)
+function separator:init(args)
     local ret  = {}
 
     local args = args or {}

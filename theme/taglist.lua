@@ -1,5 +1,3 @@
-local resources = require("resources")
-
 local taglist   = {}
 
 function taglist:init(theme)

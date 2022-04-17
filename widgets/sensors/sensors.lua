@@ -1,7 +1,6 @@
 local awful        = require("awful")
 local wibox        = require("wibox")
 local beautiful    = require("beautiful")
-local resources    = require("resources")
 
 local sensors      = {}
 

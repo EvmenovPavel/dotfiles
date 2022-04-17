@@ -1,7 +1,4 @@
 local wibox     = require("wibox")
-local awful     = require("awful")
-local naughty   = require("naughty")
-local resources = require("resources")
 
 local battery   = {}
 
@@ -85,26 +82,15 @@ function battery:updateWidgetInfo(state, value)
 end
 
 function battery:notify_power(notify)
-    local title = "Система электропитания"
-
     if notify == 1 then
-        naughty.notify {
-            preset = naughty.config.presets.critical,
-            title  = title,
-            text   = "Питание отключено."
-        }
+        local messagebox = widget:messagebox()
+        messagebox:information("Система электропитания", "Питание отключено.")
     elseif notify == 2 then
-        naughty.notify {
-            preset = naughty.config.presets.normal,
-            title  = title,
-            text   = "Питание подключено."
-        }
+        local messagebox = widget:messagebox()
+        messagebox:information("Система электропитания", "Питание подключено.")
     elseif notify == 3 then
-        naughty.notify {
-            preset = naughty.config.presets.normal,
-            title  = title,
-            text   = "Батарея полностью заряжена."
-        }
+        local messagebox = widget:messagebox()
+        messagebox:information("Система электропитания", "Батарея полностью заряжена.")
     end
 end
 

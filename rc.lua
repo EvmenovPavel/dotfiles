@@ -5,7 +5,7 @@ require("lib.lib")
 require("modules.modules")
 
 -- Global type --
-resources     = require("resources.resources")
+require("resources.resources")
 
 -- Start --
 require("main")

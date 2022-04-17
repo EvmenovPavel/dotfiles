@@ -1,8 +1,6 @@
 --local xrandr = require("modules.foggy.xrandr")
 --local awful  = require("awful")
 
-local widget = require("lib.widget")
-
 local test   = {}
 
 local function init()

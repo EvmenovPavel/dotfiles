@@ -14,7 +14,7 @@ local function init(clientkeys, buttonkeys)
         require("rules.copyq")(),
 
         -- UE4Editor
-        require("rules.ue4editor")(),
+        --require("rules.ue4editor")(),
     }
 end
 

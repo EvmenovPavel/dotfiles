@@ -6,7 +6,7 @@ local function init()
     return {
         rule_any   = {
             class = {
-                "kitty",
+                --"kitty",
                 "TeamViewer"
             },
         },

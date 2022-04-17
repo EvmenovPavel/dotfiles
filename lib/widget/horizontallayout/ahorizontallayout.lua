@@ -2,7 +2,7 @@ local wibox            = require("wibox")
 
 local horizontallayout = {}
 
-function horizontallayout:create()
+function horizontallayout:init()
     local layout  = {}
 
     layout.widget = wibox.widget({

@@ -2,7 +2,7 @@ local wibox  = require("wibox")
 
 local slider = {}
 
-function slider:create(args)
+function slider:init(args)
     local ret  = {}
 
     local args = args or {}

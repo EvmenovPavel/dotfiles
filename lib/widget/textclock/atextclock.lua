@@ -2,7 +2,7 @@ local wibox     = require("wibox")
 
 local textclock = {}
 
-function textclock:create(args)
+function textclock:init(args)
     local ret  = {}
 
     local args = args or {}

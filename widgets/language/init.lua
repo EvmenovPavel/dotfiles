@@ -1,0 +1,1 @@
+return require("widgets.language.language")

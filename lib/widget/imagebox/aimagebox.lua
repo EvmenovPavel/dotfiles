@@ -1,38 +1,53 @@
-local wibox     = require("wibox")
-local resources = require("resources")
+local wibox    = require("wibox")
 
-local imagebox  = {}
+local imagebox = {}
 
-function imagebox:create(argc)
-    local ret           = {}
+function imagebox:init(argc)
+    local ret                  = {}
 
-    local argc          = argc or {}
-    local image         = argc.image or ""
-    local resize        = argc.resize or true
-    local forced_width  = argc.forced_width or nil
-    local forced_height = argc.forced_height or nil
+    ret._private               = {}
 
-    ret.widget          = wibox.widget({
-                                           type          = "imagebox",
-                                           image         = image,
+    local argc                 = argc or {}
 
-                                           resize        = resize,
-                                           forced_width  = forced_width,
-                                           forced_height = forced_height,
+    ret._private.image         = argc.image or nil
+    ret._private.resize        = argc.resize or true
+    ret._private.forced_width  = argc.forced_width or nil
+    ret._private.forced_height = argc.forced_height or nil
+
+    function ret:set_image(image)
+        ret._private.image = image or nil
+    end
+
+    function ret:set_width(width)
+        ret._private.forced_width = width
+    end
+
+    function ret:set_height(height)
+        ret._private.forced_height = height
+    end
+
+    function ret:set_resize(resize)
+        ret._private.resize = resize or true
+    end
+
+    local function create()
+        ret.widget      = wibox.widget({
+                                           image         = ret._private.image,
+
+                                           resize        = ret._private.resize,
+                                           forced_width  = ret._private.forced_width,
+                                           forced_height = ret._private.forced_height,
 
                                            widget        = wibox.widget.imagebox(),
                                        })
 
-    function ret:set_image(src)
-        ret.widget.image = src or image
-    end
+        ret.widget.type = "imagebox"
 
-    function ret:set_resize(resize_)
-        ret.widget.resize = resize_ or resize
+        return ret.widget
     end
 
     function ret:get()
-        return ret.widget
+        return create()
     end
 
     return ret

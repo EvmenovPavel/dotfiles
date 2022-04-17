@@ -3,7 +3,7 @@ local wibox     = require("wibox")
 
 local graph     = {}
 
-function graph:create(args)
+function graph:init(args)
     local ret       = {}
     local args      = args or {}
 
