@@ -10,9 +10,13 @@ local capi  = {
 local posix = require("posix")
 local pid   = posix.getpid("pid")
 
-local spawn = require("awful.spawn")
+--local spawn = require("awful.spawn")
 
 local wmapi = {}
+
+function wmapi:widget()
+    return require("lib.widget.widget")
+end
 
 function wmapi:layout_align_horizontal(items)
     --local widget = wibox.widget({
@@ -51,12 +55,14 @@ end
 --- Check if a file or directory exists in this path
 function wmapi:exists(file)
     local ok, err, code = os.rename(file, file)
+
     if not ok then
         if code == 13 then
             -- Permission denied, but it exists
             return true
         end
     end
+
     return ok, err
 end
 
@@ -71,6 +77,7 @@ function wmapi:table_length(T)
     for _ in pairs(T) do
         count = count + 1
     end
+
     return count
 end
 
@@ -86,32 +93,32 @@ function wmapi:signs(stdout, signs)
     return str
 end
 
-function wmapi:set_widget(...)
-    if not self.res then
-        self.res = wibox.widget({
-                                    layout = wibox.layout.fixed.horizontal()
-                                })
-    end
-
-    for i = 1, select("#", ...) do
-        local item = select(i, ...)
-
-        log:debug(item.type)
-
-        if item then
-            local widget = item.widget
-            if widget then
-                if WidgetType[widget.type] then
-                    self.res:add(widget)
-                end
-            else
-                self.res:add(item)
-            end
-        end
-    end
-
-    self.widget:set_widget(self.res)
-end
+--function wmapi:set_widget(...)
+--    if not self.res then
+--        self.res = wibox.widget({
+--                                    layout = wibox.layout.fixed.horizontal()
+--                                })
+--    end
+--
+--    for i = 1, select("#", ...) do
+--        local item = select(i, ...)
+--
+--        log:debug(item.type)
+--
+--        if item then
+--            local widget = item.widget
+--            if widget then
+--                if WidgetType[widget.type] then
+--                    self.res:add(widget)
+--                end
+--            else
+--                self.res:add(item)
+--            end
+--        end
+--    end
+--
+--    self.widget:set_widget(self.res)
+--end
 
 function wmapi:remove_space(str, symbol)
     local str    = str
@@ -213,7 +220,8 @@ function wmapi:sleep(sec)
     --repeat until os.clock() > ntime
 
     local t0 = clock()
-    while clock() - t0 <= sec do end
+    while clock() - t0 <= sec do
+    end
 
     --socket.sleep(sec)
     --lsocket.select(sec)
@@ -240,6 +248,12 @@ end
 
 function wmapi:mkdir(name)
     lfs.mkdir(name)
+end
+
+function wmapi:file_size(file)
+    local filesize = lfs.attributes(file, "size")
+    -- если filesize nil = размер файла 0
+    return filesize or 0
 end
 
 function wmapi:read_file(path)
@@ -288,7 +302,7 @@ function wmapi:watch(command, timeout, callback)
     local t = gears.timer { timeout = timeout }
     t:connect_signal("timeout", function()
         t:stop()
-        spawn.easy_async(command, function(stdout, stderr, exitreason, exitcode)
+        awful.spawn.easy_async(command, function(stdout, stderr, exitreason, exitcode)
             callback(stdout, stderr, exitreason, exitcode)
             t:again()
         end)
@@ -299,13 +313,14 @@ function wmapi:watch(command, timeout, callback)
 end
 
 function wmapi:easy_async_with_shell(bash)
-    local last_result = ""
+    local last_result = nil
 
     awful.spawn.easy_async_with_shell(bash, function(result)
         last_result = result
-        log:message(tostring(last_result))
+        log:debug("1 easy_async_with_shell: " .. tostring(last_result))
     end)
 
+    log:debug("2 easy_async_with_shell: " .. tostring(last_result))
     return last_result
 end
 
@@ -323,6 +338,10 @@ function wmapi:update(callback, timeout)
     end
 
     return nil
+end
+
+function wmapi:int2float(integer)
+    return integer + 0.0
 end
 
 function wmapi:mouse_coords()
@@ -396,7 +415,6 @@ function wmapi:connect_signal(widget, signal, event, func)
 
     local signal = signal or event.signals.button.release
     local event  = event or event.mouse.button_click_left
-    local widget = widget or nil
 
     local func   = func or function()
         log:debug("Error args.func = nil")

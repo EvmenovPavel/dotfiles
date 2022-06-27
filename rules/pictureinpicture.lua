@@ -4,7 +4,7 @@ local PictureInPicture = {}
 local function init()
     return {
         rule       = {
-            class = "Firefox",
+            class = "firefox",
         },
         except     = {
             instance = "Navigator"
@@ -12,6 +12,8 @@ local function init()
         properties = {
             titlebars_enabled = true,
             floating          = true,
+            sticky            = true,
+            ontop             = true,
 
             width             = 470,
             height            = 290,

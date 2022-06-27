@@ -1,4 +1,4 @@
-local naughty                        = require("naughty")
+local naughty                        = require("lib.naughty")
 local beautiful                      = require("beautiful")
 local gears                          = require("gears")
 
@@ -11,7 +11,7 @@ naughty.config.defaults.title        = "Title: System Notification"
 naughty.config.defaults.text         = "Text: System Notification"
 
 naughty.config.defaults.margin       = 16
-naughty.config.defaults.border_width = 2
+naughty.config.defaults.border_width = 0
 naughty.config.defaults.position     = placement.top_right
 
 naughty.config.defaults.width        = 322

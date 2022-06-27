@@ -220,7 +220,7 @@ function language:updatePreview()
     end
 end
 
-function language:cycle(dir)
+function language:show(dir)
     -- Switch to next client
     language.altTabIndex = language.altTabIndex + dir
     if language.altTabIndex > #language.altTabTable then
@@ -421,7 +421,7 @@ function language:preview()
         -- Add mouse handler
         if language.settings.client_focus_mouse then
             language.preview_widgets[i]:connect_signal("mouse::enter", function()
-                self:cycle(leftRightTabToAltTabIndex[i] - language.altTabIndex)
+                self:show(leftRightTabToAltTabIndex[i] - language.altTabIndex)
             end)
         end
     end
@@ -531,7 +531,7 @@ function language:init(mod_key, key_switch)
     capi.keygrabber.run(
             function(mod, keys, event)
                 if keys == key_switch and event == "press" then
-                    language:cycle(1)
+                    language:show(1)
                 elseif keys == mod_key and event == "release" then
                     language:close()
                 end
@@ -539,7 +539,7 @@ function language:init(mod_key, key_switch)
     )
 
     -- switch to next client
-    language:cycle(1)
+    language:show(1)
 
 end -- function altTab
 

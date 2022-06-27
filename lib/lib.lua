@@ -4,4 +4,4 @@ event = require("lib.event")
 
 --
 wmapi = require("lib.wmapi")
-widget = require("lib.widget")
+color = require("settings.color")

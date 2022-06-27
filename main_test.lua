@@ -1,91 +1,118 @@
-local threads = require 'threads'
-
-local nthread = 4
-local njob    = 10
-local msg     = "hello from a satellite thread"
-
---local pool      = threads.Threads(
---        nthread
---function(threadid)
---print('starting a new thread/state number ' .. threadid)
---gmsg = msg -- get it the msg upvalue and store it in thread state
---end
---)
-
---local jobdone = 0
+--local api  = require('telegram-bot-lua.core').configure('1584165136:AAGjQXrPaFByxbPKh4fWstDVP7a96fm7DWU')
+--local json = require('dkjson')
 --
---print("njob", njob)
-
---for i = 1, njob do
---    print(i)
---
---    pool:addjob(
---            function()
---                print(string.format('%s -- thread ID is %x', gmsg, __threadid))
---                return __threadid
---            end
---    --,
---
---            --function(id)
---            --    print(string.format("task %d finished (ran on thread ID %x)", i, id))
---            --    jobdone = jobdone + 1
---            --end
+--function api.on_callback_query(callback_query)
+--    api.answer_callback_query(
+--            callback_query.id,
+--            json.encode(callback_query.from)
 --    )
 --end
-
---pool:synchronize()
-
---print(string.format('%d jobs done', jobdone))
-
---pool:terminate()
-
---require 'inifile'
+---- https://api.telegram.org/bot<TOKEN>/sendMessage?chat_id=123&text=test&reply_markup={"keyboard": [["Button"]]}
+---- {"keyboard":[["Yes","No"]],"resize_keyboard":false,"one_time_keyboard":false,"selective":false}
 --
---local keyboardlayout = require("keyboardlayout")
+--local keyboard = { ['keyboard'] = {
+--    ["button"] = "Yes",
+--    ["button"] = "No",
+--},
+--                   ["resize_keyboard"] = true,
+--                   ["one_time_keyboard"] = false,
+--                   ["selective"] = false
+--}
 --
---if ("ru" == keyboardlayout:name()) then
---    print("ru")
+--function api.on_message(message)
+--    print("on_message > message:", message.text)
+--
+--    api.send_message(
+--            message.chat.id,
+--            'TEST',
+--            nil,
+--            true,
+--            false,
+--            nil,
+--            --nil
+--            keyboard
+--    )
 --end
 --
---print(keyboardlayout:groupname())
+--api.run()
 
-local scripts  = {}
+--
+--local list = {}
+--
+--list["1"]  = 123
+--list[2]    = "asdas"
+--list[3]    = "table"
+--
+----print(list["1"])
+----print(list[2])
+--
+--local function test(index)
+--    if not (index == 5) then
+--        return test(index + 1)
+--    end
+--
+--    return index
+--end
+--
+--print(test(1))
+--
+--local max = (4 > 5) and 1 or 2
+--print(max)
 
-scripts.i3lock = [[ #!/bin/sh
+--local private     = {}
+--
+--private.ellipsize = "start"
+--
+--local function ellipsize(ellipsize)
+--    if type(ellipsize) == "string" then
+--        if ellipsize == "start" or ellipsize == "middle" or ellipsize == "end" then
+--            private.ellipsize = ellipsize
+--            return private.ellipsize
+--        end
+--    end
+--
+--    local ellipsize = {}
+--
+--    function ellipsize:start()
+--        private.ellipsize = "start"
+--    end
+--    function ellipsize:middle()
+--        private.ellipsize = "middle"
+--    end
+--    function ellipsize:the_end()
+--        private.ellipsize = "end"
+--    end
+--
+--    return ellipsize
+--end
+--
+--print(private.ellipsize)
+--ellipsize():middle()
+--print(private.ellipsize)
+--ellipsize("end")
+--print(private.ellipsize)
 
-BLANK='#00000000'
-CLEAR='#ffffff22'
-DEFAULT='#ff00ffcc'
-TEXT='#ee00eeee'
-WRONG='#880000bb'
-VERIFYING='#bb00bbbb'
+--local function run(self)
+--    print(self.text) -- HELLO
+--end
+--
+--local promptbox = {}
+--
+--promptbox.text  = "HELLO"
+--promptbox.run   = run
+--
+--promptbox:run()
 
-i3lock \
---insidever-color=$CLEAR     \
---ringver-color=$VERIFYING   \
-\
---insidewrong-color=$CLEAR   \
---ringwrong-color=$WRONG     \
-\
---inside-color=$BLANK        \
---ring-color=$DEFAULT        \
---line-color=$BLANK          \
---separator-color=$DEFAULT   \
-\
---verif-color=$TEXT          \
---wrong-color=$TEXT          \
---time-color=$TEXT           \
---date-color=$TEXT           \
---layout-color=$TEXT         \
---keyhl-color=$WRONG         \
---bshl-color=$WRONG          \
-\
---screen 1                   \
---blur 5                     \
---clock                      \
---indicator                  \
---time-str="%H:%M:%S"        \
---date-str="%A, %Y-%m-%d"       \
---keylayout 1]]
+local test = nil
 
-print(scripts.i3lock)
+local i = 0
+
+while (not test) do
+    i = i + 1
+
+    if (i == 100) then
+        test = "test"
+    end
+end
+
+print("test")

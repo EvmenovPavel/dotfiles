@@ -1,4 +1,4 @@
-local color = {
+color = {
     active         = "#275EFE",
     active_inner   = "#ffffff",
     focus          = "#becfff",

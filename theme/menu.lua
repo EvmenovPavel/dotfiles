@@ -1,4 +1,4 @@
-local menu      = {}
+local menu = {}
 
 function menu:init(theme)
     theme.menu_submenu_icon = resources.awesome
@@ -14,6 +14,4 @@ function menu:init(theme)
     theme.menu_border_width = 1
 end
 
-return setmetatable(menu, { __call = function(_, ...)
-    return menu:init(...)
-end })
+return menu

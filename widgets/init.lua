@@ -1,9 +1,9 @@
 return {
-    battery    = require("widgets.battery"),
+    battery    = require("widgets.battery.battery"),
 
-    systray    = require("widgets.systray"),
+    systray    = require("widgets.systray.systray"),
 
-    keyboard   = require("widgets.keyboard"),
+    keyboard   = require("widgets.keyboard.keyboard"),
 
     --cpu        = require("widgets.cpu"),
     --
@@ -11,13 +11,15 @@ return {
     --
     --clock      = require("widgets.calendar"),
 
-    calendar   = require("widgets.calendar"),
+    calendar   = require("widgets.calendar.calendar"),
 
-    volume     = require("widgets.volume"),
+    volume     = require("widgets.volume.volume"),
 
-    brightness = require("widgets.brightness"),
+    brightness = require("widgets.brightness.brightness"),
 
-    reboot   = require("widgets.restart"),
+    expressvpn = require("widgets.expressvpn.expressvpn"),
+
+    reboot     = require("widgets.restart.restart"),
     --
     --pacmd      = require("widgets.pacmd"),
     --

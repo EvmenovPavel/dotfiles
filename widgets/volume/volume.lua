@@ -1,14 +1,14 @@
-local wibox              = require("wibox")
-local awful              = require("awful")
-local gears              = require("gears")
+local wibox         = require("wibox")
+local awful         = require("awful")
+local gears         = require("gears")
 
-local amixer_volume      = "amixer -D pulse sget Master | grep 'Left:' | awk -F '[][]' '{print $2}' | sed 's/[^0-9]//g'"
-local amixer_active      = "amixer -D pulse sget Master | grep 'Left:' | awk -F '[][]' '{print $4}'"
+local amixer_volume = "amixer -D pulse sget Master | grep 'Left:' | awk -F '[][]' '{print $2}' | sed 's/[^0-9]//g'"
+local amixer_active = "amixer -D pulse sget Master | grep 'Left:' | awk -F '[][]' '{print $4}'"
 
-local volume             = {}
-local volume_adjust      = {}
+local volume        = {}
+local volume_adjust = {}
 
-local w_volume_bar       = wibox.widget {
+local w_volume_bar  = wibox.widget {
     widget           = wibox.widget.progressbar,
     shape            = gears.shape.rounded_bar,
     color            = "#efefef",
@@ -17,20 +17,9 @@ local w_volume_bar       = wibox.widget {
     value            = 0
 }
 
-local w_volume_icon      = wibox.widget {
-    image  = resources.widgets.volume.on,
-    widget = wibox.widget.imagebox
-}
+local w_volume_icon = wmapi:widget():imagebox(resources.widgets.volume.on)
 
-local hide_volume_adjust = gears.timer {
-    timeout   = 3,
-    autostart = true,
-    callback  = function()
-        volume_adjust.visible = false
-    end
-}
-
-function volume:on_images()
+local function on_images()
     awful.spawn.easy_async_with_shell(
             amixer_active,
             function(stdout)
@@ -44,44 +33,49 @@ function volume:on_images()
     )
 end
 
-function volume:on_volume()
+local function on_volume()
     awful.spawn.easy_async_with_shell(
             amixer_volume,
             function(stdout)
                 w_volume_bar.value = tonumber(stdout)
-                volume:on_images()
+                on_images()
             end,
             false
     )
 end
+
+local hide_volume_adjust = wmapi:update(
+        function()
+            volume_adjust.visible = false
+        end,
+        3)
 
 local function widget_volume_adjust()
     if volume_adjust.visible then
         hide_volume_adjust:again()
     else
         volume_adjust.visible = true
-        hide_volume_adjust:start()
         hide_volume_adjust:again()
     end
 
-    volume:on_volume()
+    on_volume()
 end
 
 awesome.connect_signal("volume_change",
                        function(stdout)
-                           if ((stdout == "+") or (stdout == "-")) then
+                           if stdout == "+" or stdout == "-" then
                                awful.spawn("amixer -D pulse set Master 5%" .. stdout, false)
                                widget_volume_adjust()
-                           elseif (stdout == "off") then
+                           elseif stdout == "off" then
                                awful.spawn("amixer -D pulse set Master 1+ toggle", false)
                                widget_volume_adjust()
-                           elseif (stdout == "disable") then
+                           elseif stdout == "disable" then
                                volume_adjust.visible = false
                            end
                        end
 )
 
-local function init()
+function volume:init()
     local offsetx           = 48
     local offsety           = 300
 
@@ -124,14 +118,14 @@ local function init()
             layout        = wibox.container.rotate,
         },
         wibox.container.margin(
-                w_volume_icon,
+                w_volume_icon:get(),
                 7, 7, 14, 14
         )
     }
 
-    return w_volume_icon
+    return w_volume_icon:get()
 end
 
 return setmetatable(volume, { __call = function(_, ...)
-    return init(...)
+    return volume:init(...)
 end })

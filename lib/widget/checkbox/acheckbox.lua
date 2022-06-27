@@ -5,14 +5,14 @@ local beautiful = require("beautiful")
 local checkbox  = {}
 
 function checkbox:init(text, src, key, event, func)
-    local ret      = {}
+    local ret      = widget:base("checkbox")
 
     ret.res        = wibox.widget({ layout = wibox.layout.fixed.horizontal })
 
     local imagebox = widget:imagebox()
     imagebox:set_image(resources.checkbox.checkbox)
 
-    local textbox = widget:textbox("Checkbox")
+    local textbox = widget:textbox("checkbox")
 
     ret.checkbox  = wibox.widget({
                                      imagebox:get(),

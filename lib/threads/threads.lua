@@ -37,7 +37,8 @@ function Threads.new(N, ...)
     local serialize = require(Threads.__serialize)
 
     if #funcs == 0 then
-        funcs = { function() end }
+        funcs = { function()
+        end }
     end
 
     setmetatable(self, Threads)
@@ -169,7 +170,9 @@ function Threads:dojob()
     self.endcallbacks.n                             = self.endcallbacks.n - 1
     if callstatus then
         local endcallstatus, msg = xpcall(
-                function() return endcallback(_unpack(args)) end,
+                function()
+                    return endcallback(_unpack(args))
+                end,
                 debug.traceback)
         if not endcallstatus then
             self.errors = true
@@ -223,7 +226,8 @@ function Threads:addjob(...)
 
     -- now add a new endcallback in the list
     local endcallbackid         = #endcallbacks + 1
-    endcallbacks[endcallbackid] = endcallback or function() end
+    endcallbacks[endcallbackid] = endcallback or function()
+    end
     endcallbacks.n              = endcallbacks.n + 1
 
     local func                  = function(...)

@@ -1,4 +1,4 @@
-resources             = {}
+resources                   = {}
 
 resources.path              = dir.awesomewm .. "/resources/icons"
 resources.wallpaper         = dir.awesomewm .. "/resources/wallpapers"
@@ -231,19 +231,21 @@ resources.titlebar          = {
     --ontop
     ontop     = {
         --[[act app]]--
-        button_focus_active          = resources.path .. "/titlebar/ontop/focus_active.png",
-        button_focus_active_hover    = resources.path .. "/titlebar/ontop/focus_active_hover.png",
-        button_focus_active_press    = resources.path .. "/titlebar/ontop/focus_active_press.png",
-        button_focus_inactive        = resources.path .. "/titlebar/ontop/focus_inactive.png",
-        button_focus_inactive_hover  = resources.path .. "/titlebar/ontop/focus_inactive_hover.png",
-        button_focus_inactive_press  = resources.path .. "/titlebar/ontop/focus_inactive_press.png",
+        button_focus                 = resources.path .. "/titlebar/ontop/button_focus.png",
+        button_focus_active          = resources.path .. "/titlebar/ontop/button_focus_active.png",
+        button_focus_active_hover    = resources.path .. "/titlebar/ontop/button_focus_active_hover.png",
+        button_focus_active_press    = resources.path .. "/titlebar/ontop/button_focus_active_press.png",
+        button_focus_inactive        = resources.path .. "/titlebar/ontop/button_focus_inactive.png",
+        button_focus_inactive_hover  = resources.path .. "/titlebar/ontop/button_focus_inactive_hover.png",
+        button_focus_inactive_press  = resources.path .. "/titlebar/ontop/button_focus_inactive_press.png",
         --[[no act app]]--
-        button_normal_active         = resources.path .. "/titlebar/ontop/normal_active.png",
-        button_normal_active_hover   = resources.path .. "/titlebar/ontop/normal_active_hover.png",
-        button_normal_active_press   = resources.path .. "/titlebar/ontop/normal_active_press.png",
-        button_normal_inactive       = resources.path .. "/titlebar/ontop/normal_inactive.png",
-        button_normal_inactive_hover = resources.path .. "/titlebar/ontop/normal_inactive_hover.png",
-        button_normal_inactive_press = resources.path .. "/titlebar/ontop/normal_inactive_press.png",
+        button_normal                = resources.path .. "/titlebar/ontop/button_normal.png",
+        button_normal_active         = resources.path .. "/titlebar/ontop/button_normal_active.png",
+        button_normal_active_hover   = resources.path .. "/titlebar/ontop/button_normal_active_hover.png",
+        button_normal_active_press   = resources.path .. "/titlebar/ontop/button_normal_active_press.png",
+        button_normal_inactive       = resources.path .. "/titlebar/ontop/button_normal_inactive.png",
+        button_normal_inactive_hover = resources.path .. "/titlebar/ontop/button_normal_inactive_hover.png",
+        button_normal_inactive_press = resources.path .. "/titlebar/ontop/button_normal_inactive_press.png",
     },
 
 

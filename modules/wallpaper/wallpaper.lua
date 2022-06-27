@@ -26,7 +26,7 @@ function mywallpaper:set_animated(surf, s)
 end
 
 local function init(s)
-    local file = resources.wallpapers.ruby_rose
+    local file = "/home/be3yh4uk/.config/awesome/wallpapers/1761712.jpg"
 
     if type(file) == "function" then
         file = file(s)

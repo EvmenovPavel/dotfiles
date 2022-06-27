@@ -8,7 +8,7 @@ local function init(clientkeys, buttonkeys)
         require("rules.pictureinpicture")(),
 
         -- Maximized
-        require("rules.maximized")(),
+        --require("rules.maximized")(),
 
         -- CopyQ
         require("rules.copyq")(),

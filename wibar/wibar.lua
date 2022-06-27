@@ -8,7 +8,6 @@ local mywibar   = {}
 function mywibar:w_left(s)
     return {
         require("modules.taglist")(s),
-        --widgets.taglist(s),
         layout = wibox.layout.fixed.horizontal
     }
 end
@@ -16,7 +15,6 @@ end
 function mywibar:w_middle(s)
     return {
         require("modules.tasklist")(s),
-        --widgets.tasklist(s),
         layout = wibox.layout.fixed.horizontal
     }
 end
@@ -32,16 +30,49 @@ end
 --    return w:get()
 --end
 
-local c = require("widgets.calendar.test3")
+-- {{{ Menu
+-- Create a launcher widget and a main menu
+--local myawesomemenu = {
+--    { "manual", "terminal" .. " -e man awesome" },
+--    { "edit config", "editor_cmd" .. " " .. awesome.conffile },
+--    { "restart", awesome.restart },
+--    { "quit", function()
+--        awesome.quit()
+--    end },
+--}
+--
+--local menu_awesome  = { "awesome", myawesomemenu, resources.widgets.volume.on }
+--local menu_terminal = { "open terminal", "terminal" }
+--
+--local mymainmenu    = awful.menu({
+--                                     items = {
+--                                         menu_awesome,
+--                                         { "Debian", "debian.menu.Debian_menu.Debian" },
+--                                         menu_terminal,
+--                                     }
+--                                 })
+--
+----root.buttons(gears.table.join(
+----        awful.button({ }, event.mouse.button_click_right, function()
+----            mymainmenu:toggle()
+----        end)
+----))
+--
+--local mylauncher    = awful.widget.launcher({ image = resources.widgets.volume.on,
+--                                              menu  = mymainmenu })
 
 function mywibar:w_right(s)
+    widgets.expressvpn()
+
     if wmapi:is_screen_primary(s) then
         return {
+            --mylauncher,
 
             widgets.systray(s),
+            --widgets.keyboard(),
+            wibox.widget.systray(),
+
             widgets.keyboard(),
-
-
 
             widgets.volume(),
             widgets.brightness(),
@@ -50,8 +81,7 @@ function mywibar:w_right(s)
             widgets.battery(),
             --widgets.memory(),
             --widgets.clock(),
-            --widgets.calendar(),
-            c(),
+            widgets.calendar(),
 
             widgets.reboot(),
             --widgets.loggingui(),
@@ -63,13 +93,12 @@ function mywibar:w_right(s)
 
             layout = wibox.layout.fixed.horizontal
         }
-    else
-        return {
-            screen_if_test(s),
 
-            layout = wibox.layout.fixed.horizontal
-        }
     end
+
+    return {
+        layout = wibox.layout.fixed.horizontal
+    }
 end
 
 local function init(s)

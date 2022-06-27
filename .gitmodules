@@ -6,3 +6,7 @@
 	path = modules/foggy
 	url = git@github.com:EvmenovPavel/foggy.git
     branch = master
+
+[submodule "3rdparty/i3lock-color"]
+	path = modules/foggy
+	url = git@github.com:Raymo111/i3lock-color.git

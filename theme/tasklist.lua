@@ -49,6 +49,4 @@ function tasklist:init(theme)
     theme.tasklist_spacing           = 1
 end
 
-return setmetatable(tasklist, { __call = function(_, ...)
-    return tasklist:init(...)
-end })
+return tasklist

@@ -33,15 +33,16 @@ function mytitlebar:titlewidget(c)
 end
 
 function mytitlebar:button(c, name, selector, action)
-    local ret = wibox.widget.imagebox()
+    local imagebox = wibox.widget.imagebox()
 
     if mytitlebar.enable_tooltip then
-        ret._private.tooltip = atooltip({ objects = { ret }, delay_show = 1 })
-        ret._private.tooltip:set_text(name)
+        imagebox._private.tooltip = atooltip({ objects = { imagebox }, delay_show = 1 })
+        imagebox._private.tooltip:set_text(name)
     end
 
     local function update()
         local img = selector(c)
+
         if type(img) ~= "nil" then
             -- Convert booleans automatically
             if type(img) == "boolean" then
@@ -51,14 +52,17 @@ function mytitlebar:button(c, name, selector, action)
                     img = "inactive"
                 end
             end
+
             local prefix = "normal"
             if client.focus == c then
                 prefix = "focus"
             end
+
             if img ~= "" then
                 prefix = prefix .. "_"
             end
-            local state = ret.state
+
+            local state = imagebox.state
             if state ~= "" then
                 state = "_" .. state
             end
@@ -71,118 +75,119 @@ function mytitlebar:button(c, name, selector, action)
                 img = theme
             end
         end
-        ret:set_image(img)
+
+        imagebox:set_image(img)
     end
 
-    ret.state = ""
+    imagebox.state = ""
 
     if action then
-        ret:buttons(abutton({}, 1, nil, function()
-            ret.state = ""
+        imagebox:buttons(abutton({}, 1, nil, function()
+            imagebox.state = ""
             update()
             action(c, selector(c))
         end))
     else
-        ret:buttons(abutton({}, 1, nil, function()
-            ret.state = ""
+        imagebox:buttons(abutton({}, 1, nil, function()
+            imagebox.state = ""
             update()
         end))
     end
 
-    ret:connect_signal("mouse::enter", function()
-        ret.state = "hover"
+    imagebox:connect_signal("mouse::enter", function()
+        imagebox.state = "hover"
         update()
     end)
 
-    ret:connect_signal("mouse::leave", function()
-        ret.state = ""
+    imagebox:connect_signal("mouse::leave", function()
+        imagebox.state = ""
         update()
     end)
 
-    ret:connect_signal("button::press", function(_, _, _, b)
+    imagebox:connect_signal("button::press", function(_, _, _, b)
         if b == 1 then
-            ret.state = "press"
+            imagebox.state = "press"
             update()
         end
     end)
 
-    ret.update = update
+    imagebox.update = update
     update()
 
     c:connect_signal("focus", update)
     c:connect_signal("unfocus", update)
 
-    return ret
+    return imagebox
 end
 
 function mytitlebar:floatingbutton(c)
-    local widget = mytitlebar:button(
-            c, "floating",
-            function(cl)
-                return cl.floating
-            end,
-            function(cl, state)
-                fun:on_floating(cl)
-            end)
+    local widget = mytitlebar:button(c, "floating",
+                                     function(cl)
+                                     end,
+                                     function(cl)
+                                         fun:on_floating(cl)
+                                     end)
+    c:connect_signal("property::floating", widget.update)
     return widget
 end
 
 function mytitlebar:maximizedbutton(c)
-    local widget = mytitlebar:button(
-            c, "maximized",
-            function(cl)
-                return cl.maximized
-            end,
-            function(cl, state)
-                fun:on_maximized(cl)
-            end)
+    local widget = mytitlebar:button(c, "maximized",
+                                     function(cl)
+                                         return cl.maximized
+                                     end,
+                                     function(cl, state)
+                                         fun:on_maximized(cl, state)
+                                     end)
+    c:connect_signal("property::maximized", widget.update)
     return widget
 end
 
 function mytitlebar:minimizebutton(c)
-    local widget = mytitlebar:button(
-            c, "minimize",
-            function()
-                return ""
-            end,
-            function(cl)
-                fun:on_minimized(cl)
-            end)
+    local widget = mytitlebar:button(c, "minimize",
+                                     function(cl)
+                                         return ""
+                                     end,
+                                     function(cl)
+                                         fun:on_minimized(cl)
+                                     end)
+    c:connect_signal("property::minimize", widget.update)
     return widget
 end
 
 function mytitlebar:closebutton(c)
-    return mytitlebar:button(
-            c, "close",
-            function()
-                return ""
-            end,
-            function(cl)
-                fun:on_close(cl)
-            end)
+    local widget = mytitlebar:button(c, "close",
+                                     function(cl)
+                                         return ""
+                                     end,
+                                     function(cl)
+                                         fun:on_close(cl)
+                                     end)
+    c:connect_signal("property::close", widget.update)
+    return widget
 end
 
 function mytitlebar:ontopbutton(c)
-    local widget = mytitlebar:button(
-            c, "ontop",
-            function(cl)
-                return cl.ontop
-            end,
-            function(cl, state)
-                fun:on_ontop(cl)
-            end)
+    local widget = mytitlebar:button(c, "ontop",
+                                     function(cl)
+                                         return cl.ontop
+                                     end,
+                                     function(cl, state)
+                                         fun:on_ontop(cl, state)
+                                     end)
+    c:connect_signal("property::ontop", widget.update)
     return widget
 end
 
 function mytitlebar:stickybutton(c)
-    local widget = mytitlebar:button(
-            c, "sticky",
-            function(cl)
-                return cl.sticky
-            end,
-            function(cl, state)
-                fun:on_sticky(cl)
-            end)
+    local widget = mytitlebar:button(c, "sticky",
+                                     function(cl)
+                                         return cl.sticky
+                                     end,
+                                     function(cl, state)
+                                         fun:on_sticky(cl, state)
+                                     end)
+    c:connect_signal("property::sticky", widget.update)
     return widget
 end
 
@@ -234,24 +239,23 @@ client.connect_signal("request::titlebars",
                               {
                                   {
                                       clienticon(c),
-                                      layout = wibox.layout.align.horizontal
+                                      layout = wibox.layout.align.horizontal()
                                   },
                                   margins = 3,
                                   widget  = wibox.container.margin(),
+
                               },
                               {
-                                  {
-                                      align  = "center",
-                                      widget = mytitlebar:titlewidget(c),
-                                  },
+                                  align   = "center",
                                   buttons = buttons,
-                                  layout  = wibox.layout.flex.horizontal()
+                                  widget  = mytitlebar:titlewidget(c),
                               },
                               {
                                   mytitlebar:minimizebutton(c),
                                   mytitlebar:maximizedbutton(c),
                                   mytitlebar:closebutton(c),
-                                  layout = wibox.layout.flex.horizontal()
+
+                                  layout = wibox.layout.align.horizontal()
                               },
                               layout = wibox.layout.align.horizontal()
                           }

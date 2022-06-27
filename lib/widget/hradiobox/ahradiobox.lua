@@ -16,7 +16,7 @@ function hradiobox:init()
 
     ret.table  = {}
 
-    function set_widget(...)
+    local function set_widget(...)
         for i = 1, select("#", ...) do
             local item = select(i, ...)
             if item then
@@ -26,7 +26,7 @@ function hradiobox:init()
                 end
 
                 widget:connect_signal(
-                        signals.button.release,
+                        event.signals.button.release,
                         function()
                             for _, item in ipairs(ret.table) do
                                 item:disable()
@@ -46,7 +46,7 @@ function hradiobox:init()
     end
 
     function ret:add_radiobox(text, func)
-        local text            = text or "Checkbox"
+        local text            = text or "checkbox"
         local func            = func or function()
             log:debug("radiobox:init (" .. text .. ")")
         end

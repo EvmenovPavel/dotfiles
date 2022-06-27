@@ -1,10 +1,10 @@
 --local xrandr = require("modules.foggy.xrandr")
 --local awful  = require("awful")
 
-local test   = {}
+local test = {}
 
 local function init()
-    local b = widget:button()
+    local b = wmapi:widget():button()
     b:set_text("Monitors")
 
     b:set_func(function()

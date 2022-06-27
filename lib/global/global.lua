@@ -25,7 +25,7 @@ LuaTypes    = {
     null     = "nil",
     boolean  = "boolean",
     number   = "number",
-    str      = "string",
+    string   = "string",
     fun      = "function",
     userdata = "userdata",
     thread   = "thread",
@@ -60,8 +60,15 @@ function Type(var)
 end
 
 placement = {
-    top          = "top",
-    top_right    = "top_right",
-    top_left     = "top_left",
-    bottom_right = "bottom_right"
+    top_left          = "top_left",
+    top_right         = "top_right",
+    bottom_left       = "bottom_left",
+    bottom_right      = "bottom_right",
+    left              = "left",
+    right             = "right",
+    top               = "top",
+    bottom            = "bottom",
+    centered          = "centered",
+    center_vertical   = "center_vertical",
+    center_horizontal = "center_horizontal",
 }

@@ -1,5 +1,7 @@
 # Awesome WM
 
+_echo 'awesome.restart()' | awesome-client_
+
 ##Themes for Awesome WM 4.3
 
 ##Install programms:

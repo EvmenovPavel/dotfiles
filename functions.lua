@@ -1,4 +1,6 @@
 local awful         = require("awful")
+local gears         = require("gears")
+local beautiful     = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
 local functions     = {}
@@ -10,7 +12,47 @@ end
 local client_iterate = require("awful.client").iterate
 local gtable         = require("gears.table")
 
-function clients(filter)
+function functions:logs(c)
+    --log:debug(
+    --        "\nname:", c.name,
+    --        "\nskip_taskbar:", c.skip_taskbar,
+    --        "\nclass:", c.class,
+    --        "\ninstance:", c.instance,
+    --        "\npid:", c.pid,
+    --        "\nrole:", c.role,
+    --        "\nicon_name:", c.icon_name,
+    --        "\nicon:", c.icon,
+    --        "\nicon_sizes:", c.icon_sizes,
+    --        "\ngroup_window:", c.group_window,
+    --        "\nstartup_id:", c.startup_id,
+    --        "\nborder_width:", c.border_width,
+    --        "\nmaximized:", c.maximized,
+    --        "\nfullscreen:", c.fullscreen,
+    --        "\nmaximized_horizontal:", c.maximized_horizontal,
+    --        "\nmaximized_vertical:", c.maximized_vertical,
+    --        "\nwidth:", c.width,
+    --        "\nheight:", c.height,
+    --        "\n\n"
+    --)
+end
+
+function functions:update_client(c)
+    if c.maximized or c.fullscreen then
+        c.border_width = 0
+        c.shape        = function(cr, w, h)
+            gears.shape.rounded_rect(cr, w, h, 0)
+        end
+    else
+        c.border_width = 4
+        c.shape        = function(cr, w, h)
+            gears.shape.rounded_rect(cr, w, h, beautiful.shape_rounded_rect)
+        end
+    end
+
+    c:raise()
+end
+
+local function clients(filter)
     local item_args = {}
 
     local cls_t     = {}
@@ -56,29 +98,27 @@ function functions:on_run(cmd)
     awful.util.spawn(cmd)
 end
 
-function functions:on_fullscreen(c)
-    c.fullscreen = not c.fullscreen
-end
+function functions:on_maximized(c, state)
+    c.fullscreen = false
+    c.floating   = false
 
-function functions:on_maximized(c)
-    if c.fullscreen then
-        c.fullscreen = false
-    end
+    c.maximized  = not c.maximized
 
-    c.floating  = false
-    c.maximized = not c.maximized
+    self:update_client(c)
 end
 
 function functions:on_fullscreen(c)
-    if c.maximized then
-        c.maximized = false
-    end
+    c.maximized  = false
+    c.floating   = false
 
     c.fullscreen = not c.fullscreen
+
+    self:update_client(c)
 end
 
 function functions:on_minimized(c)
     c.minimized = not c.minimized
+    c:raise()
 end
 
 function functions:on_close(c)
@@ -89,12 +129,14 @@ function functions:on_kill(c)
     c:kill()
 end
 
-function functions:on_sticky(c)
+function functions:on_sticky(c, state)
     c.sticky = not c.sticky
+    c:raise()
 end
 
-function functions:on_ontop(c)
+function functions:on_ontop(c, state)
     c.ontop = not c.ontop
+    c:raise()
 end
 
 function functions:on_floating(c)

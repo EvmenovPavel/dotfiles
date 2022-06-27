@@ -2,23 +2,21 @@
 
 
 --local asn1 = require "resty.asn1"
-local ffi = require "ffi"
-local ffi_new = ffi.new
-local ffi_gc = ffi.gc
-local ffi_str = ffi.string
-local ffi_copy = ffi.copy
-local C = ffi.C
+local ffi          = require "ffi"
+local ffi_new      = ffi.new
+local ffi_gc       = ffi.gc
+local ffi_str      = ffi.string
+local ffi_copy     = ffi.copy
+local C            = ffi.C
 local setmetatable = setmetatable
 --local error = error
-local type = type
+local type         = type
 
+local _M           = { _VERSION = '0.09' }
 
-local _M = { _VERSION = '0.09' }
+local mt           = { __index = _M }
 
-local mt = { __index = _M }
-
-
-ffi.cdef[[
+ffi.cdef [[
 typedef struct engine_st ENGINE;
 
 typedef struct evp_cipher_st EVP_CIPHER;
@@ -102,42 +100,42 @@ int EVP_BytesToKey(const EVP_CIPHER *type,const EVP_MD *md,
 local ctx_ptr_type = ffi.typeof("EVP_CIPHER_CTX[1]")
 
 local hash
-hash = {
-    md5 = C.EVP_md5(),
-    sha1 = C.EVP_sha1(),
+hash               = {
+    md5    = C.EVP_md5(),
+    sha1   = C.EVP_sha1(),
     sha224 = C.EVP_sha224(),
     sha256 = C.EVP_sha256(),
     sha384 = C.EVP_sha384(),
     sha512 = C.EVP_sha512()
 }
-_M.hash = hash
+_M.hash            = hash
 
 local cipher
-cipher = function (size, _cipher)
-    local _size = size or 128
+cipher             = function(size, _cipher)
+    local _size   = size or 128
     local _cipher = _cipher or "cbc"
-    local func = "EVP_aes_" .. _size .. "_" .. _cipher
+    local func    = "EVP_aes_" .. _size .. "_" .. _cipher
     if C[func] then
-        return { size=_size, cipher=_cipher, method=C[func]()}
+        return { size = _size, cipher = _cipher, method = C[func]() }
     else
         return nil
     end
 end
-_M.cipher = cipher
+_M.cipher          = cipher
 
 function _M.new(self, key, salt, _cipher, _hash, hash_rounds)
-    local encrypt_ctx = ffi_new(ctx_ptr_type)
-    local decrypt_ctx = ffi_new(ctx_ptr_type)
-    local _cipher = _cipher or cipher()
-    local _hash = _hash or hash.md5
-    local hash_rounds = hash_rounds or 1
-    local _cipherLength = _cipher.size/8
-    local gen_key = ffi_new("unsigned char[?]",_cipherLength)
-    local gen_iv = ffi_new("unsigned char[?]",_cipherLength)
+    local encrypt_ctx   = ffi_new(ctx_ptr_type)
+    local decrypt_ctx   = ffi_new(ctx_ptr_type)
+    local _cipher       = _cipher or cipher()
+    local _hash         = _hash or hash.md5
+    local hash_rounds   = hash_rounds or 1
+    local _cipherLength = _cipher.size / 8
+    local gen_key       = ffi_new("unsigned char[?]", _cipherLength)
+    local gen_iv        = ffi_new("unsigned char[?]", _cipherLength)
 
     if type(_hash) == "table" then
         if not _hash.iv or #_hash.iv ~= 16 then
-          return nil, "bad iv"
+            return nil, "bad iv"
         end
 
         if _hash.method then
@@ -161,7 +159,7 @@ function _M.new(self, key, salt, _cipher, _hash, hash_rounds)
     else
         if C.EVP_BytesToKey(_cipher.method, _hash, salt, key, #key,
                             hash_rounds, gen_key, gen_iv)
-            ~= _cipherLength
+                ~= _cipherLength
         then
             return nil
         end
@@ -171,9 +169,9 @@ function _M.new(self, key, salt, _cipher, _hash, hash_rounds)
     C.EVP_CIPHER_CTX_init(decrypt_ctx)
 
     if C.EVP_EncryptInit_ex(encrypt_ctx, _cipher.method, nil,
-      gen_key, gen_iv) == 0 or
-      C.EVP_DecryptInit_ex(decrypt_ctx, _cipher.method, nil,
-      gen_key, gen_iv) == 0 then
+                            gen_key, gen_iv) == 0 or
+            C.EVP_DecryptInit_ex(decrypt_ctx, _cipher.method, nil,
+                                 gen_key, gen_iv) == 0 then
         return nil
     end
 
@@ -181,19 +179,18 @@ function _M.new(self, key, salt, _cipher, _hash, hash_rounds)
     ffi_gc(decrypt_ctx, C.EVP_CIPHER_CTX_cleanup)
 
     return setmetatable({
-      _encrypt_ctx = encrypt_ctx,
-      _decrypt_ctx = decrypt_ctx
-      }, mt)
+                            _encrypt_ctx = encrypt_ctx,
+                            _decrypt_ctx = decrypt_ctx
+                        }, mt)
 end
 
-
 function _M.encrypt(self, s)
-    local s_len = #s
+    local s_len   = #s
     local max_len = s_len + 16
-    local buf = ffi_new("unsigned char[?]", max_len)
+    local buf     = ffi_new("unsigned char[?]", max_len)
     local out_len = ffi_new("int[1]")
     local tmp_len = ffi_new("int[1]")
-    local ctx = self._encrypt_ctx
+    local ctx     = self._encrypt_ctx
 
     if C.EVP_EncryptInit_ex(ctx, nil, nil, nil, nil) == 0 then
         return nil
@@ -210,20 +207,19 @@ function _M.encrypt(self, s)
     return ffi_str(buf, out_len[0] + tmp_len[0])
 end
 
-
 function _M.decrypt(self, s)
-    local s_len = #s
-    local buf = ffi_new("unsigned char[?]", s_len)
+    local s_len   = #s
+    local buf     = ffi_new("unsigned char[?]", s_len)
     local out_len = ffi_new("int[1]")
     local tmp_len = ffi_new("int[1]")
-    local ctx = self._decrypt_ctx
+    local ctx     = self._decrypt_ctx
 
     if C.EVP_DecryptInit_ex(ctx, nil, nil, nil, nil) == 0 then
-      return nil
+        return nil
     end
 
     if C.EVP_DecryptUpdate(ctx, buf, out_len, s, s_len) == 0 then
-      return nil
+        return nil
     end
 
     if C.EVP_DecryptFinal_ex(ctx, buf + out_len[0], tmp_len) == 0 then
@@ -232,7 +228,6 @@ function _M.decrypt(self, s)
 
     return ffi_str(buf, out_len[0] + tmp_len[0])
 end
-
 
 return _M
 

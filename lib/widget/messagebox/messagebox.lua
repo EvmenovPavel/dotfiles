@@ -1,4 +1,4 @@
-local naughty = require("naughty")
+local naughty = require("lib.naughty")
 
 --local ButtonRole     = {
 --    InvalidRole     = -1,
@@ -46,39 +46,32 @@ local naughty = require("naughty")
 --    ButtonMask      = 0x00000300, -- FlagMask
 --};
 
-local function question(title, text, ...)
-    local preset        = preset or naughty.config.presets.info
-
-    local timeout       = timeout or preset.timeout
-    local hover_timeout = hover_timeout or preset.hover_timeout
-
-    local icon          = icon or nil
-
-    local title         = title or "nil"
-    local text          = text or "nil"
-
-    --if not notification.panel_notification.visible then
+local function question(title, text)
     naughty.notify({
-                       preset        = preset,
-
-                       icon          = icon,
-                       title         = title,
-                       text          = text,
-
-                       timeout       = timeout,
-                       hover_timeout = hover_timeout,
+                       title = title,
+                       text  = text,
                    })
-end
-
-local function test(notification)
-
 end
 
 local function information(title, text, ...)
     naughty.notify({
-                       icon  = rec,
-                       title = title,
-                       text  = text,
+                       title   = title,
+                       text    = text,
+
+                       actions = {
+                           ["Accept1"] = function()
+                               naughty.notify({
+                                                  title = "title",
+                                                  text  = "text 1",
+                                              })
+                           end,
+                           ["Accept2"] = function()
+                               naughty.notify({
+                                                  title = "title",
+                                                  text  = "text 2",
+                                              })
+                           end
+                       },
                    })
 end
 
@@ -87,7 +80,9 @@ local function warning(title, text, ...)
         local action = select(i, ...)
         if action then
             local name     = action.name or "Action"
-            local callback = action.callback or function() log:error() end
+            local callback = action.callback or function()
+                log:error()
+            end
         end
     end
 
@@ -109,50 +104,50 @@ local function warning(title, text, ...)
 end
 
 local function critical(title, text, ...)
-    local preset        = args.preset or naughty.config.presets.info
+    --local preset        = args.preset or naughty.config.presets.info
 
-    local timeout       = args.timeout or preset.timeout
-    local hover_timeout = args.hover_timeout or preset.hover_timeout
+    --local timeout       = args.timeout or preset.timeout
+    --local hover_timeout = args.hover_timeout or preset.hover_timeout
 
-    local icon          = args.icon or nil
+    --local icon          = args.icon or nil
 
-    local title         = args.title or preset.title
-    local text          = args.text or preset.text
+    --local title         = args.title or preset.title
+    --local text          = args.text or preset.text
 
     --if not notification.panel_notification.visible then
     naughty.notify({
-                       preset        = preset,
+                       --preset        = preset,
 
-                       icon          = icon,
-                       title         = title,
-                       text          = text,
+                       --icon          = icon,
+                       title = title,
+                       text  = text,
 
-                       timeout       = timeout,
-                       hover_timeout = hover_timeout,
+                       --timeout       = timeout,
+                       --hover_timeout = hover_timeout,
                    })
 end
 
-local function about(title, text, ...)
-    local preset        = args.preset or naughty.config.presets.info
+local function about(title, text)
+    --local preset        = args.preset or naughty.config.presets.info
 
-    local timeout       = args.timeout or preset.timeout
-    local hover_timeout = args.hover_timeout or preset.hover_timeout
+    --local timeout       = args.timeout or preset.timeout
+    --local hover_timeout = args.hover_timeout or preset.hover_timeout
 
-    local icon          = args.icon or nil
+    --local icon          = args.icon or nil
 
-    local title         = args.title or preset.title
-    local text          = args.text or preset.text
+    --local title         = args.title or preset.title
+    --local text          = args.text or preset.text
 
     --if not notification.panel_notification.visible then
     naughty.notify({
-                       preset        = preset,
+                       --preset        = preset,
 
-                       icon          = icon,
-                       title         = title,
-                       text          = text,
+                       --icon          = icon,
+                       title = title,
+                       text  = text,
 
-                       timeout       = timeout,
-                       hover_timeout = hover_timeout,
+                       --timeout       = timeout,
+                       --hover_timeout = hover_timeout,
                    })
 end
 
@@ -165,24 +160,24 @@ function messagebox:init()
     --    question(title, text, ...)
     --end
 
-    function ret:question(title, text, ...)
-        question(title, text, ...)
+    function ret:question(title, text)
+        --question(title, text, ...)
     end
 
-    function ret:information(title, text, ...)
-        information(title, text, ...)
+    function ret:information(title, text)
+        information(title, text)
     end
 
     function ret:warning(title, text, ...)
-        warning(title, text, ...)
+        --warning(title, text, ...)
     end
 
     function ret:critical(title, text, ...)
-        critical(title, text, ...)
+        --critical(title, text, ...)
     end
 
     function ret:about(title, text, ...)
-        about(title, text, ...)
+        --about(title, text, ...)
     end
 
     return ret

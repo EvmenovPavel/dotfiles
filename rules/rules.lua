@@ -1,5 +1,6 @@
 local awful     = require("awful")
 local beautiful = require("beautiful")
+local fun       = require("functions")
 
 local rules     = {}
 
@@ -12,7 +13,7 @@ local function init(clientkeys, buttonkeys)
             }
         },
         properties = {
-            titlebars_enabled = beautiful.titlebars_enabled,
+            titlebars_enabled = beautiful.titlebars_enabled or true,
 
             border_width      = beautiful.border_width,
             border_color      = beautiful.border_normal,
@@ -25,9 +26,32 @@ local function init(clientkeys, buttonkeys)
             buttons           = buttonkeys,
 
             screen            = awful.screen.preferred,
-            placement         = awful.placement.no_overlap + awful.placement.no_offscreen,
+            placement         = awful.placement.centered,
 
-            callback          = function(c)
+            --shape             = function()
+            --    return function(cr, w, h)
+            --        gears.shape.rounded_rect(cr, w, h, 7)
+            --    end
+            --end
+            --gears.shape.rounded_rect,
+
+            callback          = function(c, startup)
+                --log:debug("rules >> c:", c)
+
+                fun:update_client(c, "rules >> c:")
+
+                --c.border_width = beautiful.border_width
+                --
+                --if c.maximized then
+                --    c.shape = function(cr, w, h)
+                --        gears.shape.rounded_rect(cr, w, h, 0)
+                --    end
+                --else
+                --    c.shape = function(cr, w, h)
+                --        gears.shape.rounded_rect(cr, w, h, 7)
+                --    end
+                --end
+
 
                 --local client = c
 

@@ -1,19 +1,20 @@
 local widget = {}
 
-function widget:base(shape)
-    return require("lib.widget.base.abase"):init(shape)
+---@param name_type string
+function widget:base(name_type)
+    return require("lib.widget.base.abase"):init(name_type)
 end
 
 function widget:button(text, src, key, event, func)
-    return require("lib.widget.button.abutton"):init(key, event, func, text, src)
+    return require("lib.widget.button.abutton"):init(text, src, key, event, func)
 end
 
-function widget:textbox(text, valign, align)
-    return require("lib.widget.textbox.atextbox"):init(text, valign, align)
+function widget:textbox(text)
+    return require("lib.widget.textbox.atextbox"):init(text)
 end
 
-function widget:checkbox()
-    return require("lib.widget.checkbox.acheckbox"):init()
+function widget:checkbox(text, src, key, event, func)
+    return require("lib.widget.checkbox.acheckbox"):init(text, src, key, event, func)
 end
 
 function widget:combobox(argc)
@@ -24,8 +25,18 @@ function widget:graph(argc)
     return require("lib.widget.graph.agraph"):init(argc)
 end
 
-function widget:imagebox(argc)
-    return require("lib.widget.imagebox.aimagebox"):init(argc)
+---@overload fun(image:string):widget
+---@overload fun(image:string,resize:number):widget
+---@overload fun(image:string,resize:number,forced_width:number):widget
+---@overload fun(image:string,resize:number,forced_width:number,forced_height:number):widget
+---@overload fun(image:string,resize:number,forced_width:number,forced_height:number,clip_shape:fun()):widget
+---@param image string
+---@param resize number
+---@param forced_width number
+---@param forced_height number
+---@param clip_shape fun()
+function widget:imagebox(image, resize, forced_width, forced_height, clip_shape)
+    return require("lib.widget.imagebox.aimagebox"):init(image, resize, forced_width, forced_height, clip_shape)
 end
 
 function widget:launcher(argc)
@@ -60,8 +71,8 @@ function widget:box(argc)
     return require("lib.widget.box.abox"):init(argc)
 end
 
-function widget:switch(argc)
-    return require("lib.widget.switch.aswitch"):init(argc)
+function widget:switch()
+    return require("lib.widget.switch.aswitch"):init()
 end
 
 function widget:hradiobox()
@@ -82,6 +93,14 @@ end
 
 function widget:messagebox()
     return require("lib.widget.messagebox.messagebox"):init()
+end
+
+function widget:calendar()
+    return require("lib.widget.calendar.calendar")--:init()
+end
+
+function widget:prompt(args)
+    return require("lib.widget.prompt.promptbox").new(args)--:init()
 end
 
 return widget

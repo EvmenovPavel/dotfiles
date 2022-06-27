@@ -1,71 +1,77 @@
-local theme           = {}
+local gears = require("gears")
 
-theme.focus           = false
-theme.shape           = false
---theme.border_width     = true
+local theme = {}
 
-theme.font_size       = 10
-theme.font            = "SF Pro Text " .. tostring(theme.font_size)
-theme.title_font_size = 20
-theme.title_font      = "SF Pro Display Medium " .. tostring(theme.title_font_size)
+function theme:init(config)
+    config.focus                        = false
 
-theme.datetime        = "%A %d %B  %H:%M:%S"
+    config.font_size                    = 10
+    config.font                         = "SF Pro Text " .. tostring(config.font_size)
+    config.title_font_size              = 20
+    config.title_font                   = "SF Pro Display Medium " .. tostring(config.title_font_size)
 
-theme.position        = {
-    center = "center",
-    top    = "top",
-    left   = "left",
-    botton = "bottom",
-    right  = "right",
-}
+    config.datetime                     = "%A %d %B  %H:%M:%S"
 
-require("theme.titlebar")(theme)
-require("theme.taglist")(theme)
-require("theme.tasklist")(theme)
-require("theme.menu")(theme)
-require("theme.wibar")(theme)
+    -- ### Background ### --
+    config.bg_normal                    = color.active_inner -- "#1f2430"
+    config.bg_dark                      = "#ffffff11"
+    config.bg_focus                     = color.active -- "#5A5A5A"
+    config.bg_urgent                    = "#ed8274"
+    config.bg_minimize                  = "#444444"
 
 
--- ### Background ### --
-theme.bg_normal                = "#1f2430"
-theme.bg_dark                  = "#000000"
-theme.bg_focus                 = "#151821"
-theme.bg_urgent                = "#ed8274"
-theme.bg_minimize              = "#444444"
+    -- ### systray ### --
+    config.mouse_enter                  = "#ffffff11"
+    config.mouse_leave                  = "#ffffff00"
+    config.button_press                 = "#ffffff22"
+    config.button_release               = "#ffffff11"
+
+    -- ### systray ### --
+    config.systray_icon_spacing         = 2
+    config.bg_systray                   = config.bg_normal
 
 
--- ### systray ### --
-theme.mouse_enter              = "#ffffff11"
-theme.mouse_leave              = "#ffffff00"
-theme.button_press             = "#ffffff22"
-theme.button_release           = "#ffffff11"
+    -- ### Foreground ### --
+    config.fg_normal                    = "#000000"
+    config.fg_focus                     = "#e4e4e4"
+    config.fg_urgent                    = "#ffffff"
+    config.fg_minimize                  = "#ffffff"
 
--- ### systray ### --
-theme.systray_icon_spacing     = 2
-theme.bg_systray               = theme.bg_normal
+    config.active_inner_color           = "#000000"
+    config.border_color                 = "#BBC1E1"
+    config.border_hover_color           = "#275EFE"
 
 
--- ### Foreground ### --
-theme.fg_normal                = "#ffffff"
-theme.fg_focus                 = "#e4e4e4"
-theme.fg_urgent                = "#ffffff"
-theme.fg_minimize              = "#ffffff"
+    -- ### Window Borders ### --
+    config.border_radius                = 10
+    config.useless_gap                  = 10
+    config.gap_single_client            = true
 
-theme.active_inner_color       = "#ffffff"
-theme.border_color             = "#BBC1E1"
-theme.border_hover_color       = "#275EFE"
+    config.border_width                 = 4
+    config.border_normal                = config.bg_normal
+    config.border_focus                 = "#ff8a65"
+    config.border_marked                = config.fg_urgent
 
--- ### Window Borders ### --
-theme.border_radius            = 10
-theme.useless_gap              = 10
-theme.gap_single_client        = true
+    config.shape_rounded_rect           = 10
+    --theme.opacity                  = 0.5
 
-theme.border_width             = 1
-theme.border_normal            = theme.bg_normal
-theme.border_focusw            = "#ff8a65"
-theme.border_marked            = theme.fg_urgent
+    -- Affects mostly the taglist and tasklist..
+    --theme.fg_urgent                = "#ffffff"
+    --theme.bg_urgent                = "#ff0000"
 
-theme.shape_border_width_enter = 1
-theme.shape_border_width_leave = 0
+    -- Set the client border to be orange and large.
+    --theme.border_color_urgent      = "#ffaa00"
+    --theme.border_width_urgent      = 6
+
+    -- Set the titlebar green.
+    --theme.titlebar_bg_urgent       = "#00ff00"
+    --theme.titlebar_fg_urgent       = "#000000"
+
+    config.shape_border_width_enter     = 1
+    config.shape_border_width_leave     = 1
+
+    local btnCloseColor                 = gears.surface.load_from_shape(20, 20, gears.shape.circle, "#D12D2D")
+    config.titlebar_close_button_normal = btnCloseColor
+end
 
 return theme

@@ -7,14 +7,14 @@ local function init()
         rule_any   = {
             class = {
                 --"kitty",
-                "TeamViewer"
+                --"TeamViewer"
             },
         },
         properties = {
-            maximized    = true,
-            border_width = beautiful.border_width,
-            callback     = function(c)
-                c.border_width = 0
+            maximized = true,
+            --border_width = beautiful.border_width,
+            callback  = function(c)
+                --c.border_width = 0
                 --awful.client.movetoscreen(c, client.focus.screen)
             end
         }

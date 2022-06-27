@@ -1,53 +1,114 @@
 local wibox    = require("wibox")
 
+--local glib     = require("lgi").GLib
+--local timer    = require("gears.timer")
+--local DateTime = glib.DateTime
+--local TimeZone = glib.TimeZone
+
 local imagebox = {}
 
-function imagebox:init(argc)
-    local ret                  = {}
+--- This lowers the timeout so that it occurs "correctly". For example, a timeout
+-- of 60 is rounded so that it occurs the next time the clock reads ":00 seconds".
+--local function calc_timeout(real_timeout)
+--    return real_timeout - os.time() % real_timeout
+--end
+--
+--function private.imagebox_update_cb()
+--    --ret.widget:set_image(private.image)
+--
+--    ret._timer.timeout = calc_timeout(private.refresh)
+--    ret._timer:again()
+--
+--    return true -- Continue the timer
+--
+--
+--    --private.update()
+--    --ret.widget:reset()
+--
+--    --ret.widget:set_image(private.image)
+--
+--    --ret.widget:set_resize(private.resize)
+--
+--    --log:debug("local function update")
+--end
+--
+--ret._timer = timer.weak_start_new(private.timeout, private.imagebox_update_cb)
+--ret._timer:emit_signal("timeout")
 
-    ret._private               = {}
+--private.timeout       = argc.timeout or 1
+--private.refresh       = argc.refresh or 1
+--private.timezone      = TimeZone.new()
+--private.format        = argc.format or " %a %b %d, %H:%M "
 
-    local argc                 = argc or {}
 
-    ret._private.image         = argc.image or nil
-    ret._private.resize        = argc.resize or true
-    ret._private.forced_width  = argc.forced_width or nil
-    ret._private.forced_height = argc.forced_height or nil
+function imagebox:init(image, resize, forced_width, forced_height, clip_shape)
+    local ret             = wmapi:widget():base("imagebox")
+
+    local private         = {}
+
+    private.image         = image or nil
+    private.resize        = resize or true
+    private.forced_width  = forced_width or nil
+    private.forced_height = forced_height or nil
+    private.clip_shape    = clip_shape or nil
+
+    local widget          = wibox.widget({
+                                             image         = private.image,
+
+                                             resize        = private.resize,
+                                             forced_width  = private.forced_width,
+                                             forced_height = private.forced_height,
+
+                                             widget        = wibox.widget.imagebox(),
+                                         })
+
+    --ret.widget:emit_signal("widget::layout_changed")
+    --ret.widget:emit_signal("widget::reset")
+
+    local function imagebox_update()
+        widget:set_image(private.image)
+        widget:set_resize(private.resize)
+
+        --ret.widget.forced_width  = private.forced_width
+        --ret.widget.forced_height = private.forced_width
+    end
 
     function ret:set_image(image)
-        ret._private.image = image or nil
+        private.image = image or nil
+        imagebox_update()
     end
 
     function ret:set_width(width)
-        ret._private.forced_width = width
+        private.forced_width = width or 0
+        imagebox_update()
     end
 
     function ret:set_height(height)
-        ret._private.forced_height = height
+        private.forced_height = height or 0
+        imagebox_update()
     end
 
     function ret:set_resize(resize)
-        ret._private.resize = resize or true
+        private.resize = resize or true
+        imagebox_update()
     end
 
-    local function create()
-        ret.widget      = wibox.widget({
-                                           image         = ret._private.image,
+    --function ret:set_clip_shape(clip_shape, ...)
+    --    private.clip_shape = clip_shape or true
+    --    ret._private:imagebox_update()
+    --end
 
-                                           resize        = ret._private.resize,
-                                           forced_width  = ret._private.forced_width,
-                                           forced_height = ret._private.forced_height,
+    --function imagebox:draw(cr, width, height)
+    --
+    --end
 
-                                           widget        = wibox.widget.imagebox(),
-                                       })
-
-        ret.widget.type = "imagebox"
-
-        return ret.widget
-    end
+    --function imagebox:fit(width, height)
+    --
+    --end
 
     function ret:get()
-        return create()
+        imagebox_update()
+        return widget
     end
 
     return ret

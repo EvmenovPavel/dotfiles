@@ -1,9 +1,9 @@
-local taglist   = {}
+local taglist = {}
 
 function taglist:init(theme)
     theme.taglist_disable_icon = false
 
-    theme.taglist_count        = 10
+    theme.taglist_count        = 9
 
     --отспут между item
     theme.taglist_spacing      = 0
@@ -17,6 +17,4 @@ function taglist:init(theme)
     theme.taglist_icons        = resources.taglist
 end
 
-return setmetatable(taglist, { __call = function(_, ...)
-    return taglist:init(...)
-end })
+return taglist

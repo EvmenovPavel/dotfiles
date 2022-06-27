@@ -1,13 +1,13 @@
-local awful          = require("awful")
-local gears          = require("gears")
+local awful     = require("awful")
+local gears     = require("gears")
 
-local programms      = require("programms")
+local programms = require("programms")
 
-local hotkeys        = require("keys.hotkeys")
-local switcher       = require("widgets.switcher")
-local fun            = require("functions")
+local hotkeys   = require("keys.hotkeys")
+local switcher  = require("widgets.switcher")
+local fun       = require("functions")
 
-local keyboardlayout = require("keyboardlayout")
+--local keyboardlayout = require("keyboardlayout")
 
 local global    = gears.table.join(
 --[[ AWESOME ]]--
@@ -145,9 +145,9 @@ local global    = gears.table.join(
 
         awful.key({ event.key.mod }, event.key.r,
                   function()
-                      if ("ru" == keyboardlayout:name()) then
-                          
-                      end
+                      --if ("ru" == keyboardlayout:name()) then
+
+                      --end
 
                       fun:on_run(programms.rofi)
                   end, hotkeys.programm.run),

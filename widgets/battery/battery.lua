@@ -1,15 +1,6 @@
-local wibox     = require("wibox")
+local wibox   = require("wibox")
 
-local battery   = {}
-
-local wIconBox  = wibox.widget {
-    image  = resources.battery.bolt,
-    widget = wibox.widget.imagebox
-}
-
-local wTextBox  = wibox.widget {
-    widget = wibox.widget.textbox
-}
+local battery = {}
 
 function battery:state_to_number(state)
     if state == "discharging" then
@@ -26,49 +17,49 @@ function battery:updateWidgetInfo(state, value)
     local image = ""
 
     if state == 1 then
-        if (value >= 1 and value < 9) then
+        if (value >= 1 and value <= 9) then
             image = resources.battery.level_0
-        elseif (value >= 10 and value < 19) then
+        elseif (value >= 10 and value <= 19) then
             image = resources.battery.level_10
-        elseif (value >= 20 and value < 29) then
+        elseif (value >= 20 and value <= 29) then
             image = resources.battery.level_20
-        elseif (value >= 30 and value < 39) then
+        elseif (value >= 30 and value <= 39) then
             image = resources.battery.level_30
-        elseif (value >= 40 and value < 49) then
+        elseif (value >= 40 and value <= 49) then
             image = resources.battery.level_40
-        elseif (value >= 50 and value < 59) then
+        elseif (value >= 50 and value <= 59) then
             image = resources.battery.level_50
-        elseif (value >= 60 and value < 69) then
+        elseif (value >= 60 and value <= 69) then
             image = resources.battery.level_60
-        elseif (value >= 70 and value < 79) then
+        elseif (value >= 70 and value <= 79) then
             image = resources.battery.level_70
-        elseif (value >= 80 and value < 89) then
+        elseif (value >= 80 and value <= 89) then
             image = resources.battery.level_80
-        elseif (value >= 90 and value < 100) then
+        elseif (value >= 90 and value <= 99) then
             image = resources.battery.level_90
         elseif (value == 100) then
             image = resources.battery.level_100
         end
     elseif state == 2 then
-        if (value >= 0 and value < 10) then
+        if (value >= 1 and value <= 9) then
             image = resources.battery.level_0_charging
-        elseif (value >= 10 and value < 19) then
+        elseif (value >= 10 and value <= 19) then
             image = resources.battery.level_10_charging
-        elseif (value >= 20 and value < 29) then
+        elseif (value >= 20 and value <= 29) then
             image = resources.battery.level_20_charging
-        elseif (value >= 30 and value < 39) then
+        elseif (value >= 30 and value <= 39) then
             image = resources.battery.level_30_charging
-        elseif (value >= 40 and value < 49) then
+        elseif (value >= 40 and value <= 49) then
             image = resources.battery.level_40_charging
-        elseif (value >= 50 and value < 59) then
+        elseif (value >= 50 and value <= 59) then
             image = resources.battery.level_50_charging
-        elseif (value >= 60 and value < 69) then
+        elseif (value >= 60 and value <= 69) then
             image = resources.battery.level_60_charging
-        elseif (value >= 70 and value < 79) then
+        elseif (value >= 70 and value <= 79) then
             image = resources.battery.level_70_charging
-        elseif (value >= 80 and value < 89) then
+        elseif (value >= 80 and value <= 89) then
             image = resources.battery.level_80_charging
-        elseif (value >= 90 and value < 100) then
+        elseif (value >= 90 and value <= 99) then
             image = resources.battery.level_90_charging
         elseif (value == 100) then
             image = resources.battery.level_100_charging
@@ -77,19 +68,17 @@ function battery:updateWidgetInfo(state, value)
         image = resources.battery.level_100_charged
     end
 
-    wIconBox.image  = image
-    wTextBox.markup = " " .. tostring(value) .. "%"
+    return image, " " .. tostring(value) .. "%"
 end
 
 function battery:notify_power(notify)
+    local messagebox = wmapi:widget():messagebox()
+
     if notify == 1 then
-        local messagebox = widget:messagebox()
         messagebox:information("Система электропитания", "Питание отключено.")
     elseif notify == 2 then
-        local messagebox = widget:messagebox()
         messagebox:information("Система электропитания", "Питание подключено.")
     elseif notify == 3 then
-        local messagebox = widget:messagebox()
         messagebox:information("Система электропитания", "Батарея полностью заряжена.")
     end
 end
@@ -119,10 +108,16 @@ end
 --icon-name:          'battery-full-charging-symbolic'
 
 function battery:init()
-    local notify      = 0
-    local state       = 0
+    local _private    = {}
+
+    _private.notify   = 0
+    _private.state    = 0
+    _private.value    = 0
 
     local bash_upower = [[bash -c "upower -i $(upower -e | grep 'BAT')"]]
+
+    local imagebox    = wmapi:widget():imagebox()
+    local textbox     = wmapi:widget():textbox()
 
     wmapi:watch(bash_upower, 1,
                 function(stdout)
@@ -204,30 +199,39 @@ function battery:init()
                     --_upower.buf.technology
                     --_upower.buf.icon_name
 
-                    local _state = self:state_to_number(_upower.buf.state)
-                    local _value = _upower.buf.percentage
+                    _private.state     = tonumber(self:state_to_number(_upower.buf.state))
+                    _private.value     = _upower.buf.percentage
 
-                    state        = tonumber(_state)
-                    self:updateWidgetInfo(_state, _value)
+                    local image, value = self:updateWidgetInfo(_private.state, _private.value)
 
-                    if state == 1 and notify ~= state then
-                        self:notify_power(state)
-                    elseif state == 2 and notify ~= state then
-                        self:notify_power(state)
-                    elseif state == 3 and notify ~= state then
-                        self:notify_power(state)
+                    imagebox:set_image(image)
+                    textbox:text(value)
+                    --textbox:markup(value)
+
+                    if _private.state == 1 and _private.notify ~= _private.state then
+                        self:notify_power(_private.state)
+                    elseif _private.state == 2 and _private.notify ~= _private.state then
+                        self:notify_power(_private.state)
+                    elseif _private.state == 3 and _private.notify ~= _private.state then
+                        self:notify_power(_private.state)
                     end
 
-                    notify = state
+                    _private.notify = _private.state
                 end)
 
-    local widget = wibox.widget {
-        wIconBox,
-        wTextBox,
+    local ret = wibox.widget {
+        imagebox:get(),
+        textbox:get(),
         layout = wibox.layout.align.horizontal
     }
 
-    return widget
+    --ret:connect_signal("mouse::leave", function()
+    --    --widget.state = ""
+    --    --local n = widget:messagebox()
+    --    --n:information("1", "2")
+    --end)
+
+    return ret
 end
 
 return setmetatable(battery, { __call = function(_, ...)
