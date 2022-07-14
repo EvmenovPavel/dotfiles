@@ -356,24 +356,90 @@ end
 
 function wmapi:client_info(c)
     if c then
-        capi.log:message(c.name,
-                         "tag:       " .. tostring(c.tag),
-                         "tags:      " .. tostring(c.tags),
-                         "instance:  " .. tostring(c.instance),
-                         "class:     " .. tostring(c.class),
-                         "screen:    " .. tostring(self:screen_id(c.screen)),
-                         "exec_once: " .. tostring(c.exec_once),
-                         "icon:      " .. tostring(c.icon),
-                         "width:     " .. tostring(c.width),
-                         "height:    " .. tostring(c.height)
+        capi.log:message("name:                 " .. tostring(c.name), -- The client title.
+                         "window:               " .. tostring(c.window), -- The X window id.
+                         "skip_taskbar:         " .. tostring(c.skip_taskbar), -- True if the client does not want to be in taskbar.
+                         "type:                 " .. tostring(c.type), -- The window type.
+                         "class:                " .. tostring(c.class), -- The client class.
+                         "instance:             " .. tostring(c.instance), -- The client instance.
+                         "pid:                  " .. tostring(c.pid), -- The client PID, if available.
+                         "role:                 " .. tostring(c.role), -- The window role, if available.
+                         "machine:              " .. tostring(c.machine), -- The machine client is running on.
+                         "icon_name:            " .. tostring(c.icon_name), -- The client name when iconified.
+                         "icon:                 " .. tostring(c.icon), -- The client icon as a surface.
+                         "icon_sizes:           " .. tostring(c.icon_sizes), -- The available sizes of client icons.
+                         "screen:               " .. tostring(self:screen_id(c.screen)), -- Client screen.
+                         "hidden:               " .. tostring(c.hidden), -- Define if the client must be hidden, i.e.
+                         "minimized:            " .. tostring(c.minimized), -- Define it the client must be iconify, i.e.
+                         "size_hints_honor:     " .. tostring(c.size_hints_honor), -- Honor size hints, e.g.
+                         "border_width:         " .. tostring(c.border_width), -- The client border width.
+                         "border_color:         " .. tostring(c.border_color), -- The client border color.
+                         "urgent:               " .. tostring(c.urgent), -- The client urgent state.
+                         "content:              " .. tostring(c.content), -- A cairo surface for the client window content.
+                         "opacity:              " .. tostring(c.opacity), -- The client opacity.
+                         "ontop:                " .. tostring(c.ontop), -- The client is on top of every other windows.
+                         "above:                " .. tostring(c.above), -- The client is above normal windows.
+                         "below:                " .. tostring(c.below), -- The client is below normal windows.
+                         "fullscreen:           " .. tostring(c.fullscreen), -- The client is fullscreen or not.
+                         "maximized:            " .. tostring(c.maximized), -- The client is maximized (horizontally and vertically) or not.
+                         "maximized_horizontal: " .. tostring(c.maximized_horizontal), -- The client is maximized horizontally or not.
+                         "maximized_vertical:   " .. tostring(c.maximized_vertical), -- The client is maximized vertically or not.
+                         "transient_for:        " .. tostring(c.transient_for), -- The client the window is transient for.
+                         "group_window:         " .. tostring(c.group_window), -- Window identification unique to a group of windows.
+                         "leader_window:        " .. tostring(c.leader_window), -- Identification unique to windows spawned by the same command.
+                         "size_hints:           " .. tostring(c.size_hints), -- A table with size hints of the client.
+                         "motif_wm_hints:       " .. tostring(c.motif_wm_hints), -- The motif WM hints of the client.
+                         "sticky:               " .. tostring(c.sticky), -- Set the client sticky, i.e.
+                         "modal:                " .. tostring(c.modal), -- Indicate if the client is modal.
+                         "focusable:            " .. tostring(c.focusable), -- True if the client can receive the input focus.
+                         "shape_bounding:       " .. tostring(c.shape_bounding), -- The client’s bounding shape as set by awesome as a (native) cairo surface.
+                         "shape_clip:           " .. tostring(c.shape_clip), -- The client’s clip shape as set by awesome as a (native) cairo surface.
+                         "shape_input:          " .. tostring(c.shape_input), -- The client’s input shape as set by awesome as a (native) cairo surface.
+                         "client_shape_bounding:" .. tostring(c.client_shape_bounding), -- The client’s bounding shape as set by the program as a (native) cairo surface.
+                         "client_shape_clip:    " .. tostring(c.client_shape_clip), -- The client’s clip shape as set by the program as a (native) cairo surface.
+                         "startup_id:           " .. tostring(c.startup_id), -- The FreeDesktop StartId.
+                         "valid:                " .. tostring(c.valid), -- If the client that this object refers to is still managed by awesome.
+                         "first_tag:            " .. tostring(c.first_tag), -- The first tag of the client.
+                         "marked:               " .. tostring(c.marked), -- If a client is marked or not.
+                         "is_fixed:             " .. tostring(c.is_fixed), -- Return if a client has a fixed size or not.
+                         "immobilized:          " .. tostring(c.immobilized), -- Is the client immobilized horizontally?
+                         "immobilized:          " .. tostring(c.immobilized), -- Is the client immobilized vertically?
+                         "floating:             " .. tostring(c.floating), -- The client floating state.
+                         "x:                    " .. tostring(c.x), -- The x coordinates.
+                         "y:                    " .. tostring(c.y), -- The y coordinates.
+                         "width:                " .. tostring(c.width), -- The width of the client.
+                         "height:               " .. tostring(c.height), -- The height of the client.
+                         "dockable:             " .. tostring(c.dockable), -- If the client is dockable.
+                         "requests_no_titlebar: " .. tostring(c.requests_no_titlebar), -- If the client requests not to be decorated with a titlebar.
+                         "shape:                " .. tostring(c.shape) -- Set the client shape.
         )
+
+        --capi.log:message(tostring(c.size_hints.user_position),
+        --                 tostring(c.size_hints.user_size),
+        --                 tostring(c.size_hints.program_position),
+        --                 tostring(c.size_hints.program_size),
+        --                 tostring(c.size_hints.max_width),
+        --                 tostring(c.size_hints.max_height),
+        --                 tostring(c.size_hints.min_width),
+        --                 tostring(c.size_hints.min_height),
+        --                 tostring(c.size_hints.width_inc),
+        --                 tostring(c.size_hints.height_inc)
+        --)
     end
 end
 
-function wmapi:list_client()
-    for i, item in ipairs(client.get()) do
-        self:client_info(item)
+function wmapi:all_list_client()
+    --for i, item in ipairs(client.get()) do
+    --    self:client_info(item)
+    --end
+
+    local t = awful.screen.focused().selected_tag
+    if not t then
+        return
     end
+
+    local clients = t:clients()
+    capi.log:message(tostring(#clients))
 end
 
 return wmapi

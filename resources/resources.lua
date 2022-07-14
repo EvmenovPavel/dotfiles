@@ -6,6 +6,7 @@ resources.awesome           = resources.path .. "/awesome.png"
 
 resources.menu_submenu_icon = resources.path .. "/submenu.png"
 resources.warning           = resources.path .. "/warning.png"
+resources.error             = resources.path .. "/error.png"
 
 resources.battery           = {
     caution_charging   = resources.path .. "/battery/battery-caution-charging-symbolic.svg",

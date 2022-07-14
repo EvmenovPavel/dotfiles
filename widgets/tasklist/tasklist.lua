@@ -150,7 +150,7 @@ local function list_update(widget, buttons, label, data, objects)
             -- Ошибка, если иконка отсуствует
             -- то, исчезает с тасклиста апп
             -- ib_icon:set_margins(0)
-            ib_icon.image = resources.path .. "/error.png"
+            ib_icon.image = resources.error
         end
 
         local res = wibox.widget({

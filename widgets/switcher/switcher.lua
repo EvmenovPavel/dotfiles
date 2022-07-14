@@ -350,7 +350,7 @@ function switcher:preview()
                 -- Icons
                 local icon
                 if c.icon == nil then
-                    icon = gears.surface(gears.surface.load(switcher.noicon))
+                    icon = gears.surface(gears.surface.load(resources.error))
                 else
                     icon = gears.surface(c.icon)
                 end

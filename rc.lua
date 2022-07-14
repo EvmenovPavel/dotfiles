@@ -1,6 +1,6 @@
 require("capi")
 require("dirtree")
-require("signals")
+--require("signals")
 
 local beautiful = require("beautiful")
 local theme     = require("theme")
@@ -44,14 +44,24 @@ require("awful.autofocus")
 local scripts = require("scripts")
 scripts.xrandr()
 
-local signal = require("posix.signal")
+-- local signal = require("posix.signal")
 
-signal.signal(signal.SIGINT, function(signum)
-    capi.log:message("signum: " .. tostring(signum))
-    -- put code to save some stuff here
-    --os.exit(128 + signum)
-end)
+--signal.signal(signal.SIGINT, function(signum)
+--  capi.log:message("signum: " .. tostring(signum))
+-- put code to save some stuff here
+--os.exit(128 + signum)
+--end)
 
 --if [ "`systemctl is-system-running`" = "stopping" ]; then
 --# Do what you need
 --end
+
+--client.disconnect_signal("request::activate", awful.ewmh.activate)
+--function awful.ewmh.activate(c)
+--    if c:isvisible() then
+--        client.focus = c
+--        c:raise()
+--    end
+--end
+--
+--client.connect_signal("request::activate", awful.ewmh.activate)

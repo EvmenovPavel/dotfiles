@@ -28,7 +28,10 @@ function mywallpaper:set_animated(surf, s)
 end
 
 function mywallpaper:init(s)
-    local file = resources.wallpapers.ruby_rose
+
+    local id = capi.wmapi:screen_id(s)
+
+    local file = resources.wallpaper .. "/spider man2/" .. tostring(id) .. ".png"
 
     if type(file) == "function" then
         file = file(s)
