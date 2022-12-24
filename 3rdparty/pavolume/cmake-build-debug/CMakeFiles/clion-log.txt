@@ -1,0 +1,4 @@
+/opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_CXX_FLAGS=-Wall -Wextra -Wpedantic -Werror" -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G "CodeBlocks - Unix Makefiles" /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug

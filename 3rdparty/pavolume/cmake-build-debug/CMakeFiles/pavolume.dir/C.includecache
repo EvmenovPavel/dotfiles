@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/pavolume.c
+getopt.h
+-
+math.h
+-
+memory.h
+-
+stdbool.h
+-
+stdio.h
+-
+pulse/pulseaudio.h
+-
+
