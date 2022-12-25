@@ -16,6 +16,7 @@ local capi          = { awesome = awesome,
                         dbus    = dbus,
                         type    = type }
 local gsurface      = require("gears.surface")
+local gtable        = require("gears.table")
 
 local lgi           = require("lgi")
 local cairo         = lgi.cairo
@@ -39,8 +40,6 @@ local capabilities  = {
 
 --- Notification library, dbus bindings
 local dbus          = { config = {} }
-
-local notif_methods = {}
 
 -- DBUS Notification constants
 local urgency       = {
@@ -210,7 +209,13 @@ function dbus.get_clients(notif)
     return ret
 end
 
+local notif_methods = {}
+
 function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text, actions, hints, expire)
+    if data == nil then
+        return
+    end
+
     local type, method, sender, bus, object_path, interface = unpack(data)
 
     local args                                              = {}
@@ -235,7 +240,10 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text,
             args.app_name = appname
         end
 
-        local preset = args.preset or cst.config.defaults
+        args.preset  = gtable.join(cst.config.defaults or {},
+                                   args.preset or cst.config.presets.normal or {})
+        local preset = args.preset
+
         local notification
         if actions then
             args.actions = {}
@@ -397,22 +405,38 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text,
                 args._unique_sender = sender
 
                 notification        = nnotif.create(args)
-                local client        = nnotif.get_clients(notification)
 
-                log:debug("client", client)
-                wmapi:client_info(client)
+                naughty.connect_signal("destroyed", function(n, reason)
+                    log:debug("naughty.connect_signal")
+                    args.destroy(reason)
 
-                notification:connect_signal("destroyed", function(_, r)
-                    args.destroy(r)
+                    --if not n.clients then
+                    --    return
+                    --end
+                    --if reason == require(
+                    --        "naughty.constants"
+                    --).notification_closed_reason.dismissed_by_user then
+                    --    local jumped = false
+                    --    for _, c in ipairs(n.clients) do
+                    --        c.urgent = true
+                    --        if jumped then
+                    --            c:activate {
+                    --                context = "client.jumpto"
+                    --            }
+                    --        else
+                    --            c:jump_to()
+                    --            jumped = true
+                    --        end
+                    --    end
+                    --end
                 end)
             end
         end
-
         return "u", notification.id
     elseif data.member == "CloseNotification" then
         local obj = naughty.getById(appname)
         if obj then
-            naughty.destroy(obj, naughty.notificationClosedReason.dismissedByCommand)
+            naughty.destroy(obj, naughty.notification_closed_reason.dismissedByCommand)
         end
     elseif data.member == "GetServerInfo" or data.member == "GetServerInformation" then
         -- name of notification app, name of vender, version, specification version
@@ -424,43 +448,9 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text,
     end
 end
 
-function notif_methods.NotifyDBus(_, sender, object_path, interface, method, parameters, invocation)
-    log:debug("notif_methods.NotifyDBus")
-end
-
-function notif_methods.CloseNotification(_1, _2, _3, _4, parameters, invocation)
-    log:debug("notif_methods.CloseNotification", _1, _2, _3, _4, parameters, invocation)
-    local obj = naughty.get_by_id(parameters.value[1])
-    if obj then
-        obj:destroy(cst.notification_closed_reason.dismissed_by_command)
-    end
-    --invocation:return_value(GLib.Variant("()"))
-end
-
-function notif_methods.GetServerInformation(_1, _2, _3, _4, _5, invocation)
-    log:debug("notif_methods.GetServerInformation")
-    -- name of notification app, name of vender, version, specification version
-    --invocation:return_value(GLib.Variant("(ssss)", {
-    --    "naughty", "awesome", capi.awesome.version, "1.2"
-    --}))
-end
-
-function notif_methods.GetCapabilities(_1, _2, _3, _4, _5, invocation)
-    -- We actually do display the body of the message, we support <b>, <i>
-    -- and <u> in the body and we handle static (non-animated) icons.
-    --invocation:return_value(GLib.Variant("(as)", { capabilities }))
-end
-
--- For testing
-dbus._notif_methods = notif_methods
-
 -- listen for dbus notification requests
-capi.dbus.connect_signal("org.freedesktop.Notifications", dbus._notif_methods.Notify)
+capi.dbus.connect_signal("org.freedesktop.Notifications", notif_methods.Notify)
 capi.dbus.request_name("session", "org.freedesktop.Notifications")
-
---capi.dbus.connect_signal("org.freedesktop.DBus", dbus._notif_methods.NotifyDBus)
---capi.dbus.request_name(Gio.BusType.SESSION, "org.freedesktop.DBus")
---capi.dbus.request_name("session", "org.freedesktop.DBus")
 
 local function remove_capability(cap)
     for k, v in ipairs(capabilities) do
@@ -487,29 +477,6 @@ naughty.connect_signal("property::image_animations_enabled", function()
             and "icon-multi" or "icon-static"
     )
 end)
-
---naughty.connect_signal("destroyed", function(n, reason)
---    log:debug("naughty.connect_signal")
---    if not n.clients then
---        return
---    end
---    if reason == require(
---            "naughty.constants"
---    ).notification_closed_reason.dismissed_by_user then
---        local jumped = false
---        for _, c in ipairs(n.clients) do
---            c.urgent = true
---            if jumped then
---                c:activate {
---                    context = "client.jumpto"
---                }
---            else
---                c:jump_to()
---                jumped = true
---            end
---        end
---    end
---end)
 
 -- For the tests.
 dbus._capabilities = capabilities

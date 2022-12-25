@@ -412,13 +412,38 @@ end
 -- @return True if the popup was successfully destroyed, nil otherwise
 -- @deprecated naughty.destroy
 function naughty.destroy(notification, reason, keep_visible)
-    gdebug.deprecate("Use notification:destroy(reason, keep_visible)", { deprecated_in = 5 })
+    if notification and notification.box.visible then
+        if naughty.notifications.suspended then
+            for k, v in pairs(naughty.notifications.suspended) do
+                if v.box == notification.box then
+                    table.remove(naughty.notifications.suspended, k)
+                    break
+                end
+            end
+        end
+        local scr = notification.screen
+        table.remove(naughty.notifications[scr][notification.position], notification.idx)
+        if notification.timer then
+            notification.timer:stop()
+        end
 
-    if not notification then
-        return
+        if not keep_visible then
+            notification.box.visible = false
+            arrange(scr)
+        end
+
+        if notification.destroy_cb and reason ~= naughty.notification_closed_reason.silent then
+            notification.destroy_cb(reason or naughty.notification_closed_reason.undefined)
+        end
+        return true
     end
-
-    return notification:destroy(reason, keep_visible)
+    --gdebug.deprecate("Use notification:destroy(reason, keep_visible)", { deprecated_in = 5 })
+    --
+    --if not notification then
+    --    return
+    --end
+    --
+    --return notification:destroy(reason, keep_visible)
 end
 
 --- Destroy all notifications on given screens.

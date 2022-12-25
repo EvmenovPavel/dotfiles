@@ -24,28 +24,46 @@ ret.config                     = {
 
 no_clear.presets               = {
     low      = {
-        timeout = 5
+        fg            = beautiful.fg_normal,
+        bg            = "#74C045",
+        level         = 1,
+        timeout       = 5,
+        hover_timeout = 5,
     },
-    normal   = {},
+    normal   = {
+        fg            = beautiful.fg_normal,
+        bg            = "#74C045",
+        timeout       = 5,
+        hover_timeout = 5,
+        level         = 2,
+    },
     critical = {
-        bg      = "#ff0000",
-        fg      = "#ffffff",
-        timeout = 0,
+        bg            = "#ff0000",
+        fg            = "#ffffff",
+        timeout       = 0,
+        hover_timeout = 10,
+        level         = 3,
     },
     ok       = {
-        bg      = "#00bb00",
-        fg      = "#ffffff",
-        timeout = 5,
+        bg            = "#00bb00",
+        fg            = "#ffffff",
+        timeout       = 5,
+        hover_timeout = 5,
+        level         = 4,
     },
     info     = {
-        bg      = "#0000ff",
-        fg      = "#ffffff",
-        timeout = 5,
+        bg            = "#0000ff",
+        fg            = "#ffffff",
+        timeout       = 5,
+        hover_timeout = 5,
+        level         = 5,
     },
     warn     = {
-        bg      = "#ffaa00",
-        fg      = "#000000",
-        timeout = 10,
+        bg            = "#ffaa00",
+        fg            = "#000000",
+        timeout       = 10,
+        hover_timeout = 10,
+        level         = 6,
     },
 }
 
@@ -89,9 +107,6 @@ ret.notification_closed_reason = {
     dismissed_by_command = 3,
     undefined            = 4
 }
-
--- Legacy --TODO v5 remove this alias
-ret.notificationClosedReason   = ret.notification_closed_reason
 
 -- `no_clear` is used to prevent users from setting the entire table.
 -- If they did and we added a new default value, then it would not be
