@@ -54,7 +54,7 @@ local naughty  = {}
 -- It's done that way to preserve compatibility with Awesome 4.0 while allowing
 -- the naughty submodules to use the contants without creating a circular
 -- dependency.
-gtable.crush(naughty, require("naughty.constants"))
+gtable.crush(naughty, require("lib.naughty.constants"))
 
 --- Notification presets for `naughty.notify`.
 -- This holds presets for different purposes.  A preset is a table of any
@@ -898,7 +898,7 @@ function naughty.notify(args)
     )
 
     --TODO v6 remove this hack
-    nnotif  = nnotif or require("naughty.notification")
+    nnotif  = nnotif or require("lib.naughty.notification")
 
     -- The existing notification object, if any.
     local n = args and args.replaces_id and
