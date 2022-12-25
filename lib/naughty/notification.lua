@@ -1017,8 +1017,7 @@ end
 --     title   = "Achtung!",
 --     message = "You're idling", timeout = 0
 -- }
-local function create(args)
-    log:debug("local function create(args)")
+function notification.create(args)
     if cst.config.notify_callback then
         args = cst.config.notify_callback(args)
         if not args then
@@ -1161,6 +1160,7 @@ end
 
 --@DOC_object_COMMON@
 
-return setmetatable(notification, { __call = function(_, ...)
-    return create(...)
-end })
+--return setmetatable(notification, { __call = function(_, ...)
+--    return create(...)
+--end })
+return notification

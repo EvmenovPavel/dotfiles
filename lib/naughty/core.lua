@@ -468,7 +468,6 @@ end
 -- @treturn naughty.notification|nil notification object if it was found, nil otherwise
 -- @staticfct naughty.get_by_id
 function naughty.get_by_id(id)
-    log:debug("naughty.get_by_id")
     -- iterate the notifications to get the notfications with the correct ID
     for s in capi.screen do
         for p in pairs(naughty.notifications[s] or {}) do
