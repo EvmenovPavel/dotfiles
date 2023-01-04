@@ -17,7 +17,6 @@ local capi     = { screen = screen }
 local gdebug   = require("gears.debug")
 local screen   = require("awful.screen")
 local gtable   = require("gears.table")
-local gobject  = require("gears.object")
 local gsurface = require("gears.surface")
 
 local naughty  = {}
@@ -401,6 +400,19 @@ function naughty.toggle()
     end
 end
 
+-- This allows notification to be updated later.
+local counter = 1
+
+-- Identifier support.
+function naughty._gen_next_id()
+    counter = counter + 1
+    return counter
+end
+
+function naughty._gen_id()
+    return counter
+end
+
 --- Destroy notification by notification object
 --
 -- This function is deprecated in favor of
@@ -475,16 +487,6 @@ function naughty.destroy_all_notifications(screens, reason)
         end
     end
     return ret
-end
-
---- Get notification by ID
---
--- @tparam integer id ID of the notification
--- @treturn naughty.notification|nil notification object if it was found, nil otherwise
--- @deprecated naughty.getById
-function naughty.getById(id)
-    gdebug.deprecate("Use naughty.get_by_id", { deprecated_in = 5 })
-    return naughty.get_by_id(id)
 end
 
 --- Get notification by ID
@@ -902,7 +904,7 @@ function naughty.notify(args)
 
     -- The existing notification object, if any.
     local n = args and args.replaces_id and
-            naughty.get_by_id(args.replaces_id) or nil
+            self.get_by_id(args.replaces_id) or nil
 
     -- It was possible to update the notification content using `replaces_id`.
     -- This is a concept that come from the dbus API and leaked into the public

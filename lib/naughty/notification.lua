@@ -23,7 +23,7 @@ local gfs          = require("gears.filesystem")
 local cst          = require("lib.naughty.constants")
 local naughty      = require("lib.naughty.core")
 local gdebug       = require("gears.debug")
-local pcommon      = require("awful.permissions._common")
+local pcommon      = require("lib.naughty._common")
 
 local notification = {}
 
@@ -1104,7 +1104,7 @@ function notification.create(args)
         notification.set_actions(n, args.actions)
     end
 
-    n.id = n.id or notification._gen_next_id()
+    n.id = n.id or naughty._gen_next_id()
 
     -- The rules are attached to this.
     if naughty._has_preset_handler then
@@ -1148,15 +1148,6 @@ end
 -- @see awful.permissions
 
 pcommon.setup_grant(notification, "notification")
-
--- This allows notification to be updated later.
-local counter = 1
-
--- Identifier support.
-function notification._gen_next_id()
-    counter = counter + 1
-    return counter
-end
 
 --@DOC_object_COMMON@
 

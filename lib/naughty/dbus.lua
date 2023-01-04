@@ -7,53 +7,42 @@
 -- @module naughty.dbus
 ---------------------------------------------------------------------------
 
-assert(dbus)
-
 -- Package environment
-local pairs                     = pairs
-local string                    = string
-local capi                      = { awesome = awesome,
-                                    dbus    = dbus,
-                                    type    = type }
-local gsurface                  = require("gears.surface")
-local gdebug                    = require("gears.debug")
-local protected_call            = require("gears.protected_call")
-local lgi                       = require("lgi")
-local cairo, Gio, GLib, GObject = lgi.cairo, lgi.Gio, lgi.GLib, lgi.GObject
---local lgi                       = require("lgi")
---local cairo                     = lgi.cairo
---local GLib                      = lgi.GLib
---local Gio                       = lgi.Gio
+local pairs           = pairs
+local string          = string
+local capi            = { awesome = awesome,
+                          dbus    = dbus,
+                          type    = type }
+local gsurface        = require("gears.surface")
+local gdebug          = require("gears.debug")
+local protected_call  = require("gears.protected_call")
 
-local schar                     = string.char
-local sbyte                     = string.byte
-local tcat                      = table.concat
-local tins                      = table.insert
-local unpack                    = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
-local naughty                   = require("lib.naughty.core")
-local cst                       = require("lib.naughty.constants")
-local nnotif                    = require("lib.naughty.notification")
-local naction                   = require("lib.naughty.action")
+local lgi             = require("lgi")
+local cairo           = lgi.cairo
+local Gio             = lgi.Gio
+local GLib            = lgi.GLib
+local GObject         = lgi.GObject
 
---local gsurface                  = require("gears.surface")
-local gtable                    = require("gears.table")
+local schar           = string.char
+local sbyte           = string.byte
+local tcat            = table.concat
+local tins            = table.insert
+local unpack          = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local naughty         = require("lib.naughty.core")
+local cst             = require("lib.naughty.constants")
+local nnotif          = require("lib.naughty.notification")
+local naction         = require("lib.naughty.action")
 
---local gdebug                    = require("gears.debug")
---local schar                     = string.char
---local sbyte                     = string.byte
---local tcat                      = table.concat
---local tins                      = table.insert
---local unpack                    = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
---local naughty                   = require("lib.naughty.core")
---local cst                       = require("lib.naughty.constants")
---local nnotif                    = require("lib.naughty.notification")
---local naction                   = require("lib.naughty.action")
-
-local capabilities              = {
+local capabilities    = {
     "body", "body-markup", "icon-static", "actions", "action-icons"
 }
 
-local dbus_method               = {
+local dbus_connection = {
+    session = "session",
+    system  = "system",
+}
+
+local dbus_method     = {
     dbusRemoveMatch            = "org.freedesktop.DBus.RemoveMatch",
     dbusAddMatch               = "org.freedesktop.DBus.AddMatch",
     dbusObjectPath             = "/org/freedesktop/Notifications", -- the DBUS object path
@@ -67,14 +56,13 @@ local dbus_method               = {
 }
 
 --- Notification library, dbus bindings
-local dbus                      = { config = {} }
+local dbus            = { config = {} }
 
--- This is either nil or a Gio.DBusConnection for emitting signals
-local bus_connection
+local bus_connection  = nil
 
 -- DBUS Notification constants
 -- https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html#urgency-levels
-local urgency                   = {
+local urgency         = {
     low      = "\0",
     normal   = "\1",
     critical = "\2"
@@ -89,28 +77,28 @@ local urgency                   = {
 -- @tfield table 2 normal urgency
 -- @tfield table 3 critical urgency
 -- @table config.mapping
-dbus.config.mapping             = cst.config.mapping
+dbus.config.mapping   = cst.config.mapping
 
 local function sendActionInvoked(notificationId, action)
-    if bus_connection then
-        bus_connection:emit_signal(nil, "/org/freedesktop/Notifications",
-                                   dbus_method.dbusNotificationsInterface, "ActionInvoked",
-        --"u", notificationId,
-        --"s", action)
-                                   GLib.Variant("(us)", { notificationId, action }))
+    log:info("sendActionInvoked", notificationId, action)
+
+    if capi.dbus then
+        capi.dbus:emit_signal(dbus_connection.session, "/org/freedesktop/Notifications",
+                              dbus_method.dbusNotificationsInterface, "ActionInvoked",
+                              GLib.Variant("(us)", { notificationId, action }))
     end
 end
 
 local function sendNotificationClosed(notificationId, reason)
+    log:info("sendNotificationClosed", notificationId, reason)
+
     if reason <= 0 then
         reason = cst.notification_closed_reason.undefined
     end
-    if bus_connection then
-        bus_connection:emit_signal(nil, "/org/freedesktop/Notifications",
-                                   dbus_method.dbusNotificationsInterface, "NotificationClosed",
-        --"u", notificationId,
-        --"u", reason)
-                                   GLib.Variant("(uu)", { notificationId, reason }))
+    if capi.dbus then
+        capi.dbus:emit_signal(dbus_connection.session, "/org/freedesktop/Notifications",
+                              dbus_method.dbusNotificationsInterface, "NotificationClosed",
+                              GLib.Variant("(uu)", { notificationId, reason }))
     end
 end
 
@@ -163,6 +151,44 @@ local function convert_icon(w, h, rowstride, channels, data)
 end
 
 local notif_methods = {}
+
+function notif_methods.RemoveMatch()
+    log:debug("\nnotif_methods.RemoveMatch")
+end
+
+function notif_methods.AddMatch()
+    log:debug("\nnotif_methods.AddMatch")
+end
+
+function notif_methods.Notifications()
+    log:debug("\nnotif_methods.Notifications")
+end
+
+function notif_methods.NotificationClosed()
+    log:debug("\nnotif_methods.NotificationClosed")
+end
+
+function notif_methods.ActionInvoked()
+    log:debug("\nnotif_methods.ActionInvoked")
+end
+
+function notif_methods.GetCapabilities(data)
+    log:debug("\nnotif_methods.GetCapabilities")
+    -- We actually do display the body of the message, we support <b>, <i>
+    -- and <u> in the body and we handle static (non-animated) icons.
+
+    return GLib.Variant("(as)", { capabilities })
+end
+
+function notif_methods.CloseNotification(id)
+    log:debug("\nnotif_methods.CloseNotification")
+    --local obj = naughty.get_by_id(parameters.value[1])
+    --if obj then
+    --    obj:destroy(cst.notification_closed_reason.dismissed_by_command)
+    --end
+
+    return GLib.Variant("()")
+end
 
 function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text, actions, hints, expire)
     if data == nil then
@@ -233,9 +259,11 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text,
             end
         end
     end
+
     args.destroy      = function(reason)
         sendNotificationClosed(notification.id, reason)
     end
+
     local legacy_data = { -- This data used to be generated by AwesomeWM's C code
         type   = type --[[ "method_call" ]], interface = interface, path = object_path,
         member = method, sender = sender, bus = bus --[[ "session" ]]
@@ -279,9 +307,11 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text,
             args.images = args.images or {}
         end
 
+        log:info("replaces_id", replaces_id)
         if replaces_id and replaces_id ~= "" and replaces_id ~= 0 then
             args.replaces_id = replaces_id
         end
+
         if expire and expire > -1 then
             args.timeout = expire / 1000
         end
@@ -305,6 +335,9 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text,
 
         -- Try to update existing objects when possible
         notification = naughty.get_by_id(replaces_id)
+
+        --local client = dbus.get_clients(notification)
+        --log:debug("client", client)
 
         if notification then
             if not notification._private._unique_sender then
@@ -354,207 +387,65 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text,
 
             notification        = nnotif.create(args)
 
-            notification:connect_signal("destroyed", function(_, r)
-                args.destroy(r)
+            naughty.connect_signal("destroyed", function(n, reason)
+                args.destroy(reason)
             end)
         end
 
         return GLib.Variant("(u)", { notification.id })
     end
 
-    return GLib.Variant("(u)", { nnotif._gen_next_id() })
+    return GLib.Variant("(u)", { naughty._gen_next_id() })
 end
 
-function notif_methods.CloseNotification(...)
-    log:debug("notif_methods.CloseNotification")
-    --local obj = naughty.get_by_id(parameters.value[1])
-    --if obj then
-    --    obj:destroy(cst.notification_closed_reason.dismissed_by_command)
-    --end
+function notif_methods.GetServerInfo()
+    log:info("\nnotif_methods.GetServerInfo")
 
-    local nodes = { ... }
-    for _, w in ipairs(nodes) do
-        log:info(">>", _, w)
-    end
+    local return_name, return_vendor, return_version
 
-    return GLib.Variant("()")
+    return GLib.Variant("(u)", { return_name, return_vendor, return_version })
 end
 
-function notif_methods.GetServerInformation(...)
-    log:debug("notif_methods.GetServerInformation")
+function notif_methods.GetServerInformation(data)
+    log:debug("\nnotif_methods.GetServerInformation")
     -- name of notification app, name of vender, version, specification version
 
-    local nodes = { ... }
-    for _, w in ipairs(nodes) do
-        log:info(">>", _, w)
-    end
+    local type      = data["type"]
+    local path      = data["path"]
+    local bus       = data["bus"]
+    local member    = data["member"]
+    local interface = data["interface"]
+    local sender    = data["sender"]
+
+    log:info(">>", type, path, bus, member, interface, sender)
 
     return GLib.Variant("(ssss)", {
-        "lib.naughty", "awesome", capi.awesome.version, "1.2"
+        "naughty", "awesome", capi.awesome.version, "1.2"
     })
 end
 
-function notif_methods.GetCapabilities(...)
-    log:debug("notif_methods.GetCapabilities")
-    -- We actually do display the body of the message, we support <b>, <i>
-    -- and <u> in the body and we handle static (non-animated) icons.
-
-    local nodes = { ... }
-    for _, w in ipairs(nodes) do
-        log:info(">>", _, w)
-    end
-
-    return GLib.Variant("(as)", { capabilities })
-end
+--[[
+method QString org.freedesktop.DBus.Introspectable.Introspect()
+signal void org.freedesktop.Notifications.ActionInvoked(uint id, QString action_key)
+signal void org.freedesktop.Notifications.NotificationClosed(uint id, uint reason)
+method void org.freedesktop.Notifications.CloseNotification(uint id)
+method QStringList org.freedesktop.Notifications.GetCapabilities()
+method QString org.freedesktop.Notifications.GetServerInfo(QString& return_vendor, QString& return_version)
+method QString org.freedesktop.Notifications.GetServerInformation(QString& return_vendor, QString& return_version, QString& return_spec_version)
+method uint org.freedesktop.Notifications.Notify(QString app_name, uint id, QString icon, QString summary, QString body, QStringList actions, QVariantMap hints, int timeout)
+]]
 
 local function method_call(data, ...)
+    log:info("method_call")
     if data == nil then
         return
     end
 
-    log:debug(">> data.member", data.member)
+    log:info("data.member", data.member)
 
-    if notif_methods[data.member] then
-        protected_call(notif_methods[data.member], data, ...)
-    end
-end
-
-local function on_bus_acquire(conn, _)
-    local function arg(name, signature)
-        return Gio.DBusArgInfo { name = name, signature = signature }
-    end
-    local method         = Gio.DBusMethodInfo
-    local signal         = Gio.DBusSignalInfo
-
-    local interface_info = Gio.DBusInterfaceInfo {
-        name    = "org.freedesktop.Notifications",
-        methods = {
-            method { name     = "GetCapabilities",
-                     out_args = { arg("caps", "as") }
-            },
-            method { name    = "CloseNotification",
-                     in_args = { arg("id", "u") }
-            },
-            method { name     = "GetServerInformation",
-                     out_args = { arg("return_name", "s"), arg("return_vendor", "s"),
-                                  arg("return_version", "s"), arg("return_spec_version", "s")
-                     }
-            },
-            method { name     = "Notify",
-                     in_args  = { arg("app_name", "s"), arg("id", "u"),
-                                  arg("icon", "s"), arg("summary", "s"), arg("body", "s"),
-                                  arg("actions", "as"), arg("hints", "a{sv}"),
-                                  arg("timeout", "i")
-                     },
-                     out_args = { arg("return_id", "u") }
-            }
-        },
-        signals = {
-            signal { name = "NotificationClosed",
-                     args = { arg("id", "u"), arg("reason", "u") }
-            },
-            signal { name = "ActionInvoked",
-                     args = { arg("id", "u"), arg("action_key", "s") }
-            }
-        }
-    }
-    conn:register_object("/org/freedesktop/Notifications", interface_info,
-                         GObject.Closure(method_call))
-end
-
-local bus_proxy, pid_for_unique_name = nil, {}
-
---- Get the clients associated with a notification.
---
--- Note that is based on the process PID. PIDs roll over, so don't use this
--- with very old notifications.
---
--- Also note that some multi-process application can use a different process
--- for the clients and the service used to send the notifications.
---
--- Since this is based on PIDs, it is impossible to know which client sent the
--- notification if the process has multiple clients (windows). Using the
--- `client.type` can be used to further filter this list into more probable
--- candidates (tooltips, menus and dialogs are unlikely to send notifications).
---
--- @tparam naughty.notification notif A notification object.
--- @treturn table A table with all associated clients.
-function dbus.get_clients(notif)
-    -- First, the trivial case, but I never found an app that implements it.
-    -- It isn't standardized, but mentioned as possible.
-    local win_id = notif.freedesktop_hints and (notif.freedesktop_hints.window_ID
-            or notif.freedesktop_hints["window-id"]
-            or notif.freedesktop_hints.windowID
-            or notif.freedesktop_hints.windowid)
-
-    if win_id then
-        for _, c in ipairs(client.get()) do
-            if c.window_id == win_id then
-                return { win_id }
-            end
-        end
-    end
-
-    -- Less trivial, but mentioned in the spec. Note that this isn't
-    -- recommended by the spec, let alone mandatory. It is mentioned it can
-    -- exist. This wont work with Flatpak or Snaps.
-    local pid = notif.freedesktop_hints and (
-            notif.freedesktop_hints.PID or notif.freedesktop_hints.pid
-    )
-
-    if ((not bus_proxy) or not notif._private._unique_sender) and not pid then
-        return {}
-    end
-
-    if (not pid) and (not pid_for_unique_name[notif._private._unique_sender]) then
-        local owner = GLib.Variant("(s)", { notif._private._unique_sender })
-
-        -- It is sync, but this isn't done very often and since it is DBus
-        -- daemon itself, it is very responsive. Doing this using the async
-        -- variant would cause the clients to be unavailable in the notification
-        -- rules.
-        pid         = bus_proxy:call_sync("GetConnectionUnixProcessID",
-                                          owner,
-                                          Gio.DBusCallFlags.NONE,
-                                          -1
-        )
-
-        if (not pid) or (not pid.value) then
-            return {}
-        end
-
-        pid = pid.value and pid.value[1]
-
-        if not pid then
-            return {}
-        end
-
-        pid_for_unique_name[notif._private._unique_sender] = pid
-    end
-
-    pid = pid or pid_for_unique_name[notif._private._unique_sender]
-
-    if not pid then
-        return {}
-    end
-
-    local ret = {}
-
-    for _, c in ipairs(client.get()) do
-        if c.pid == pid then
-            table.insert(ret, c)
-        end
-    end
-
-    return ret
-end
-
-local function on_name_acquired(conn, _)
-    bus_connection = conn
-end
-
-local function on_name_lost(_, _)
-    bus_connection = nil
+    --if notif_methods[data.member] then
+    --    protected_call(notif_methods[data.member], data, ...)
+    --end
 end
 
 local function remove_capability(cap)
@@ -566,9 +457,77 @@ local function remove_capability(cap)
     end
 end
 
--- listen for dbus notification requests
+capi.dbus.connect_signal(dbus_method.dbusRemoveMatch, method_call)
+capi.dbus.connect_signal(dbus_method.dbusAddMatch, method_call)
+capi.dbus.connect_signal(dbus_method.dbusObjectPath, method_call)
 capi.dbus.connect_signal(dbus_method.dbusNotificationsInterface, method_call)
-capi.dbus.request_name("session", dbus_method.dbusNotificationsInterface)
+capi.dbus.connect_signal(dbus_method.signalNotificationClosed, method_call)
+capi.dbus.connect_signal(dbus_method.signalActionInvoked, method_call)
+capi.dbus.connect_signal(dbus_method.callGetCapabilities, method_call)
+capi.dbus.connect_signal(dbus_method.callCloseNotification, method_call)
+capi.dbus.connect_signal(dbus_method.callNotify, method_call)
+capi.dbus.connect_signal(dbus_method.callGetServerInformation, method_call)
+
+--capi.dbus.connect_signal(dbus_method.dbusNotificationsInterface, notif_methods.Notify)
+
+capi.dbus.connect_signal("org.freedesktop.DBus.Introspectable", function(data)
+    log:info("org.freedesktop.DBus.Introspectable")
+
+    if data.member == "Introspect" then
+        local xml = [=["<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object
+                    Introspection 1.0//EN"
+                    "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+                    <node>
+                      <interface name="org.freedesktop.DBus.Introspectable">
+                        <method name="Introspect">
+                          <arg name="data" direction="out" type="s"/>
+                        </method>
+                      </interface>
+                      <interface name="org.freedesktop.Notifications">
+                        <method name="GetCapabilities">
+                          <arg name="caps" type="as" direction="out"/>
+                        </method>
+                        <method name="CloseNotification">
+                          <arg name="id" type="u" direction="in"/>
+                        </method>
+                        <method name="Notify">
+                          <arg name="app_name" type="s" direction="in"/>
+                          <arg name="id" type="u" direction="in"/>
+                          <arg name="icon" type="s" direction="in"/>
+                          <arg name="summary" type="s" direction="in"/>
+                          <arg name="body" type="s" direction="in"/>
+                          <arg name="actions" type="as" direction="in"/>
+                          <arg name="hints" type="a{sv}" direction="in"/>
+                          <arg name="timeout" type="i" direction="in"/>
+                          <arg name="return_id" type="u" direction="out"/>
+                        </method>
+                        <method name="GetServerInformation">
+                          <arg name="return_name" type="s" direction="out"/>
+                          <arg name="return_vendor" type="s" direction="out"/>
+                          <arg name="return_version" type="s" direction="out"/>
+                          <arg name="return_spec_version" type="s" direction="out"/>
+                        </method>
+                        <method name="GetServerInfo">
+                          <arg name="return_name" type="s" direction="out"/>
+                          <arg name="return_vendor" type="s" direction="out"/>
+                          <arg name="return_version" type="s" direction="out"/>
+                       </method>
+                       <signal name="NotificationClosed">
+                          <arg name="id" type="u" direction="out"/>
+                          <arg name="reason" type="u" direction="out"/>
+                       </signal>
+                       <signal name="ActionInvoked">
+                          <arg name="id" type="u" direction="out"/>
+                          <arg name="action_key" type="s" direction="out"/>
+                       </signal>
+                      </interface>
+                    </node>"]=]
+        return "s", xml
+    end
+end)
+
+-- listen for dbus notification requests
+capi.dbus.request_name(dbus_connection.session, dbus_method.dbusNotificationsInterface)
 
 -- Update the capabilities.
 naughty.connect_signal("property::persistence_enabled", function()

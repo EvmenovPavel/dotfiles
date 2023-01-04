@@ -154,6 +154,7 @@ local function get_offset(s, position, idx, width, height)
     return v
 end
 
+
 --- Re-arrange notifications according to their position and index - internal
 --
 -- @return None
@@ -165,27 +166,6 @@ local function arrange(s)
             notification.box:geometry({ x = offset.x, y = offset.y })
         end
     end
-end
-
-
---- Install expiration timer for notification object.
--- @tparam notification notification Notification object.
--- @tparam number timeout Time in seconds to be set as expiration timeout.
-function set_timeout(notification, timeout)
-    local die = function(reason)
-        naughty.destroy(notification, reason)
-    end
-    if timeout > 0 then
-        local timer_die = timer { timeout = timeout }
-        timer_die:connect_signal("timeout", function()
-            die(naughty.notification_closed_reason.expired)
-        end)
-        if not naughty.suspended then
-            timer_die:start()
-        end
-        notification.timer = timer_die
-    end
-    notification.die = die
 end
 
 local function update_size(notification)
@@ -420,10 +400,10 @@ function naughty.default_notification_handler(notification, args)
     notification.position   = position
 
     -- hook destroy
-    set_timeout(notification, timeout)
+    notification.timeout    = timeout
+    local die               = notification.die
 
-    local die           = notification.die
-    local run           = function()
+    local run               = function()
         if args.run then
             args.run(notification)
         else
@@ -431,7 +411,7 @@ function naughty.default_notification_handler(notification, args)
         end
     end
 
-    local hover_destroy = function()
+    local hover_destroy     = function()
         if hover_timeout == 0 then
             die(naughty.notification_closed_reason.expired)
         else
@@ -447,8 +427,8 @@ function naughty.default_notification_handler(notification, args)
     end
 
     -- create textbox
-    local textbox       = wibox.widget.textbox()
-    local marginbox     = wibox.container.margin()
+    local textbox           = wibox.widget.textbox()
+    local marginbox         = wibox.container.margin()
     marginbox:set_margins(margin)
     marginbox:set_widget(textbox)
     textbox:set_valign("middle")
@@ -576,7 +556,7 @@ function naughty.default_notification_handler(notification, args)
             end)
             update_icon(icon)
         elseif had_icon then
-            require("gears.debug").print_warning("Naughty: failed to load icon " ..
+            require("gears.debug").print_warning("naughty: failed to load icon " ..
                                                          (args.icon or preset.icon) .. "(title: " .. title .. ")")
         end
 
@@ -585,7 +565,9 @@ function naughty.default_notification_handler(notification, args)
     notification.iconbox = iconbox
 
     -- create container wibox
-    notification.box     = wibox({ fg                 = fg,
+    -- create container wibox
+    if not notification.reuse_box then
+        notification.box = wibox({ fg                 = fg,
                                    bg                 = bg,
                                    border_color       = border_color,
                                    border_width       = border_width,
@@ -593,6 +575,9 @@ function naughty.default_notification_handler(notification, args)
                                    shape_border_width = shape and border_width,
                                    shape              = shape,
                                    type               = "notification" })
+    else
+        notification.box = reuse_box
+    end
 
     if hover_timeout then
         notification.box:connect_signal("mouse::enter", hover_destroy)
