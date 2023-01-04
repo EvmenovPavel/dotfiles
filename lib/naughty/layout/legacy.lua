@@ -154,7 +154,6 @@ local function get_offset(s, position, idx, width, height)
     return v
 end
 
-
 --- Re-arrange notifications according to their position and index - internal
 --
 -- @return None
@@ -565,7 +564,6 @@ function naughty.default_notification_handler(notification, args)
     notification.iconbox = iconbox
 
     -- create container wibox
-    -- create container wibox
     if not notification.reuse_box then
         notification.box = wibox({ fg                 = fg,
                                    bg                 = bg,
@@ -576,7 +574,7 @@ function naughty.default_notification_handler(notification, args)
                                    shape              = shape,
                                    type               = "notification" })
     else
-        notification.box = reuse_box
+        notification.box = notification.reuse_box
     end
 
     if hover_timeout then
