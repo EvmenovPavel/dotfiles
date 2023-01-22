@@ -1017,7 +1017,7 @@ end
 --     title   = "Achtung!",
 --     message = "You're idling", timeout = 0
 -- }
-function notification.create(args)
+local function create(args)
     if cst.config.notify_callback then
         args = cst.config.notify_callback(args)
         if not args then
@@ -1037,7 +1037,7 @@ function notification.create(args)
                     (type(next(args.actions)) == "string")
     )
 
-    local n             = gobject {
+    local ret           = gobject {
         enable_properties = true,
     }
 
@@ -1051,15 +1051,15 @@ function notification.create(args)
 
     assert(naughty.emit_signal)
     -- Make sure all signals bubble up
-    n:_connect_everything(naughty.emit_signal)
+    ret:_connect_everything(naughty.emit_signal)
 
     -- Avoid modifying the original table
     local private = { weak_screen = setmetatable({}, { __mode = "v" }) }
-    rawset(n, "_private", private)
+    rawset(ret, "_private", private)
 
     -- Allow extensions to create override the preset with custom data
     if not naughty._has_preset_handler then
-        select_legacy_preset(n, args)
+        select_legacy_preset(ret, args)
     end
 
     if is_old_action then
@@ -1075,24 +1075,24 @@ function notification.create(args)
     end
 
     -- It's an automatic property
-    n.is_expired = false
+    ret.is_expired = false
 
-    gtable.crush(n, notification, true)
+    gtable.crush(ret, notification, true)
 
     -- Always emit property::actions when any of the action change to allow
     -- some widgets to be updated without over complicated built-in tracking
     -- of all options.
-    function n._private.action_cb()
-        n:emit_signal("property::actions")
+    function ret._private.action_cb()
+        ret:emit_signal("property::actions")
     end
 
     -- Listen to action press and destroy non-resident notifications.
-    function n._private.invoked_cb(a, notif)
-        if (not notif) or notif == n then
-            n:emit_signal("invoked", a)
+    function ret._private.invoked_cb(a, notif)
+        if (not notif) or notif == ret then
+            ret:emit_signal("invoked", a)
 
-            if not n.resident then
-                n:destroy(cst.notification_closed_reason.dismissed_by_user)
+            if not ret.resident then
+                ret:destroy(cst.notification_closed_reason.dismissed_by_user)
             end
         end
     end
@@ -1101,34 +1101,34 @@ function notification.create(args)
     -- using the shorthand `if #notif.actions > 0 then`
     private.actions = {}
     if args.actions then
-        notification.set_actions(n, args.actions)
+        notification.set_actions(ret, args.actions, args)
     end
 
-    n.id = n.id or naughty._gen_next_id()
+    ret.id = ret.id or naughty._gen_next_id()
 
     -- The rules are attached to this.
     if naughty._has_preset_handler then
-        naughty.emit_signal("request::preset", n, "new", args)
+        naughty.emit_signal("request::preset", ret, "new", args)
     end
 
     -- Register the notification before requesting a widget
-    n:emit_signal("new", args)
+    ret:emit_signal("new", args)
 
     -- Let all listeners handle the actual visual aspects
-    if (not n.ignore) and ((not n.preset) or n.preset.ignore ~= true) and (not get_suspended(n)) then
-        naughty.emit_signal("request::display", n, "new", args)
-        naughty.emit_signal("request::fallback", n, "new", args)
+    if (not ret.ignore) and ((not ret.preset) or ret.preset.ignore ~= true) and (not get_suspended(ret)) then
+        naughty.emit_signal("request::display", ret, "new", args)
+        naughty.emit_signal("request::fallback", ret, "new", args)
     end
 
     -- Because otherwise the setter logic would not be executed
-    if n._private.timeout then
-        n:set_timeout(n._private.timeout
-                              or (n.preset and n.preset.timeout)
-                              or cst.config.timeout
+    if ret._private.timeout then
+        ret:set_timeout(ret._private.timeout
+                                or (ret.preset and ret.preset.timeout)
+                                or cst.config.timeout
         )
     end
 
-    return n
+    return ret
 end
 
 --- Grant a permission for a notification.
@@ -1151,7 +1151,6 @@ pcommon.setup_grant(notification, "notification")
 
 --@DOC_object_COMMON@
 
---return setmetatable(notification, { __call = function(_, ...)
---    return create(...)
---end })
-return notification
+return setmetatable(notification, { __call = function(_, ...)
+    return create(...)
+end })
