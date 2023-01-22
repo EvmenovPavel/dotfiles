@@ -409,6 +409,10 @@ function naughty._gen_next_id()
     return counter
 end
 
+function naughty.get_next_notification_id()
+    return naughty._gen_next_id()
+end
+
 function naughty._gen_id()
     return counter
 end

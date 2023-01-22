@@ -19,9 +19,6 @@ local protected_call  = require("gears.protected_call")
 
 local lgi             = require("lgi")
 local cairo           = lgi.cairo
-local Gio             = lgi.Gio
-local GLib            = lgi.GLib
-local GObject         = lgi.GObject
 
 local schar           = string.char
 local sbyte           = string.byte
@@ -85,7 +82,8 @@ local function sendActionInvoked(notificationId, action)
     if capi.dbus then
         capi.dbus:emit_signal(dbus_connection.session, "/org/freedesktop/Notifications",
                               dbus_method.dbusNotificationsInterface, "ActionInvoked",
-                              GLib.Variant("(us)", { notificationId, action }))
+                              "u", notificationId,
+                              "s", action)
     end
 end
 
@@ -95,10 +93,12 @@ local function sendNotificationClosed(notificationId, reason)
     if reason <= 0 then
         reason = cst.notification_closed_reason.undefined
     end
+
     if capi.dbus then
         capi.dbus:emit_signal(dbus_connection.session, "/org/freedesktop/Notifications",
                               dbus_method.dbusNotificationsInterface, "NotificationClosed",
-                              GLib.Variant("(uu)", { notificationId, reason }))
+                              "u", notificationId,
+                              "u", reason)
     end
 end
 
@@ -177,7 +177,7 @@ function notif_methods.GetCapabilities(data)
     -- We actually do display the body of the message, we support <b>, <i>
     -- and <u> in the body and we handle static (non-animated) icons.
 
-    return GLib.Variant("(as)", { capabilities })
+    return "as", { "s", "body", "s", "body-markup", "s", "icon-static", "s", "actions" }
 end
 
 function notif_methods.CloseNotification(id)
@@ -187,7 +187,7 @@ function notif_methods.CloseNotification(id)
     --    obj:destroy(cst.notification_closed_reason.dismissed_by_command)
     --end
 
-    return GLib.Variant("()")
+    return "()"
 end
 
 function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text, actions, hints, expire)
@@ -335,9 +335,7 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text,
 
         -- Try to update existing objects when possible
         notification = naughty.get_by_id(replaces_id)
-
-        --local client = dbus.get_clients(notification)
-        --log:debug("client", client)
+        log:info("notification", notification)
 
         if notification then
             if not notification._private._unique_sender then
@@ -385,25 +383,23 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text,
             -- Only set the sender for new notifications.
             args._unique_sender = sender
 
-            notification        = nnotif.create(args)
+            notification        = nnotif(args)
 
             naughty.connect_signal("destroyed", function(n, reason)
                 args.destroy(reason)
             end)
         end
 
-        return GLib.Variant("(u)", { notification.id })
+        return "u", notification.id
     end
 
-    return GLib.Variant("(u)", { naughty._gen_next_id() })
+    return "u", naughty.get_next_notification_id()
 end
 
 function notif_methods.GetServerInfo()
     log:info("\nnotif_methods.GetServerInfo")
 
-    local return_name, return_vendor, return_version
-
-    return GLib.Variant("(u)", { return_name, return_vendor, return_version })
+    return "s", "naughty", "s", "awesome", "s", capi.awesome.version, "s", "1.2"
 end
 
 function notif_methods.GetServerInformation(data)
@@ -419,9 +415,7 @@ function notif_methods.GetServerInformation(data)
 
     log:info(">>", type, path, bus, member, interface, sender)
 
-    return GLib.Variant("(ssss)", {
-        "naughty", "awesome", capi.awesome.version, "1.2"
-    })
+    return notif_methods.GetServerInfo()
 end
 
 --[[
@@ -436,16 +430,13 @@ method uint org.freedesktop.Notifications.Notify(QString app_name, uint id, QStr
 ]]
 
 local function method_call(data, ...)
-    log:info("method_call")
     if data == nil then
         return
     end
 
-    log:info("data.member", data.member)
-
-    --if notif_methods[data.member] then
-    --    protected_call(notif_methods[data.member], data, ...)
-    --end
+    if notif_methods[data.member] then
+        protected_call(notif_methods[data.member], data, ...)
+    end
 end
 
 local function remove_capability(cap)
@@ -457,24 +448,12 @@ local function remove_capability(cap)
     end
 end
 
-capi.dbus.connect_signal(dbus_method.dbusRemoveMatch, method_call)
-capi.dbus.connect_signal(dbus_method.dbusAddMatch, method_call)
-capi.dbus.connect_signal(dbus_method.dbusObjectPath, method_call)
 capi.dbus.connect_signal(dbus_method.dbusNotificationsInterface, method_call)
-capi.dbus.connect_signal(dbus_method.signalNotificationClosed, method_call)
-capi.dbus.connect_signal(dbus_method.signalActionInvoked, method_call)
-capi.dbus.connect_signal(dbus_method.callGetCapabilities, method_call)
-capi.dbus.connect_signal(dbus_method.callCloseNotification, method_call)
-capi.dbus.connect_signal(dbus_method.callNotify, method_call)
-capi.dbus.connect_signal(dbus_method.callGetServerInformation, method_call)
-
---capi.dbus.connect_signal(dbus_method.dbusNotificationsInterface, notif_methods.Notify)
 
 capi.dbus.connect_signal("org.freedesktop.DBus.Introspectable", function(data)
-    log:info("org.freedesktop.DBus.Introspectable")
-
+    log:info("\n\norg.freedesktop.DBus.Introspectable")
     if data.member == "Introspect" then
-        local xml = [=["<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object
+        local xml = [=[<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object
                     Introspection 1.0//EN"
                     "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
                     <node>
@@ -521,7 +500,7 @@ capi.dbus.connect_signal("org.freedesktop.DBus.Introspectable", function(data)
                           <arg name="action_key" type="s" direction="out"/>
                        </signal>
                       </interface>
-                    </node>"]=]
+                    </node>]=]
         return "s", xml
     end
 end)

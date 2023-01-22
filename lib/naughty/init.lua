@@ -89,6 +89,27 @@ do
         in_error = false
     end)
 
+    gdebug.print_warning = function(message)
+        local warning = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
+        naughty.notification {
+            urgency = "warn",
+            title   = "Warning",
+            message = warning
+        }
+
+        log:warning(warning)
+    end
+
+    gdebug.print_error   = function(message)
+        local error = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
+        naughty.notification {
+            urgency = "warn",
+            title   = "Warning",
+            message = error
+        }
+
+        log:error(error)
+    end
 end
 
 return naughty
