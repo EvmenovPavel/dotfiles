@@ -241,32 +241,45 @@ local function set_escaped_text(self)
         return
     end
 
-    local text    = self.message or ""
-    local title   = self.title or ""
-    local textbox = self.textbox
+    local app_name = self.app_name or ""
+    local text     = self.message or ""
+    local title    = self.title or ""
+    local textbox  = self.textbox
 
     local function set_markup(pattern, replacements)
         local parts = {}
+        if app_name ~= "" then
+            table.insert(parts, "<b>" .. app_name .. "</b>")
+        end
+
         if title ~= "" then
             table.insert(parts, "<b>" .. title .. "</b>")
         end
+
         if text ~= "" then
             local markup = text:gsub(pattern, replacements)
             if markup ~= "" then
                 table.insert(parts, markup)
             end
         end
+
         return textbox:set_markup_silently(table.concat(parts, "\n"))
     end
 
     local function set_text()
         local parts = {}
+        if app_name ~= "" then
+            table.insert(parts, app_name)
+        end
+
         if title ~= "" then
             table.insert(parts, title)
         end
+
         if text ~= "" then
             table.insert(parts, text)
         end
+
         textbox:set_text(table.concat(parts, "\n"))
     end
 
@@ -344,19 +357,19 @@ function naughty.default_notification_handler(notification, args)
         return
     end
 
-    local preset = notification.preset or {}
+    local preset   = notification.preset or {}
 
-    local title  = get_value(notification, args, preset, "title")
-    local text   = get_value(notification, args, preset, "message")
-            or args.text or preset.text
+    local app_name = get_value(notification, args, preset, "app_name")
+    local title    = get_value(notification, args, preset, "title")
+    local text     = get_value(notification, args, preset, "message") or args.text or preset.text
 
-    local s      = get_screen(
+    local s        = get_screen(
             get_value(notification, args, preset, "screen") or screen.focused()
     )
 
     if not s then
         local err = "lib.naughty.notify: there is no screen available to display the following notification:"
-        err       = string.format("%s title='%s' text='%s'", err, tostring(title or ""), tostring(text or ""))
+        err       = string.format("%s app_name='%s' title='%s' text='%s'", err, tostring(app_name or ""), tostring(title or ""), tostring(text or ""))
         require("gears.debug").print_warning(err)
         return
     end
@@ -436,6 +449,7 @@ function naughty.default_notification_handler(notification, args)
     notification.textbox = textbox
 
     -- Update the content if it changes
+    notification:connect_signal("property::app_name", set_escaped_text)
     notification:connect_signal("property::message", set_escaped_text)
     notification:connect_signal("property::title", set_escaped_text)
 
@@ -556,7 +570,9 @@ function naughty.default_notification_handler(notification, args)
             update_icon(icon)
         elseif had_icon then
             require("gears.debug").print_warning("naughty: failed to load icon " ..
-                                                         (args.icon or preset.icon) .. "(title: " .. title .. ")")
+                                                         (args.icon or preset.icon) ..
+                                                         "(app_name: " .. app_name .. ")" ..
+                                                         "(title: " .. title .. ")")
         end
 
     end
