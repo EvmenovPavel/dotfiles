@@ -1017,6 +1017,35 @@ end
 --     title   = "Achtung!",
 --     message = "You're idling", timeout = 0
 -- }
+
+local function new(ret, args)
+    -- The rules are attached to this.
+    if naughty._has_preset_handler then
+        naughty.emit_signal("request::preset", ret, "new", args)
+    end
+
+    -- Register the notification before requesting a widget
+    ret:emit_signal("new", args)
+
+    -- Let all listeners handle the actual visual aspects
+    if (not ret.ignore) and ((not ret.preset) or ret.preset.ignore ~= true) and (not get_suspended(ret)) then
+        naughty.emit_signal("request::display", ret, "new", args)
+        naughty.emit_signal("request::fallback", ret, "new", args)
+    end
+
+    -- Because otherwise the setter logic would not be executed
+    if ret._private.timeout then
+        ret:set_timeout(ret._private.timeout
+                                or (ret.preset and ret.preset.timeout)
+                                or cst.config.timeout
+        )
+    end
+
+    naughty.connect_signal("destroyed", function(n, reason)
+        args.destroy(reason)
+    end)
+end
+
 local function create(args)
     if cst.config.notify_callback then
         args = cst.config.notify_callback(args)
@@ -1104,28 +1133,73 @@ local function create(args)
         notification.set_actions(ret, args.actions, args)
     end
 
-    ret.id = ret.id or naughty._gen_next_id()
+    --ret.id = ret.id or naughty._gen_next_id()
+    if args.replaces_id then
+        -- Try to update existing objects when possible
+        local obj = naughty.get_by_id(args.replaces_id)
+        if obj then
+            if not obj._private._unique_sender then
+                -- If this happens, the notification is either trying to
+                -- highjack content created within AwesomeWM or it is garbage
+                -- to begin with.
+                gdebug.print_warning(
+                        "A notification has been received, but tried to update " ..
+                                "the content of a notification it does not own."
+                )
+            elseif obj._private._unique_sender ~= args.sender then
+                -- Nothing says you cannot and some scripts may do it
+                -- accidentally, but this is rather unexpected.
+                gdebug.print_warning(
+                        "Notification " .. obj.title .. " is being updated" ..
+                                "by a different DBus connection (" .. args.sender .. "), this is " ..
+                                "suspicious. The original connection was " ..
+                                obj._private._unique_sender
+                )
+            end
 
-    -- The rules are attached to this.
-    if naughty._has_preset_handler then
-        naughty.emit_signal("request::preset", ret, "new", args)
-    end
+            for k, v in pairs(args) do
+                if k == "destroy" then
+                    k = "destroy_cb"
+                end
+                obj[k] = v
+            end
 
-    -- Register the notification before requesting a widget
-    ret:emit_signal("new", args)
+            -- Update the icon if necessary.
+            if args.app_icon ~= obj._private.app_icon then
+                obj._private.app_icon = args.app_icon
 
-    -- Let all listeners handle the actual visual aspects
-    if (not ret.ignore) and ((not ret.preset) or ret.preset.ignore ~= true) and (not get_suspended(ret)) then
-        naughty.emit_signal("request::display", ret, "new", args)
-        naughty.emit_signal("request::fallback", ret, "new", args)
-    end
+                naughty._emit_signal_if(
+                        "request::icon", function()
+                            if obj._private.icon then
+                                return true
+                            end
+                        end, obj, "dbus_clear", {}
+                )
+            end
 
-    -- Because otherwise the setter logic would not be executed
-    if ret._private.timeout then
-        ret:set_timeout(ret._private.timeout
-                                or (ret.preset and ret.preset.timeout)
-                                or cst.config.timeout
-        )
+            -- Even if no property changed, restart the timeout.
+            obj:reset_timeout()
+        end
+
+        -- ... may use its ID
+        if args.replaces_id <= naughty._gen_id() then
+            ret.id = args.replaces_id
+        else
+            -- Only set the sender for new notifications.
+            args._unique_sender = args.sender
+
+            -- get a brand new ID
+            ret.id              = naughty._gen_next_id()
+
+            new(ret, args)
+        end
+    else
+        -- Only set the sender for new notifications.
+        args._unique_sender = args.sender
+        -- get a brand new ID
+        ret.id              = naughty._gen_next_id()
+
+        new(ret, args)
     end
 
     return ret
