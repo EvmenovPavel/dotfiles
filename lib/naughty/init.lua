@@ -97,16 +97,16 @@ do
         --    message = warning
         --}
 
-        log:warning(warning)
+        --log:warning(warning)
     end
 
     gdebug.print_error   = function(message)
         local error = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
-        --naughty.notification {
-        --    urgency = "warn",
-        --    title   = "Warning",
-        --    message = error
-        --}
+        naughty.notification {
+            urgency = "err",
+            title   = "Error",
+            message = error
+        }
 
         log:error(error)
     end

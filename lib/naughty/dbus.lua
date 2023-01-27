@@ -63,14 +63,6 @@ local data_method     = {
 --- Notification library, dbus bindings
 local dbus            = { config = {} }
 
--- DBUS Notification constants
--- https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html#urgency-levels
-local urgency         = {
-    low      = "\0",
-    normal   = "\1",
-    critical = "\2"
-}
-
 --- DBUS notification to preset mapping.
 -- The first element is an object containing the filter.
 -- If the rules in the filter match, the associated preset will be applied.
@@ -188,7 +180,6 @@ end
 
 function notif_methods.CloseNotification(id)
     log:debug("\nnotif_methods.CloseNotification")
-    log:info("id:", id)
 
     local obj = naughty.get_by_id(id)
     if obj then
@@ -199,7 +190,7 @@ function notif_methods.CloseNotification(id)
 end
 
 function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text, actions, hints, expire)
-    log:info("\nnotif_methods.Notify")
+    log:info("\n\nnotif_methods.Notify")
 
     local args = {}
     if text ~= "" then
@@ -321,13 +312,15 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text,
 
         args.freedesktop_hints = hints
 
+        log:info("urgency", hints.urgency)
+
         -- Not very pretty, but given the current format is documented in the
         -- public API... well, whatever...
         if hints and hints.urgency then
-            for name, key in pairs(urgency) do
-                if is_empty(hints.urgency) then
-                    local b = string.char(hints.urgency)
-                    if key == b then
+            for name, key in pairs(cst.config._urgency) do
+                if not is_empty(hints.urgency) then
+                    local urgency = tostring(hints.urgency)
+                    if name == urgency or key == urgency then
                         args.urgency = name
                     end
                 end
@@ -360,7 +353,6 @@ function notif_methods.GetServerInformation()
 end
 
 local function method_call(data, ...)
-    log:info("data.member", data.member)
     if data_method[data.member] then
         return protected_call(notif_methods[data.member], data, ...)
     end
@@ -436,6 +428,10 @@ capi.dbus.request_name(dbus_connection.session, dbus_method.dbusNotificationsInt
 -- For testing
 dbus._notif_methods = notif_methods
 
+dbus.notification   = function(app_name, title, text, app_icon, urgency)
+    notif_methods.Notify({  }, app_name, 0, app_icon, title, text, nil, { urgency = urgency or "normal" }, -1)
+end
+
 -- Update the capabilities.
 naughty.connect_signal("property::persistence_enabled", function()
     remove_capability("persistence")
@@ -444,6 +440,7 @@ naughty.connect_signal("property::persistence_enabled", function()
         table.insert(capabilities, "persistence")
     end
 end)
+
 naughty.connect_signal("property::image_animations_enabled", function()
     remove_capability("icon-multi")
     remove_capability("icon-static")

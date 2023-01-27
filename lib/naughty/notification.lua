@@ -1018,46 +1018,7 @@ end
 --     message = "You're idling", timeout = 0
 -- }
 
-local function new(ret, args)
-    -- The rules are attached to this.
-    if naughty._has_preset_handler then
-        naughty.emit_signal("request::preset", ret, "new", args)
-    end
-
-    -- Register the notification before requesting a widget
-    ret:emit_signal("new", args)
-
-    -- Let all listeners handle the actual visual aspects
-    if (not ret.ignore) and ((not ret.preset) or ret.preset.ignore ~= true) and (not get_suspended(ret)) then
-        naughty.emit_signal("request::display", ret, "new", args)
-        naughty.emit_signal("request::fallback", ret, "new", args)
-    end
-
-    -- Because otherwise the setter logic would not be executed
-    if ret._private.timeout then
-        ret:set_timeout(ret._private.timeout
-                                or (ret.preset and ret.preset.timeout)
-                                or cst.config.timeout
-        )
-    end
-
-    naughty.connect_signal("destroyed", function(n, reason)
-        args.destroy(reason)
-    end)
-end
-
-local function create(args)
-    if cst.config.notify_callback then
-        args = cst.config.notify_callback(args)
-        if not args then
-            return
-        end
-    end
-
-    assert(not args.id, "Identifiers cannot be specified externally")
-
-    args                = args or {}
-
+local function new_notification(ret, args)
     -- Old actions usually have callbacks and names. But this isn't non
     -- compliant with the spec. The spec has explicit ordering and optional
     -- icons. The old format doesn't allow these metadata to be stored.
@@ -1065,10 +1026,6 @@ local function create(args)
             (args.actions[1] and type(args.actions[1]) == "string") or
                     (type(next(args.actions)) == "string")
     )
-
-    local ret           = gobject {
-        enable_properties = true,
-    }
 
     if args.text then
         gdebug.deprecate(
@@ -1133,7 +1090,49 @@ local function create(args)
         notification.set_actions(ret, args.actions, args)
     end
 
-    --ret.id = ret.id or naughty._gen_next_id()
+    -- The rules are attached to this.
+    if naughty._has_preset_handler then
+        naughty.emit_signal("request::preset", ret, "new", args)
+    end
+
+    -- Register the notification before requesting a widget
+    ret:emit_signal("new", args)
+
+    -- Let all listeners handle the actual visual aspects
+    if (not ret.ignore) and ((not ret.preset) or ret.preset.ignore ~= true) and (not get_suspended(ret)) then
+        naughty.emit_signal("request::display", ret, "new", args)
+        naughty.emit_signal("request::fallback", ret, "new", args)
+    end
+
+    -- Because otherwise the setter logic would not be executed
+    if ret._private.timeout then
+        ret:set_timeout(ret._private.timeout
+                                or (ret.preset and ret.preset.timeout)
+                                or cst.config.timeout
+        )
+    end
+
+    ret:connect_signal("destroyed", function(_, r)
+        args.destroy(r)
+    end)
+end
+
+local function create(args)
+    if cst.config.notify_callback then
+        args = cst.config.notify_callback(args)
+        if not args then
+            return
+        end
+    end
+
+    assert(not args.id, "Identifiers cannot be specified externally")
+
+    args      = args or {}
+
+    local ret = gobject {
+        enable_properties = true,
+    }
+
     if args.replaces_id then
         -- Try to update existing objects when possible
         local obj = naughty.get_by_id(args.replaces_id)
@@ -1179,6 +1178,7 @@ local function create(args)
 
             -- Even if no property changed, restart the timeout.
             obj:reset_timeout()
+            ret.reuse_box = obj.box
         end
 
         -- ... may use its ID
@@ -1191,7 +1191,7 @@ local function create(args)
             -- get a brand new ID
             ret.id              = naughty._gen_next_id()
 
-            new(ret, args)
+            new_notification(ret, args)
         end
     else
         -- Only set the sender for new notifications.
@@ -1199,7 +1199,7 @@ local function create(args)
         -- get a brand new ID
         ret.id              = naughty._gen_next_id()
 
-        new(ret, args)
+        new_notification(ret, args)
     end
 
     return ret

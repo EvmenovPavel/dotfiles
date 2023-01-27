@@ -59,30 +59,41 @@ no_clear.presets               = {
         timeout       = 10,
         hover_timeout = 10,
     },
+    err      = {
+        bg            = "#ffff00",
+        fg            = "#000000",
+        timeout       = 5,
+        hover_timeout = 5,
+    },
 }
 
+-- DBUS Notification constants
+-- https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html#urgency-levels
 ret.config._urgency            = {
     low      = "\0",
     normal   = "\1",
     critical = "\2",
     ok       = "\3",
     info     = "\4",
-    warn     = "\5"
+    warn     = "\5",
+    err      = "\6",
 }
 
 ret.config.mapping             = {
     { { urgency = ret.config._urgency.low }, no_clear.presets.low }, --compat
     { { urgency = ret.config._urgency.normal }, no_clear.presets.normal }, --compat
     { { urgency = ret.config._urgency.critical }, no_clear.presets.critical }, --compat
-    { { urgency = ret.config._urgency.warn }, no_clear.presets.warn }, --compat
     { { urgency = ret.config._urgency.ok }, no_clear.presets.ok }, --compat
     { { urgency = ret.config._urgency.info }, no_clear.presets.info }, --compat
+    { { urgency = ret.config._urgency.warn }, no_clear.presets.warn }, --compat
+    { { urgency = ret.config._urgency.err }, no_clear.presets.err }, --compat
     { { urgency = "low" }, no_clear.presets.low },
     { { urgency = "normal" }, no_clear.presets.normal },
     { { urgency = "critical" }, no_clear.presets.critical },
     { { urgency = "ok" }, no_clear.presets.ok },
     { { urgency = "info" }, no_clear.presets.info },
     { { urgency = "warn" }, no_clear.presets.warn },
+    { { urgency = "err" }, no_clear.presets.err },
 }
 
 no_clear.defaults              = {
