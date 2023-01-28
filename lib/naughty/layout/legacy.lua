@@ -33,6 +33,7 @@ local beautiful = require("beautiful")
 local surface   = require("gears.surface")
 local wibox     = require("wibox")
 local gfs       = require("gears.filesystem")
+local gtable    = require("gears.table")
 local timer     = require("gears.timer")
 local gmath     = require("gears.math")
 local cairo     = require("lgi").cairo
@@ -622,12 +623,11 @@ function naughty.default_notification_handler(notification, args)
     notification.box:set_widget(completelayout)
 
     -- Setup the mouse events
-    layout.buttons = {
-        button({}, 1, nil, run),
-        button({}, 3, nil, function()
-            die(naughty.notification_closed_reason.dismissed_by_user)
-        end),
-    }
+    layout:buttons(gtable.join(
+            button({}, 1, nil, run),
+            button({}, 3, nil, function()
+                die(naughty.notification_closed_reason.dismissed_by_user)
+            end)))
 
     -- insert the notification to the table
     table.insert(current_notifications[s][notification.position], notification)
