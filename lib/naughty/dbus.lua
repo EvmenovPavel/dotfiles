@@ -75,8 +75,6 @@ local dbus            = { config = {} }
 dbus.config.mapping   = cst.config.mapping
 
 local function sendActionInvoked(notificationId, action)
-    log:info("sendActionInvoked", notificationId, action)
-
     if capi.dbus then
         capi.dbus.emit_signal(dbus_connection.session, dbus_method.dbusObjectPath,
                               dbus_method.dbusNotificationsInterface, "ActionInvoked",
@@ -86,8 +84,6 @@ local function sendActionInvoked(notificationId, action)
 end
 
 local function sendNotificationClosed(notificationId, reason)
-    log:info("sendNotificationClosed", notificationId, reason)
-
     if reason <= 0 then
         reason = cst.notification_closed_reason.undefined
     end
@@ -171,7 +167,6 @@ function notif_methods.ActionInvoked()
 end
 
 function notif_methods.GetCapabilities()
-    log:debug("\nnotif_methods.GetCapabilities")
     -- We actually do display the body of the message, we support <b>, <i>
     -- and <u> in the body and we handle static (non-animated) icons.
 
@@ -179,8 +174,6 @@ function notif_methods.GetCapabilities()
 end
 
 function notif_methods.CloseNotification(id)
-    log:debug("\nnotif_methods.CloseNotification")
-
     local obj = naughty.get_by_id(id)
     if obj then
         obj:destroy(cst.notification_closed_reason.dismissed_by_command)
@@ -190,8 +183,6 @@ function notif_methods.CloseNotification(id)
 end
 
 function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text, actions, hints, expire)
-    log:info("\n\nnotif_methods.Notify")
-
     local args = {}
     if text ~= "" then
         args.message = text
@@ -312,8 +303,6 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text,
 
         args.freedesktop_hints = hints
 
-        log:info("urgency", hints.urgency)
-
         -- Not very pretty, but given the current format is documented in the
         -- public API... well, whatever...
         if hints and hints.urgency then
@@ -340,15 +329,11 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, text,
 end
 
 function notif_methods.GetServerInfo()
-    log:info("\nnotif_methods.GetServerInfo")
-
     return "s", "naughty", "s", "awesome", "s", capi.awesome.version, "s", "1.0"
 end
 
 function notif_methods.GetServerInformation()
-    log:debug("\nnotif_methods.GetServerInformation")
     -- name of notification app, name of vender, version, specification version
-
     return notif_methods.GetServerInfo()
 end
 
