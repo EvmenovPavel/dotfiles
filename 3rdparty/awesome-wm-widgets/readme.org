@@ -1,0 +1,58 @@
+
+* Three widgets for Awesome WM
+
+[[./screenshot.png]]
+
+** Sct Widget
+Set screen color temperature.
+Mouse wheel or mouse button (L/R) clicks to adjust.
+Middle click recalls the defaut value (6500K).
+Requires =sct=.
+
+** Monitors on/off
+[[./awesome-wm-xrandr.png]]
+
+To turn screens on and off with two clicks.
+Requires =xrandr=.
+
+You may turn off the last screen available this way ;)
+
+** udisk ctl
+[[./awesome-wm-udiskctl.png]]
+
+Unfinished widget to turn on/off USB disks.
+To /unmount/ and to *poweroff*.
+
+[2023-01-05 Thu]
+- [X] Mount/unmount and detection OK
+- [ ] poweroff should work, but needs to unmount drives first
+- [ ] needs widget refresh after poweroff 
+  
+** Installation
+#+begin_src lua
+local xrandr 		  	 = require("awesome-wm-widgets.xrandr")
+local udiskctl 		  	 = require("awesome-wm-widgets.udiskctl")
+local Sct 			 = require("awesome-wm-widgets.sct")
+local sct = Sct() -- get access to the widget and the update function 
+
+awful.screen.connect_for_each_screen(function(s)
+      ...
+      -- Add widgets to the wibox
+      s.mywibox:setup {
+	 ...
+	 s.mytasklist,
+	 { 	   
+	    xrandr(),
+	    udiskctl(),
+	    sct.widget,
+	    ...
+
+...
+   awful.key({modkey}, "F7", function() sct.update(-500) end),
+   awful.key({modkey}, "F8", function() sct.update(500) end),
+	    
+#+end_src
+
+** TODO TODO
+- [ ] make the widgets frame display up
+      when the bar is at the bottom of the screen

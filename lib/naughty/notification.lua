@@ -627,6 +627,7 @@ function notification:set_timeout(timeout)
 
         self.timer = timer_die
     end
+
     self.die              = die
     self._private.timeout = timeout
     self:emit_signal("property::timeout", timeout)

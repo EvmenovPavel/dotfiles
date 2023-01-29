@@ -168,17 +168,16 @@ local function arrange(s)
     end
 end
 
-local function update_size(notification)
-    local n      = notification
-    local s      = n.size_info
+local function update_size(self)
+    local s      = self.size_info
     local width  = s.width
     local height = s.height
     local margin = s.margin
 
     -- calculate the width
     if not width then
-        local w, _ = n.textbox:get_preferred_size(n.screen)
-        width      = w + (n.iconbox and s.icon_w + 2 * margin or 0) + 2 * margin
+        local w, _ = self.textbox:get_preferred_size(self.screen)
+        width      = w + (self.iconbox and s.icon_w + 2 * margin or 0) + 2 * margin
     end
 
     if width < s.actions_max_width then
@@ -192,9 +191,9 @@ local function update_size(notification)
 
     -- calculate the height
     if not height then
-        local w = width - (n.iconbox and s.icon_w + 2 * margin or 0) - 2 * margin
-        local h = n.textbox:get_height_for_width(w, n.screen)
-        if n.iconbox and s.icon_h + 2 * margin > h + 2 * margin then
+        local w = width - (self.iconbox and s.icon_w + 2 * margin or 0) - 2 * margin
+        local h = self.textbox:get_height_for_width(w, self.screen)
+        if self.iconbox and s.icon_h + 2 * margin > h + 2 * margin then
             height = s.icon_h + 2 * margin
         else
             height = h + 2 * margin
@@ -208,7 +207,7 @@ local function update_size(notification)
     end
 
     -- crop to workarea size if too big
-    local workarea     = n.screen.workarea
+    local workarea     = self.screen.workarea
     local border_width = s.border_width or 0
     local padding      = naughty.config.padding or 0
     if width > workarea.width - 2 * border_width - 2 * padding then
@@ -219,18 +218,18 @@ local function update_size(notification)
     end
 
     -- set size in notification object
-    n.height     = height + 2 * border_width
-    n.width      = width + 2 * border_width
-    local offset = get_offset(n.screen, n.position, n.idx, n.width, n.height)
-    n.box:geometry({
-                       width  = width,
-                       height = height,
-                       x      = offset.x,
-                       y      = offset.y,
-                   })
+    self.height  = height + 2 * border_width
+    self.width   = width + 2 * border_width
+    local offset = get_offset(self.screen, self.position, self.idx, self.width, self.height)
+    self.box:geometry({
+                          width  = width,
+                          height = height,
+                          x      = offset.x,
+                          y      = offset.y,
+                      })
 
     -- update positions of other notifications
-    arrange(n.screen)
+    arrange(self.screen)
 end
 
 local escape_pattern = "[<>&]"
@@ -243,7 +242,7 @@ local function set_escaped_text(self)
     end
 
     local app_name = self.app_name or ""
-    local text     = self.message or ""
+    local message  = self.message or ""
     local title    = self.title or ""
     local textbox  = self.textbox
 
@@ -257,8 +256,8 @@ local function set_escaped_text(self)
             table.insert(parts, "<b>" .. title .. "</b>")
         end
 
-        if text ~= "" then
-            local markup = text:gsub(pattern, replacements)
+        if message ~= "" then
+            local markup = message:gsub(pattern, replacements)
             if markup ~= "" then
                 table.insert(parts, markup)
             end
@@ -277,8 +276,8 @@ local function set_escaped_text(self)
             table.insert(parts, title)
         end
 
-        if text ~= "" then
-            table.insert(parts, text)
+        if message ~= "" then
+            table.insert(parts, message)
         end
 
         textbox:set_text(table.concat(parts, "\n"))
@@ -362,7 +361,7 @@ function naughty.default_notification_handler(notification, args)
 
     local app_name = get_value(notification, args, preset, "app_name")
     local title    = get_value(notification, args, preset, "title")
-    local text     = get_value(notification, args, preset, "message") or args.text or preset.text
+    local message  = get_value(notification, args, preset, "message") or args.text or preset.text
 
     local s        = get_screen(
             get_value(notification, args, preset, "screen") or screen.focused()
@@ -370,7 +369,7 @@ function naughty.default_notification_handler(notification, args)
 
     if not s then
         local err = "lib.naughty.notify: there is no screen available to display the following notification:"
-        err       = string.format("%s app_name='%s' title='%s' text='%s'", err, tostring(app_name or ""), tostring(title or ""), tostring(text or ""))
+        err       = string.format("%s app_name='%s' title='%s' text='%s'", err, tostring(app_name or ""), tostring(title or ""), tostring(message or ""))
         require("gears.debug").print_warning(err)
         return
     end
@@ -624,8 +623,8 @@ function naughty.default_notification_handler(notification, args)
 
     -- Setup the mouse events
     layout:buttons(gtable.join(
-            button({}, 1, nil, run),
-            button({}, 3, nil, function()
+            button({}, event.mouse.button_click_left, nil, run),
+            button({}, event.mouse.button_click_right, nil, function()
                 die(naughty.notification_closed_reason.dismissed_by_user)
             end)))
 

@@ -64,9 +64,7 @@ if capi.awesome.startup_errors then
         -- A lot of things have to go wrong for this to happen, but it can.
         screen_fallback()
 
-        --naughty.emit_signal(
-        --        "request::display_error", capi.awesome.startup_errors, true
-        --)
+        naughty.emit_signal("request::display_error", capi.awesome.startup_errors, true)
     end)
 end
 
@@ -84,7 +82,7 @@ do
 
         screen_fallback()
 
-        --naughty.emit_signal("request::display_error", tostring(err), false)
+        naughty.emit_signal("request::display_error", tostring(err), false)
 
         in_error = false
     end)
