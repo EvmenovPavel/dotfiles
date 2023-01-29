@@ -927,16 +927,16 @@ function naughty.client_icon_handler(self, context)
         return
     end
 
-    --local clients = self:get_clients()
-    --
-    --for _, t in ipairs { "normal", "dialog" } do
-    --    for _, c in ipairs(clients) do
-    --        if c.type == t then
-    --            self._private.icon = gsurface(c.icon) --TODO support other size
-    --            return
-    --        end
-    --    end
-    --end
+    local clients = self:get_clients()
+
+    for _, t in ipairs { "normal", "dialog" } do
+        for _, c in ipairs(clients) do
+            if c.type == t then
+                self._private.icon = gsurface(c.icon) --TODO support other size
+                return
+            end
+        end
+    end
 end
 
 --- Request handler to get the icon using the image or path.

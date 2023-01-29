@@ -1019,7 +1019,89 @@ end
 --     message = "You're idling", timeout = 0
 -- }
 
-local function new_notification(ret, args)
+local function create(args)
+    if cst.config.notify_callback then
+        args = cst.config.notify_callback(args)
+        if not args then
+            return
+        end
+    end
+
+    assert(not args.id, "Identifiers cannot be specified externally")
+
+    args      = args or {}
+
+    local ret = gobject {
+        enable_properties = true,
+    }
+
+    if args.replaces_id then
+        -- Try to update existing objects when possible
+        local obj = naughty.get_by_id(args.replaces_id)
+        if obj then
+            if not obj._private._unique_sender then
+                -- If this happens, the notification is either trying to
+                -- highjack content created within AwesomeWM or it is garbage
+                -- to begin with.
+                gdebug.print_warning(
+                        "A notification has been received, but tried to update " ..
+                                "the content of a notification it does not own."
+                )
+            elseif obj._private._unique_sender ~= args.sender then
+                -- Nothing says you cannot and some scripts may do it
+                -- accidentally, but this is rather unexpected.
+                gdebug.print_warning(
+                        "Notification " .. obj.title .. " is being updated" ..
+                                "by a different DBus connection (" .. args.sender .. "), this is " ..
+                                "suspicious. The original connection was " ..
+                                obj._private._unique_sender
+                )
+            end
+
+            for k, v in pairs(args) do
+                if k == "destroy" then
+                    k = "destroy_cb"
+                end
+                obj[k] = v
+            end
+
+            -- Update the icon if necessary.
+            if args.app_icon ~= obj._private.app_icon then
+                obj._private.app_icon = args.app_icon
+
+                naughty._emit_signal_if(
+                        "request::icon", function()
+                            if obj._private.icon then
+                                return true
+                            end
+                        end, obj, "dbus_clear", {}
+                )
+            end
+
+            -- Even if no property changed, restart the timeout.
+            obj:reset_timeout()
+            ret.reuse_box = obj.box
+        end
+
+        -- ... may use its ID
+        if args.replaces_id <= naughty._gen_id() then
+            ret.id = args.replaces_id
+            require("gears.debug").print_warning("ret.id = args.replaces_id")
+            log:info("Ошибка, тут должно остановиться по идеи!")
+        else
+            -- Only set the sender for new notifications.
+            args._unique_sender = args.sender
+
+            -- get a brand new ID
+            ret.id              = naughty._gen_next_id()
+        end
+    else
+        -- Only set the sender for new notifications.
+        args._unique_sender = args.sender
+        -- get a brand new ID
+        ret.id              = naughty._gen_next_id()
+    end
+
     -- Old actions usually have callbacks and names. But this isn't non
     -- compliant with the spec. The spec has explicit ordering and optional
     -- icons. The old format doesn't allow these metadata to be stored.
@@ -1116,92 +1198,6 @@ local function new_notification(ret, args)
     ret:connect_signal("destroyed", function(_, r)
         args.destroy(r)
     end)
-end
-
-local function create(args)
-    if cst.config.notify_callback then
-        args = cst.config.notify_callback(args)
-        if not args then
-            return
-        end
-    end
-
-    assert(not args.id, "Identifiers cannot be specified externally")
-
-    args      = args or {}
-
-    local ret = gobject {
-        enable_properties = true,
-    }
-
-    if args.replaces_id then
-        -- Try to update existing objects when possible
-        local obj = naughty.get_by_id(args.replaces_id)
-        if obj then
-            if not obj._private._unique_sender then
-                -- If this happens, the notification is either trying to
-                -- highjack content created within AwesomeWM or it is garbage
-                -- to begin with.
-                gdebug.print_warning(
-                        "A notification has been received, but tried to update " ..
-                                "the content of a notification it does not own."
-                )
-            elseif obj._private._unique_sender ~= args.sender then
-                -- Nothing says you cannot and some scripts may do it
-                -- accidentally, but this is rather unexpected.
-                gdebug.print_warning(
-                        "Notification " .. obj.title .. " is being updated" ..
-                                "by a different DBus connection (" .. args.sender .. "), this is " ..
-                                "suspicious. The original connection was " ..
-                                obj._private._unique_sender
-                )
-            end
-
-            for k, v in pairs(args) do
-                if k == "destroy" then
-                    k = "destroy_cb"
-                end
-                obj[k] = v
-            end
-
-            -- Update the icon if necessary.
-            if args.app_icon ~= obj._private.app_icon then
-                obj._private.app_icon = args.app_icon
-
-                naughty._emit_signal_if(
-                        "request::icon", function()
-                            if obj._private.icon then
-                                return true
-                            end
-                        end, obj, "dbus_clear", {}
-                )
-            end
-
-            -- Even if no property changed, restart the timeout.
-            obj:reset_timeout()
-            ret.reuse_box = obj.box
-        end
-
-        -- ... may use its ID
-        if args.replaces_id <= naughty._gen_id() then
-            ret.id = args.replaces_id
-        else
-            -- Only set the sender for new notifications.
-            args._unique_sender = args.sender
-
-            -- get a brand new ID
-            ret.id              = naughty._gen_next_id()
-
-            new_notification(ret, args)
-        end
-    else
-        -- Only set the sender for new notifications.
-        args._unique_sender = args.sender
-        -- get a brand new ID
-        ret.id              = naughty._gen_next_id()
-
-        new_notification(ret, args)
-    end
 
     return ret
 end
