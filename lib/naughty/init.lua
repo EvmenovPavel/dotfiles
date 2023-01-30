@@ -15,7 +15,7 @@ end
 
 naughty.action       = require("lib.naughty.action")
 naughty.list         = require("lib.naughty.list")
-naughty.layout       = require("lib.naughty.layout")
+naughty.layout = require("lib.naughty.layout")
 naughty.widget       = require("lib.naughty.widget")
 naughty.container    = require("lib.naughty.container")
 naughty.action       = require("lib.naughty.action")
@@ -88,25 +88,21 @@ do
     end)
 
     gdebug.print_warning = function(message)
-        local warning = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
-        --naughty.notification {
-        --    urgency = "warn",
-        --    title   = "Warning",
-        --    message = warning
-        --}
+        local msg   = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
 
-        --log:warning(warning)
+        local mgbox = wmapi.widget.messagebox()
+        mgbox:warning("", "Error", msg)
+
+        log:warning(msg)
     end
 
     gdebug.print_error   = function(message)
-        local error = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
-        naughty.notification {
-            urgency = "err",
-            title   = "Error",
-            message = error
-        }
+        local msg   = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
 
-        log:error(error)
+        local mgbox = wmapi.widget.messagebox()
+        mgbox:error("", "Error", msg)
+
+        log:error(msg)
     end
 end
 

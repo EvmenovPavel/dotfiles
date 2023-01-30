@@ -59,7 +59,7 @@ no_clear.presets               = {
         timeout       = 10,
         hover_timeout = 10,
     },
-    err      = {
+    error    = {
         bg            = "#ffff00",
         fg            = "#000000",
         timeout       = 5,
@@ -76,7 +76,7 @@ ret.config._urgency            = {
     ok       = "\3",
     info     = "\4",
     warn     = "\5",
-    err      = "\6",
+    error    = "\6",
 }
 
 ret.config.mapping             = {
@@ -86,14 +86,14 @@ ret.config.mapping             = {
     { { urgency = ret.config._urgency.ok }, no_clear.presets.ok }, --compat
     { { urgency = ret.config._urgency.info }, no_clear.presets.info }, --compat
     { { urgency = ret.config._urgency.warn }, no_clear.presets.warn }, --compat
-    { { urgency = ret.config._urgency.err }, no_clear.presets.err }, --compat
+    { { urgency = ret.config._urgency.error }, no_clear.presets.error }, --compat
     { { urgency = "low" }, no_clear.presets.low },
     { { urgency = "normal" }, no_clear.presets.normal },
     { { urgency = "critical" }, no_clear.presets.critical },
     { { urgency = "ok" }, no_clear.presets.ok },
     { { urgency = "info" }, no_clear.presets.info },
     { { urgency = "warn" }, no_clear.presets.warn },
-    { { urgency = "err" }, no_clear.presets.err },
+    { { urgency = "err" }, no_clear.presets.error },
 }
 
 no_clear.defaults              = {

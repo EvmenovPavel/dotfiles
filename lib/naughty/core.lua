@@ -437,20 +437,23 @@ function naughty.destroy(notification, reason, keep_visible)
                 end
             end
         end
+
         local scr = notification.screen
         table.remove(naughty.notifications[scr][notification.position], notification.idx)
+
         if notification.timer then
             notification.timer:stop()
         end
 
         if not keep_visible then
             notification.box.visible = false
-            arrange(scr)
+            naughty.emit_signal("destroyed", scr)
         end
 
         if notification.destroy_cb and reason ~= naughty.notification_closed_reason.silent then
             notification.destroy_cb(reason or naughty.notification_closed_reason.undefined)
         end
+
         return true
     end
     --gdebug.deprecate("Use notification:destroy(reason, keep_visible)", { deprecated_in = 5 })
@@ -479,7 +482,9 @@ function naughty.destroy_all_notifications(screens, reason)
             table.insert(screens, key)
         end
     end
+
     local ret = true
+
     for _, scr in pairs(screens) do
         for _, list in pairs(naughty.notifications[scr]) do
             while #list > 0 do
@@ -490,6 +495,7 @@ function naughty.destroy_all_notifications(screens, reason)
             end
         end
     end
+
     return ret
 end
 
