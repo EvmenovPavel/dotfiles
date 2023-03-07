@@ -2,8 +2,6 @@ local awful                   = require("awful")
 local wibox                   = require("wibox")
 local beautiful               = require("beautiful")
 
-local fun                     = require("functions")
-
 awful.titlebar.enable_tooltip = false
 awful.titlebar.fallback_name  = 'Client\'s name'
 
@@ -125,7 +123,7 @@ function mytitlebar:floatingbutton(c)
                                      function(cl)
                                      end,
                                      function(cl)
-                                         fun:on_floating(cl)
+                                         wmapi:on_floating(cl)
                                      end)
     c:connect_signal("property::floating", widget.update)
     return widget
@@ -137,7 +135,7 @@ function mytitlebar:maximizedbutton(c)
                                          return cl.maximized
                                      end,
                                      function(cl, state)
-                                         fun:on_maximized(cl, state)
+                                         wmapi:on_maximized(cl, state)
                                      end)
     c:connect_signal("property::maximized", widget.update)
     return widget
@@ -149,7 +147,7 @@ function mytitlebar:minimizebutton(c)
                                          return ""
                                      end,
                                      function(cl)
-                                         fun:on_minimized(cl)
+                                         wmapi:on_minimized(cl)
                                      end)
     c:connect_signal("property::minimize", widget.update)
     return widget
@@ -161,7 +159,7 @@ function mytitlebar:closebutton(c)
                                          return ""
                                      end,
                                      function(cl)
-                                         fun:on_close(cl)
+                                         wmapi:on_close(cl)
                                      end)
     c:connect_signal("property::close", widget.update)
     return widget
@@ -173,7 +171,7 @@ function mytitlebar:ontopbutton(c)
                                          return cl.ontop
                                      end,
                                      function(cl, state)
-                                         fun:on_ontop(cl, state)
+                                         wmapi:on_ontop(cl, state)
                                      end)
     c:connect_signal("property::ontop", widget.update)
     return widget
@@ -185,7 +183,7 @@ function mytitlebar:stickybutton(c)
                                          return cl.sticky
                                      end,
                                      function(cl, state)
-                                         fun:on_sticky(cl, state)
+                                         wmapi:on_sticky(cl, state)
                                      end)
     c:connect_signal("property::sticky", widget.update)
     return widget

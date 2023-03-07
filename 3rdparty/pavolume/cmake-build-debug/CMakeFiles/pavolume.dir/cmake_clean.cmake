@@ -1,7 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/pavolume.dir/lua-pavolume.c.o"
-  "CMakeFiles/pavolume.dir/main.c.o"
-  "CMakeFiles/pavolume.dir/pavolume.c.o"
+  "CMakeFiles/pavolume.dir/src/main.c.o"
+  "CMakeFiles/pavolume.dir/src/pavolume.c.o"
   "pavolume"
   "pavolume.pdb"
 )

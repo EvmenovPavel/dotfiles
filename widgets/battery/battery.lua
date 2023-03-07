@@ -1,4 +1,4 @@
-local wibox   = require("wibox")
+local wibox = require("wibox")
 
 local battery = {}
 
@@ -72,14 +72,14 @@ function battery:updateWidgetInfo(state, value)
 end
 
 function battery:notify_power(notify)
-    local messagebox = wmapi:widget():messagebox()
+    local msgbox = wmapi.widget:messagebox()
 
     if notify == 1 then
-        messagebox:information("Система электропитания", "Питание отключено.")
+        msgbox:information("Battery", "Система электропитания", "Питание отключено.")
     elseif notify == 2 then
-        messagebox:information("Система электропитания", "Питание подключено.")
+        msgbox:information("Battery", "Система электропитания", "Питание подключено.")
     elseif notify == 3 then
-        messagebox:information("Система электропитания", "Батарея полностью заряжена.")
+        msgbox:information("Battery", "Система электропитания", "Батарея полностью заряжена.")
     end
 end
 
@@ -108,116 +108,116 @@ end
 --icon-name:          'battery-full-charging-symbolic'
 
 function battery:init()
-    local _private    = {}
+    local _private = {}
 
-    _private.notify   = 0
-    _private.state    = 0
-    _private.value    = 0
+    _private.notify = 0
+    _private.state = 0
+    _private.value = 0
 
     local bash_upower = [[bash -c "upower -i $(upower -e | grep 'BAT')"]]
 
-    local imagebox    = wmapi:widget():imagebox()
-    local textbox     = wmapi:widget():textbox()
+    local imagebox = wmapi.widget:imagebox()
+    local textbox = wmapi.widget:textbox()
 
     wmapi:watch(bash_upower, 1,
-                function(stdout)
-                    local _upower = { buf = {}, swp = {} }
+            function(stdout)
+                log:info("stdout", stdout)
+                local _upower = { buf = {}, swp = {} }
 
-                    for line in stdout:gmatch("[^\r\n]+") do
-                        for k, v in string.gmatch(line, "([%a].+):([%s].+)") do
-                            k = k:gsub("%s+", "")
-                            v = v:gsub("^%s+", "")
+                for line in stdout:gmatch("[^\r\n]+") do
+                    for k, v in string.gmatch(line, "([%a].+):([%s].+)") do
+                        k = k:gsub("%s+", "")
+                        v = v:gsub("^%s+", "")
 
-                            if k == "native-path" then
-                                _upower.buf.native_path = v
-                            elseif k == "vendor" then
-                                _upower.buf.vendor = v
-                            elseif k == "model" then
-                                _upower.buf.model = v
-                            elseif k == "powersupply" then
-                                _upower.buf.powersupply = v
-                            elseif k == "updated" then
-                                _upower.buf.updated = v
-                            elseif k == "hashistory" then
-                                _upower.buf.hashistory = v
-                            elseif k == "hasstatistics" then
-                                _upower.buf.hasstatistics = v
-                            elseif k == "present" then
-                                _upower.buf.present = v
-                            elseif k == "rechargeable" then
-                                _upower.buf.rechargeable = v
-                            elseif k == "state" then
-                                _upower.buf.state = v
-                            elseif k == "warning-level" then
-                                _upower.buf.warning_level = v
-                            elseif k == "energy" then
-                                _upower.buf.energy = v
-                            elseif k == "energy-empty" then
-                                _upower.buf.energy_empty = v
-                            elseif k == "energy-full" then
-                                _upower.buf.energy_full = v
-                            elseif k == "energy-full-design" then
-                                _upower.buf.energy_full_design = v
-                            elseif k == "energy-rate" then
-                                _upower.buf.energy_rate = v
-                            elseif k == "voltage" then
-                                _upower.buf.voltage = v
-                            elseif k == "timetoempty" then
-                                _upower.buf.timetoempty = v
-                            elseif k == "percentage" then
-                                _upower.buf.percentage = v
-                            elseif k == "capacity" then
-                                _upower.buf.capacity = v
-                            elseif k == "technology" then
-                                _upower.buf.technology = v
-                            elseif k == "icon-name" then
-                                _upower.buf.icon_name = v
-                            end
+                        if k == "native-path" then
+                            _upower.buf.native_path = v
+                        elseif k == "vendor" then
+                            _upower.buf.vendor = v
+                        elseif k == "model" then
+                            _upower.buf.model = v
+                        elseif k == "powersupply" then
+                            _upower.buf.powersupply = v
+                        elseif k == "updated" then
+                            _upower.buf.updated = v
+                        elseif k == "hashistory" then
+                            _upower.buf.hashistory = v
+                        elseif k == "hasstatistics" then
+                            _upower.buf.hasstatistics = v
+                        elseif k == "present" then
+                            _upower.buf.present = v
+                        elseif k == "rechargeable" then
+                            _upower.buf.rechargeable = v
+                        elseif k == "state" then
+                            _upower.buf.state = v
+                        elseif k == "warning-level" then
+                            _upower.buf.warning_level = v
+                        elseif k == "energy" then
+                            _upower.buf.energy = v
+                        elseif k == "energy-empty" then
+                            _upower.buf.energy_empty = v
+                        elseif k == "energy-full" then
+                            _upower.buf.energy_full = v
+                        elseif k == "energy-full-design" then
+                            _upower.buf.energy_full_design = v
+                        elseif k == "energy-rate" then
+                            _upower.buf.energy_rate = v
+                        elseif k == "voltage" then
+                            _upower.buf.voltage = v
+                        elseif k == "timetoempty" then
+                            _upower.buf.timetoempty = v
+                        elseif k == "percentage" then
+                            _upower.buf.percentage = v
+                        elseif k == "capacity" then
+                            _upower.buf.capacity = v
+                        elseif k == "technology" then
+                            _upower.buf.technology = v
+                        elseif k == "icon-name" then
+                            _upower.buf.icon_name = v
                         end
                     end
+                end
 
-                    --_upower.buf.native_path
-                    --_upower.buf.vendor
-                    --_upower.buf.model
-                    --_upower.buf.powersupply
-                    --_upower.buf.updated
-                    --_upower.buf.hashistory
-                    --_upower.buf.hasstatistics
-                    --_upower.buf.present
-                    --_upower.buf.rechargeable
-                    --_upower.buf.state
-                    --_upower.buf.warning_level
-                    --_upower.buf.energy
-                    --_upower.buf.energy_empty
-                    --_upower.buf.energy_full
-                    --_upower.buf.energy_full_design
-                    --_upower.buf.energy_rate
-                    --_upower.buf.voltage
-                    --_upower.buf.timetoempty
-                    --_upower.buf.percentage
-                    --_upower.buf.capacity
-                    --_upower.buf.technology
-                    --_upower.buf.icon_name
+                --_upower.buf.native_path
+                --_upower.buf.vendor
+                --_upower.buf.model
+                --_upower.buf.powersupply
+                --_upower.buf.updated
+                --_upower.buf.hashistory
+                --_upower.buf.hasstatistics
+                --_upower.buf.present
+                --_upower.buf.rechargeable
+                --_upower.buf.state
+                --_upower.buf.warning_level
+                --_upower.buf.energy
+                --_upower.buf.energy_empty
+                --_upower.buf.energy_full
+                --_upower.buf.energy_full_design
+                --_upower.buf.energy_rate
+                --_upower.buf.voltage
+                --_upower.buf.timetoempty
+                --_upower.buf.percentage
+                --_upower.buf.capacity
+                --_upower.buf.technology
+                --_upower.buf.icon_name
 
-                    _private.state     = tonumber(self:state_to_number(_upower.buf.state))
-                    _private.value     = _upower.buf.percentage
+                _private.state = tonumber(self:state_to_number(_upower.buf.state))
+                _private.value = _upower.buf.percentage
 
-                    local image, value = self:updateWidgetInfo(_private.state, _private.value)
+                local image, value = self:updateWidgetInfo(_private.state, _private.value)
 
-                    imagebox:set_image(image)
-                    textbox:text(value)
-                    --textbox:markup(value)
+                imagebox:image(image)
+                textbox:text(value)
 
-                    if _private.state == 1 and _private.notify ~= _private.state then
-                        self:notify_power(_private.state)
-                    elseif _private.state == 2 and _private.notify ~= _private.state then
-                        self:notify_power(_private.state)
-                    elseif _private.state == 3 and _private.notify ~= _private.state then
-                        self:notify_power(_private.state)
-                    end
+                if _private.state == 1 and _private.notify ~= _private.state then
+                    self:notify_power(_private.state)
+                elseif _private.state == 2 and _private.notify ~= _private.state then
+                    self:notify_power(_private.state)
+                elseif _private.state == 3 and _private.notify ~= _private.state then
+                    self:notify_power(_private.state)
+                end
 
-                    _private.notify = _private.state
-                end)
+                _private.notify = _private.state
+            end)
 
     local ret = wibox.widget {
         imagebox:get(),

@@ -1,33 +1,36 @@
-local wibox     = require("wibox")
-local gears     = require("gears")
+local wibox = require("wibox")
 local beautiful = require("beautiful")
 
-local combobox  = {}
+local combobox = {}
 
 function combobox:init()
-    local ret  = {}
+    local ret = wmapi.widget:base("checkbox")
 
-    ret.widget = wibox.widget({
-                                  type               = "checkbox",
+    local __private = {}
 
-                                  --checked  = true,
-                                  --color    = beautiful.bg_normal,
-                                  --paddings = 2,
-                                  --shape    = gears.shape.circle,
+    __private.list = {}
 
-                                  color              = beautiful.bg_normal,
-                                  bg                 = '#ff00ff',
-                                  border_width       = 3,
-                                  paddings           = 4,
-                                  border_color       = '#0000ff',
-                                  check_color        = '#ff0000',
-                                  check_border_color = '#ffff00',
-                                  check_border_width = 1,
+    local widget = wibox.widget({
+        type = "checkbox",
 
-                                  paddings           = 2,
+        --checked  = true,
+        --color    = beautiful.bg_normal,
+        --paddings = 2,
+        --shape    = gears.shape.circle,
 
-                                  widget             = wibox.widget.checkbox,
-                              })
+        color = beautiful.bg_normal,
+        bg = '#ff00ff',
+        border_width = 3,
+        paddings = 4,
+        border_color = '#0000ff',
+        check_color = '#ff0000',
+        check_border_color = '#ffff00',
+        check_border_width = 1,
+
+        paddings = 2,
+
+        widget = wibox.widget.checkbox,
+    })
 
     --local bg_enter   = beautiful.mouse_enter
     --local bg_leave   = beautiful.mouse_leave
@@ -65,19 +68,17 @@ function combobox:init()
     --        end
     --)
 
-    function ret:add_widget()
-
-    end
-
-    function ret:add_text()
-
+    function ret:insert(name)
+        table.insert(__private.list, name)
     end
 
     function ret:get()
-        return self.widget
+        return widget
     end
 
     return ret
 end
 
-return combobox
+return setmetatable(combobox, { __call = function(_)
+    return combobox
+end })

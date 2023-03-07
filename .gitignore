@@ -2,4 +2,6 @@ trash/
 logs/
 
 # IDEA files
-.idea
+.idea/
+
+/*build*/

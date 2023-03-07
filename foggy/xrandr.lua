@@ -1,4 +1,4 @@
-local edid            = require('modules.foggy.edid')
+local edid            = require('foggy.edid')
 local cmd
 
 local status, cmd_fun = pcall(function()

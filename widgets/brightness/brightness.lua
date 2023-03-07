@@ -19,6 +19,8 @@ local w_brightness_bar       = wibox.widget {
     value            = 0
 }
 
+local w_volume_icon          = wmapi.widget:imagebox()
+w_volume_icon:image(resources.widgets.volume.on)
 local hide_brightness_adjust = wmapi:update(function()
     brightness_adjust.visible = false
 end, 3)
@@ -114,6 +116,10 @@ function brightness:init()
             direction     = "east",
             layout        = wibox.container.rotate,
         },
+        wibox.container.margin(
+                w_volume_icon:get(),
+                7, 7, 14, 14
+        )
     }
 end
 

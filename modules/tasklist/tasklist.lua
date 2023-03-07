@@ -567,11 +567,12 @@ local function update_function(widget, buttons, label, data, objects)
 
         if icon then
             ib_icon.image = icon
+        elseif c.icon then
+            ib_icon.image = c.icon
         else
             -- TODO
             -- Ошибка, если иконка отсуствует
             -- то, исчезает с тасклиста апп
-            -- ib_icon:set_margins(0)
             ib_icon.image = resources.path .. "/error.png"
         end
 
@@ -626,6 +627,41 @@ local function tasklist_buttons()
 end
 
 function tasklist:init(s)
+    local tasklist_template = {
+        {
+            {
+                {
+                    id     = "text_role",
+                    widget = wibox.widget.textbox,
+                },
+                id     = "text_margin_role",
+                left   = 5,
+                right  = 5,
+                bottom = 2,
+                widget = wibox.container.margin
+            },
+            fill_space = true,
+            layout     = wibox.layout.fixed.horizontal
+        },
+        id     = "background_role",
+        widget = wibox.container.background
+    }
+
+    if not beautiful.tasklist_disable_icon then
+        table.insert(tasklist_template[1], 1,
+                     {
+                         {
+                             id     = "icon_role",
+                             widget = wibox.widget.imagebox,
+                         },
+                         id     = "icon_margin_role",
+                         top    = 5,
+                         left   = 5,
+                         widget = wibox.container.margin
+                     }
+        )
+    end
+
     return w_tasklist.new {
         screen          = s,
         style           = {},
@@ -663,6 +699,71 @@ function tasklist:init(s)
 
         update_function = update_function,
     }
+
+    -- @TASKLIST_BUTTON@
+    -- Create a tasklist widget
+    --s.mytasklist = awful.widget.tasklist {
+    --    screen          = s,
+    --    filter          = awful.widget.tasklist.filter.currenttags,
+    --    buttons         = {
+    --        awful.button({ }, 1, function(c)
+    --            c:activate { context = "tasklist", action = "toggle_minimization" }
+    --        end),
+    --        awful.button({ }, 3, function()
+    --            awful.menu.client_list { theme = { width = 250 } }
+    --        end),
+    --        awful.button({ }, 4, function()
+    --            awful.client.focus.byidx(-1)
+    --        end),
+    --        awful.button({ }, 5, function()
+    --            awful.client.focus.byidx(1)
+    --        end),
+    --    },
+    --    style           = {
+    --        shape_border_width = 1,
+    --        shape_border_color = '#777777',
+    --        shape              = gears.shape.rounded_bar,
+    --    },
+    --    layout          = {
+    --        spacing        = 10,
+    --        spacing_widget = {
+    --            {
+    --                forced_width = 5,
+    --                shape        = gears.shape.circle,
+    --                widget       = wibox.widget.separator
+    --            },
+    --            valign = 'center',
+    --            halign = 'center',
+    --            widget = wibox.container.place,
+    --        },
+    --        layout         = wibox.layout.flex.horizontal
+    --    },
+    --    widget_template = {
+    --        {
+    --            {
+    --                {
+    --                    {
+    --                        id     = 'icon_role',
+    --                        widget = wibox.widget.imagebox,
+    --                    },
+    --                    margins = 2,
+    --                    widget  = wibox.container.margin,
+    --                },
+    --                {
+    --                    id     = 'text_role',
+    --                    widget = wibox.widget.textbox,
+    --                },
+    --                layout = wibox.layout.fixed.horizontal,
+    --            },
+    --            left   = 10,
+    --            right  = 10,
+    --            widget = wibox.container.margin
+    --        },
+    --        id     = 'background_role',
+    --        widget = wibox.container.background,
+    --    },
+    --}
+
 end
 
 return setmetatable(tasklist, { __call = function(_, ...)

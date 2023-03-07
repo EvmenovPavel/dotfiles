@@ -1,3 +1,4 @@
-/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles/pavolume.dir
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles/pavolume.dir
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles/libpavolume.dir

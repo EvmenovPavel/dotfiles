@@ -8,38 +8,38 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug"/>
+				<Option working_dir="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug"/>
+				<Option working_dir="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug"/>
+				<Option working_dir="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="pavolume">
-				<Option output="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/pavolume" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug"/>
+				<Option output="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/pavolume" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -53,15 +53,15 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 pavolume"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 pavolume"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="pavolume/fast">
-				<Option output="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/pavolume" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug"/>
+				<Option output="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/pavolume" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -75,29 +75,87 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 pavolume/fast"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 pavolume/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="libpavolume">
+				<Option output="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/liblibpavolume.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/11"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/11"/>
+					<Add directory="/usr/include/c++/11/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 libpavolume"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="libpavolume/fast">
+				<Option output="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/liblibpavolume.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/11"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/11"/>
+					<Add directory="/usr/include/c++/11/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 libpavolume/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/lua-pavolume.c">
+		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/myObj.cpp">
+			<Option target="libpavolume"/>
+		</Unit>
+		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/myObj.hpp">
+			<Option target="libpavolume"/>
+		</Unit>
+		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/config.h">
+			<Option target="pavolume"/>
+			<Option target="libpavolume"/>
+		</Unit>
+		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/main.c">
 			<Option target="pavolume"/>
 		</Unit>
-		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/main.c">
+		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/options.h">
 			<Option target="pavolume"/>
+			<Option target="libpavolume"/>
 		</Unit>
-		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/options.h">
+		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/pavolume.c">
 			<Option target="pavolume"/>
+			<Option target="libpavolume"/>
 		</Unit>
-		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/pavolume.c">
+		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/pavolume.h">
 			<Option target="pavolume"/>
+			<Option target="libpavolume"/>
 		</Unit>
-		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/usage.h">
+		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/usage.h">
 			<Option target="pavolume"/>
+			<Option target="libpavolume"/>
 		</Unit>
-		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/CMakeLists.txt">
+		<Unit filename="/home/be3yh4uk/.config/awesome/3rdparty/pavolume/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>

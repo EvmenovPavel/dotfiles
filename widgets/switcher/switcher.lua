@@ -55,7 +55,7 @@ switcher.altTabIndex               = 1
 
 --switcher.source                    = string.sub(debug.getinfo(1, "S").source, 2)
 --switcher.path                      = string.sub(switcher.source, 1, string.find(switcher.source, "/[^/]*$"))
-switcher.path                      = wmapi:path(debug.getinfo(1))
+switcher.path                      = wmapi:debuginfo().parent_info.path
 switcher.noicon                    = switcher.path .. "error.png"
 
 -- simple function for counting the size of a table
@@ -128,9 +128,9 @@ end
 -- _M.getClients(). In case we have altTabTable with some value, the list of the
 -- old known clients is restored.
 function switcher:populateAltTabTable()
-    local clients = self:getClients()
+    local clients = switcher:getClients()
 
-    if self:tableLength(switcher.altTabTable) then
+    if switcher:tableLength(switcher.altTabTable) then
         for ci = 1, #clients do
             for ti = 1, #switcher.altTabTable do
                 if switcher.altTabTable[ti].client == clients[ci] then
@@ -157,8 +157,8 @@ end
 -- we need to repopulate the array and update the UI. This function does this
 -- check.
 function switcher:clientsHaveChanged()
-    local clients = self:getClients()
-    return self:tableLength(clients) ~= self:tableLength(switcher.altTabTable)
+    local clients = switcher:getClients()
+    return switcher:tableLength(clients) ~= switcher:tableLength(switcher.altTabTable)
 end
 
 function switcher:createPreviewText(c)
@@ -210,9 +210,9 @@ end
 -- of clients is changed, we need to redraw the whole preview box. Otherwise, a
 -- simple widget::updated signal is enough
 function switcher:updatePreview()
-    if self:clientsHaveChanged() then
-        self:populateAltTabTable()
-        self:preview()
+    if switcher:clientsHaveChanged() then
+        switcher:populateAltTabTable()
+        switcher:preview()
     end
 
     for i = 1, #switcher.preview_widgets do
@@ -229,7 +229,7 @@ function switcher:cycle(dir)
         switcher.altTabIndex = #switcher.altTabTable -- wrap around
     end
 
-    self:updatePreview()
+    switcher:updatePreview()
 
     switcher.altTabTable[switcher.altTabIndex].client.minimized = false
 
@@ -238,7 +238,7 @@ function switcher:cycle(dir)
     end
 
     if switcher.settings.client_opacity and switcher.preview_wbox.visible then
-        self:clientOpacity()
+        switcher:clientOpacity()
     end
 
     if switcher.settings.cycle_raise_client == true then
@@ -297,7 +297,7 @@ function switcher:preview()
     --cr:set_font_size(fontSize)
 
     for i = 1, #leftRightTab do
-        text       = self:createPreviewText(leftRightTab[i])
+        text       = switcher:createPreviewText(leftRightTab[i])
         textWidth  = cr:text_extents(text).width
         textHeight = cr:text_extents(text).height
         if textWidth > maxTextWidth or textHeight > maxTextHeight then
@@ -360,7 +360,7 @@ function switcher:preview()
                 cr:set_font_face(cr:get_font_face())
                 cr:set_font_size(fontSize)
 
-                text                 = self:createPreviewText(c)
+                text                 = switcher:createPreviewText(c)
                 textWidth            = cr:text_extents(text).width
                 textHeight           = cr:text_extents(text).height
 
@@ -421,7 +421,7 @@ function switcher:preview()
         -- Add mouse handler
         if switcher.settings.client_focus_mouse then
             switcher.preview_widgets[i]:connect_signal("mouse::enter", function()
-                self:cycle(leftRightTabToAltTabIndex[i] - switcher.altTabIndex)
+                switcher:cycle(leftRightTabToAltTabIndex[i] - switcher.altTabIndex)
             end)
         end
     end
@@ -453,10 +453,10 @@ function switcher:showPreview()
     switcher.preview_live_timer:connect_signal("timeout", switcher.updatePreview)
     switcher.preview_live_timer:start()
 
-    self:preview()
+    switcher:preview()
     switcher.preview_wbox.visible = true
 
-    self:clientOpacity()
+    switcher:clientOpacity()
 end
 
 function switcher:close()

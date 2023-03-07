@@ -1,1 +1,1 @@
-/usr/bin/cc -g CMakeFiles/pavolume.dir/main.c.o CMakeFiles/pavolume.dir/pavolume.c.o CMakeFiles/pavolume.dir/lua-pavolume.c.o -o pavolume  -lm -lpulse 
+/usr/bin/c++ -Wall -Wextra -Wpedantic -Werror -g CMakeFiles/pavolume.dir/src/main.c.o CMakeFiles/pavolume.dir/src/pavolume.c.o -o pavolume  liblibpavolume.a -lm -lpulse 

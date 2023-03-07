@@ -6,9 +6,17 @@
 
 #IncludeRegexTransform: 
 
-/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/pavolume.c
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/config.h
+
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/options.h
+stdlib.h
+-
 getopt.h
 -
+
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/pavolume.c
+pavolume.h
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/pavolume.h
 math.h
 -
 memory.h
@@ -18,5 +26,25 @@ stdbool.h
 stdio.h
 -
 pulse/pulseaudio.h
+-
+config.h
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/config.h
+
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/pavolume.h
+stdbool.h
+-
+pulse/pulseaudio.h
+-
+config.h
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/config.h
+usage.h
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/usage.h
+options.h
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/options.h
+
+/home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/usage.h
+stdio.h
+-
+stdlib.h
 -
 

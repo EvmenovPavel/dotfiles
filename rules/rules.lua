@@ -1,6 +1,5 @@
 local awful     = require("awful")
 local beautiful = require("beautiful")
-local fun       = require("functions")
 
 local rules     = {}
 
@@ -32,85 +31,14 @@ local function init(clientkeys, buttonkeys)
             --    return function(cr, w, h)
             --        gears.shape.rounded_rect(cr, w, h, 7)
             --    end
-            --end
+            --end,
+
             --gears.shape.rounded_rect,
-
             callback          = function(c, startup)
-                --log:debug("rules >> c:", c)
+                -- обновляет края окон
+                wmapi:update_client(c)
 
-                fun:update_client(c, "rules >> c:")
-
-                --c.border_width = beautiful.border_width
-                --
-                --if c.maximized then
-                --    c.shape = function(cr, w, h)
-                --        gears.shape.rounded_rect(cr, w, h, 0)
-                --    end
-                --else
-                --    c.shape = function(cr, w, h)
-                --        gears.shape.rounded_rect(cr, w, h, 7)
-                --    end
-                --end
-
-
-                --local client = c
-
-                --wmapi:client_info(client)
-
-
-                --c:deny("autofocus", "mouse_enter")
-                --awful.client.setslave(c)
-                --apply_delayed_rule(c)
-                --end
-
-                --callback          = function(c)
-                --    c.border_width = 0
-                --
-                --    --awful.client.movetoscreen(c, mouse.screen)
-                --
-                --    --local screen   = c.screen
-                --    --local workarea = screen.geometry
-                --    --local index    = screen.index
-                --
-                --    --local workarea = awful.screen.focused().workarea
-                --    --local y        = workarea.height + workarea.y - c:geometry().height - beautiful.useless_gap * 2 - beautiful.border_width * 2
-                --    --local x        = workarea.width + workarea.x - c:geometry().width - beautiful.useless_gap * 2 - beautiful.border_width * 2
-                --
-                --    --c.y = c.screen.geometry.y + c.screen.geometry.height* 0.04
-                --
-                --    local width    = c.width
-                --    --log:debug(width)
-                --    local height   = c.height
-                --    --log:debug(height)
-                --
-                --    if width < 1820 and height < 980 then
-                --    --if width < wmapi:getscreen_width() and height < wmapi:getscreen_height() - beautiful.wr_height then
-                --        c.floating = true
-                --
-                --        --awful.client.movetoscreen(c, client.focus.screen)
-                --
-                --        -- окно переносит, где находиться мышка (координаты)
-                --        c:geometry({
-                --                       --x = 30,
-                --                       --y = 30,
-                --                       --x = x,
-                --                       --y = y,
-                --                       --x = (index * workarea.width) / 2 - width / 2,
-                --                       --y = workarea.height / 2 - height / 2
-                --                   })
-                --
-                --        --local g    = c:geometry()
-                --        --g.x        = g.x - x
-                --        --g.y        = g.y - y
-                --        --c:geometry(g)
-                --
-                --        --elseif workarea.height < height or workarea.width < width then
-                --        --    c.maximized = true
-                --        --    log:debug("c.maximized = true")
-                --    else
-                --        c.floating  = false
-                --        --c.maximized = true
-                --    end
+                --wmapi:client_info(c)
             end
         }
     }

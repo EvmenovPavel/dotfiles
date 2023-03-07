@@ -24,15 +24,15 @@ function expressvpn:state_to_number(line)
 end
 
 function expressvpn:notify_power(notify, line)
-    local messagebox = wmapi:widget():messagebox()
-
-    if notify == 1 then
-        messagebox:information("ExpressVPN", line)
-    elseif notify == 2 then
-        messagebox:information("ExpressVPN", line)
-    elseif notify == 3 then
-        messagebox:information("ExpressVPN", "Error: " .. line)
-    end
+    --local messagebox = wmapi.widget:messagebox()
+    --
+    --if notify == 1 then
+    --    messagebox:information("ExpressVPN", line)
+    --elseif notify == 2 then
+    --    messagebox:information("ExpressVPN", line)
+    --elseif notify == 3 then
+    --    messagebox:information("ExpressVPN", "Error: " .. line)
+    --end
 end
 
 function expressvpn:init()

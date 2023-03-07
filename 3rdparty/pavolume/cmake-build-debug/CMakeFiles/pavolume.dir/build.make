@@ -53,10 +53,10 @@ RM = /opt/clion/bin/cmake/linux/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume
+CMAKE_SOURCE_DIR = /home/be3yh4uk/.config/awesome/3rdparty/pavolume
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug
+CMAKE_BINARY_DIR = /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/pavolume.dir/depend.make
@@ -66,60 +66,46 @@ include CMakeFiles/pavolume.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/pavolume.dir/flags.make
 
-CMakeFiles/pavolume.dir/main.c.o: CMakeFiles/pavolume.dir/flags.make
-CMakeFiles/pavolume.dir/main.c.o: ../main.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/pavolume.dir/main.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pavolume.dir/main.c.o -c /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/main.c
+CMakeFiles/pavolume.dir/src/main.c.o: CMakeFiles/pavolume.dir/flags.make
+CMakeFiles/pavolume.dir/src/main.c.o: ../src/main.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/pavolume.dir/src/main.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pavolume.dir/src/main.c.o -c /home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/main.c
 
-CMakeFiles/pavolume.dir/main.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pavolume.dir/main.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/main.c > CMakeFiles/pavolume.dir/main.c.i
+CMakeFiles/pavolume.dir/src/main.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pavolume.dir/src/main.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/main.c > CMakeFiles/pavolume.dir/src/main.c.i
 
-CMakeFiles/pavolume.dir/main.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pavolume.dir/main.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/main.c -o CMakeFiles/pavolume.dir/main.c.s
+CMakeFiles/pavolume.dir/src/main.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pavolume.dir/src/main.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/main.c -o CMakeFiles/pavolume.dir/src/main.c.s
 
-CMakeFiles/pavolume.dir/pavolume.c.o: CMakeFiles/pavolume.dir/flags.make
-CMakeFiles/pavolume.dir/pavolume.c.o: ../pavolume.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/pavolume.dir/pavolume.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pavolume.dir/pavolume.c.o -c /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/pavolume.c
+CMakeFiles/pavolume.dir/src/pavolume.c.o: CMakeFiles/pavolume.dir/flags.make
+CMakeFiles/pavolume.dir/src/pavolume.c.o: ../src/pavolume.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/pavolume.dir/src/pavolume.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pavolume.dir/src/pavolume.c.o -c /home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/pavolume.c
 
-CMakeFiles/pavolume.dir/pavolume.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pavolume.dir/pavolume.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/pavolume.c > CMakeFiles/pavolume.dir/pavolume.c.i
+CMakeFiles/pavolume.dir/src/pavolume.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pavolume.dir/src/pavolume.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/pavolume.c > CMakeFiles/pavolume.dir/src/pavolume.c.i
 
-CMakeFiles/pavolume.dir/pavolume.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pavolume.dir/pavolume.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/pavolume.c -o CMakeFiles/pavolume.dir/pavolume.c.s
-
-CMakeFiles/pavolume.dir/lua-pavolume.c.o: CMakeFiles/pavolume.dir/flags.make
-CMakeFiles/pavolume.dir/lua-pavolume.c.o: ../lua-pavolume.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/pavolume.dir/lua-pavolume.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pavolume.dir/lua-pavolume.c.o -c /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/lua-pavolume.c
-
-CMakeFiles/pavolume.dir/lua-pavolume.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pavolume.dir/lua-pavolume.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/lua-pavolume.c > CMakeFiles/pavolume.dir/lua-pavolume.c.i
-
-CMakeFiles/pavolume.dir/lua-pavolume.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pavolume.dir/lua-pavolume.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/lua-pavolume.c -o CMakeFiles/pavolume.dir/lua-pavolume.c.s
+CMakeFiles/pavolume.dir/src/pavolume.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pavolume.dir/src/pavolume.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/be3yh4uk/.config/awesome/3rdparty/pavolume/src/pavolume.c -o CMakeFiles/pavolume.dir/src/pavolume.c.s
 
 # Object files for target pavolume
 pavolume_OBJECTS = \
-"CMakeFiles/pavolume.dir/main.c.o" \
-"CMakeFiles/pavolume.dir/pavolume.c.o" \
-"CMakeFiles/pavolume.dir/lua-pavolume.c.o"
+"CMakeFiles/pavolume.dir/src/main.c.o" \
+"CMakeFiles/pavolume.dir/src/pavolume.c.o"
 
 # External object files for target pavolume
 pavolume_EXTERNAL_OBJECTS =
 
-pavolume: CMakeFiles/pavolume.dir/main.c.o
-pavolume: CMakeFiles/pavolume.dir/pavolume.c.o
-pavolume: CMakeFiles/pavolume.dir/lua-pavolume.c.o
+pavolume: CMakeFiles/pavolume.dir/src/main.c.o
+pavolume: CMakeFiles/pavolume.dir/src/pavolume.c.o
 pavolume: CMakeFiles/pavolume.dir/build.make
+pavolume: liblibpavolume.a
 pavolume: CMakeFiles/pavolume.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable pavolume"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable pavolume"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/pavolume.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -131,6 +117,6 @@ CMakeFiles/pavolume.dir/clean:
 .PHONY : CMakeFiles/pavolume.dir/clean
 
 CMakeFiles/pavolume.dir/depend:
-	cd /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles/pavolume.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/be3yh4uk/.config/awesome/3rdparty/pavolume /home/be3yh4uk/.config/awesome/3rdparty/pavolume /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles/pavolume.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/pavolume.dir/depend
 

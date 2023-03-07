@@ -5,7 +5,6 @@ local programms = require("programms")
 
 local hotkeys   = require("keys.hotkeys")
 local switcher  = require("widgets.switcher")
-local fun       = require("functions")
 
 --local keyboardlayout = require("keyboardlayout")
 
@@ -13,17 +12,17 @@ local global    = gears.table.join(
 --[[ AWESOME ]]--
         awful.key({ event.key.mod, event.key.shift }, event.key.r,
                   function()
-                      fun:on_restart()
+                      wmapi:on_restart()
                   end, hotkeys.awesome.restart),
 
         awful.key({ event.key.mod, event.key.shift }, event.key.q,
                   function()
-                      fun:on_quit()
+                      wmapi:on_quit()
                   end, hotkeys.awesome.quit),
 
         awful.key({ event.key.mod }, event.key.s,
                   function()
-                      fun:on_show_help()
+                      wmapi:on_show_help()
                   end, hotkeys.awesome.help),
 
         awful.key({ event.key.win, event.key.shift }, event.key.v,
@@ -99,12 +98,12 @@ local global    = gears.table.join(
 --[[ COMMAND ]]--
         awful.key({ event.key.ctrl, event.key.altL }, event.key.delete,
                   function()
-                      fun:on_run(programms.htop)
+                      wmapi:on_run(programms.htop)
                   end, hotkeys.command.htop),
 
         awful.key({ }, event.key.print,
                   function()
-                      fun:on_run(programms.screenshot)
+                      wmapi:on_run(programms.screenshot)
                   end, hotkeys.command.printscreen),
 
 
@@ -136,30 +135,35 @@ local global    = gears.table.join(
                       --end
                   end, hotkeys.client.previous),
 
+        --awful.key({ event.key.win }, event.key.a,
+        --          function()
+        --              local c = client.focus
+        --              if c then
+        --                  c.opacity = c.opacity + 0.1
+        --              end
+        --          end,
+        --          { description = "decrease window opacity(transparency)" }),
 
 --[[ Programms ]]--
         awful.key({ event.key.mod }, event.key.e,
                   function()
-                      fun:on_run(programms.manager)
+                      wmapi:on_run(programms.manager)
                   end, hotkeys.programm.manager),
 
         awful.key({ event.key.mod }, event.key.r,
                   function()
-                      --if ("ru" == keyboardlayout:name()) then
-
-                      --end
-
-                      fun:on_run(programms.rofi)
+                      wmapi:on_run(programms.rofi)
+                      wmapi:on_run("xkb-switch -s us")
                   end, hotkeys.programm.run),
 
         awful.key({ event.key.ctrl, event.key.altL }, event.key.t,
                   function()
-                      fun:on_run(programms.terminal)
+                      wmapi:on_run(programms.terminal)
                   end, hotkeys.programm.terminal),
 
         awful.key({ event.key.mod }, event.key.l,
                   function()
-                      fun:on_run(programms.lockscreen)
+                      wmapi:on_run(programms.lockscreen)
                   end, hotkeys.programm.lockscreen),
 
 
@@ -177,7 +181,7 @@ local global    = gears.table.join(
 -- Test key
         awful.key({ event.key.win, event.key.shift }, event.key.p,
                   function()
-                      fun:on_run(programms.terminal .. " xev | grep 'keycode'")
+                      wmapi:on_run(programms.terminal .. " xev | grep 'keycode'")
                   end)
 --,
 
@@ -185,12 +189,12 @@ local global    = gears.table.join(
 -- Test key
 --        awful.key({ }, key.test.XF86Search,
 --                  function()
---                      fun:on_run(programms.htop)
+--                      wmapi:on_run(programms.htop)
 --                  end, hotkeys.command.htop),
 --
 --        awful.key({ }, key.test.XF86Favorites,
 --                  function()
---                      fun:on_run(programms.htop)
+--                      wmapi:on_run(programms.htop)
 --                  end, hotkeys.command.htop)
 
 )

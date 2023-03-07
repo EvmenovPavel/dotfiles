@@ -1,117 +1,94 @@
-local wibox    = require("wibox")
-
---local glib     = require("lgi").GLib
---local timer    = require("gears.timer")
---local DateTime = glib.DateTime
---local TimeZone = glib.TimeZone
+local wibox = require("wibox")
 
 local imagebox = {}
 
---- This lowers the timeout so that it occurs "correctly". For example, a timeout
--- of 60 is rounded so that it occurs the next time the clock reads ":00 seconds".
---local function calc_timeout(real_timeout)
---    return real_timeout - os.time() % real_timeout
---end
---
---function private.imagebox_update_cb()
---    --ret.widget:set_image(private.image)
---
---    ret._timer.timeout = calc_timeout(private.refresh)
---    ret._timer:again()
---
---    return true -- Continue the timer
---
---
---    --private.update()
---    --ret.widget:reset()
---
---    --ret.widget:set_image(private.image)
---
---    --ret.widget:set_resize(private.resize)
---
---    --log:debug("local function update")
---end
---
---ret._timer = timer.weak_start_new(private.timeout, private.imagebox_update_cb)
---ret._timer:emit_signal("timeout")
+function imagebox:init()
+    local ret = wmapi.widget:base("imagebox")
 
---private.timeout       = argc.timeout or 1
---private.refresh       = argc.refresh or 1
---private.timezone      = TimeZone.new()
---private.format        = argc.format or " %a %b %d, %H:%M "
+    local __private = {}
 
+    __private.image = ""
+    __private.resize = true
+    __private.forced_width = nil
+    __private.forced_height = nil
+    __private.clip_shape = nil
 
-function imagebox:init(image, resize, forced_width, forced_height, clip_shape)
-    local ret             = wmapi:widget():base("imagebox")
+    local widget = wibox.widget({
+        image = __private.image,
+        resize = __private.resize,
+        forced_width = __private.forced_width,
+        forced_height = __private.forced_height,
+        widget = wibox.widget.imagebox(),
+    })
+    ret:set_widget(widget)
 
-    local private         = {}
+    local function update_widget()
+        widget:set_image(__private.image)
+        widget:set_resize(__private.resize)
 
-    private.image         = image or nil
-    private.resize        = resize or true
-    private.forced_width  = forced_width or nil
-    private.forced_height = forced_height or nil
-    private.clip_shape    = clip_shape or nil
-
-    local widget          = wibox.widget({
-                                             image         = private.image,
-
-                                             resize        = private.resize,
-                                             forced_width  = private.forced_width,
-                                             forced_height = private.forced_height,
-
-                                             widget        = wibox.widget.imagebox(),
-                                         })
-
-    --ret.widget:emit_signal("widget::layout_changed")
-    --ret.widget:emit_signal("widget::reset")
-
-    local function imagebox_update()
-        widget:set_image(private.image)
-        widget:set_resize(private.resize)
-
-        --ret.widget.forced_width  = private.forced_width
-        --ret.widget.forced_height = private.forced_width
+        widget.forced_width = __private.forced_width
+        widget.forced_height = __private.forced_width
     end
 
-    function ret:set_image(image)
-        private.image = image or nil
-        imagebox_update()
+    function ret:image(image)
+        if type(image) == LuaTypes.string then
+            if not wmapi:is_file(image) then
+                __private.image = image or nil
+                update_widget()
+            end
+        end
+
+        return __private.image
     end
 
-    function ret:set_width(width)
-        private.forced_width = width or 0
-        imagebox_update()
+    function ret:width(width)
+        if type(width) == LuaTypes.number then
+            __private.forced_width = width
+            update_widget()
+        end
+
+        return __private.forced_width
     end
 
-    function ret:set_height(height)
-        private.forced_height = height or 0
-        imagebox_update()
+    function ret:height(height)
+        if type(height) == LuaTypes.number then
+            __private.forced_height = height
+            update_widget()
+        end
+
+        return __private.forced_height
     end
 
-    function ret:set_resize(resize)
-        private.resize = resize or true
-        imagebox_update()
+    function ret:resize(resize)
+        if type(resize) == LuaTypes.boolean then
+            __private.resize = resize
+            update_widget()
+        end
+
+        return __private.resize
     end
 
-    --function ret:set_clip_shape(clip_shape, ...)
-    --    private.clip_shape = clip_shape or true
-    --    ret._private:imagebox_update()
-    --end
+    function ret:clip_shape(clip_shape, ...)
+        __private.clip_shape = clip_shape or true
+        update_widget()
+    end
 
-    --function imagebox:draw(cr, width, height)
-    --
-    --end
+    function imagebox:draw(cr, width, height)
 
-    --function imagebox:fit(width, height)
-    --
-    --end
+    end
+
+    function imagebox:fit(width, height)
+
+    end
 
     function ret:get()
-        imagebox_update()
+        update_widget()
         return widget
     end
 
     return ret
 end
 
-return imagebox
+return setmetatable(imagebox, { __call = function()
+    return imagebox
+end })

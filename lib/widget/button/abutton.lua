@@ -1,141 +1,115 @@
-local awful     = require("awful")
-local wibox     = require("wibox")
-local gears     = require("gears")
-local beautiful = require("beautiful")
+local wibox = require("wibox")
+local gears = require("gears")
 
-local button    = {}
-
-local function connect_signal(widget, bg_enter, bg_leave, bg_press, bg_release)
-    local bg_enter   = bg_enter or beautiful.mouse_enter or "#ffffff11"
-    local bg_leave   = bg_leave or beautiful.mouse_leave or "#ffffff00"
-    local bg_press   = bg_press or beautiful.button_press or "#ffffff22"
-    local bg_release = bg_release or beautiful.button_release or "#ffffff11"
-
-    widget:connect_signal(
-            event.signals.mouse.enter,
-            function(self)
-                self.bg = bg_enter
-
-                local w = _G.mouse.current_wibox
-                if w then
-                    self.old_cursor, self.old_wibox = w.cursor, w
-                    w.cursor                        = "hand1"
-                end
-            end
-    )
-
-    widget:connect_signal(
-            event.signals.mouse.leave,
-            function(self)
-                self.bg = bg_leave
-                if self.old_wibox then
-                    self.old_wibox.cursor = self.old_cursor
-                    self.old_wibox        = nil
-                end
-            end
-    )
-
-    widget:connect_signal(
-            event.signals.button.press,
-            function(self)
-                self.bg = bg_press
-            end
-    )
-
-    widget:connect_signal(
-            event.signals.button.release,
-            function(self)
-                self.bg = bg_release
-            end
-    )
-end
-
-local function button_join(widget)
-    --widget:buttons(
-    --        gears.table.join(
-    --                awful.button(ret._private.key,
-    --                             ret._private.event,
-    --                             nil,
-    --                             ret._private.func)
-    --        )
-    --)
-end
+local button = { mt = {} }
 
 function button:init()
-    local public  = wmapi:widget():base("button")
+    local ret = wmapi.widget:base("button")
 
-    local private = {}
+    local __private = {}
 
-    private.text  = "Button"
-    private.src   = ""
-    private.key   = {}
-    private.event = event.mouse.button_click_left
-    private.func  = function()
+    __private.func = function()
         log:debug("button:create")
     end
 
-    local textbox = wmapi:widget():textbox(text)
-    local widget  = wibox.container.background()
-    widget:set_widget(textbox:get())
-
-    widget:connect_signal("mouse::enter",
-                          function(_1, _2, _3, b)
-                              log:debug("mouse::enter > _1", _1, "_2", _2, "_3", _3, "b", b)
-                          end)
-
-    widget:connect_signal("mouse::leave",
-                          function(_1, _2, _3, b)
-                              log:debug("mouse::leave > _1", _1, "_2", _2, "_3", _3, "b", b)
-                          end)
-
-    widget:connect_signal(event.signals.button.release,
-                          function(_, _, _, b)
-                              if b == private.event then
-                                  private.func()
-                              end
-                          end
-    )
-
-    widget:connect_signal(
-            event.signals.button.press,
-            function(_, _, _, button)
-                if button == private.event then
-
-                end
-            end
-    )
-
-    --widget:connect_signal("focus", update)
-    --widget:connect_signal("unfocus", update)
-
-    function public:set_text(text)
-        private.text = text
-        textbox:text(private.text)
+    local w_textbox = wmapi.widget:textbox()
+    w_textbox:text("button")
+    function ret:textbox()
+        return w_textbox
     end
 
-    function public:set_function(func)
-        if type(func) == LuaTypes.fun then
-            private.func = func
+    local w_imagebox = wmapi.widget:imagebox()
+    function ret:imagebox()
+        return w_imagebox
+    end
+
+    local w_mImagebox = wibox.widget({
+        w_imagebox:get(),
+        margins = 5,
+        widget = wibox.container.margin,
+    })
+
+    local w_mTextbox = wibox.widget({
+        w_textbox:get(),
+        right = 5,
+        widget = wibox.container.margin,
+    })
+
+    local w_text_image_box = wibox.widget({
+        w_mImagebox,
+        w_mTextbox,
+        layout = wibox.layout.fixed.horizontal,
+    })
+
+    local w_bg = wibox.widget({
+        w_text_image_box,
+
+        shape = function(cr, w, h)
+            gears.shape.rounded_rect(cr, w, h, 5)
+        end,
+
+        bg = color.border,
+        shape_border_color = color.border_hover,
+        widget = wibox.container.background,
+    })
+
+    local widget = wibox.widget({
+        w_bg,
+        layout = wibox.layout.fixed.horizontal,
+    })
+    ret:set_widget(widget, function()
+        if wmapi:is_empty(w_imagebox:image()) then
+            w_mImagebox.left = 0
         else
-            private.func = function()
-                func()
-            end
+            w_mImagebox.margins = 5
+        end
+    end)
+
+    ret:button():release(function(_, _, _, button)
+        if button == event.mouse.button_click_left then
+            __private.func()
+            w_bg.bg = color.border_hover
+
+            wmapi:weak_watch(function()
+                w_bg.bg = color.border
+            end, 0.1)
+        end
+    end)
+
+    ret:mouse():enter(function(self)
+        w_bg.shape_border_width = 1
+
+        local w = _G.mouse.current_wibox
+        if w then
+            self.old_cursor, self.old_wibox = w.cursor, w
+            w.cursor = "hand1"
+        end
+    end)
+
+    ret:mouse():leave(function(self)
+        w_bg.shape_border_width = 0
+        w_bg.bg = color.border
+
+        if self.old_wibox then
+            self.old_wibox.cursor = self.old_cursor
+            self.old_wibox = nil
+        end
+    end)
+
+    function ret:clicked(func)
+        if type(func) == LuaTypes.func then
+            __private.func = func
         end
     end
 
-    function public:set_key(event)
-        private.event = event
-    end
-
-    function public:get()
-        connect_signal(widget)
-        button_join(public)
-
-        widget.type = "button"
+    function ret:get()
+        ret:update_widget()
         return widget
     end
 
-    return public
+    return ret
 end
 
-return button
+return setmetatable(button, { __call = function()
+    return button
+end })

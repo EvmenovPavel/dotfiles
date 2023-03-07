@@ -1,22 +1,143 @@
---local xrandr = require("modules.foggy.xrandr")
---local awful  = require("awful")
+--- Separating Multiple Monitor functions as a separeted module (taken from awesome wiki)
 
-local test = {}
+local gtable    = require("gears.table")
+local spawn     = require("awful.spawn")
+local naughty   = require("naughty")
 
-local function init()
-    local b = wmapi:widget():button()
-    b:set_text("Monitors")
+-- A path to a fancy icon
+local icon_path = ""
 
-    b:set_func(function()
-        local s = wmapi:easy_async_with_shell("zenity --file-selection")
-        log:message(tostring(s))
+-- Get active outputs
+local function outputs()
+    local outputs = {}
+    local xrandr  = io.popen("xrandr -q --current")
 
-        b:set_text(s)
-    end)
+    if xrandr then
+        for line in xrandr:lines() do
+            local output = line:match("^([%w-]+) connected ")
+            if output then
+                outputs[#outputs + 1] = output
+            end
+        end
+        xrandr:close()
+    end
 
-    return b:get()
+    return outputs
 end
 
-return setmetatable(test, { __call = function(_, ...)
-    return init(...)
-end })
+local function arrange(out)
+    -- We need to enumerate all permutations of horizontal outputs.
+
+    local choices  = {}
+    local previous = { {} }
+    for i = 1, #out do
+        -- Find all permutation of length `i`: we take the permutation
+        -- of length `i-1` and for each of them, we create new
+        -- permutations by adding each output at the end of it if it is
+        -- not already present.
+        local new = {}
+        for _, p in pairs(previous) do
+            for _, o in pairs(out) do
+                if not gtable.hasitem(p, o) then
+                    new[#new + 1] = gtable.join(p, { o })
+                end
+            end
+        end
+        choices  = gtable.join(choices, new)
+        previous = new
+    end
+
+    return choices
+end
+
+-- Build available choices
+local function menu()
+    local menu    = {}
+    local out     = outputs()
+    local choices = arrange(out)
+
+    for _, choice in pairs(choices) do
+        local cmd = "xrandr"
+        -- Enabled outputs
+        for i, o in pairs(choice) do
+            cmd = cmd .. " --output " .. o .. " --auto"
+            if i > 1 then
+                cmd = cmd .. " --right-of " .. choice[i - 1]
+            end
+        end
+
+        -- Disabled outputs
+        for _, o in pairs(out) do
+            if not gtable.hasitem(choice, o) then
+                cmd = cmd .. " --output " .. o .. " --off"
+            end
+        end
+
+        local label = ""
+        if #choice == 1 then
+            label = 'Only <span weight="bold">' .. choice[1] .. '</span>'
+        else
+            for i, o in pairs(choice) do
+                if i > 1 then
+                    label = label .. " + "
+                end
+                label = label .. '<span weight="bold">' .. o .. '</span>'
+            end
+        end
+
+        menu[#menu + 1] = { label, cmd }
+    end
+
+    return menu
+end
+
+-- Display xrandr notifications from choices
+local state = { cid = nil }
+
+local function naughty_destroy_callback(reason)
+    --if reason == naughty.notificationClosedReason.expired or
+    --        reason == naughty.notificationClosedReason.dismissedByUser then
+    --    local action = state.index and state.menu[state.index - 1][2]
+    --    if action then
+    --        spawn(action, false)
+    --        state.index = nil
+    --    end
+    --end
+end
+
+local function xrandr()
+    -- Build the list of choices
+    if not state.index then
+        state.menu  = menu()
+        state.index = 1
+    end
+
+    -- Select one and display the appropriate notification
+    local label, action
+    local next  = state.menu[state.index]
+    state.index = state.index + 1
+
+    if not next then
+        label       = "Keep the current configuration"
+        state.index = nil
+    else
+        label, action = next[1], next[2]
+    end
+    --state.cid = naughty.notify({ text        = label,
+    --                             icon        = icon_path,
+    --                             timeout     = 4,
+    --                             screen      = mouse.screen,
+    --                             replaces_id = state.cid,
+    --                             destroy     = naughty_destroy_callback }).id
+end
+
+return {
+    outputs = outputs,
+    arrange = arrange,
+    menu    = menu,
+    xrandr  = xrandr
+}
+
+--return setmetatable(test, { __call = function(_, ...)
+--    return init(...)
+--end })

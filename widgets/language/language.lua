@@ -55,7 +55,7 @@ language.altTabIndex               = 1
 
 --switcher.source                    = string.sub(debug.getinfo(1, "S").source, 2)
 --switcher.path                      = string.sub(switcher.source, 1, string.find(switcher.source, "/[^/]*$"))
-language.path                      = wmapi:path(debug.getinfo(1))
+language.path                      = wmapi:debuginfo().path
 language.noicon                    = language.path .. "error.png"
 
 -- simple function for counting the size of a table

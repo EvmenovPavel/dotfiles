@@ -1,4 +1,4 @@
-# Install script for directory: /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume
+# Install script for directory: /home/be3yh4uk/.config/awesome/3rdparty/pavolume
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

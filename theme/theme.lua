@@ -49,6 +49,7 @@ function theme:init(config)
 
     config.border_width                 = 4
     config.border_normal                = config.bg_normal
+    --config.border_normal                = '#ffffff' .. '66'
     config.border_focus                 = "#ff8a65"
     config.border_marked                = config.fg_urgent
 
@@ -69,6 +70,8 @@ function theme:init(config)
 
     config.shape_border_width_enter     = 1
     config.shape_border_width_leave     = 1
+
+    config.icon_theme                   = "hicolor"
 
     local btnCloseColor                 = gears.surface.load_from_shape(20, 20, gears.shape.circle, "#D12D2D")
     config.titlebar_close_button_normal = btnCloseColor

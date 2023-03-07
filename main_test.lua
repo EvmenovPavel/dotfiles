@@ -103,16 +103,78 @@
 --
 --promptbox:run()
 
-local test = nil
+--local test = nil
+--
+--local i = 0
+--
+--while (not test) do
+--    i = i + 1
+--
+--    if (i == 100) then
+--        test = "test"
+--    end
+--end
+--
+--print("test")
 
-local i = 0
+--local math = require("math")
+--
+--function math.sign(x)
+--    return x > 0 and 1 or x < 0 and -1 or 0
+--end
+--
+--local function draw(x, y)
+--    --while x < 0
+--    for i = 1, x do
+--        for j = 1, y do
+--            print("*")
+--        end
+--
+--        print(" ")
+--    end
+--end
+--
+--local squircle = function(w, h, rate, delta)
+--    rate      = rate or 2
+--    delta     = delta or 0.05
+--    local a   = w / 2
+--    local b   = h / 2
+--    local phi = 0
+--
+--    -- draw with polar cord
+--    while phi < 2 * math.pi do
+--        local cosphi = math.cos(phi)
+--        local sinphi = math.sin(phi)
+--        local x      = a * math.pow(math.abs(cosphi), 1 / rate) * math.sign(cosphi)
+--        local y      = b * math.pow(math.abs(sinphi), 1 / rate) * math.sign(sinphi)
+--
+--        print(x, -y)
+--        draw(x, y)
+--
+--        phi = phi + delta
+--    end
+--end
+--
+--squircle(10, 10)
 
-while (not test) do
-    i = i + 1
+--local args    = {}
+--
+--local default = {
+--    -- See "table 1" of the spec about the default name
+--    id           = 1,
+--    name         = args.name or "default",
+--    selected     = args.selected == true,
+--    position     = args.position,
+--    icon         = args.icon,
+--    notification = args.notification,
+--    icon_only    = args.icon_only or false,
+--    action       = args.action or function()
+--        print("id", id, "name", args.name)
+--    end
+--}
+--
+--default.action()
 
-    if (i == 100) then
-        test = "test"
-    end
-end
-
-print("test")
+local a = true
+a = not a
+print(a)

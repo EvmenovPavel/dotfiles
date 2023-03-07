@@ -17,20 +17,27 @@ set(CMAKE_C_STANDARD 99)
 #ADD_DEFINITIONS(-DXKBSWITCH_VERSION="${XKBSWITCH_VERSION}")
 
 set(pavolume_src
-    pavolume.c
-    options.h
-    usage.h
-    lua-pavolume.c
+    src/pavolume.c
+    src/pavolume.h
+    src/options.h
+    src/config.h
+    src/usage.h
     )
 
 set(lua_pavolume_src
+    lua-pavolume.c
     luainc.c
     luainc.h
     )
 
+add_library(libpavolume
+            ${pavolume_src}
+            )
+target_link_libraries(libpavolume -lm -lpulse)
+
 add_executable(pavolume
-               main.c
+               src/main.c
                ${pavolume_src}
                )
-
-target_link_libraries(pavolume -lm -lpulse)
+target_link_libraries(pavolume PRIVATE
+                      libpavolume)

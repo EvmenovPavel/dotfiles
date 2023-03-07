@@ -1,10 +1,19 @@
-local awful   = require("awful")
-local wibox   = require("wibox")
-local dpi     = require("beautiful").xresources.apply_dpi
+local awful               = require("awful")
+local wibox               = require("wibox")
+local dpi                 = require("beautiful").xresources.apply_dpi
 
-local taglist = {}
+local beautiful           = require("beautiful")
+local gears               = require("gears")
+local rubato              = require("3rdparty.rubato")
 
-function create_callback(self, c3, index, objects)
+local transition_duration = 0.3
+local icon_size           = 28
+local dot_size            = 1.5
+local number_of_tags      = 10
+
+local taglist             = {}
+
+function create_callback1(self, c3, index, objects)
     local old_cursor, old_wibox
 
     --mouse::enter
@@ -55,7 +64,7 @@ function create_callback(self, c3, index, objects)
     --)
 end
 
-local function update_callback(w, buttons, label, data, objects)
+local function update_callback1(w, buttons, label, data, objects)
     w:reset()
     for i, o in ipairs(objects) do
         local cache = data[o]
@@ -126,30 +135,106 @@ local function buttons()
     )
 end
 
-function widget_template()
+local function widget_template()
     return {
         {
             {
-                id     = 'icon_role',
+                id     = "icon_role",
                 widget = wibox.widget.imagebox,
             },
             {
-                id     = 'text_role',
+                id     = "text_role",
                 widget = wibox.widget.textbox,
             },
             layout = wibox.layout.fixed.horizontal,
         },
-        id              = 'background_role',
+        id              = "background_role",
         widget          = wibox.container.background,
 
-        create_callback = create_callback
+        create_callback = create_callback1
     }
 end
 
+local function create_resize_transition()
+    return rubato.timed {
+        pos      = dpi(icon_size),
+        intro    = 0,
+        duration = transition_duration,
+        easing   = rubato.linear
+    }
+end
+
+local taglist_item_transitions = {}
+for i = 1, number_of_tags do
+    taglist_item_transitions[i] = create_resize_transition()
+end
+
+local floating_indicator_transition = rubato.timed {
+    pos      = 0,
+    intro    = 0,
+    duration = transition_duration,
+    easing   = rubato.linear
+}
+
+local indicator_widget              = wibox.widget {
+    {
+        forced_height = dpi(icon_size),
+        -- если переключаешься быстро
+        -- делает сдвиги
+        forced_width  = dpi(icon_size * dot_size),
+        shape         = gears.shape.rounded_bar,
+        bg            = beautiful.taglist_bg_focus,
+        widget        = wibox.container.background,
+    },
+    left   = 0,
+    widget = wibox.container.margin
+}
+
+-- Helper function that updates a taglist item
+--local update_taglist                = function(item, tag, index)
+local function update_taglist(item, tag, index)
+    if tag.selected then
+        taglist_item_transitions[index].target = dpi(icon_size)
+    else
+        taglist_item_transitions[index].target = dpi(icon_size * dot_size)
+        floating_indicator_transition.target   = (beautiful.taglist_spacing + icon_size) * (index - 1)
+    end
+end
+
 function taglist:init(s)
-    return awful.widget.taglist {
+    local create_taglist = function(item, tag, index)
+        -- bling: Only show widget when there are clients in the tag
+        item:connect_signal("mouse::enter", function()
+            if #tag:clients() > 0 then
+                awesome.emit_signal("bling::tag_preview::update", tag)
+                awesome.emit_signal("bling::tag_preview::visibility", s, true)
+            end
+        end)
+
+        item:connect_signal("mouse::leave", function()
+            -- bling: Turn the widget off
+            awesome.emit_signal("bling::tag_preview::visibility", s, false)
+
+            if item.has_backup then
+                item.bg = item.backup
+            end
+        end)
+
+        taglist_item_transitions[index]:subscribe(function(value)
+            item.forced_width = value
+        end)
+        floating_indicator_transition:subscribe(function(value)
+            indicator_widget.left = value
+        end)
+
+        update_taglist(item, tag, index)
+    end
+
+    local tl             = awful.widget.taglist {
         screen          = s,
         filter          = awful.widget.taglist.filter.all,
+        buttons         = buttons(),
+        layout          = wibox.layout.fixed.horizontal,
         style           = {
             --taglist_count          = 10,
             --taglist_spacing        = 10,
@@ -167,12 +252,62 @@ function taglist:init(s)
             --update_function = list_update,
             --shape = gears.shape.powerline
         },
-
-        widget_template = widget_template(),
-        buttons         = buttons(),
-        update_callback = update_callback,
+        widget_template = {
+            {
+                {
+                    id     = "icon_role",
+                    widget = wibox.widget.imagebox,
+                },
+                {
+                    id     = "text_role",
+                    widget = wibox.widget.textbox,
+                },
+                layout = wibox.layout.fixed.horizontal,
+            },
+            id              = "background_role",
+            --forced_width    = icon_size,
+            widget          = wibox.container.background,
+            create_callback = create_taglist,
+            update_callback = update_taglist,
+        }
     }
+
+    return tl
+
+    --return wibox.widget {
+    --    {
+    --        tl,
+    --        {
+    --            indicator_widget,
+    --            widget = wibox.layout.fixed.horizontal,
+    --        },
+    --        layout = wibox.layout.stack
+    --    },
+    --    top    = dpi(12),
+    --    bottom = dpi(12),
+    --    widget = wibox.container.margin
+    --}
 end
+
+-- Tag preview
+--bling.widget.tag_preview.enable {
+--    show_client_content = true,
+--    placement_fn        = function(c)
+--        awful.placement.top_left(c, {
+--            margins = {
+--                top  = beautiful.top_bar_height + DPI(10),
+--                left = DPI(10)
+--            }
+--        })
+--    end,
+--    scale               = 0.16,
+--    honor_padding       = true,
+--    honor_workarea      = true,
+--    background_widget   = wibox.widget {
+--        widget = wibox.container.background,
+--        bg     = beautiful.wallpaper
+--    }
+--}
 
 return setmetatable(taglist, { __call = function(_, ...)
     return taglist:init(...)

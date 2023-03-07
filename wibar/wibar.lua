@@ -3,6 +3,8 @@ local awful     = require("awful")
 local wibox     = require("wibox")
 local widgets   = require("widgets")
 
+local foggy     = require('foggy')
+
 local mywibar   = {}
 
 function mywibar:w_left(s)
@@ -19,77 +21,27 @@ function mywibar:w_middle(s)
     }
 end
 
---function screen_if_test(s)
---    local w    = widget.button()
---
---    local s_id = wmapi:screen_id(s)
---
---    w:set_text("Screen: " .. tostring(s_id))
---    w:set_key(event.mouse.button_click_left)
---
---    return w:get()
---end
-
--- {{{ Menu
--- Create a launcher widget and a main menu
---local myawesomemenu = {
---    { "manual", "terminal" .. " -e man awesome" },
---    { "edit config", "editor_cmd" .. " " .. awesome.conffile },
---    { "restart", awesome.restart },
---    { "quit", function()
---        awesome.quit()
---    end },
---}
---
---local menu_awesome  = { "awesome", myawesomemenu, resources.widgets.volume.on }
---local menu_terminal = { "open terminal", "terminal" }
---
---local mymainmenu    = awful.menu({
---                                     items = {
---                                         menu_awesome,
---                                         { "Debian", "debian.menu.Debian_menu.Debian" },
---                                         menu_terminal,
---                                     }
---                                 })
---
-----root.buttons(gears.table.join(
-----        awful.button({ }, event.mouse.button_click_right, function()
-----            mymainmenu:toggle()
-----        end)
-----))
---
---local mylauncher    = awful.widget.launcher({ image = resources.widgets.volume.on,
---                                              menu  = mymainmenu })
-
 function mywibar:w_right(s)
-    widgets.expressvpn()
-
     if wmapi:is_screen_primary(s) then
+        local scrnicon = wibox.widget.background(wibox.widget.imagebox(resources.awesome), '#313131')
+        scrnicon:buttons(awful.util.table.join(
+                awful.button({ }, event.mouse.button_click_left, function(c)
+                    foggy.menu()
+                end)
+        ))
+
         return {
-            --mylauncher,
+            widgets.reboot(),
 
             widgets.systray(s),
             --widgets.keyboard(),
-            wibox.widget.systray(),
-
-            widgets.keyboard(),
 
             widgets.volume(),
             widgets.brightness(),
-            --widgets.pacmd(),
-            --widgets.cpu(),
-            widgets.battery(),
-            --widgets.memory(),
-            --widgets.clock(),
+            --widgets.battery(),
             widgets.calendar(),
 
-            widgets.reboot(),
-            --widgets.loggingui(),
-            --widgets.xrandr(),
-
-            --widget:checkbox():get(),
-
-            --screen_if_test(s),
+            --scrnicon,
 
             layout = wibox.layout.fixed.horizontal
         }
@@ -103,6 +55,8 @@ end
 
 local function init(s)
     local wibar = awful.wibar({
+                                  --bg           = beautiful.bg_normal .. "55",
+
                                   ontop        = false,
                                   stretch      = true,
                                   position     = beautiful.wr_position,

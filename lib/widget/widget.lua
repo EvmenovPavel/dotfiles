@@ -1,42 +1,38 @@
 local widget = {}
 
----@param name_type string
-function widget:base(name_type)
-    return require("lib.widget.base.abase"):init(name_type)
+---@param name string
+function widget:base(name)
+    return require("lib.widget.base.abase"):init(name)
 end
 
-function widget:button(text, src, key, event, func)
-    return require("lib.widget.button.abutton"):init(text, src, key, event, func)
+---@overload fun():widget
+function widget:button()
+    return require("lib.widget.button.abutton"):init()
 end
 
-function widget:textbox(text)
-    return require("lib.widget.textbox.atextbox"):init(text)
+---@overload fun():widget
+function widget:textbox()
+    return require("lib.widget.textbox.atextbox"):init()
 end
 
-function widget:checkbox(text, src, key, event, func)
-    return require("lib.widget.checkbox.acheckbox"):init(text, src, key, event, func)
+---@overload fun():widget
+function widget:checkbox()
+    return require("lib.widget.checkbox.acheckbox"):init()
 end
 
-function widget:combobox(argc)
-    return require("lib.widget.combobox.acombobox"):init(argc)
+---@overload fun():widget
+function widget:combobox()
+    return require("lib.widget.combobox.acombobox"):init()
 end
 
+---@overload fun():widget
 function widget:graph(argc)
     return require("lib.widget.graph.agraph"):init(argc)
 end
 
----@overload fun(image:string):widget
----@overload fun(image:string,resize:number):widget
----@overload fun(image:string,resize:number,forced_width:number):widget
----@overload fun(image:string,resize:number,forced_width:number,forced_height:number):widget
----@overload fun(image:string,resize:number,forced_width:number,forced_height:number,clip_shape:fun()):widget
----@param image string
----@param resize number
----@param forced_width number
----@param forced_height number
----@param clip_shape fun()
-function widget:imagebox(image, resize, forced_width, forced_height, clip_shape)
-    return require("lib.widget.imagebox.aimagebox"):init(image, resize, forced_width, forced_height, clip_shape)
+---@overload fun():widget
+function widget:imagebox()
+    return require("lib.widget.imagebox.aimagebox"):init()
 end
 
 function widget:launcher(argc)
@@ -92,15 +88,19 @@ function widget:horizontallayout(argc)
 end
 
 function widget:messagebox()
-    return require("lib.widget.messagebox.messagebox"):init()
+    return require("lib.widget.messagebox.messagebox")
 end
 
 function widget:calendar()
-    return require("lib.widget.calendar.calendar")--:init()
+    return require("lib.widget.calendar.calendar")
 end
 
-function widget:prompt(args)
-    return require("lib.widget.prompt.promptbox").new(args)--:init()
+function widget:prompt()
+    return require("lib.widget.prompt.promptbox"):init()
+end
+
+function widget:window()
+    return require("lib.widget.window.awindow"):init()
 end
 
 return widget

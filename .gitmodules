@@ -8,5 +8,17 @@
     branch = master
 
 [submodule "3rdparty/i3lock-color"]
-	path = modules/foggy
+	path = 3rdparty/i3lock-color
 	url = git@github.com:Raymo111/i3lock-color.git
+
+[submodule "3rdparty/xkb-switch"]
+	path = 3rdparty/xkb-switch
+	url = git@github.com:EvmenovPavel/xkb-switch.git
+
+[submodule "3rdparty/pavolume"]
+	path = 3rdparty/pavolume
+	url = git@github.com:EvmenovPavel/pavolume.git
+
+[submodule "3rdparty/brightnessctl"]
+	path = 3rdparty/brightnessctl
+	url = git@github.com:EvmenovPavel/brightnessctl.git

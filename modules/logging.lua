@@ -1,1 +1,1 @@
-return require("modules.logging.logging")
+return require("modules.logger.logger")

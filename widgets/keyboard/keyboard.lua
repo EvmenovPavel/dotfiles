@@ -297,7 +297,7 @@ function keyboardlayout.new()
     --        gtable.join(button({ }, 1, self.next_layout))
     --)
 
-    awful.util.spawn("setxkbmap -model pc105 -layout us,ru -variant qwerty -option grp:win_space_toggle")
+    awful.util.spawn("setxkbmap -layout us,ru -option grp:win_space_toggle")
 
     return self
 end

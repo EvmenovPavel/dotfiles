@@ -9,7 +9,7 @@ local log_level       = {
 
 local PARENT_LOG_PATH = os.getenv("HOME") .. "/.config/awesome/logs"
 
-local logging         = {}
+local logger          = {}
 
 local setting         = {
     date_format     = "%Y-%m-%d",
@@ -94,7 +94,7 @@ local function message(type, ...)
         if msg == nil or msg == "" then
             msg = tostring(item)
         else
-            msg = msg .. " " .. tostring(item)
+            msg = msg .. ", " .. tostring(item)
         end
     end
 
@@ -106,40 +106,35 @@ local function message(type, ...)
 end
 
 -- Logs a message with DEBUG level.
-function logging:debug(...)
+function logger:debug(...)
     message(log_level.LOG_LEVEL_DEBUG, ...)
 end
 
 -- Logs a message with INFO level.
-function logging:info(...)
+function logger:info(...)
     message(log_level.LOG_LEVEL_INFO, ...)
 end
 
 -- Logs a message with WARNING level.
-function logging:warning(...)
+function logger:warning(...)
     message(log_level.LOG_LEVEL_WARNING, ...)
 end
 
 -- Logs a message with CRITICAL level.
-function logging:critical(...)
+function logger:critical(...)
     message(log_level.LOG_LEVEL_CRITICAL, ...)
 end
 
 -- Logs a message with ERROR level.
-function logging:error(...)
+function logger:error(...)
     message(log_level.LOG_LEVEL_ERROR, ...)
 end
 
 -- Logs a message with FATAL level.
-function logging:fatal(...)
+function logger:fatal(...)
     message(log_level.LOG_LEVEL_FATAL, ...)
 end
 
-local function init(...)
-    return logging
-end
-
---return logging
-return setmetatable(logging, { __call = function(_, ...)
-    return init(...)
+return setmetatable(logger, { __call = function(_, ...)
+    return logger
 end })

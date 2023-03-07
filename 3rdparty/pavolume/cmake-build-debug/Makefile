@@ -57,10 +57,10 @@ RM = /opt/clion/bin/cmake/linux/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume
+CMAKE_SOURCE_DIR = /home/be3yh4uk/.config/awesome/3rdparty/pavolume
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug
+CMAKE_BINARY_DIR = /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -129,77 +129,93 @@ pavolume/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/build
 .PHONY : pavolume/fast
 
-lua-pavolume.o: lua-pavolume.c.o
-.PHONY : lua-pavolume.o
+#=============================================================================
+# Target rules for targets named libpavolume
+
+# Build rule for target.
+libpavolume: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libpavolume
+.PHONY : libpavolume
+
+# fast build rule for target.
+libpavolume/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/libpavolume.dir/build.make CMakeFiles/libpavolume.dir/build
+.PHONY : libpavolume/fast
+
+myObj.o: myObj.cpp.o
+.PHONY : myObj.o
 
 # target to build an object file
-lua-pavolume.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/lua-pavolume.c.o
-.PHONY : lua-pavolume.c.o
+myObj.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/libpavolume.dir/build.make CMakeFiles/libpavolume.dir/myObj.cpp.o
+.PHONY : myObj.cpp.o
 
-lua-pavolume.i: lua-pavolume.c.i
-.PHONY : lua-pavolume.i
+myObj.i: myObj.cpp.i
+.PHONY : myObj.i
 
 # target to preprocess a source file
-lua-pavolume.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/lua-pavolume.c.i
-.PHONY : lua-pavolume.c.i
+myObj.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/libpavolume.dir/build.make CMakeFiles/libpavolume.dir/myObj.cpp.i
+.PHONY : myObj.cpp.i
 
-lua-pavolume.s: lua-pavolume.c.s
-.PHONY : lua-pavolume.s
+myObj.s: myObj.cpp.s
+.PHONY : myObj.s
 
 # target to generate assembly for a file
-lua-pavolume.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/lua-pavolume.c.s
-.PHONY : lua-pavolume.c.s
+myObj.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/libpavolume.dir/build.make CMakeFiles/libpavolume.dir/myObj.cpp.s
+.PHONY : myObj.cpp.s
 
-main.o: main.c.o
-.PHONY : main.o
+src/main.o: src/main.c.o
+.PHONY : src/main.o
 
 # target to build an object file
-main.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/main.c.o
-.PHONY : main.c.o
+src/main.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/src/main.c.o
+.PHONY : src/main.c.o
 
-main.i: main.c.i
-.PHONY : main.i
+src/main.i: src/main.c.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/main.c.i
-.PHONY : main.c.i
+src/main.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/src/main.c.i
+.PHONY : src/main.c.i
 
-main.s: main.c.s
-.PHONY : main.s
+src/main.s: src/main.c.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/main.c.s
-.PHONY : main.c.s
+src/main.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/src/main.c.s
+.PHONY : src/main.c.s
 
-pavolume.o: pavolume.c.o
-.PHONY : pavolume.o
+src/pavolume.o: src/pavolume.c.o
+.PHONY : src/pavolume.o
 
 # target to build an object file
-pavolume.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/pavolume.c.o
-.PHONY : pavolume.c.o
+src/pavolume.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/src/pavolume.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/libpavolume.dir/build.make CMakeFiles/libpavolume.dir/src/pavolume.c.o
+.PHONY : src/pavolume.c.o
 
-pavolume.i: pavolume.c.i
-.PHONY : pavolume.i
+src/pavolume.i: src/pavolume.c.i
+.PHONY : src/pavolume.i
 
 # target to preprocess a source file
-pavolume.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/pavolume.c.i
-.PHONY : pavolume.c.i
+src/pavolume.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/src/pavolume.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/libpavolume.dir/build.make CMakeFiles/libpavolume.dir/src/pavolume.c.i
+.PHONY : src/pavolume.c.i
 
-pavolume.s: pavolume.c.s
-.PHONY : pavolume.s
+src/pavolume.s: src/pavolume.c.s
+.PHONY : src/pavolume.s
 
 # target to generate assembly for a file
-pavolume.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/pavolume.c.s
-.PHONY : pavolume.c.s
+src/pavolume.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/src/pavolume.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/libpavolume.dir/build.make CMakeFiles/libpavolume.dir/src/pavolume.c.s
+.PHONY : src/pavolume.c.s
 
 # Help Target
 help:
@@ -209,16 +225,17 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... libpavolume"
 	@echo "... pavolume"
-	@echo "... lua-pavolume.o"
-	@echo "... lua-pavolume.i"
-	@echo "... lua-pavolume.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
-	@echo "... pavolume.o"
-	@echo "... pavolume.i"
-	@echo "... pavolume.s"
+	@echo "... myObj.o"
+	@echo "... myObj.i"
+	@echo "... myObj.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
+	@echo "... src/pavolume.o"
+	@echo "... src/pavolume.i"
+	@echo "... src/pavolume.s"
 .PHONY : help
 
 

@@ -54,16 +54,17 @@ RM = /opt/clion/bin/cmake/linux/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume
+CMAKE_SOURCE_DIR = /home/be3yh4uk/.config/awesome/3rdparty/pavolume
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug
+CMAKE_BINARY_DIR = /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug
 
 #=============================================================================
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
 all: CMakeFiles/pavolume.dir/all
+all: CMakeFiles/libpavolume.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -72,23 +73,24 @@ preinstall:
 
 # The main recursive "clean" target.
 clean: CMakeFiles/pavolume.dir/clean
+clean: CMakeFiles/libpavolume.dir/clean
 .PHONY : clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/pavolume.dir
 
 # All Build rule for target.
-CMakeFiles/pavolume.dir/all:
+CMakeFiles/pavolume.dir/all: CMakeFiles/libpavolume.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles --progress-num=1,2,3,4 "Built target pavolume"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles --progress-num=4,5,6 "Built target pavolume"
 .PHONY : CMakeFiles/pavolume.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/pavolume.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/pavolume.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/be3yh4uk/.config/awesome/3rdparty/lua-pavolume/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/pavolume.dir/rule
 
 # Convenience name for target.
@@ -99,6 +101,32 @@ pavolume: CMakeFiles/pavolume.dir/rule
 CMakeFiles/pavolume.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pavolume.dir/build.make CMakeFiles/pavolume.dir/clean
 .PHONY : CMakeFiles/pavolume.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/libpavolume.dir
+
+# All Build rule for target.
+CMakeFiles/libpavolume.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/libpavolume.dir/build.make CMakeFiles/libpavolume.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/libpavolume.dir/build.make CMakeFiles/libpavolume.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles --progress-num=1,2,3 "Built target libpavolume"
+.PHONY : CMakeFiles/libpavolume.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/libpavolume.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles 3
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/libpavolume.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/be3yh4uk/.config/awesome/3rdparty/pavolume/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/libpavolume.dir/rule
+
+# Convenience name for target.
+libpavolume: CMakeFiles/libpavolume.dir/rule
+.PHONY : libpavolume
+
+# clean rule for target.
+CMakeFiles/libpavolume.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/libpavolume.dir/build.make CMakeFiles/libpavolume.dir/clean
+.PHONY : CMakeFiles/libpavolume.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

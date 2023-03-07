@@ -1,7 +1,6 @@
 local xinerama = require('foggy.xinerama')
 local xrandr   = require('foggy.xrandr')
 local awful    = require('awful')
-local naughty  = require('naughty')
 local edid     = require('foggy.edid')
 
 local menu     = { mt = {}, _NAME = "foggy.menu" }
@@ -212,19 +211,24 @@ local function build_menu(current_screen)
     local thisout   = get_output(current_screen)
     local scrn_menu = screen_menu(thisout, true)
     local visible   = { [thisout.name] = true }
+
     -- iterate over outputs, not screens
     -- otherwise menu is bugged when cloning
     for name, output in pairs(outputs) do
+        -- надо добавлять все мониторы
+        -- те, которые даже отключены или не подключены
         if output.connected and output.on and output.name ~= thisout.name then
             scrn_menu[#scrn_menu + 1] = { output_name(output), screen_menu(output, false) }
         end
     end
+
     -- add connected but disabled screens
     for name, output in pairs(outputs) do
         if output.connected and (not output.on) and (not visible[name]) then
             scrn_menu[#scrn_menu + 1] = { output_name(output), screen_menu(output, false) }
         end
     end
+
     return scrn_menu
 end
 

@@ -11,6 +11,7 @@ local function list()
         "copyq",
         "lxpolkit",
         "megasync",
+	    --"touchpad-indicator",
         --"indicator-stickynotes"
     }
 end

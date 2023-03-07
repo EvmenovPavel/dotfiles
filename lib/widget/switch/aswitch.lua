@@ -1,171 +1,141 @@
-local wibox  = require("wibox")
-local gears  = require("gears")
+local wibox = require("wibox")
+local gears = require("gears")
 
 local switch = {}
 
 function switch:init()
-    local public           = wmapi:widget():base("switch")
+    local ret = wmapi.widget:base("switch")
 
-    local private          = {}
+    local __private = {}
 
-    private.checked        = false
-    private.event          = event.mouse.button_click_left
-    private.function_true  = function()
-        log:debug("switch:create - true")
+    __private.checked = false
+    __private.func_checked = function()
+        log:debug("switch:checked")
     end
-    private.function_false = function()
-        log:debug("switch:create - false")
-    end
-
-    local switch           = wibox.widget({
-                                              checked = false,
-                                              bg      = color.border,
-                                              shape   = gears.shape.circle,
-                                              widget  = wibox.widget.checkbox
-                                          })
-
-    local margin           = wibox.widget({
-                                              {
-                                                  switch,
-                                                  margins = 3,
-                                                  widget  = wibox.container.margin,
-                                              },
-                                              forced_width = 50,
-                                              left         = 0,
-                                              widget       = wibox.container.margin,
-                                          })
-
-    local outline          = wibox.widget({
-                                              margin,
-                                              bg     = color.active_inner,
-                                              shape  = gears.shape.rounded_bar,
-                                              widget = wibox.container.background,
-                                          })
-
-    local bg               = wibox.widget({
-                                              outline,
-                                              shape_border_color = color.border_hover,
-                                              shape              = gears.shape.rounded_bar,
-                                              widget             = wibox.container.background,
-                                          })
-
-    local textbox          = wmapi:widget():textbox()
-
-    local widget           = wibox.widget({
-                                              {
-                                                  bg,
-                                                  widget = wibox.container.background,
-                                              },
-                                              {
-                                                  right  = 5,
-                                                  widget = wibox.container.margin,
-                                              },
-                                              {
-                                                  textbox:get(),
-                                                  widget = wibox.container.background,
-                                              },
-                                              layout = wibox.layout.fixed.horizontal,
-                                          })
-
-    function public:set_text(text)
-        if type(text) == LuaTypes.string then
-            textbox:text(text)
-        end
-
-        return "Error: not string"
+    __private.func_unchecked = function()
+        log:debug("switch:unchecked")
     end
 
-    function public:set_event(event)
-        if type(event) == LuaTypes.number then
-            private.event = event
-        end
+    local w_switch = wibox.widget({
+        checked = false,
+        bg = color.border,
+        shape = gears.shape.circle,
+        widget = wibox.widget.checkbox
+    })
 
-        return "Error: event not number"
+    local w_margin = wibox.widget({
+        {
+            w_switch,
+            margins = 3,
+            widget = wibox.container.margin,
+        },
+        forced_width = 50,
+        left = 0,
+        widget = wibox.container.margin,
+    })
+
+    local w_outline = wibox.widget({
+        w_margin,
+        bg = color.active_inner,
+        shape = gears.shape.rounded_bar,
+        widget = wibox.container.background,
+    })
+
+    local w_bg = wibox.widget({
+        {
+            w_outline,
+            margins = 0.25,
+            widget = wibox.container.margin,
+        },
+        bg = color.active,
+        shape_border_color = color.border_hover,
+        shape = gears.shape.rounded_bar,
+        widget = wibox.container.background,
+    })
+
+    local w_textbox = wmapi.widget:textbox()
+    function ret:textbox()
+        return w_textbox
     end
 
-    function public:set_function(func, checked)
-        local f = {}
-
-        function f:checked(func)
-            if type(func) == LuaTypes.fun then
-                private.function_true = func
-            else
-                private.function_true = function()
-                    func()
-                end
-            end
-        end
-
-        function f:unchecked(func)
-            if type(func) == LuaTypes.fun then
-                private.function_false = func
-            else
-                private.function_false = function()
-                    func()
-                end
-            end
-        end
-
-        local checked = checked or true
-        if checked then
-            f:checked(func)
-        else
-            f:unchecked(func)
-        end
-    end
-
-    function public:trigger(checked)
+    local widget = wibox.widget({
+        {
+            w_bg,
+            widget = wibox.container.background,
+        },
+        {
+            right = 5,
+            widget = wibox.container.margin,
+        },
+        {
+            w_textbox:get(),
+            widget = wibox.container.background,
+        },
+        layout = wibox.layout.fixed.horizontal,
+    })
+    ret:set_widget(widget, function(checked)
         if type(checked) == LuaTypes.boolean then
-            private.checked = checked
+            __private.checked = checked
 
-            if private.checked then
-                margin.left = 22
+            if __private.checked then
+                w_margin.left = 22
 
-                switch.bg   = color.active_inner
-                outline.bg  = color.border_hover
-
-                private.function_true()
+                w_switch.bg = color.active_inner
+                w_outline.bg = color.border_hover
             else
-                margin.left = 0
+                w_margin.left = 0
 
-                switch.bg   = color.border
-                outline.bg  = color.active_inner
-
-                private.function_false()
+                switch.bg = color.border
+                w_outline.bg = color.active_inner
             end
+        end
+    end)
+
+    ret:button():release(function(_, _, _, button)
+        if button == event.mouse.button_click_left then
+            ret:update_widget(not __private.checked)
+
+            if __private.checked then
+                __private.func_checked()
+            else
+                __private.func_unchecked()
+            end
+        end
+    end)
+
+    ret:mouse():enter(function()
+        w_bg.shape_border_width = 1
+    end)
+
+    ret:mouse():leave(function()
+        if not __private.checked then
+            w_bg.shape_border_width = 0
+        end
+    end)
+
+    function ret:unchecked(func)
+        if type(func) == LuaTypes.func then
+            __private.func_unchecked = func
         end
     end
 
-    widget:connect_signal(
-            event.signals.button.release,
-            function(_, _, _, b)
-                if b == private.event then
-                    public:trigger(not private.checked)
-                end
-            end
-    )
+    function ret:checked(func)
+        if type(func) == LuaTypes.func then
+            __private.func_checked = func
+        end
+    end
 
-    widget:connect_signal(
-            event.signals.mouse.enter,
-            function()
-                bg.shape_border_width = 1
-            end
-    )
+    function ret:is_checked()
+        return __private.checked
+    end
 
-    widget:connect_signal(
-            event.signals.mouse.leave,
-            function()
-                if not private.checked then
-                    bg.shape_border_width = 0
-                end
-            end
-    )
-
-    function public:get()
+    function ret:get()
         return widget
     end
 
-    return public
+    return ret
 end
 
-return switch
+return setmetatable(switch, { __call = function()
+    return switch
+end })

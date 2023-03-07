@@ -1,11 +1,11 @@
 local wibox     = require("lib.wibox")
 
-local wmapi     = require("wmapi")
 local signals   = require("device.signals")
 local programms = require("device.programms")
 
 return function()
-    local icon   = wmapi:imagebox(resources.widgets.search)
+    local icon   = wmapi.widget:imagebox()
+    icon:image(resources.widgets.search)
 
     local search = wibox.widget {
         icon,

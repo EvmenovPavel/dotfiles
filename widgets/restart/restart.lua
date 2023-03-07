@@ -1,40 +1,27 @@
 local restart = {}
 
 function restart:init()
-    local w    = wmapi:widget():prompt()
+    local w = wmapi.widget:switch()
+    --w:image(resources.battery.caution)
 
-    --w:run()
-    local test = true
+    w:checked(function()
+        wmapi.widget:messagebox():information("app", "title", "text")
+    end)
 
-    w:connect_signal(
-            event.signals.button.release,
-            function(_, _, _, b)
-                if b == event.mouse.button_click_left then
-                    test = not test
+    local int = 0
+    local str = "restart" .. tostring(int)
+    wmapi:update(function()
+        int = int + 1
+        --local t = w:textbox()
 
-                    if test then
-                        w:focus()
-                    else
-                        w:unfocus()
-                    end
-                end
-            end
-    )
+        --str = str .. " " .. tostring(int)
+        --t:text(str)
+        --w:visible(not w:visible())
+    end, 1)
 
-    return w
-
-    --local w = wmapi:widget():switch()
-
-    --w:set_text("Restart")
-    --w:set_event(event.mouse.button_click_left)
-    --w:set_function(
-    --        function()
-    --            log:debug("trigger")
-    --        end)
-    --w:trigger(true)
-    --return w:get()
+    return w:get()
 end
 
-return setmetatable(restart, { __call = function(_, ...)
-    return restart:init(...)
+return setmetatable(restart, { __call = function()
+    return restart:init()
 end })

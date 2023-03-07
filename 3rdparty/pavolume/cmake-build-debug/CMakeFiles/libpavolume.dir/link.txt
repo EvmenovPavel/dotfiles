@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblibpavolume.a CMakeFiles/libpavolume.dir/src/pavolume.c.o CMakeFiles/libpavolume.dir/myObj.cpp.o
+/usr/bin/ranlib liblibpavolume.a

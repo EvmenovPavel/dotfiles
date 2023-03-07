@@ -3,7 +3,7 @@ return {
 
     systray    = require("widgets.systray.systray"),
 
-    keyboard   = require("widgets.keyboard.keyboard"),
+    --keyboard   = require("widgets.keyboard.keyboard"),
 
     --cpu        = require("widgets.cpu"),
     --
@@ -29,7 +29,7 @@ return {
     --
     --pad        = require("widgets.pad"),
     --
-    --xrandr     = require("widgets.xrandr"),
+    xrandr     = require("widgets.xrandr"),
     --
     --loggingui  = require("widgets.loggingui"),
 

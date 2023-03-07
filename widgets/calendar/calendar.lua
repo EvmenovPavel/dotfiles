@@ -1,81 +1,81 @@
-local awful      = require("awful")
-local gears      = require("gears")
-local wibox      = require("wibox")
-local grid       = require("wibox.layout.grid")
-local gmath      = require("gears.math")
+local awful = require("awful")
+local gears = require("gears")
+local wibox = require("wibox")
+local grid = require("wibox.layout.grid")
+local gmath = require("gears.math")
 
 local keygrabber = require("awful.keygrabber")
-local gtable     = require("gears.table")
-local object     = require("gears.object")
+local gtable = require("gears.table")
+local object = require("gears.object")
 
-local beautiful  = require("beautiful")
-local xrdb       = beautiful.xresources.get_current_theme()
+local beautiful = require("beautiful")
+local xrdb = beautiful.xresources.get_current_theme()
 
-local _calendar  = {}
+local _calendar = {}
 
-local x          = {
+local x = {
     --           xrdb variable
     background = xrdb.background,
     foreground = xrdb.foreground,
-    color0     = xrdb.color0,
-    color1     = xrdb.color1,
-    color2     = xrdb.color2,
-    color3     = xrdb.color3,
-    color4     = xrdb.color4,
-    color5     = xrdb.color5,
-    color6     = xrdb.color6,
-    color7     = xrdb.color7,
-    color8     = xrdb.color8,
-    color9     = xrdb.color9,
-    color10    = xrdb.color10,
-    color11    = xrdb.color11,
-    color12    = xrdb.color12,
-    color13    = xrdb.color13,
-    color14    = xrdb.color14,
-    color15    = xrdb.color15,
+    color0 = xrdb.color0,
+    color1 = xrdb.color1,
+    color2 = xrdb.color2,
+    color3 = xrdb.color3,
+    color4 = xrdb.color4,
+    color5 = xrdb.color5,
+    color6 = xrdb.color6,
+    color7 = xrdb.color7,
+    color8 = xrdb.color8,
+    color9 = xrdb.color9,
+    color10 = xrdb.color10,
+    color11 = xrdb.color11,
+    color12 = xrdb.color12,
+    color13 = xrdb.color13,
+    color14 = xrdb.color14,
+    color15 = xrdb.color15,
 }
 
-local styles     = {}
-styles.month     = {
-    padding      = 20,
-    fg_color     = x.color7,
-    bg_color     = x.background .. "00",
+local styles = {}
+styles.month = {
+    padding = 20,
+    fg_color = x.color7,
+    bg_color = x.background .. "00",
     border_width = 1,
 }
 
-styles.normal    = {}
+styles.normal = {}
 
-styles.focus     = {
+styles.focus = {
     fg_color = x.color1,
     bg_color = x.color5 .. 00,
-    markup   = function(t)
+    markup = function(t)
         return '<b>' .. t .. '</b>'
     end,
 }
 
-styles.header    = {
+styles.header = {
     fg_color = x.color4,
     bg_color = x.color1 .. "00",
     -- markup   = function(t) return '<b>' .. t .. '</b>' end,
-    markup   = function(t)
+    markup = function(t)
         return '<span font_desc="sans bold 22">' .. t .. '</span>'
     end,
 }
 
-styles.weekday   = {
+styles.weekday = {
     fg_color = x.color7,
     bg_color = x.color1 .. "00",
-    padding  = 3,
-    markup   = function(t)
+    padding = 3,
+    markup = function(t)
         return '<b>' .. t .. '</b>'
     end,
 }
 
-styles.disable   = {
+styles.disable = {
     fg_color = x.color7,
     bg_color = x.color1 .. "00",
-    padding  = 3,
-    markup   = function(t)
+    padding = 3,
+    markup = function(t)
         return '<b>' .. t .. '</b>'
     end,
 }
@@ -91,98 +91,41 @@ local function theme_calendar(widget, flag, date)
     end
 
     -- Change bg color for weekends
-    local d          = {
-        year  = date.year,
+    local d = {
+        year = date.year,
         month = (date.month or 1),
-        day   = (date.day or 1)
+        day = (date.day or 1)
     }
-    local weekday    = tonumber(os.date('%w', os.time(d)))
+    local weekday = tonumber(os.date('%w', os.time(d)))
 
     local default_fg = x.color7
     --local default_bg = x.color0 .. "00"
     local default_bg = (weekday == 0 or weekday == 6) and x.color6 or x.color14
-    local ret        = wibox.widget({
-                                        {
-                                            widget,
-                                            margins = (props.padding or 2) + (props.border_width or 0),
-                                            widget  = wibox.container.margin
-                                        },
-                                        shape              = props.shape,
-                                        shape_border_color = props.border_color or x.background,
-                                        shape_border_width = props.border_width or 0,
-                                        fg                 = props.fg_color or default_fg,
-                                        bg                 = props.bg_color or default_bg,
-                                        widget             = wibox.container.background,
-                                    })
+    local ret = wibox.widget({
+        {
+            widget,
+            margins = (props.padding or 2) + (props.border_width or 0),
+            widget = wibox.container.margin
+        },
+        shape = props.shape,
+        shape_border_color = props.border_color or x.background,
+        shape_border_width = props.border_width or 0,
+        fg = props.fg_color or default_fg,
+        bg = props.bg_color or default_bg,
+        widget = wibox.container.background,
+    })
     return ret
 end
 
-local common_args = { w    = wibox.layout.fixed.horizontal(),
+local common_args = { w = wibox.layout.fixed.horizontal(),
                       data = setmetatable({}, { __mode = 'kv' }) }
 
-local wbase       = require("wibox.widget.base")
+local menu = {}
 
-local function create_test()
-    local fg_color     = beautiful.fg_normal
-    local bg_color     = beautiful.bg_normal
-    local border_width = beautiful.menu_border_width or 0
-    local border_color = beautiful.menu_border_color
-
-    local instance     = wibox {
-        ontop        = true,
-        bg           = bg_color,
-        fg           = fg_color,
-        border_width = border_width,
-        border_color = border_color,
-    }
-
-    if instance.visible then
-        -- Menu already shown, exit
-        return
-        --elseif not menubar.cache_entries then
-        --    menubar.refresh(scr)
-    end
-
-    -- Set position and size
-
-    local scrgeom  = wmapi:screen_geometry()
-    local geometry = { height = 10, width = 50 }
-
-    local geometry = { x      = geometry.x or scrgeom.x,
-                       y      = 100 or geometry.y or scrgeom.y,
-
-                       height = geometry.height or gmath.round(beautiful.get_font_height() * 2),
-                       width  = (geometry.width or scrgeom.width) - border_width * 2 }
-    instance:geometry(geometry)
-
-    --current_item     = 1
-    --current_category = nil
-    --menulist_update(scr)
-
-    --local prompt_args = menubar.prompt_args or {}
-
-    --awful.prompt.run(setmetatable({
-    --                                  prompt              = "Run: ",
-    --                                  textbox             = instance.prompt.widget,
-    --                                  completion_callback = awful.completion.shell,
-    --                                  history_path        = gfs.get_cache_dir() .. "/history_menu",
-    --                                  done_callback       = menubar.hide,
-    --                                  changed_callback    = function(query)
-    --                                      instance.query = query
-    --                                      menulist_update(scr)
-    --                                  end,
-    --                                  keypressed_callback = prompt_keypressed_callback
-    --                              }, { __index = prompt_args }))
-
-    instance.visible = true
-end
-
-local menu     = {}
-
-menu.menu_keys = { up    = { "Up", "k" },
-                   down  = { "Down", "j" },
-                   back  = { "Left", "h" },
-                   exec  = { "Return" },
+menu.menu_keys = { up = { "Up", "k" },
+                   down = { "Down", "j" },
+                   back = { "Left", "h" },
+                   exec = { "Return" },
                    enter = { "Right", "l" },
                    close = { "Escape" } }
 
@@ -233,8 +176,6 @@ end
 
 --return calendar_widget
 function _calendar:init(args)
-    --create_test()
-
     local function theme_text(widget, flag, date)
         local props = styles.header
 
@@ -244,41 +185,41 @@ function _calendar:init(args)
 
         local default_fg = x.color7
 
-        local ret        = wibox.widget({
-                                            {
-                                                widget,
-                                                margins = (props.padding or 2) + (props.border_width or 0),
-                                                widget  = wibox.container.margin
-                                            },
-                                            shape              = props.shape,
-                                            shape_border_color = props.border_color or x.background,
-                                            shape_border_width = props.border_width or 0,
-                                            fg                 = props.fg_color or default_fg,
-                                            widget             = wibox.container.background
-                                        })
+        local ret = wibox.widget({
+            {
+                widget,
+                margins = (props.padding or 2) + (props.border_width or 0),
+                widget = wibox.container.margin
+            },
+            shape = props.shape,
+            shape_border_color = props.border_color or x.background,
+            shape_border_width = props.border_width or 0,
+            fg = props.fg_color or default_fg,
+            widget = wibox.container.background
+        })
         return ret
     end
 
-    local widgetCalendar  = wibox.widget({
-                                             date          = os.date("*t"),
-                                             font          = beautiful.get_font(),
-                                             --fn_embed      = theme_calendar,
-                                             long_weekdays = true,
-                                             widget        = wmapi:widget():calendar().month,
-                                         })
+    local widgetCalendar = wibox.widget({
+        date = os.date("*t"),
+        font = beautiful.get_font(),
+        --fn_embed      = theme_calendar,
+        long_weekdays = true,
+        widget = wmapi.widget:calendar().month,
+    })
 
     local widgetMonthName = wibox.widget({
-                                             date          = os.date("*t"),
-                                             font          = beautiful.get_font(),
-                                             --fn_embed      = theme_text,
-                                             long_weekdays = true,
-                                             widget        = wmapi:widget():calendar().month_name
-                                         })
+        date = os.date("*t"),
+        font = beautiful.get_font(),
+        --fn_embed      = theme_text,
+        long_weekdays = true,
+        widget = wmapi.widget:calendar().month_name
+    })
 
-    local btn_next        = wmapi:widget():button()
-    local btn_prev        = wmapi:widget():button()
+    local btn_next = wmapi.widget:button()
+    local btn_prev = wmapi.widget:button()
 
-    local widget_grid     = grid()
+    local widget_grid = grid()
     widget_grid:set_expand(true)
     widget_grid:set_homogeneous(true)
     widget_grid:set_spacing(10)
@@ -291,102 +232,67 @@ function _calendar:init(args)
     widget_grid:add_widget_at(btn_next:get(), 1, 3, 1, 1)
     widget_grid:add_widget_at(widgetCalendar, 2, 1, 3, 3)
 
-    local layout      = wibox.widget({
-                                         --widgetText,
-                                         --{
-                                         --    {
-                                         --        -- <
-                                         --        btn_prev:get(),
-                                         --        widget = wibox.layout.fixed.horizontal,
-                                         --    },
-                                         --    {
-                                         --        -- month name
-                                         --        widgetMonthName,
-                                         --        widget = wibox.layout.fixed.horizontal,
-                                         --    },
-                                         --    {
-                                         --        -- >
-                                         --        btn_next:get(),
-                                         --        widget = wibox.layout.fixed.horizontal,
-                                         --    },
-                                         --    -- < month_day > --
-                                         --    widget = wibox.layout.fixed.horizontal
-                                         --},
-                                         widget_grid,
-
-                                         widget = wibox.layout.fixed.vertical,
-                                     })
+    local layout = wibox.widget({
+        widget_grid,
+        widget = wibox.layout.fixed.vertical,
+    })
 
     local popupWidget = awful.popup({
-                                        ontop        = true,
-                                        visible      = false,
-                                        shape        = gears.shape.rounded_rect,
-                                        offset       = { y = 5 },
-                                        border_width = 1,
-                                        border_color = "#333333",
-                                        widget       = layout
-                                    })
+        ontop = true,
+        visible = false,
+        shape = gears.shape.rounded_rect,
+        offset = { y = 5 },
+        border_width = 1,
+        border_color = "#333333",
+        widget = layout
+    })
 
     --local btn_next_image = widget:imagebox()
     --btn_next_image:set_image(resources.calendar.next)
     --btn_next_image:set_resize(true)
 
+    local function update(widget, count)
+        local a = widget:get_date()
+        a.month = a.month + count
+        widget:set_date(nil)
+        widget:set_date(a)
+    end
 
-    btn_next:set_text("asdasd")
-    --btn_next:set_image(resources.calendar.next)
-    --btn_next:set_wimage(btn_next_image)
-    btn_next:set_key(event.mouse.button_click_left)
-    btn_next:set_function(
-            function()
-                local function update(widget)
-                    local a = widget:get_date()
-                    a.month = a.month + 1
-                    widget:set_date(nil)
-                    widget:set_date(a)
-                end
+    btn_next:textbox():text(">")
+    --btn_next:set_image(resources.checkbox.checkbox)
+    btn_next:clicked(function()
+        update(widgetCalendar, 1)
+        update(widgetMonthName, 1)
 
-                update(widgetCalendar)
-                --update(widgetText)
-                update(widgetMonthName)
-
-                popupWidget:set_widget(nil)
-                popupWidget:set_widget(layout)
-            end
+        popupWidget:set_widget(nil)
+        popupWidget:set_widget(layout)
+    end
     )
 
-    --btn_prev:set_image(resources.calendar.prev)
-    btn_prev:set_key(event.mouse.button_click_left)
-    btn_prev:set_function(
-            function()
-                local function update(widget)
-                    local a = widget:get_date()
-                    a.month = a.month - 1
-                    widget:set_date(nil)
-                    widget:set_date(a)
-                end
+    btn_prev:textbox():text("<")
+    --btn_prev:imagebox():set_image(resources.calendar.prev)
+    btn_prev:clicked(function()
+        update(widgetCalendar, -1)
+        update(widgetMonthName, -1)
 
-                update(widgetCalendar)
-                --update(widgetText)
-                update(widgetMonthName)
-
-                popupWidget:set_widget(nil)
-                popupWidget:set_widget(layout)
-            end
+        popupWidget:set_widget(nil)
+        popupWidget:set_widget(layout)
+    end
     )
 
-    local _menu       = table_update(object(), {
+    local _menu = table_update(object(), {
         item_enter = menu.item_enter,
         item_leave = menu.item_leave,
-        get_root   = menu.get_root,
-        delete     = menu.delete,
-        update     = menu.update,
-        toggle     = menu.toggle,
-        hide       = menu.hide,
-        show       = menu.show,
-        exec       = menu.exec,
-        add        = menu.add,
-        child      = {},
-        items      = {},
+        get_root = menu.get_root,
+        delete = menu.delete,
+        update = menu.update,
+        toggle = menu.toggle,
+        hide = menu.hide,
+        show = menu.show,
+        exec = menu.exec,
+        add = menu.add,
+        child = {},
+        items = {},
         --parent     = parent,
         --layout     = args.layout(),
         --theme      = load_theme(args.theme or {}, parent and parent.theme)
@@ -421,10 +327,10 @@ function _calendar:init(args)
         else
             awful.placement.top_right(popupWidget, {
                 margins = {
-                    top   = 30,
+                    top = 30,
                     right = 10
                 },
-                parent  = awful.screen.focused()
+                parent = awful.screen.focused()
             })
             popupWidget.visible = true
 
@@ -433,9 +339,9 @@ function _calendar:init(args)
     end
 
     local textclock = wibox.widget({
-                                       wibox.widget.textclock(beautiful.datetime, 1),
-                                       widget = wibox.layout.fixed.horizontal,
-                                   })
+        wibox.widget.textclock(beautiful.datetime, 1),
+        widget = wibox.layout.fixed.horizontal,
+    })
 
     textclock:connect_signal(
             event.signals.button.release,

@@ -13,6 +13,9 @@ local function init(clientkeys, buttonkeys)
         -- CopyQ
         require("rules.copyq")(),
 
+        -- RDesktop
+        require("rules.rdesktop")(),
+
         -- UE4Editor
         --require("rules.ue4editor")(),
     }
