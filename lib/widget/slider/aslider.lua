@@ -8,9 +8,9 @@ function slider:init(args)
     local args = args or {}
 
     ret.widget = wibox.widget({
-                                  type   = "slider",
-                                  widget = wibox.widget.slider,
-                              })
+        type   = "slider",
+        widget = wibox.widget.slider,
+    })
 
     return ret
 end

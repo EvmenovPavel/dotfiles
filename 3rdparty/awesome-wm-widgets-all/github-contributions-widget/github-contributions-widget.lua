@@ -8,40 +8,40 @@
 -- @copyright 2020 Pavel Makhov
 -------------------------------------------------
 
-local awful = require("awful")
-local naughty = require("naughty")
-local wibox = require("wibox")
-local gears = require("gears")
-local widget_themes = require("awesome-wm-widgets.github-contributions-widget.themes")
+local awful                       = require("awful")
+local naughty                     = require("naughty")
+local wibox                       = require("wibox")
+local gears                       = require("gears")
+local widget_themes               = require("awesome-wm-widgets.github-contributions-widget.themes")
 
-local GET_CONTRIBUTIONS_CMD = [[bash -c "curl -s https://github-contributions.vercel.app/api/v1/%s]]
-    .. [[ | jq -r '[.contributions[] ]]
-    .. [[ | select ( .date | strptime(\"%%Y-%%m-%%d\") | mktime < now)][:%s]| .[].intensity'"]]
+local GET_CONTRIBUTIONS_CMD       = [[bash -c "curl -s https://github-contributions.vercel.app/api/v1/%s]]
+        .. [[ | jq -r '[.contributions[] ]]
+        .. [[ | select ( .date | strptime(\"%%Y-%%m-%%d\") | mktime < now)][:%s]| .[].intensity'"]]
 
-local github_contributions_widget = wibox.widget{
+local github_contributions_widget = wibox.widget {
     reflection = {
         horizontal = true,
-        vertical = true,
+        vertical   = true,
     },
-    widget = wibox.container.mirror
+    widget     = wibox.container.mirror
 }
 
 local function show_warning(message)
-    naughty.notify{
+    naughty.notify {
         preset = naughty.config.presets.critical,
-        title = 'Github Contributions Widget',
-        text = message}
+        title  = 'Github Contributions Widget',
+        text   = message }
 end
 
 local function worker(user_args)
 
-    local args = user_args or {}
-    local username = args.username or 'streetturtle'
-    local days = args.days or 365
+    local args                 = user_args or {}
+    local username             = args.username or 'streetturtle'
+    local days                 = args.days or 365
     local color_of_empty_cells = args.color_of_empty_cells
-    local with_border = args.with_border
-    local margin_top = args.margin_top or 1
-    local theme = args.theme or 'standard'
+    local with_border          = args.with_border
+    local margin_top           = args.margin_top or 1
+    local theme                = args.theme or 'standard'
 
     if widget_themes[theme] == nil then
         show_warning('Theme ' .. theme .. ' does not exist')
@@ -55,11 +55,11 @@ local function worker(user_args)
             color = color_of_empty_cells
         end
 
-        return wibox.widget{
-            fit = function()
+        return wibox.widget {
+            fit    = function()
                 return 3, 3
             end,
-            draw = function(_, _, cr, _, _)
+            draw   = function(_, _, cr, _, _)
                 cr:set_source(gears.color(color))
                 cr:rectangle(0, 0, with_border and 2 or 3, with_border and 2 or 3)
                 cr:fill()
@@ -68,8 +68,8 @@ local function worker(user_args)
         }
     end
 
-    local col = {layout = wibox.layout.fixed.vertical}
-    local row = {layout = wibox.layout.fixed.horizontal}
+    local col     = { layout = wibox.layout.fixed.vertical }
+    local row     = { layout = wibox.layout.fixed.horizontal }
     local day_idx = 5 - os.date('%w')
     for _ = 0, day_idx do
         table.insert(col, get_square(color_of_empty_cells))
@@ -77,26 +77,26 @@ local function worker(user_args)
 
     local update_widget = function(_, stdout, _, _, _)
         for intensity in stdout:gmatch("[^\r\n]+") do
-            if day_idx %7 == 0 then
+            if day_idx % 7 == 0 then
                 table.insert(row, col)
-                col = {layout = wibox.layout.fixed.vertical}
+                col = { layout = wibox.layout.fixed.vertical }
             end
             table.insert(col, get_square(widget_themes[theme][tonumber(intensity)]))
             day_idx = day_idx + 1
         end
         github_contributions_widget:setup(
-            {
-                row,
-                top = margin_top,
-                layout = wibox.container.margin
-            }
+                {
+                    row,
+                    top    = margin_top,
+                    layout = wibox.container.margin
+                }
         )
     end
 
     awful.spawn.easy_async(string.format(GET_CONTRIBUTIONS_CMD, username, days),
-        function(stdout)
-            update_widget(github_contributions_widget, stdout)
-        end)
+            function(stdout)
+                update_widget(github_contributions_widget, stdout)
+            end)
 
     return github_contributions_widget
 end

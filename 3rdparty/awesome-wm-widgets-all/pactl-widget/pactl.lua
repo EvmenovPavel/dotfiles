@@ -3,7 +3,6 @@ local utils = require("awesome-wm-widgets.pactl-widget.utils")
 
 local pactl = {}
 
-
 function pactl.volume_increase(device, step)
     spawn('pactl set-sink-volume ' .. device .. ' +' .. step .. '%', false)
 end
@@ -17,7 +16,7 @@ function pactl.mute_toggle(device)
 end
 
 function pactl.get_volume(device)
-    local stdout = utils.popen_and_return('pactl get-sink-volume ' .. device)
+    local stdout         = utils.popen_and_return('pactl get-sink-volume ' .. device)
 
     local volsum, volcnt = 0, 0
     for vol in string.gmatch(stdout, "(%d?%d?%d)%%") do
@@ -45,11 +44,11 @@ function pactl.get_mute(device)
 end
 
 function pactl.get_sinks_and_sources()
-    local default_sink = utils.trim(utils.popen_and_return('pactl get-default-sink'))
+    local default_sink   = utils.trim(utils.popen_and_return('pactl get-default-sink'))
     local default_source = utils.trim(utils.popen_and_return('pactl get-default-source'))
 
-    local sinks = {}
-    local sources = {}
+    local sinks          = {}
+    local sources        = {}
 
     local device
     local ports
@@ -63,14 +62,14 @@ function pactl.get_sinks_and_sources()
             in_section = nil
         end
 
-        local is_sink_line = string.match(line, '^Sink #')
+        local is_sink_line   = string.match(line, '^Sink #')
         local is_source_line = string.match(line, '^Source #')
 
         if is_sink_line or is_source_line then
             in_section = "main"
 
-            device = {
-                id = line:match('#(%d+)'),
+            device     = {
+                id         = line:match('#(%d+)'),
                 is_default = false
             }
             if is_sink_line then
@@ -83,10 +82,10 @@ function pactl.get_sinks_and_sources()
         -- Found a new subsection
         if in_section ~= nil and string.match(line, '^\t%a+:$') then
             in_section = utils.trim(line):lower()
-            in_section = string.sub(in_section, 1, #in_section-1)
+            in_section = string.sub(in_section, 1, #in_section - 1)
 
             if in_section == 'ports' then
-                ports = {}
+                ports           = {}
                 device['ports'] = ports
             end
         end
@@ -94,8 +93,8 @@ function pactl.get_sinks_and_sources()
         -- Found a key-value pair
         if string.match(line, "^\t*[^\t]+: ") then
             local t = utils.split(line, ':')
-            key = utils.trim(t[1]):lower():gsub(' ', '_')
-            value = utils.trim(t[2])
+            key     = utils.trim(t[1]):lower():gsub(' ', '_')
+            value   = utils.trim(t[2])
         end
 
         -- Key value pair on 1st level
@@ -119,6 +118,5 @@ end
 function pactl.set_default(type, name)
     spawn('pactl set-default-' .. type .. ' "' .. name .. '"', false)
 end
-
 
 return pactl

@@ -6,15 +6,15 @@ local myspotify = {}
 function myspotify:create(s)
     if wmapi:is_screen_primary(s) then
         local spotify = awful.wibar({
-                                        ontop        = false,
-                                        stretch      = true,
-                                        position     = "bottom",
-                                        border_width = 0,
-                                        visible      = true,
-                                        height       = 27,
-                                        width        = wmapi:screen_width() - 30,
-                                        screen       = s,
-                                    })
+            ontop        = false,
+            stretch      = true,
+            position     = "bottom",
+            border_width = 0,
+            visible      = true,
+            height       = 27,
+            width        = wmapi:screen_width() - 30,
+            screen       = s,
+        })
 
         spotify:setup {
             --self:w_left(s),

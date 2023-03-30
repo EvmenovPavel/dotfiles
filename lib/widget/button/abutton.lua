@@ -1,14 +1,14 @@
-local wibox = require("wibox")
-local gears = require("gears")
+local wibox  = require("wibox")
+local gears  = require("gears")
 
 local button = { mt = {} }
 
 function button:init()
-    local ret = wmapi.widget:base("button")
+    local ret       = wmapi.widget:base("button")
 
     local __private = {}
 
-    __private.func = function()
+    __private.func  = function()
         log:debug("button:create")
     end
 
@@ -23,15 +23,15 @@ function button:init()
         return w_imagebox
     end
 
-    local w_mImagebox = wibox.widget({
+    local w_mImagebox      = wibox.widget({
         w_imagebox:get(),
         margins = 5,
-        widget = wibox.container.margin,
+        widget  = wibox.container.margin,
     })
 
-    local w_mTextbox = wibox.widget({
+    local w_mTextbox       = wibox.widget({
         w_textbox:get(),
-        right = 5,
+        right  = 5,
         widget = wibox.container.margin,
     })
 
@@ -41,19 +41,19 @@ function button:init()
         layout = wibox.layout.fixed.horizontal,
     })
 
-    local w_bg = wibox.widget({
+    local w_bg             = wibox.widget({
         w_text_image_box,
 
-        shape = function(cr, w, h)
+        shape              = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, 5)
         end,
 
-        bg = color.border,
-        shape_border_color = color.border_hover,
-        widget = wibox.container.background,
+        bg                 = ret:color():border(),
+        shape_border_color = ret:color():border_hover(),
+        widget             = wibox.container.background,
     })
 
-    local widget = wibox.widget({
+    local widget           = wibox.widget({
         w_bg,
         layout = wibox.layout.fixed.horizontal,
     })
@@ -68,10 +68,10 @@ function button:init()
     ret:button():release(function(_, _, _, button)
         if button == event.mouse.button_click_left then
             __private.func()
-            w_bg.bg = color.border_hover
+            w_bg.bg = ret:color():border_hover()
 
             wmapi:weak_watch(function()
-                w_bg.bg = color.border
+                w_bg.bg = ret:color():border()
             end, 0.1)
         end
     end)
@@ -79,20 +79,20 @@ function button:init()
     ret:mouse():enter(function(self)
         w_bg.shape_border_width = 1
 
-        local w = _G.mouse.current_wibox
+        local w                 = _G.mouse.current_wibox
         if w then
             self.old_cursor, self.old_wibox = w.cursor, w
-            w.cursor = "hand1"
+            w.cursor                        = "hand1"
         end
     end)
 
     ret:mouse():leave(function(self)
         w_bg.shape_border_width = 0
-        w_bg.bg = color.border
+        w_bg.bg                 = ret:color():border()
 
         if self.old_wibox then
             self.old_wibox.cursor = self.old_cursor
-            self.old_wibox = nil
+            self.old_wibox        = nil
         end
     end)
 

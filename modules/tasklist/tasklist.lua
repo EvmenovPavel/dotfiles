@@ -41,10 +41,10 @@ local function tasklist_label(c, args, tb)
     local fg_focus              = gcolor.ensure_pango_color(args.fg_focus or theme.tasklist_fg_focus or theme.fg_focus, fg_normal)
     local bg_focus              = args.bg_focus or theme.tasklist_bg_focus or theme.bg_focus or bg_normal
     local fg_urgent             = gcolor.ensure_pango_color(args.fg_urgent or theme.tasklist_fg_urgent or theme.fg_urgent,
-                                                            fg_normal)
+            fg_normal)
     local bg_urgent             = args.bg_urgent or theme.tasklist_bg_urgent or theme.bg_urgent or bg_normal
     local fg_minimize           = gcolor.ensure_pango_color(args.fg_minimize or theme.tasklist_fg_minimize or theme.fg_minimize,
-                                                            fg_normal)
+            fg_normal)
     local bg_minimize           = args.bg_minimize or theme.tasklist_bg_minimize or theme.bg_minimize or bg_normal
     -- FIXME v5, remove the fallback theme.bg_image_* variables, see GH#1403
     local bg_image_normal       = args.bg_image_normal or theme.tasklist_bg_image_normal or theme.bg_image_normal
@@ -226,7 +226,7 @@ function w_tasklist.new(args, filter, buttons, style, update_function, base_widg
     if argstype == "number" or argstype == "screen" or
             (argstype == "table" and args.index and args == capi.screen[args.index]) then
         gdebug.deprecate("The `screen` paramater is deprecated, use `args.screen`.",
-                         { deprecated_in = 5 })
+                { deprecated_in = 5 })
 
         screen = get_screen(args)
         args   = {}
@@ -241,8 +241,8 @@ function w_tasklist.new(args, filter, buttons, style, update_function, base_widg
                         layout          = base_widget
     } do
         gdebug.deprecate("The `awful.widget.tasklist()` `" .. k
-                                 .. "` paramater is deprecated, use `args." .. k .. "`.",
-                         { deprecated_in = 5 })
+                .. "` paramater is deprecated, use `args." .. k .. "`.",
+                { deprecated_in = 5 })
         args[k] = v
     end
 
@@ -437,14 +437,14 @@ local function create_buttons(buttons, object)
             -- argument.
             local btn = button { modifiers = b.modifiers, button = b.button }
             btn:connect_signal("press",
-                               function()
-                                   b:emit_signal("press", object)
-                               end
+                    function()
+                        b:emit_signal("press", object)
+                    end
             )
             btn:connect_signal("release",
-                               function()
-                                   b:emit_signal("release", object)
-                               end
+                    function()
+                        b:emit_signal("release", object)
+                    end
             )
             btns[#btns + 1] = btn
         end
@@ -485,9 +485,9 @@ local function update_function(widget, buttons, label, data, objects)
 
             w_bm_close:buttons(gears.table.join(
                     awful.button({}, event.mouse.button_click_left, nil,
-                                 function()
-                                     o.kill(o)
-                                 end))
+                            function()
+                                o.kill(o)
+                            end))
             )
 
             -- ICON
@@ -532,9 +532,9 @@ local function update_function(widget, buttons, label, data, objects)
             })
 
             bgb_item = wibox.widget({
-                                        bg_clickable,
-                                        widget = wibox.container.background(),
-                                    })
+                bg_clickable,
+                widget = wibox.container.background(),
+            })
 
             bgb_item:buttons(create_buttons(buttons, o))
 
@@ -579,20 +579,20 @@ local function update_function(widget, buttons, label, data, objects)
         --log:debug(text, w_bg, bg_image, icon, args)
 
         local res = wibox.widget({
-                                     {
-                                         bgb_item,
-                                         widget = wibox.layout.fixed.horizontal()
-                                     },
+            {
+                bgb_item,
+                widget = wibox.layout.fixed.horizontal()
+            },
 
-                                     shape_border_width = 0.5,
-                                     shape_border_color = "#00000040",
-                                     shape              = function(cr, width, height)
-                                         gears.shape.transform(gears.shape.rounded_rect):translate(width, 0)(cr, 0, height, 0)
-                                         gears.shape.transform(gears.shape.rounded_rect):translate(0, 0)(cr, 0, height, 0)
-                                     end,
+            shape_border_width = 0.5,
+            shape_border_color = "#00000040",
+            shape              = function(cr, width, height)
+                gears.shape.transform(gears.shape.rounded_rect):translate(width, 0)(cr, 0, height, 0)
+                gears.shape.transform(gears.shape.rounded_rect):translate(0, 0)(cr, 0, height, 0)
+            end,
 
-                                     widget             = wibox.container.background()
-                                 })
+            widget             = wibox.container.background()
+        })
 
         widget:add(res)
     end
@@ -649,16 +649,16 @@ function tasklist:init(s)
 
     if not beautiful.tasklist_disable_icon then
         table.insert(tasklist_template[1], 1,
-                     {
-                         {
-                             id     = "icon_role",
-                             widget = wibox.widget.imagebox,
-                         },
-                         id     = "icon_margin_role",
-                         top    = 5,
-                         left   = 5,
-                         widget = wibox.container.margin
-                     }
+                {
+                    {
+                        id     = "icon_role",
+                        widget = wibox.widget.imagebox,
+                    },
+                    id     = "icon_margin_role",
+                    top    = 5,
+                    left   = 5,
+                    widget = wibox.container.margin
+                }
         )
     end
 

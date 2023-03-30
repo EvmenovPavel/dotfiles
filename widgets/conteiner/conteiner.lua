@@ -5,18 +5,18 @@ local conteiner = {}
 
 function init()
     local widget = wibox.widget({
-                                    awful.widget.layoutlist {
-                                        --source          = awful.widget.layoutlist.source.default_layouts,
-                                        screen = 1,
-                                        --base_layout     = wibox.widget ({
-                                        --    spacing         = 5,
-                                        --    forced_num_cols = 3,
-                                        --    layout          = wibox.layout.grid.vertical,
-                                        --}),
-                                    },
-                                    margins = 4,
-                                    widget  = wibox.container.margin,
-                                })
+        awful.widget.layoutlist {
+            --source          = awful.widget.layoutlist.source.default_layouts,
+            screen = 1,
+            --base_layout     = wibox.widget ({
+            --    spacing         = 5,
+            --    forced_num_cols = 3,
+            --    layout          = wibox.layout.grid.vertical,
+            --}),
+        },
+        margins = 4,
+        widget  = wibox.container.margin,
+    })
     --,
     --preferred_anchors = "middle",
     --border_color = beautiful.border_color,

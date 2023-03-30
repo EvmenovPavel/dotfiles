@@ -694,12 +694,12 @@ function menu.new(args, parent)
     end
 
     _menu.wibox         = wibox({
-                                    ontop        = true,
-                                    fg           = _menu.theme.fg_normal,
-                                    bg           = _menu.theme.bg_normal,
-                                    border_color = _menu.theme.border,
-                                    border_width = _menu.theme.border_width,
-                                    type         = "popup_menu" })
+        ontop        = true,
+        fg           = _menu.theme.fg_normal,
+        bg           = _menu.theme.bg_normal,
+        border_color = _menu.theme.border,
+        border_width = _menu.theme.border_width,
+        type         = "popup_menu" })
     _menu.wibox.visible = false
     _menu.wibox:set_widget(_menu.layout)
     set_size(_menu)

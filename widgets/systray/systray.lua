@@ -94,7 +94,7 @@ function systray:draw(context, cr, width, height)
         base = (in_dir + spacing) / cols - spacing
     end
     capi.awesome.systray(context.wibox.drawin, math.ceil(x), math.ceil(y),
-                         base, is_rotated, bg, reverse, spacing, rows)
+            base, is_rotated, bg, reverse, spacing, rows)
 end
 
 -- Private API. Does not appear in LDoc on purpose. This function is called
@@ -121,10 +121,10 @@ function systray:fit(context, width, height)
     if base == nil then
         if horizontal then
             base = math.min(math.floor((height + spacing) / rows) - spacing,
-                            math.floor((width + spacing) / cols) - spacing)
+                    math.floor((width + spacing) / cols) - spacing)
         else
             base = math.min(math.floor((width + spacing) / rows) - spacing,
-                            math.floor((height + spacing) / cols) - spacing)
+                    math.floor((height + spacing) / cols) - spacing)
         end
     end
     base = base + spacing

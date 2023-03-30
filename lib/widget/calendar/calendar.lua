@@ -1,29 +1,4 @@
 ---------------------------------------------------------------------------
--- A calendar widget
---
--- This module defines two widgets: a month calendar and a year calendar
---
--- The two widgets have a `date` property, in the form of
--- a table {day=[number|nil], month=[number|nil], year=[number]}.
---
--- The `year` widget displays the whole specified year, e.g. {year=2006}.
---
--- The `month` widget displays the calendar for the specified month, e.g. {month=12, year=2006},
--- highlighting the specified day if the day is provided in the date, e.g. {day=22, month=12, year=2006}.
---
--- Cell and container styles can be overridden using the `fn_embed` callback function
--- which is called before adding the widgets to the layouts. The `fn_embed` function
--- takes three arguments, the original widget, the flag (`string` used to identified the widget)
--- and the date (`table`).
--- It returns another widget, embedding (and modifying) the original widget.
---
---@DOC_wibox_widget_defaults_calendar_EXAMPLE@
---
--- @author getzze
--- @copyright 2017 getzze
--- @classmod wibox.widget.calendar
--- @update be3yh4uk
----------------------------------------------------------------------------
 --%a    abbreviated weekday name (e.g., Wed)
 --%A	full weekday name (e.g., Wednesday)
 --%b	abbreviated month name (e.g., Sep)
@@ -44,101 +19,20 @@
 --%%	the character `%´
 ---------------------------------------------------------------------------
 
+local gtable      = require("gears.table")
+local vertical    = require("wibox.layout.fixed").vertical
+local grid        = require("wibox.layout.grid")
+local textbox     = require("wibox.widget.textbox")
+local bgcontainer = require("wibox.container.background")
+local base        = require("wibox.widget.base")
+local beautiful   = require("beautiful")
+local wibox       = require("wibox")
 
-local setmetatable = setmetatable
-local string       = string
-local gtable       = require("gears.table")
-local vertical     = require("wibox.layout.fixed").vertical
-local grid         = require("wibox.layout.grid")
-local textbox      = require("wibox.widget.textbox")
-local bgcontainer  = require("wibox.container.background")
-local base         = require("wibox.widget.base")
-local beautiful    = require("beautiful")
-local wibox        = require("wibox")
+local calendar    = { mt = {} }
 
-local calendar     = { mt = {} }
+local properties  = { "date", "font", "spacing", "week_numbers", "start_sunday", "long_weekdays", "fn_embed" }
 
-local properties   = { "date", "font", "spacing", "week_numbers", "start_sunday", "long_weekdays", "fn_embed" }
-
-
---- The calendar font.
--- @beautiful beautiful.calendar_font
--- @tparam string font Font of the calendar
-
---- The calendar spacing.
--- @beautiful beautiful.calendar_spacing
--- @tparam number spacing Spacing of the grid (twice this value for inter-month spacing)
-
---- Display the calendar week numbers.
--- @beautiful beautiful.calendar_week_numbers
--- @param boolean Display week numbers
-
---- Start the week on Sunday.
--- @beautiful beautiful.calendar_start_sunday
--- @param boolean Start the week on Sunday
-
---- Format the weekdays with three characters instead of two
--- @beautiful beautiful.calendar_long_weekdays
--- @param boolean Use three characters for the weekdays instead of two
-
---- The calendar date.
---
--- A table representing the date {day=[number|nil], month=[number|nil], year=[number]}.
---
--- E.g.. {day=21, month=2, year=2005}, {month=2, year=2005}, {year=2005}
--- @tparam date table Date table.
--- @tparam number date.year Date year
--- @tparam number|nil date.month Date month
--- @tparam number|nil date.day Date day
--- @property date
-
---- The calendar font.
---
--- Choose a monospace font for a better rendering.
---@DOC_wibox_widget_calendar_font_EXAMPLE@
--- @param[opt="Monospace 10"] string Font of the calendar
--- @property font
-
---- The calendar spacing.
---
--- The spacing between cells in the month.
--- The spacing between months in a year calendar is twice this value.
--- @param[opt=5] number Spacing of the grid
--- @property spacing
-
---- Display the calendar week numbers.
---
---@DOC_wibox_widget_calendar_week_numbers_EXAMPLE@
--- @param[opt=false] boolean Display week numbers
--- @property week_numbers
-
---- Start the week on Sunday.
---
---@DOC_wibox_widget_calendar_start_sunday_EXAMPLE@
--- @param[opt=false] boolean Start the week on Sunday
--- @property start_sunday
-
---- Format the weekdays with three characters instead of two
---
---@DOC_wibox_widget_calendar_long_weekdays_EXAMPLE@
--- @param[opt=false] boolean Use three characters for the weekdays instead of two
--- @property long_weekdays
-
---- The widget encapsulating function.
---
--- Function that takes a widget, flag (`string`) and date (`table`) as argument
--- and returns a widget encapsulating the input widget.
---
--- Default value: function (widget, flag, date) return widget end
---
--- It is used to add a container to the grid layout and to the cells:
---
---@DOC_wibox_widget_calendar_fn_embed_cell_EXAMPLE@
--- @param function Function to embed the widget depending on its flag
--- @property fn_embed
-
-
-local align        = {
+local align       = {
     center = "center",
     right  = "right",
     left   = "left"
@@ -150,14 +44,14 @@ local align        = {
 -- @tparam boolean center Center the text horizontally
 -- @treturn wibox.widget.textbox
 local function make_cell(text, font, _align)
-    local w = textbox()
+    local w = wmapi.widget:textbox()
 
-    w:set_markup(text)
-    w:set_align(_align or align.left)
-    w:set_valign("center")
-    w:set_font(font)
+    w:markup(text)
+    w:align(_align or align.center)
+    w:valign(align.center)
+    w:font(font)
 
-    return w
+    return w:get()
 end
 
 --- Create a grid layout with the month calendar
@@ -187,6 +81,8 @@ local function create_month(props, date)
     local last_day       = os.date("*t", os.time({ year = date.year, month = date.month + 1, day = 0 }))
     -- получаем последнюю дату предыдущего месяца
     local last_day_start = os.date("*t", os.time({ year = date.year, month = date.month, day = 0 })).day
+    -- получаем текущий месяц
+    local current_month  = os.date("*t").month
 
     -- получаем последнюю дату (число)
     local month_days     = last_day.day
@@ -260,7 +156,7 @@ local function create_month(props, date)
         text = string.format("%2d", day)
 
         -- Focus day
-        if date.day == day then
+        if date.day == day and date.month == current_month then
             flag = "focus"
             text = "<b>" .. text .. "</b>"
         end
@@ -307,7 +203,6 @@ local function create_month(props, date)
     return layout --props.fn_embed(layout, "month", date)
 end
 
-
 --- Create a grid layout for the year calendar
 -- @tparam table props Table of year calendar properties
 -- @param date Year to display (number or string)
@@ -330,16 +225,19 @@ local function create_years(props, date)
         else
             month_date = { month = month, year = date.year }
         end
+
         in_layout:add(create_month(props, month_date))
     end
 
     -- Create a vertical layout
     local flag, text  = "yearheader", string.format("%s", date.year)
     local year_header = props.fn_embed(make_cell(text, props.font), flag, date)
+
     local out_layout  = vertical()
     out_layout:set_spacing(2 * props.spacing) -- separate header from calendar grid
     out_layout:add(year_header)
     out_layout:add(in_layout)
+
     return props.fn_embed(out_layout, "year", date)
 end
 
@@ -354,9 +252,9 @@ local function create_year(props, date)
 
     -- Create layout
     local layout = wibox.widget({
-                                    w,
-                                    widget = wibox.layout.fixed.vertical
-                                })
+        w,
+        widget = wibox.layout.fixed.vertical
+    })
     layout:set_spacing(props.spacing)
 
     return layout --props.fn_embed(layout, "text", date)
@@ -374,9 +272,9 @@ local function create_day(props, date)
 
     -- Create layout
     local layout = wibox.widget({
-                                    w,
-                                    widget = wibox.layout.fixed.vertical
-                                })
+        w,
+        widget = wibox.layout.fixed.vertical
+    })
     layout:set_spacing(props.spacing)
 
     return layout --props.fn_embed(layout, "text", date)
@@ -393,9 +291,9 @@ local function create_day_name(props, date)
 
     -- Create layout
     local layout = wibox.widget({
-                                    w,
-                                    widget = wibox.layout.fixed.vertical
-                                })
+        w,
+        widget = wibox.layout.fixed.vertical
+    })
     layout:set_spacing(props.spacing)
 
     return layout --props.fn_embed(layout, "text", date)
@@ -408,22 +306,27 @@ local function create_month_name(props, date)
     t            = os.time({ year = date.year, month = date.month, day = 1 })
     text         = os.date("%B", t)
     flag         = "monthnameheader"
-    w            = props.fn_embed(make_cell(text, props.font, align.left), flag, date)
+    w            = props.fn_embed(make_cell(text, props.font, align.center), flag, date)
 
     -- Create layout
     local layout = wibox.widget({
-                                    w,
-                                    widget = wibox.layout.fixed.vertical
-                                })
+        w,
+        widget = wibox.layout.fixed.vertical
+    })
     layout:set_spacing(props.spacing)
 
     return layout --props.fn_embed(layout, "text", date)
+end
+
+local function create_full_name(props, date)
+
 end
 
 --- Set the container to the current date
 -- @param self Widget to update
 local function fill_container(self)
     local date = self._private.date
+
     if date then
         -- Create calendar grid
         if self._private.type == "month" then
@@ -438,6 +341,8 @@ local function fill_container(self)
             self._private.container:set_widget(create_day_name(self._private, date))
         elseif self._private.type == "monthname" then
             self._private.container:set_widget(create_month_name(self._private, date))
+        elseif self._private.type == "fullname" then
+            self._private.container:set_widget(create_full_name(self._private, date))
         end
     else
         self._private.container:set_widget(nil)
@@ -445,8 +350,6 @@ local function fill_container(self)
 
     self:emit_signal("widget::layout_changed")
 end
-
-
 
 -- Set the calendar date
 function calendar:set_date(date)
@@ -456,7 +359,6 @@ function calendar:set_date(date)
         fill_container(self)
     end
 end
-
 
 -- Build properties function
 for _, prop in ipairs(properties) do
@@ -470,6 +372,7 @@ for _, prop in ipairs(properties) do
             end
         end
     end
+
     -- getter
     if not calendar["get_" .. prop] then
         calendar["get_" .. prop] = function(self)
@@ -477,7 +380,6 @@ for _, prop in ipairs(properties) do
         end
     end
 end
-
 
 --- Return a new calendar widget by type.
 --
@@ -510,15 +412,10 @@ local function get_calendar(type, date, font)
         return w
     end
 
-    -- header specific
-    --ret._private.subtype       = type == "year" and "monthheader" or "fullheader"
-    --ret._private.subtype       = type == "years" and "monthheader" or type == "text" and "textheader" or "fullheader"
-
     fill_container(ret)
 
     return ret
 end
-
 
 --- A month calendar widget.
 --
@@ -533,10 +430,9 @@ end
 -- @tparam[opt="Monospace 10"] string font Font of the calendar
 -- @treturn widget The month calendar widget
 -- @function wibox.widget.calendar.month
-function calendar.month(date, font)
+function calendar:month(date, font)
     return get_calendar("month", date, font)
 end
-
 
 --- A year calendar widget.
 --
@@ -550,101 +446,35 @@ end
 -- @tparam[opt="Monospace 10"] string font Font of the calendar
 -- @treturn widget The year calendar widget
 -- @function wibox.widget.calendar.year
-function calendar.years(date, font)
+function calendar:years(date, font)
     return get_calendar("years", date, font)
 end
 
-
 --- A text calendar widget.
 -- @function wibox.widget.calendar.text
-function calendar.day(date, font)
+function calendar:day(date, font)
     return get_calendar("day", date, font)
 end
 
 --- A text calendar widget.
 -- @function wibox.widget.calendar.day_name
-function calendar.year(date, font)
+function calendar:year(date, font)
     return get_calendar("year", date, font)
 end
 
 --- A text calendar widget.
 -- @function wibox.widget.calendar.day_name
-function calendar.day_name(date, font)
+function calendar:day_name(date, font)
     return get_calendar("dayname", date, font)
 end
 
 --- A text calendar widget.
 -- @function wibox.widget.calendar.month_name
-function calendar.month_name(date, font)
+function calendar:month_name(date, font)
     return get_calendar("monthname", date, font)
 end
 
-return setmetatable(calendar, calendar.mt)
-
--- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80
-
---selectedDate           = {
---    year  = 2023,
---    month = 4,
---    day   = 18,
---}
---
---minimumDate            = {
---    year  = 1752,
---    month = 10,
---    day   = 14,
---}
---
---maximumDate            = {
---    year  = 9999,
---    month = 12,
---    day   = 31
---}
---
---TimeSpec               = {
---    LocalTime,
---    UTC,
---    OffsetFromUTC,
---    TimeZone
---};
---
-----enum
---DayOfWeek              = {
---    Monday    = 1,
---    Tuesday   = 2,
---    Wednesday = 3,
---    Thursday  = 4,
---    Friday    = 5,
---    Saturday  = 6,
---    Sunday    = 7
---};
---
---firstDayOfWeek         = DayOfWeek.Friday
---
---gridVisible            = true
---
---local SelectionMode    = {
---    NoSelection     = 1,
---    SingleSelection = 2,
---}
---
---selectionMode          = SelectionMode.NoSelection
---
---HorizontalHeaderFormat = {
---    NoHorizontalHeader   = 1,
---    SingleLetterDayNames = 2,
---    ShortDayNames        = 3,
---    LongDayNames         = 4
---};
---
---VerticalHeaderFormat   = {
---    NoVerticalHeader = 1,
---    ISOWeekNumbers   = 2
---};
---
---horizontalHeaderFormat = HorizontalHeaderFormat.ShortDayNames
---verticalHeaderFormat   = VerticalHeaderFormat.NoVerticalHeader
---navigationBarVisible   = false
---
---dateEditEnabled        = true
---dateEditAcceptDelay    = true
+--return setmetatable(calendar, calendar.mt)
+return setmetatable(calendar, { __call = function()
+    return calendar
+end })

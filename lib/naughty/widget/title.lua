@@ -37,9 +37,9 @@ function title:set_notification(notif)
 
     if old then
         old:disconnect_signal("property::message",
-                              self._private.title_changed_callback)
+                self._private.title_changed_callback)
         old:disconnect_signal("property::fg",
-                              self._private.title_changed_callback)
+                self._private.title_changed_callback)
     end
 
     markup(self, notif.title, notif.fg, notif.font)

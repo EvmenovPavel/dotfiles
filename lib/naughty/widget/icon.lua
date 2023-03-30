@@ -101,7 +101,7 @@ function icon:set_notification(notif)
 
     if old then
         old:disconnect_signal("destroyed",
-                              self._private.icon_changed_callback)
+                self._private.icon_changed_callback)
     end
 
     local icn = gsurface.load_silently(notif.icon)

@@ -55,19 +55,19 @@ end
 
 local function init(s)
     local wibar = awful.wibar({
-                                  --bg           = beautiful.bg_normal .. "55",
+        --bg           = beautiful.bg_normal .. "55",
 
-                                  ontop        = false,
-                                  stretch      = true,
-                                  position     = beautiful.wr_position,
-                                  border_width = 1,
-                                  border_color = beautiful.bg_dark,
-                                  --bg           = "#00000099",
-                                  fg           = beautiful.fg_normal,
-                                  visible      = true,
-                                  height       = beautiful.wr_height,
-                                  screen       = s,
-                              })
+        ontop        = false,
+        stretch      = true,
+        position     = beautiful.wr_position,
+        border_width = 1,
+        border_color = beautiful.bg_dark,
+        --bg           = "#00000099",
+        fg           = beautiful.fg_normal,
+        visible      = true,
+        height       = beautiful.wr_height,
+        screen       = s,
+    })
 
     wibar:setup {
         mywibar:w_left(s),

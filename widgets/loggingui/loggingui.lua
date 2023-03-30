@@ -33,9 +33,9 @@ function loggingui:toggle(popupWidget, calendarWidget)
 end
 
 awesome.connect_signal("loggingui_console",
-                       function(stdout)
-                           log:debug(stdout)
-                       end
+        function(stdout)
+            log:debug(stdout)
+        end
 )
 
 local function emit_signal(stdout)
@@ -61,23 +61,23 @@ function loggingui:init()
     }
 
     w_volume_icon:connect_signal(button.release,
-                                 function()
-                                     self:toggle(popupWidget, calendarWidget)
-                                 end)
+            function()
+                self:toggle(popupWidget, calendarWidget)
+            end)
 
     w_volume_icon:buttons(
             awful.util.table.join(
                     awful.button({
-                                     event = event.mouse.button_click_scroll_down,
-                                     func  = function()
-                                         popupWidget:set_widget(calendarWidget)
-                                     end
-                                 }),
+                        event = event.mouse.button_click_scroll_down,
+                        func  = function()
+                            popupWidget:set_widget(calendarWidget)
+                        end
+                    }),
                     awful.button({ event = event.mouse.button_click_scroll,
                                    func  = function()
                                        popupWidget:set_widget(calendarWidget)
                                    end
-                                 })
+                    })
             )
     )
 

@@ -7,12 +7,12 @@ function vradiobox:init()
     local ret  = {}
 
     ret.res    = wibox.widget({
-                                  layout = wibox.layout.fixed.vertical
-                              })
+        layout = wibox.layout.fixed.vertical
+    })
 
     ret.widget = wibox.widget({
-                                  widget = wibox.container.background,
-                              })
+        widget = wibox.container.background,
+    })
 
     ret.table  = {}
 

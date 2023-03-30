@@ -7,12 +7,12 @@ function hradiobox:init()
     local ret  = {}
 
     ret.res    = wibox.widget({
-                                  layout = wibox.layout.fixed.horizontal
-                              })
+        layout = wibox.layout.fixed.horizontal
+    })
 
     ret.widget = wibox.widget({
-                                  widget = wibox.container.background,
-                              })
+        widget = wibox.container.background,
+    })
 
     ret.table  = {}
 

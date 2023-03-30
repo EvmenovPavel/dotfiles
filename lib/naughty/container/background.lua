@@ -56,13 +56,13 @@ function background:set_notification(notif)
 
     if old then
         old:disconnect_signal("property::bg",
-                              self._private.background_changed_callback)
+                self._private.background_changed_callback)
         old:disconnect_signal("property::border_width",
-                              self._private.background_changed_callback)
+                self._private.background_changed_callback)
         old:disconnect_signal("property::border_color",
-                              self._private.background_changed_callback)
+                self._private.background_changed_callback)
         old:disconnect_signal("property::shape",
-                              self._private.background_changed_callback)
+                self._private.background_changed_callback)
     end
 
     update_background(notif, self)

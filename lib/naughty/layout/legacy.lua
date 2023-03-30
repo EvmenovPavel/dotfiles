@@ -222,11 +222,11 @@ local function update_size(self)
     self.width   = width + 2 * border_width
     local offset = get_offset(self.screen, self.position, self.idx, self.width, self.height)
     self.box:geometry({
-                          width  = width,
-                          height = height,
-                          x      = offset.x,
-                          y      = offset.y,
-                      })
+        width  = width,
+        height = height,
+        x      = offset.x,
+        y      = offset.y,
+    })
 
     -- update positions of other notifications
     arrange(self.screen)
@@ -540,14 +540,14 @@ function naughty.default_notification_handler(notification, args)
 
                 if icon_size and (icn:get_height() > icon_size or icn:get_width() > icon_size) then
                     size_info.icon_scale_factor = icon_size / math.max(icn:get_height(),
-                                                                       icn:get_width())
+                            icn:get_width())
 
                     size_info.icon_w            = icn:get_width() * size_info.icon_scale_factor
                     size_info.icon_h            = icn:get_height() * size_info.icon_scale_factor
 
                     local scaled                = cairo.ImageSurface(cairo.Format.ARGB32,
-                                                                     gmath.round(size_info.icon_w),
-                                                                     gmath.round(size_info.icon_h))
+                            gmath.round(size_info.icon_w),
+                            gmath.round(size_info.icon_h))
 
                     local cr                    = cairo.Context(scaled)
                     cr:scale(size_info.icon_scale_factor, size_info.icon_scale_factor)
@@ -570,9 +570,9 @@ function naughty.default_notification_handler(notification, args)
             update_icon(icon)
         elseif had_icon then
             require("gears.debug").print_warning("naughty: failed to load icon " ..
-                                                         (args.icon or preset.icon) ..
-                                                         "(app_name: " .. app_name .. ")" ..
-                                                         "(title: " .. title .. ")")
+                    (args.icon or preset.icon) ..
+                    "(app_name: " .. app_name .. ")" ..
+                    "(title: " .. title .. ")")
         end
 
     end

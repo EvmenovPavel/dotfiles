@@ -45,25 +45,25 @@ function expressvpn:init()
     local bash_upower = [[bash -c "expressvpn status"]]
 
     wmapi:watch(bash_upower, 1,
-                function(stdout)
-                    for line in stdout:gmatch("[^\r\n]+") do
-                        _private.line  = line:gsub("^%s+", "")
-                        _private.state = tonumber(self:state_to_number(line))
-                    end
+            function(stdout)
+                for line in stdout:gmatch("[^\r\n]+") do
+                    _private.line  = line:gsub("^%s+", "")
+                    _private.state = tonumber(self:state_to_number(line))
+                end
 
-                    if _private.state == 1 and _private.notify ~= _private.state then
-                        self:notify_power(_private.state, _private.line)
+                if _private.state == 1 and _private.notify ~= _private.state then
+                    self:notify_power(_private.state, _private.line)
 
-                    elseif _private.state == 2 and _private.notify ~= _private.state then
-                        self:notify_power(_private.state, _private.line)
+                elseif _private.state == 2 and _private.notify ~= _private.state then
+                    self:notify_power(_private.state, _private.line)
 
-                    elseif _private.state == 3 and _private.notify ~= _private.state then
-                        self:notify_power(_private.state, _private.line)
+                elseif _private.state == 3 and _private.notify ~= _private.state then
+                    self:notify_power(_private.state, _private.line)
 
-                    end
+                end
 
-                    _private.notify = _private.state
-                end)
+                _private.notify = _private.state
+            end)
 end
 
 return setmetatable(expressvpn, { __call = function(_, ...)

@@ -346,7 +346,7 @@ end
 
 if not gfs.file_readable(STORAGE) then
     spawn.easy_async(string.format([[bash -c "dirname %s | xargs mkdir -p && echo '{\"todo_items\":{}}' > %s"]],
-                                   STORAGE, STORAGE))
+            STORAGE, STORAGE))
 end
 
 return setmetatable(todo_widget, { __call = function(_, ...)

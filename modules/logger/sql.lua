@@ -36,8 +36,8 @@ local function insert(params, level, message)
 
     local logDate  = os.date("%Y-%m-%d %H:%M:%S")
     local insert   = string.format("INSERT INTO %s (%s, %s, %s) VALUES ('%s', '%s', '%s')",
-                                   params.tablename, params.logdatefield, params.loglevelfield,
-                                   params.logmessagefield, logDate, level, string.gsub(message, "'", "''"))
+            params.tablename, params.logdatefield, params.loglevelfield,
+            params.logmessagefield, logDate, level, string.gsub(message, "'", "''"))
 
     local ret, err = pcall(con.execute, con, insert)
     if not ret then

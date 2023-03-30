@@ -18,67 +18,67 @@ local function ellipsize(text, length)
         return text:sub(0, length)
     end
     return (utf8.len(text) > length and length > 0)
-        and text:sub(0, utf8.offset(text, length - 2) - 1) .. '...'
-        or text
+            and text:sub(0, utf8.offset(text, length - 2) - 1) .. '...'
+            or text
 end
 
 local spotify_widget = {}
 
 local function worker(user_args)
 
-    local args = user_args or {}
+    local args                   = user_args or {}
 
-    local play_icon = args.play_icon or '/usr/share/icons/Arc/actions/24/player_play.png'
-    local pause_icon = args.pause_icon or '/usr/share/icons/Arc/actions/24/player_pause.png'
-    local font = args.font or 'Play 9'
-    local dim_when_paused = args.dim_when_paused == nil and false or args.dim_when_paused
-    local dim_opacity = args.dim_opacity or 0.2
-    local max_length = args.max_length or 15
-    local show_tooltip = args.show_tooltip == nil and true or args.show_tooltip
-    local timeout = args.timeout or 1
-    local sp_bin = args.sp_bin or 'sp'
+    local play_icon              = args.play_icon or '/usr/share/icons/Arc/actions/24/player_play.png'
+    local pause_icon             = args.pause_icon or '/usr/share/icons/Arc/actions/24/player_pause.png'
+    local font                   = args.font or 'Play 9'
+    local dim_when_paused        = args.dim_when_paused == nil and false or args.dim_when_paused
+    local dim_opacity            = args.dim_opacity or 0.2
+    local max_length             = args.max_length or 15
+    local show_tooltip           = args.show_tooltip == nil and true or args.show_tooltip
+    local timeout                = args.timeout or 1
+    local sp_bin                 = args.sp_bin or 'sp'
 
     local GET_SPOTIFY_STATUS_CMD = sp_bin .. ' status'
-    local GET_CURRENT_SONG_CMD = sp_bin .. ' current'
-    local PLAY_PAUSE_CMD = sp_bin .. ' play'
-    local NEXT_SONG_CMD = sp_bin .. ' next'
-    local PREVIOUS_SONG_CMD = sp_bin .. ' prev'
+    local GET_CURRENT_SONG_CMD   = sp_bin .. ' current'
+    local PLAY_PAUSE_CMD         = sp_bin .. ' play'
+    local NEXT_SONG_CMD          = sp_bin .. ' next'
+    local PREVIOUS_SONG_CMD      = sp_bin .. ' prev'
 
-    local cur_artist = ''
-    local cur_title = ''
-    local cur_album = ''
+    local cur_artist             = ''
+    local cur_title              = ''
+    local cur_album              = ''
 
-    spotify_widget = wibox.widget {
+    spotify_widget               = wibox.widget {
         {
-            id = 'artistw',
-            font = font,
+            id     = 'artistw',
+            font   = font,
             widget = wibox.widget.textbox,
         },
         {
             layout = wibox.layout.stack,
             {
-                id = "icon",
+                id     = "icon",
                 widget = wibox.widget.imagebox,
             },
             {
-                widget = wibox.widget.textbox,
-                font = font,
-                text = ' ',
+                widget        = wibox.widget.textbox,
+                font          = font,
+                text          = ' ',
                 forced_height = 1
             }
         },
         {
-            layout = wibox.container.scroll.horizontal,
-            max_size = 100,
+            layout        = wibox.container.scroll.horizontal,
+            max_size      = 100,
             step_function = wibox.container.scroll.step_functions.waiting_nonlinear_back_and_forth,
-            speed = 40,
+            speed         = 40,
             {
-                id = 'titlew',
-                font = font,
+                id     = 'titlew',
+                font   = font,
                 widget = wibox.widget.textbox
             }
         },
-        layout = wibox.layout.align.horizontal,
+        layout     = wibox.layout.align.horizontal,
         set_status = function(self, is_playing)
             self:get_children_by_id('icon')[1]:set_image(is_playing and play_icon or pause_icon)
             if dim_when_paused then
@@ -91,7 +91,7 @@ local function worker(user_args)
                 self:get_children_by_id('artistw')[1]:emit_signal('widget::redraw_needed')
             end
         end,
-        set_text = function(self, artist, song)
+        set_text   = function(self, artist, song)
             local artist_to_display = ellipsize(artist, max_length)
             if self:get_children_by_id('artistw')[1]:get_markup() ~= artist_to_display then
                 self:get_children_by_id('artistw')[1]:set_markup(artist_to_display)
@@ -103,26 +103,25 @@ local function worker(user_args)
         end
     }
 
-    local update_widget_icon = function(widget, stdout, _, _, _)
+    local update_widget_icon     = function(widget, stdout, _, _, _)
         stdout = string.gsub(stdout, "\n", "")
         widget:set_status(stdout == 'Playing' and true or false)
     end
 
-    local update_widget_text = function(widget, stdout, _, _, _)
+    local update_widget_text     = function(widget, stdout, _, _, _)
         if string.find(stdout, 'Error: Spotify is not running.') ~= nil then
-            widget:set_text('','')
+            widget:set_text('', '')
             widget:set_visible(false)
             return
         end
 
-        local escaped = string.gsub(stdout, "&", '&amp;')
-        local album, _, artist, title =
-            string.match(escaped, 'Album%s*(.*)\nAlbumArtist%s*(.*)\nArtist%s*(.*)\nTitle%s*(.*)\n')
+        local escaped                 = string.gsub(stdout, "&", '&amp;')
+        local album, _, artist, title = string.match(escaped, 'Album%s*(.*)\nAlbumArtist%s*(.*)\nArtist%s*(.*)\nTitle%s*(.*)\n')
 
-        if album ~= nil and title ~=nil and artist ~= nil then
+        if album ~= nil and title ~= nil and artist ~= nil then
             cur_artist = artist
-            cur_title = title
-            cur_album = album
+            cur_title  = title
+            cur_album  = album
 
             widget:set_text(artist, title)
             widget:set_visible(true)
@@ -149,19 +148,18 @@ local function worker(user_args)
         end)
     end)
 
-
     if show_tooltip then
         local spotify_tooltip = awful.tooltip {
-            mode = 'outside',
-            preferred_positions = {'bottom'},
-         }
+            mode                = 'outside',
+            preferred_positions = { 'bottom' },
+        }
 
         spotify_tooltip:add_to_object(spotify_widget)
 
         spotify_widget:connect_signal('mouse::enter', function()
             spotify_tooltip.markup = '<b>Album</b>: ' .. cur_album
-                .. '\n<b>Artist</b>: ' .. cur_artist
-                .. '\n<b>Song</b>: ' .. cur_title
+                    .. '\n<b>Artist</b>: ' .. cur_artist
+                    .. '\n<b>Song</b>: ' .. cur_title
         end)
     end
 

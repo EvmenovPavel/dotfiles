@@ -1,59 +1,59 @@
-local wibox = require("wibox")
-local gears = require("gears")
+local wibox  = require("wibox")
+local gears  = require("gears")
 
 local switch = {}
 
 function switch:init()
-    local ret = wmapi.widget:base("switch")
+    local ret                = wmapi.widget:base("switch")
 
-    local __private = {}
+    local __private          = {}
 
-    __private.checked = false
-    __private.func_checked = function()
+    __private.checked        = false
+    __private.func_checked   = function()
         log:debug("switch:checked")
     end
     __private.func_unchecked = function()
         log:debug("switch:unchecked")
     end
 
-    local w_switch = wibox.widget({
+    local w_switch           = wibox.widget({
         checked = false,
-        bg = color.border,
-        shape = gears.shape.circle,
-        widget = wibox.widget.checkbox
+        bg      = color.border,
+        shape   = gears.shape.circle,
+        widget  = wibox.widget.checkbox
     })
 
-    local w_margin = wibox.widget({
+    local w_margin           = wibox.widget({
         {
             w_switch,
             margins = 3,
-            widget = wibox.container.margin,
+            widget  = wibox.container.margin,
         },
         forced_width = 50,
-        left = 0,
-        widget = wibox.container.margin,
+        left         = 0,
+        widget       = wibox.container.margin,
     })
 
-    local w_outline = wibox.widget({
+    local w_outline          = wibox.widget({
         w_margin,
-        bg = color.active_inner,
-        shape = gears.shape.rounded_bar,
+        bg     = color.active_inner,
+        shape  = gears.shape.rounded_bar,
         widget = wibox.container.background,
     })
 
-    local w_bg = wibox.widget({
+    local w_bg               = wibox.widget({
         {
             w_outline,
             margins = 0.25,
-            widget = wibox.container.margin,
+            widget  = wibox.container.margin,
         },
-        bg = color.active,
+        bg                 = color.active,
         shape_border_color = color.border_hover,
-        shape = gears.shape.rounded_bar,
-        widget = wibox.container.background,
+        shape              = gears.shape.rounded_bar,
+        widget             = wibox.container.background,
     })
 
-    local w_textbox = wmapi.widget:textbox()
+    local w_textbox          = wmapi.widget:textbox()
     function ret:textbox()
         return w_textbox
     end
@@ -64,7 +64,7 @@ function switch:init()
             widget = wibox.container.background,
         },
         {
-            right = 5,
+            right  = 5,
             widget = wibox.container.margin,
         },
         {
@@ -80,13 +80,13 @@ function switch:init()
             if __private.checked then
                 w_margin.left = 22
 
-                w_switch.bg = color.active_inner
-                w_outline.bg = color.border_hover
+                w_switch.bg   = color.active_inner
+                w_outline.bg  = color.border_hover
             else
                 w_margin.left = 0
 
-                switch.bg = color.border
-                w_outline.bg = color.active_inner
+                switch.bg     = color.border
+                w_outline.bg  = color.active_inner
             end
         end
     end)

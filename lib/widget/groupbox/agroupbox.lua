@@ -6,12 +6,12 @@ function layout_vertical:create()
     local layout  = {}
 
     layout.widget = wibox.widget({
-                                     homogeneous   = true,
-                                     spacing       = 5,
-                                     min_cols_size = 10,
-                                     min_rows_size = 10,
-                                     layout        = wibox.layout.grid,
-                                 })
+        homogeneous   = true,
+        spacing       = 5,
+        min_cols_size = 10,
+        min_rows_size = 10,
+        layout        = wibox.layout.grid,
+    })
 
     function layout:get()
         return self.widget

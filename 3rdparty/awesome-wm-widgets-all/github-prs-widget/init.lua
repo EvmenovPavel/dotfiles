@@ -9,76 +9,76 @@
 -- @copyright 2021 Pavel Makhov
 -------------------------------------------------
 
-local awful = require("awful")
-local wibox = require("wibox")
-local watch = require("awful.widget.watch")
-local json = require("json")
-local spawn = require("awful.spawn")
-local naughty = require("naughty")
-local gears = require("gears")
-local beautiful = require("beautiful")
-local gfs = require("gears.filesystem")
-local color = require("gears.color")
+local awful               = require("awful")
+local wibox               = require("wibox")
+local watch               = require("awful.widget.watch")
+local json                = require("json")
+local spawn               = require("awful.spawn")
+local naughty             = require("naughty")
+local gears               = require("gears")
+local beautiful           = require("beautiful")
+local gfs                 = require("gears.filesystem")
+local color               = require("gears.color")
 
-local HOME_DIR = os.getenv("HOME")
-local WIDGET_DIR = HOME_DIR .. '/.config/awesome/awesome-wm-widgets/github-prs-widget/'
-local ICONS_DIR = WIDGET_DIR .. 'icons/'
+local HOME_DIR            = os.getenv("HOME")
+local WIDGET_DIR          = HOME_DIR .. '/.config/awesome/awesome-wm-widgets/github-prs-widget/'
+local ICONS_DIR           = WIDGET_DIR .. 'icons/'
 
-local AVATARS_DIR = HOME_DIR .. '/.cache/awmw/github-widget/avatars/'
+local AVATARS_DIR         = HOME_DIR .. '/.cache/awmw/github-widget/avatars/'
 local DOWNLOAD_AVATAR_CMD = [[sh -c "curl -L --create-dirs -o ''\\]] .. AVATARS_DIR .. [[%s %s"]]
 
-local GET_PRS_CMD = "gh api -X GET search/issues "
+local GET_PRS_CMD         = "gh api -X GET search/issues "
         .. "-f 'q=review-requested:%s is:unmerged is:open' "
         .. "-f per_page=30 "
         .. "--jq '[.items[] | {url,repository_url,title,html_url,comments,assignees,user,created_at,draft}]'"
 
-local github_widget = wibox.widget {
+local github_widget       = wibox.widget {
     {
         {
             {
                 {
                     {
-                        id = 'icon',
+                        id     = 'icon',
                         widget = wibox.widget.imagebox
                     },
                     {
-                        id = 'error_marker',
-                        draw = function(_, _, cr, width, height)
+                        id      = 'error_marker',
+                        draw    = function(_, _, cr, width, height)
                             cr:set_source(color('#BF616A'))
                             cr:arc(width - height / 6, height / 6, height / 6, 0, math.pi * 2)
                             cr:fill()
                         end,
                         visible = false,
-                        layout = wibox.widget.base.make_widget,
+                        layout  = wibox.widget.base.make_widget,
                     },
                     layout = wibox.layout.stack
                 },
                 margins = 4,
-                layout = wibox.container.margin
+                layout  = wibox.container.margin
             },
             {
-                id = "txt",
+                id     = "txt",
                 widget = wibox.widget.textbox
             },
             {
-                id = "new_pr",
+                id     = "new_pr",
                 widget = wibox.widget.textbox
             },
             spacing = 4,
-            layout = wibox.layout.fixed.horizontal,
+            layout  = wibox.layout.fixed.horizontal,
         },
-        left = 4,
-        right = 4,
+        left   = 4,
+        right  = 4,
         widget = wibox.container.margin
     },
-    shape = function(cr, width, height)
+    shape            = function(cr, width, height)
         gears.shape.rounded_rect(cr, width, height, 4)
     end,
-    widget = wibox.container.background,
-    set_text = function(self, new_value)
+    widget           = wibox.container.background,
+    set_text         = function(self, new_value)
         self:get_children_by_id('txt')[1]:set_text(new_value)
     end,
-    set_icon = function(self, new_value)
+    set_icon         = function(self, new_value)
         self:get_children_by_id('icon')[1]:set_image(new_value)
     end,
     is_everything_ok = function(self, is_ok)
@@ -96,28 +96,28 @@ local github_widget = wibox.widget {
 }
 
 local function show_warning(message)
-    naughty.notify{
+    naughty.notify {
         preset = naughty.config.presets.critical,
-        title = 'GitHub PRs Widget',
-        text = message}
+        title  = 'GitHub PRs Widget',
+        text   = message }
 end
 
-local popup = awful.popup{
-    ontop = true,
-    visible = false,
-    shape = gears.shape.rounded_rect,
-    border_width = 1,
+local popup = awful.popup {
+    ontop         = true,
+    visible       = false,
+    shape         = gears.shape.rounded_rect,
+    border_width  = 1,
     maximum_width = 400,
-    offset = { y = 5 },
-    widget = {}
+    offset        = { y = 5 },
+    widget        = {}
 }
 
 --- Converts string representation of date (2020-06-02T11:25:27Z) to date
 local function parse_date(date_str)
-    local pattern = "(%d+)%-(%d+)%-(%d+)T(%d+):(%d+):(%d+)%Z"
+    local pattern                 = "(%d+)%-(%d+)%-(%d+)T(%d+):(%d+):(%d+)%Z"
     local y, m, d, h, min, sec, _ = date_str:match(pattern)
 
-    return os.time{year = y, month = m, day = d, hour = h, min = min, sec = sec}
+    return os.time { year = y, month = m, day = d, hour = h, min = min, sec = sec }
 end
 
 --- Converts seconds to "time ago" represenation, like '1 hour ago'
@@ -148,22 +148,21 @@ local function ellipsize(text, length)
 end
 
 local warning_shown = false
-local tooltip = awful.tooltip {
-    mode = 'outside',
-    preferred_positions = {'bottom'},
+local tooltip       = awful.tooltip {
+    mode                = 'outside',
+    preferred_positions = { 'bottom' },
 }
 
-local config = {}
+local config        = {}
 
-config.reviewer = nil
+config.reviewer     = nil
 
-config.bg_normal = '#aaaaaa'
-config.bg_focus = '#ffffff'
-
+config.bg_normal    = '#aaaaaa'
+config.bg_focus     = '#ffffff'
 
 local function worker(user_args)
 
-    local args = user_args or {}
+    local args    = user_args or {}
 
     -- Setup config for the widget instance.
     -- The `_config` table will keep the first existing value after checking
@@ -173,14 +172,14 @@ local function worker(user_args)
         _config[prop] = args[prop] or beautiful[prop] or value
     end
 
-    local icon = args.icon or ICONS_DIR .. 'git-pull-request.svg'
-    local reviewer = args.reviewer
-    local timeout = args.timeout or 60
+    local icon           = args.icon or ICONS_DIR .. 'git-pull-request.svg'
+    local reviewer       = args.reviewer
+    local timeout        = args.timeout or 60
 
     local current_number_of_prs
 
-    local to_review_rows = {layout = wibox.layout.fixed.vertical}
-    local rows = {layout = wibox.layout.fixed.vertical}
+    local to_review_rows = { layout = wibox.layout.fixed.vertical }
+    local rows           = { layout = wibox.layout.fixed.vertical }
 
     github_widget:set_icon(icon)
 
@@ -204,7 +203,7 @@ local function worker(user_args)
         tooltip:remove_from_object(widget)
         widget:is_everything_ok(true)
 
-        local prs = json.decode(stdout)
+        local prs             = json.decode(stdout)
 
         current_number_of_prs = #prs
 
@@ -216,17 +215,17 @@ local function worker(user_args)
         widget:set_visible(true)
         widget:set_text(current_number_of_prs)
 
-        for i = 0, #rows do rows[i]=nil end
+        for i = 0, #rows do rows[i] = nil end
 
-        for i = 0, #to_review_rows do to_review_rows[i]=nil end
+        for i = 0, #to_review_rows do to_review_rows[i] = nil end
         table.insert(to_review_rows, {
             {
-                markup = '<span size="large" color="#ffffff">PRs to review</span>',
-                align = 'center',
+                markup        = '<span size="large" color="#ffffff">PRs to review</span>',
+                align         = 'center',
                 forced_height = 20,
-                widget = wibox.widget.textbox
+                widget        = wibox.widget.textbox
             },
-            bg = _config.bg_normal,
+            bg     = _config.bg_normal,
             widget = wibox.container.background
         })
 
@@ -234,119 +233,119 @@ local function worker(user_args)
 
         for _, pr in ipairs(prs) do
             local path_to_avatar = AVATARS_DIR .. pr.user.id
-            local index = string.find(pr.repository_url, "/[^/]*$")
-            local repo = string.sub(pr.repository_url, index + 1)
+            local index          = string.find(pr.repository_url, "/[^/]*$")
+            local repo           = string.sub(pr.repository_url, index + 1)
 
-            local row = wibox.widget {
+            local row            = wibox.widget {
                 {
                     {
                         {
                             {
-                                resize = true,
-                                image = path_to_avatar,
-                                forced_width = 40,
+                                resize        = true,
+                                image         = path_to_avatar,
+                                forced_width  = 40,
                                 forced_height = 40,
-                                widget = wibox.widget.imagebox
+                                widget        = wibox.widget.imagebox
                             },
-                            id = 'avatar',
+                            id      = 'avatar',
                             margins = 4,
-                            layout = wibox.container.margin
+                            layout  = wibox.container.margin
                         },
                         {
                             {
-                                id = 'title',
-                                markup = '<b>' .. ellipsize(pr.title, 60) .. '</b>',
-                                widget = wibox.widget.textbox,
+                                id           = 'title',
+                                markup       = '<b>' .. ellipsize(pr.title, 60) .. '</b>',
+                                widget       = wibox.widget.textbox,
                                 forced_width = 400
                             },
                             {
                                 {
                                     {
                                         {
-                                            image = ICONS_DIR .. 'book.svg',
-                                            forced_width = 12,
+                                            image         = ICONS_DIR .. 'book.svg',
+                                            forced_width  = 12,
                                             forced_height = 12,
-                                            resize = true,
-                                            widget = wibox.widget.imagebox
+                                            resize        = true,
+                                            widget        = wibox.widget.imagebox
                                         },
                                         {
-                                            text = repo,
+                                            text   = repo,
                                             widget = wibox.widget.textbox
                                         },
                                         spacing = 4,
-                                        expand = 'none',
-                                        layout = wibox.layout.fixed.horizontal
+                                        expand  = 'none',
+                                        layout  = wibox.layout.fixed.horizontal
                                     },
                                     {
                                         {
-                                            image = ICONS_DIR .. 'user.svg',
-                                            forced_width = 12,
+                                            image         = ICONS_DIR .. 'user.svg',
+                                            forced_width  = 12,
                                             forced_height = 12,
-                                            resize = true,
-                                            widget = wibox.widget.imagebox
+                                            resize        = true,
+                                            widget        = wibox.widget.imagebox
                                         },
                                         {
-                                            text = pr.user.login,
+                                            text   = pr.user.login,
                                             widget = wibox.widget.textbox
                                         },
                                         spacing = 4,
-                                        expand = 'none',
-                                        layout = wibox.layout.fixed.horizontal
+                                        expand  = 'none',
+                                        layout  = wibox.layout.fixed.horizontal
                                     },
                                     spacing = 8,
-                                    expand = 'none',
-                                    layout = wibox.layout.fixed.horizontal
+                                    expand  = 'none',
+                                    layout  = wibox.layout.fixed.horizontal
                                 },
                                 {
                                     {
                                         {
-                                            image = ICONS_DIR .. 'user.svg',
-                                            forced_width = 12,
+                                            image         = ICONS_DIR .. 'user.svg',
+                                            forced_width  = 12,
                                             forced_height = 12,
-                                            resize = true,
-                                            widget = wibox.widget.imagebox
+                                            resize        = true,
+                                            widget        = wibox.widget.imagebox
                                         },
                                         {
-                                            text = to_time_ago(os.difftime(current_time, parse_date(pr.created_at))),
+                                            text   = to_time_ago(os.difftime(current_time, parse_date(pr.created_at))),
                                             widget = wibox.widget.textbox
                                         },
                                         spacing = 4,
-                                        expand = 'none',
-                                        layout = wibox.layout.fixed.horizontal
+                                        expand  = 'none',
+                                        layout  = wibox.layout.fixed.horizontal
 
                                     },
                                     {
                                         {
-                                            image = ICONS_DIR .. 'message-square.svg',
-                                            forced_width = 12,
+                                            image         = ICONS_DIR .. 'message-square.svg',
+                                            forced_width  = 12,
                                             forced_height = 12,
-                                            resize = true,
-                                            widget = wibox.widget.imagebox
+                                            resize        = true,
+                                            widget        = wibox.widget.imagebox
                                         },
                                         {
-                                            text = pr.comments,
+                                            text   = pr.comments,
                                             widget = wibox.widget.textbox
                                         },
                                         spacing = 4,
-                                        expand = 'none',
-                                        layout = wibox.layout.fixed.horizontal
+                                        expand  = 'none',
+                                        layout  = wibox.layout.fixed.horizontal
 
                                     },
                                     spacing = 8,
-                                    layout = wibox.layout.fixed.horizontal
+                                    layout  = wibox.layout.fixed.horizontal
                                 },
                                 layout = wibox.layout.fixed.vertical
                             },
                             spacing = 4,
-                            layout = wibox.layout.fixed.vertical
+                            layout  = wibox.layout.fixed.vertical
                         },
                         spacing = 8,
-                        layout = wibox.layout.fixed.horizontal
+                        layout  = wibox.layout.fixed.horizontal
                     },
                     margins = 8,
-                    layout = wibox.container.margin
+                    layout  = wibox.container.margin
                 },
-                bg = _config.bg_normal,
+                bg     = _config.bg_normal,
                 widget = wibox.container.background
             }
 
@@ -381,26 +380,26 @@ local function worker(user_args)
 
             local old_cursor, old_wibox
             row:get_children_by_id('title')[1]:connect_signal("mouse::enter", function()
-                local wb = mouse.current_wibox
+                local wb              = mouse.current_wibox
                 old_cursor, old_wibox = wb.cursor, wb
-                wb.cursor = "hand1"
+                wb.cursor             = "hand1"
             end)
             row:get_children_by_id('title')[1]:connect_signal("mouse::leave", function()
                 if old_wibox then
                     old_wibox.cursor = old_cursor
-                    old_wibox = nil
+                    old_wibox        = nil
                 end
             end)
 
             row:get_children_by_id('avatar')[1]:connect_signal("mouse::enter", function()
-                local wb = mouse.current_wibox
+                local wb              = mouse.current_wibox
                 old_cursor, old_wibox = wb.cursor, wb
-                wb.cursor = "hand1"
+                wb.cursor             = "hand1"
             end)
             row:get_children_by_id('avatar')[1]:connect_signal("mouse::leave", function()
                 if old_wibox then
                     old_wibox.cursor = old_cursor
-                    old_wibox = nil
+                    old_wibox        = nil
                 end
             end)
 

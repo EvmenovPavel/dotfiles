@@ -271,9 +271,9 @@ function keyboardlayout.new()
     self.set_layout  = function(group_number)
         if (0 > group_number) or (group_number > #self._layout) then
             error("Invalid group number: " .. group_number ..
-                          "expected number from 0 to " .. #self._layout)
+                    "expected number from 0 to " .. #self._layout)
             log:error("Invalid group number: " .. group_number ..
-                              "expected number from 0 to " .. #self._layout)
+                    "expected number from 0 to " .. #self._layout)
             return
         end
 
@@ -284,13 +284,13 @@ function keyboardlayout.new()
 
     -- callback for processing layout changes
     awesome.connect_signal("xkb::map_changed",
-                           function()
-                               update_layout(self)
-                           end)
+            function()
+                update_layout(self)
+            end)
     awesome.connect_signal("xkb::group_changed",
-                           function()
-                               update_status(self)
-                           end)
+            function()
+                update_status(self)
+            end)
 
     -- Mouse bindings
     --self:buttons(

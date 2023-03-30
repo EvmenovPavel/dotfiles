@@ -8,9 +8,9 @@ function piechart:init(args)
     local ret  = {}
 
     ret.widget = wibox.widget({
-                                  type   = "piechart",
-                                  widget = wibox.widget.piechart,
-                              })
+        type   = "piechart",
+        widget = wibox.widget.piechart,
+    })
 
     return ret
 end

@@ -6,43 +6,43 @@
 -- @copyright 2022 Augusto Gunsch
 -------------------------------------------------
 
-local awful = require("awful")
-local wibox = require("wibox")
-local watch = require("awful.widget.watch")
-local spawn = require("awful.spawn")
-local beautiful = require('beautiful')
+local awful       = require("awful")
+local wibox       = require("wibox")
+local watch       = require("awful.widget.watch")
+local spawn       = require("awful.spawn")
+local beautiful   = require('beautiful')
 
 local cmus_widget = {}
 
 local function worker(user_args)
 
-    local args = user_args or {}
-    local font = args.font or beautiful.font
+    local args          = user_args or {}
+    local font          = args.font or beautiful.font
 
     local path_to_icons = args.path_to_icons or "/usr/share/icons/Arc/actions/symbolic/"
-    local timeout = args.timeout or 10
-    local space = args.space or 3
+    local timeout       = args.timeout or 10
+    local space         = args.space or 3
 
-    cmus_widget.widget = wibox.widget {
+    cmus_widget.widget  = wibox.widget {
         {
             {
-                id = "playback_icon",
+                id     = "playback_icon",
                 resize = false,
                 widget = wibox.widget.imagebox,
             },
             layout = wibox.container.place
         },
         {
-            id = "text",
-            font = font,
+            id     = "text",
+            font   = font,
             widget = wibox.widget.textbox
         },
-        spacing = space,
-        layout = wibox.layout.fixed.horizontal,
+        spacing     = space,
+        layout      = wibox.layout.fixed.horizontal,
         update_icon = function(self, name)
             self:get_children_by_id("playback_icon")[1]:set_image(path_to_icons .. name)
         end,
-        set_title = function(self, title)
+        set_title   = function(self, title)
             self:get_children_by_id("text")[1]:set_text(title)
         end
     }
@@ -98,9 +98,9 @@ local function worker(user_args)
 
     function cmus_widget:update()
         spawn.easy_async("cmus-remote -Q",
-        function(stdout, _, _, code)
-            update_widget(cmus_widget.widget, stdout, _, _, code)
-        end)
+                function(stdout, _, _, code)
+                    update_widget(cmus_widget.widget, stdout, _, _, code)
+                end)
     end
 
     function cmus_widget:play_pause()

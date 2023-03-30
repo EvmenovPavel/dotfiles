@@ -158,7 +158,7 @@ function _M.new(self, key, salt, _cipher, _hash, hash_rounds)
 
     else
         if C.EVP_BytesToKey(_cipher.method, _hash, salt, key, #key,
-                            hash_rounds, gen_key, gen_iv)
+                hash_rounds, gen_key, gen_iv)
                 ~= _cipherLength
         then
             return nil
@@ -169,9 +169,9 @@ function _M.new(self, key, salt, _cipher, _hash, hash_rounds)
     C.EVP_CIPHER_CTX_init(decrypt_ctx)
 
     if C.EVP_EncryptInit_ex(encrypt_ctx, _cipher.method, nil,
-                            gen_key, gen_iv) == 0 or
+            gen_key, gen_iv) == 0 or
             C.EVP_DecryptInit_ex(decrypt_ctx, _cipher.method, nil,
-                                 gen_key, gen_iv) == 0 then
+                    gen_key, gen_iv) == 0 then
         return nil
     end
 
@@ -179,9 +179,9 @@ function _M.new(self, key, salt, _cipher, _hash, hash_rounds)
     ffi_gc(decrypt_ctx, C.EVP_CIPHER_CTX_cleanup)
 
     return setmetatable({
-                            _encrypt_ctx = encrypt_ctx,
-                            _decrypt_ctx = decrypt_ctx
-                        }, mt)
+        _encrypt_ctx = encrypt_ctx,
+        _decrypt_ctx = decrypt_ctx
+    }, mt)
 end
 
 function _M.encrypt(self, s)

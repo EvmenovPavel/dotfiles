@@ -120,142 +120,142 @@ end
 
 function mytitlebar:floatingbutton(c)
     local widget = mytitlebar:button(c, "floating",
-                                     function(cl)
-                                     end,
-                                     function(cl)
-                                         wmapi:on_floating(cl)
-                                     end)
+            function(cl)
+            end,
+            function(cl)
+                wmapi:on_floating(cl)
+            end)
     c:connect_signal("property::floating", widget.update)
     return widget
 end
 
 function mytitlebar:maximizedbutton(c)
     local widget = mytitlebar:button(c, "maximized",
-                                     function(cl)
-                                         return cl.maximized
-                                     end,
-                                     function(cl, state)
-                                         wmapi:on_maximized(cl, state)
-                                     end)
+            function(cl)
+                return cl.maximized
+            end,
+            function(cl, state)
+                wmapi:on_maximized(cl, state)
+            end)
     c:connect_signal("property::maximized", widget.update)
     return widget
 end
 
 function mytitlebar:minimizebutton(c)
     local widget = mytitlebar:button(c, "minimize",
-                                     function(cl)
-                                         return ""
-                                     end,
-                                     function(cl)
-                                         wmapi:on_minimized(cl)
-                                     end)
+            function(cl)
+                return ""
+            end,
+            function(cl)
+                wmapi:on_minimized(cl)
+            end)
     c:connect_signal("property::minimize", widget.update)
     return widget
 end
 
 function mytitlebar:closebutton(c)
     local widget = mytitlebar:button(c, "close",
-                                     function(cl)
-                                         return ""
-                                     end,
-                                     function(cl)
-                                         wmapi:on_close(cl)
-                                     end)
+            function(cl)
+                return ""
+            end,
+            function(cl)
+                wmapi:on_close(cl)
+            end)
     c:connect_signal("property::close", widget.update)
     return widget
 end
 
 function mytitlebar:ontopbutton(c)
     local widget = mytitlebar:button(c, "ontop",
-                                     function(cl)
-                                         return cl.ontop
-                                     end,
-                                     function(cl, state)
-                                         wmapi:on_ontop(cl, state)
-                                     end)
+            function(cl)
+                return cl.ontop
+            end,
+            function(cl, state)
+                wmapi:on_ontop(cl, state)
+            end)
     c:connect_signal("property::ontop", widget.update)
     return widget
 end
 
 function mytitlebar:stickybutton(c)
     local widget = mytitlebar:button(c, "sticky",
-                                     function(cl)
-                                         return cl.sticky
-                                     end,
-                                     function(cl, state)
-                                         wmapi:on_sticky(cl, state)
-                                     end)
+            function(cl)
+                return cl.sticky
+            end,
+            function(cl, state)
+                wmapi:on_sticky(cl, state)
+            end)
     c:connect_signal("property::sticky", widget.update)
     return widget
 end
 
 client.connect_signal("unmanage",
-                      function(c)
-                          all_titlebars[c] = nil
-                      end)
+        function(c)
+            all_titlebars[c] = nil
+        end)
 
 client.connect_signal("request::titlebars",
-                      function(c, startup)
-                          -- Custom
-                          if beautiful.titlebar_fun then
-                              beautiful.titlebar_fun(c)
-                              return
-                          end
+        function(c, startup)
+            -- Custom
+            if beautiful.titlebar_fun then
+                beautiful.titlebar_fun(c)
+                return
+            end
 
-                          if not startup then
-                              if not c.size_hints.user_position and not c.size_hints.program_position then
-                                  awful.placement.no_overlap(c)
-                                  awful.placement.no_offscreen(c)
-                              end
-                          end
+            if not startup then
+                if not c.size_hints.user_position and not c.size_hints.program_position then
+                    awful.placement.no_overlap(c)
+                    awful.placement.no_offscreen(c)
+                end
+            end
 
-                          local buttons  = awful.util.table.join(
-                                  awful.button({}, event.mouse.button_click_left,
-                                               function()
-                                                   client.focus = c
-                                                   c:raise()
-                                                   awful.mouse.client.move(c)
-                                               end),
-                                  awful.button({}, event.mouse.button_click_right,
-                                               function()
-                                                   if c.floating then
-                                                       client.focus = c
-                                                       c:raise()
-                                                       awful.mouse.client.resize(c)
-                                                   end
-                                               end)
-                          )
+            local buttons  = awful.util.table.join(
+                    awful.button({}, event.mouse.button_click_left,
+                            function()
+                                client.focus = c
+                                c:raise()
+                                awful.mouse.client.move(c)
+                            end),
+                    awful.button({}, event.mouse.button_click_right,
+                            function()
+                                if c.floating then
+                                    client.focus = c
+                                    c:raise()
+                                    awful.mouse.client.resize(c)
+                                end
+                            end)
+            )
 
-                          local titlebar = awful.titlebar(c, {
-                              --bg       = awful.titlebar.titlebar_color or "#00ff00",
-                              size     = beautiful.titlebars_size,
-                              position = beautiful.titlebars_position,
-                              font     = beautiful.titlebars_font,
-                          })
+            local titlebar = awful.titlebar(c, {
+                --bg       = awful.titlebar.titlebar_color or "#00ff00",
+                size     = beautiful.titlebars_size,
+                position = beautiful.titlebars_position,
+                font     = beautiful.titlebars_font,
+            })
 
-                          titlebar:setup {
-                              {
-                                  {
-                                      clienticon(c),
-                                      layout = wibox.layout.align.horizontal()
-                                  },
-                                  margins = 3,
-                                  widget  = wibox.container.margin(),
+            titlebar:setup {
+                {
+                    {
+                        clienticon(c),
+                        layout = wibox.layout.align.horizontal()
+                    },
+                    margins = 3,
+                    widget  = wibox.container.margin(),
 
-                              },
-                              {
-                                  align   = "center",
-                                  buttons = buttons,
-                                  widget  = mytitlebar:titlewidget(c),
-                              },
-                              {
-                                  mytitlebar:minimizebutton(c),
-                                  mytitlebar:maximizedbutton(c),
-                                  mytitlebar:closebutton(c),
+                },
+                {
+                    align   = "center",
+                    buttons = buttons,
+                    widget  = mytitlebar:titlewidget(c),
+                },
+                {
+                    mytitlebar:minimizebutton(c),
+                    mytitlebar:maximizedbutton(c),
+                    mytitlebar:closebutton(c),
 
-                                  layout = wibox.layout.align.horizontal()
-                              },
-                              layout = wibox.layout.align.horizontal()
-                          }
-                      end
+                    layout = wibox.layout.align.horizontal()
+                },
+                layout = wibox.layout.align.horizontal()
+            }
+        end
 )

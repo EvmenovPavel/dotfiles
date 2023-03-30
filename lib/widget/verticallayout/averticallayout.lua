@@ -6,12 +6,12 @@ function verticallayout:init()
     local layout  = {}
 
     layout.widget = wibox.widget({
-                                     expend      = true,
-                                     homogeneous = false,
-                                     spacing     = 0,
+        expend      = true,
+        homogeneous = false,
+        spacing     = 0,
 
-                                     layout      = wibox.layout.grid,
-                                 })
+        layout      = wibox.layout.grid,
+    })
 
     function layout:get()
         return self.widget

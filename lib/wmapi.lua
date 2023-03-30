@@ -1,30 +1,30 @@
-local awful = require("awful")
-local wibox = require("wibox")
-local gears = require("gears")
-local lfs = require("lfs")
-local beautiful = require("beautiful")
+local awful         = require("awful")
+local wibox         = require("wibox")
+local gears         = require("gears")
+local lfs           = require("lfs")
+local beautiful     = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
-local capi = {
+local capi          = {
     mouse = mouse,
     debug = debug
 }
 
-local posix = require("posix")
-local pid = posix.getpid("pid")
+local posix         = require("posix")
+local pid           = posix.getpid("pid")
 
 --local spawn = require("awful.spawn")
 
-local wmapi = {}
+local wmapi         = {}
 
-wmapi.widget = require("lib.widget.widget")
+wmapi.widget        = require("lib.widget.widget")
 
 function wmapi:layout_align_horizontal(items)
     --local widget = wibox.widget({
     --                                layout = wibox.layout.align.horizontal
     --                            })
 
-    local bg = wibox.container.background()
+    local bg     = wibox.container.background()
 
     local widget = wibox.layout.align.horizontal()
 
@@ -46,30 +46,30 @@ function wmapi:debuginfo(index)
     local index = index or 2
 
     local function get(index)
-        local debug = capi.debug.getinfo(index)
+        local debug           = capi.debug.getinfo(index)
         -- Remove symbol @ in path (@/path)
-        local source = string.sub(debug.source, 2)
-        local linedefined = debug.linedefined
+        local source          = string.sub(debug.source, 2)
+        local linedefined     = debug.linedefined
         local lastlinedefined = debug.lastlinedefined
-        local path = string.sub(source, 1, string.find(source, "/[^/]*$"))
+        local path            = string.sub(source, 1, string.find(source, "/[^/]*$"))
 
         return { source = source, linedefined = linedefined, lastlinedefined = lastlinedefined, path = path, str = "File: " .. source .. ", Line: " .. linedefined }
     end
 
     -- это файл wmapi
-    local root = capi.debug.getinfo(1)
+    local root   = capi.debug.getinfo(1)
 
     -- а родитель может быть как
-    local child = get(index)
+    local child  = get(index)
     local parent = get(index + 1)
 
     return {
-        parent_info = parent,
-        source = child.source,
-        path = child.path,
-        linedefined = child.linedefined,
+        parent_info     = parent,
+        source          = child.source,
+        path            = child.path,
+        linedefined     = child.linedefined,
         lastlinedefined = child.lastlinedefined,
-        str = child.str
+        str             = child.str
     }
 end
 
@@ -103,13 +103,14 @@ function wmapi:table_length(T)
 end
 
 function wmapi:is_empty(s)
+    -- if nil or "" - error "true"
     return s == nil or s == ""
 end
 
 function wmapi:signs(stdout, signs)
     local signs = signs or ""
-    local str = stdout:gsub("%s+", signs)
-    str = string.gsub(str, "%s+", signs)
+    local str   = stdout:gsub("%s+", signs)
+    str         = string.gsub(str, "%s+", signs)
 
     return str
 end
@@ -142,9 +143,9 @@ end
 --end
 
 function wmapi:remove_space(str, symbol)
-    local str = str
+    local str    = str
     local symbol = symbol or " "
-    local index = 0
+    local index  = 0
 
     for i = 1, #str do
         local c = str:sub(i, i)
@@ -174,8 +175,8 @@ end
 function wmapi:find(cmd, str)
     local cmd = "echo \"" .. cmd .. "\" | sed -rn \"s/.*" .. str .. ":\\s+([^ ]+).*/\\1/p\""
 
-    local f = assert(io.popen(cmd, 'r'))
-    local s = assert(f:read('*a'))
+    local f   = assert(io.popen(cmd, 'r'))
+    local s   = assert(f:read('*a'))
     f:close()
 
     s = string.gsub(s, "^%s+", "")
@@ -323,7 +324,7 @@ end
 ---@param callback function
 ---@return gears.timer
 function wmapi:watch(command, timeout, callback)
-    timeout = timeout or 5
+    timeout     = timeout or 5
 
     local timer = gears.timer { timeout = timeout }
     timer:connect_signal("timeout", function()
@@ -345,7 +346,7 @@ end
 ---@param timeout number
 ---@return gears.timer
 function wmapi:weak_watch(callback, timeout)
-    timeout = timeout or 0.5
+    timeout     = timeout or 0.5
 
     local timer = gears.timer.weak_start_new(timeout, callback)
     return timer
@@ -369,14 +370,14 @@ end
 ---@return gears.timer
 function wmapi:update(callback, timeout)
     local callback = callback or nil
-    local timeout = timeout or 0.3
+    local timeout  = timeout or 0.3
 
     if callback then
         return gears.timer {
-            timeout = timeout,
-            call_now = true,
+            timeout   = timeout,
+            call_now  = true,
             autostart = true,
-            callback = callback
+            callback  = callback
         }
     end
 
@@ -397,26 +398,26 @@ function wmapi:mouse_coords()
 end
 
 function wmapi:screen_geometry(index)
-    local index = index or self:screen_primary_id()
-    local screen = screen[index]
+    local index    = index or self:screen_primary_id()
+    local screen   = screen[index]
     local geometry = screen.geometry
 
     return {
-        width = geometry.width,
+        width  = geometry.width,
         height = geometry.height
     }
 end
 
 function wmapi:screen_height(index)
     local index = index or self:screen_primary_id()
-    local s = screen[index]
+    local s     = screen[index]
 
     return s.geometry.height
 end
 
 function wmapi:screen_width(index)
     local index = index or self:screen_primary_id()
-    local s = screen[index]
+    local s     = screen[index]
 
     return s.geometry.width
 end
@@ -457,9 +458,9 @@ function wmapi:connect_signal(widget, signal, event, func)
     end
 
     local signal = signal or event.signals.button.release
-    local event = event or event.mouse.button_click_left
+    local event  = event or event.mouse.button_click_left
 
-    local func = func or function()
+    local func   = func or function()
         log:debug("Error args.func = nil")
     end
 
@@ -487,7 +488,7 @@ function wmapi:container(widget)
                 local w = _G.mouse.current_wibox
                 if w then
                     self.old_cursor, self.old_wibox = w.cursor, w
-                    w.cursor = "hand1"
+                    w.cursor                        = "hand1"
                 end
             end
     )
@@ -498,7 +499,7 @@ function wmapi:container(widget)
                 self.bg = "#ffffff00"
                 if self.old_wibox then
                     self.old_wibox.cursor = self.old_cursor
-                    self.old_wibox = nil
+                    self.old_wibox        = nil
                 end
             end
     )
@@ -550,7 +551,7 @@ function wmapi:on_backproc()
 end
 
 local client_iterate = require("awful.client").iterate
-local gtable = require("gears.table")
+local gtable         = require("gears.table")
 
 function wmapi:logs(c)
     log:debug(
@@ -579,12 +580,12 @@ end
 function wmapi:update_client(c)
     if c.maximized or c.fullscreen then
         c.border_width = 0
-        c.shape = function(cr, w, h)
+        c.shape        = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, 0)
         end
     else
         c.border_width = 4
-        c.shape = function(cr, w, h)
+        c.shape        = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, beautiful.shape_rounded_rect)
         end
     end
@@ -595,7 +596,7 @@ end
 local function clients(filter)
     local item_args = {}
 
-    local cls_t = {}
+    local cls_t     = {}
     for c in client_iterate(filter or
             function()
                 return true
@@ -606,13 +607,13 @@ local function clients(filter)
         end
 
         cls_t[#cls_t + 1] = {
-            name = c.name,
-            tag = c.tag,
-            tags = c.tags,
-            instance = c.instance,
-            class = c.class,
-            screen = c.screen,
-            icon = c.icon,
+            name      = c.name,
+            tag       = c.tag,
+            tags      = c.tags,
+            instance  = c.instance,
+            class     = c.class,
+            screen    = c.screen,
+            icon      = c.icon,
             exec_once = c.exec_once,
         }
 
@@ -640,16 +641,16 @@ end
 
 function wmapi:on_maximized(c, state)
     c.fullscreen = false
-    c.floating = false
+    c.floating   = false
 
-    c.maximized = not c.maximized
+    c.maximized  = not c.maximized
 
     self:update_client(c)
 end
 
 function wmapi:on_fullscreen(c)
-    c.maximized = false
-    c.floating = false
+    c.maximized  = false
+    c.floating   = false
 
     c.fullscreen = not c.fullscreen
 
@@ -691,7 +692,7 @@ function wmapi:on_floating(c)
     --local y     = c.y
 
     c.maximized = false
-    c.floating = not c.floating
+    c.floating  = not c.floating
 
     --if (c.floating) then
     --    c.x = x - c.width

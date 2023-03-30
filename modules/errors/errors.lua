@@ -15,10 +15,10 @@ awesome.connect_signal(
             local msg_ = get_context()
 
             naughty.notify({
-                               preset = "preset",
-                               title  = "title",
-                               text   = err
-                           })
+                preset = "preset",
+                title  = "title",
+                text   = err
+            })
 
             local _, j = string.find(err, ".lua:")
 

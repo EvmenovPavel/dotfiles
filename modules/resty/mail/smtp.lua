@@ -204,10 +204,10 @@ function _M.new(mailer)
     end
 
     return setmetatable({
-                            mailer     = mailer,
-                            sock       = sock,
-                            extensions = {},
-                        }, { __index = _M })
+        mailer     = mailer,
+        sock       = sock,
+        extensions = {},
+    }, { __index = _M })
 end
 
 function _M.send(self, message)

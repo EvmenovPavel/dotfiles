@@ -77,9 +77,9 @@ dbus.config.mapping   = cst.config.mapping
 local function sendActionInvoked(notificationId, action)
     if capi.dbus then
         capi.dbus.emit_signal(dbus_connection.session, dbus_method.dbusObjectPath,
-                              dbus_method.dbusNotificationsInterface, "ActionInvoked",
-                              "u", notificationId,
-                              "s", action)
+                dbus_method.dbusNotificationsInterface, "ActionInvoked",
+                "u", notificationId,
+                "s", action)
     end
 end
 
@@ -90,9 +90,9 @@ local function sendNotificationClosed(notificationId, reason)
 
     if capi.dbus then
         capi.dbus.emit_signal(dbus_connection.session, dbus_method.dbusObjectPath,
-                              dbus_method.dbusNotificationsInterface, "NotificationClosed",
-                              "u", notificationId,
-                              "u", reason)
+                dbus_method.dbusNotificationsInterface, "NotificationClosed",
+                "u", notificationId,
+                "u", reason)
     end
 end
 

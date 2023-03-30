@@ -722,7 +722,7 @@ function module.arc(cr, width, height, thickness, start_angle, end_angle, start_
         }
 
         cr:arc(arc_center[1], arc_center[2], thickness / 2,
-               median_angle - math.pi / 2, median_angle + math.pi / 2
+                median_angle - math.pi / 2, median_angle + math.pi / 2
         )
 
     else
@@ -755,7 +755,7 @@ function module.arc(cr, width, height, thickness, start_angle, end_angle, start_
         }
 
         cr:arc(arc_center[1], arc_center[2], thickness / 2,
-               median_angle - math.pi / 2, median_angle + math.pi / 2
+                median_angle - math.pi / 2, median_angle + math.pi / 2
         )
 
     end
@@ -943,11 +943,11 @@ function module.transform(shape)
     end
 
     local result = setmetatable({
-                                    matrix = g_matrix.identity
-                                }, {
-                                    __call  = apply,
-                                    __index = index
-                                })
+        matrix = g_matrix.identity
+    }, {
+        __call  = apply,
+        __index = index
+    })
 
     return result
 end

@@ -1,22 +1,22 @@
-local wibox = require("wibox")
-local gears = require("gears")
+local wibox    = require("wibox")
+local gears    = require("gears")
 
 local checkbox = {}
 
 function checkbox:init()
-    local ret = wmapi.widget:base("checkbox")
+    local ret                = wmapi.widget:base("checkbox")
 
-    local __private = {}
+    local __private          = {}
 
-    __private.checked = false
-    __private.func_checked = function()
+    __private.checked        = false
+    __private.func_checked   = function()
         log:debug("checkbox:checked")
     end
     __private.func_unchecked = function()
         log:debug("checkbox:unchecked")
     end
 
-    local w_textbox = wmapi.widget:textbox("checkbox")
+    local w_textbox          = wmapi.widget:textbox("checkbox")
     function ret:textbox()
         return w_textbox
     end
@@ -29,33 +29,33 @@ function checkbox:init()
 
     local w_checkbox = wibox.widget({
         w_imagebox:get(),
-        bg = color.border,
+        bg     = ret:color():border(),
         widget = wibox.container.background,
     })
 
-    local w_bg = wibox.widget({
+    local w_bg       = wibox.widget({
         {
             w_checkbox,
             margins = 2,
-            widget = wibox.container.margin,
+            widget  = wibox.container.margin,
         },
 
-        shape = function(cr, w, h)
+        shape              = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, 5)
         end,
 
-        bg = color.border,
-        shape_border_color = color.border_hover,
-        widget = wibox.container.background,
+        bg                 = ret:color():border(),
+        shape_border_color = ret:color():border_hover(),
+        widget             = wibox.container.background,
     })
 
-    local widget = wibox.widget({
+    local widget     = wibox.widget({
         {
             w_bg,
             widget = wibox.container.background,
         },
         {
-            right = 5,
+            right  = 5,
             widget = wibox.container.margin,
         },
         {
@@ -68,11 +68,11 @@ function checkbox:init()
         __private.checked = check
 
         if __private.checked then
-            w_bg.bg = color.border_hover
-            w_checkbox.bg = color.border_hover
+            w_bg.bg       = ret:color():border_hover()
+            w_checkbox.bg = ret:color():border_hover()
         else
-            w_bg.bg = color.border
-            w_checkbox.bg = color.border
+            w_bg.bg       = ret:color():border()
+            w_checkbox.bg = ret:color():border()
         end
     end)
 

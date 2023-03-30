@@ -1,10 +1,10 @@
 local beautiful = require("beautiful")
 
-local base = {}
+local base      = {}
 
 function base:init(type_name)
-    local public = {}
-    local __private = {}
+    local public     = {}
+    local __private  = {}
 
     ---- Add __tostring method to metatable.
     --local mt = {}
@@ -15,8 +15,47 @@ function base:init(type_name)
     --end
     --public = setmetatable(public, mt)
 
-    __private.mouse = {}
+    __private.mouse  = {}
     __private.button = {}
+
+    __private.color  = {}
+    function public:color()
+        local color = {}
+
+        function color:active()
+            return "#275EFE"
+        end
+
+        function color:active_inner()
+            return "#ffffff"
+        end
+
+        function color:focus()
+            return "#becfff"
+        end
+
+        function color:border()
+            return "#BBC1E1"
+        end
+
+        function color:border_hover()
+            return "#275EFE"
+        end
+
+        function color:background()
+            return "#ffffff"
+        end
+
+        function color:disabled()
+            return "#F6F8FF"
+        end
+
+        function color:disabled_inner()
+            return "#E1E6F9"
+        end
+
+        return color
+    end
 
     __private.enabled = true
     ---@return boolean
@@ -53,9 +92,9 @@ function base:init(type_name)
     --end
 
     __private.geometry = {
-        x = 0,
-        y = 0,
-        width = 0,
+        x      = 0,
+        y      = 0,
+        width  = 0,
         height = 0,
     }
     ---@return function
@@ -98,7 +137,7 @@ function base:init(type_name)
     end
 
     __private.minimum_size = {
-        width = 0,
+        width  = 0,
         height = 0,
     }
     ---@return function
@@ -137,7 +176,7 @@ function base:init(type_name)
     end
 
     __private.maximum_size = {
-        width = 0,
+        width  = 0,
         height = 0,
     }
     ---@return function
@@ -186,12 +225,12 @@ function base:init(type_name)
     end
 
     __private.font = {
-        family = beautiful.font or "Mononoki Nerd Font",
+        family     = beautiful.font or "Mononoki Nerd Font",
         point_size = 11,
-        bold = false,
-        italic = false,
-        underline = false,
-        strikeout = false,
+        bold       = false,
+        italic     = false,
+        underline  = false,
+        strikeout  = false,
     }
     ---@return function
     function public:font()

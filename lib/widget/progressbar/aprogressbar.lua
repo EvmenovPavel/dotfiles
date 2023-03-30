@@ -31,9 +31,9 @@ function progressbar:init(args)
     ret._private.shape = nil
 
     local widget       = wibox.widget({
-                                          type   = "progressbar",
-                                          widget = wibox.widget.progressbar,
-                                      })
+        type   = "progressbar",
+        widget = wibox.widget.progressbar,
+    })
 
     function ret:shape(shape)
         ret._private.shape = shape

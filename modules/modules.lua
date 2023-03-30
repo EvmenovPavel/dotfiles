@@ -1,1 +1,1 @@
-log           = require("modules.logging")
+log = require("modules.logging")

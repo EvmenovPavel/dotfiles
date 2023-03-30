@@ -55,13 +55,13 @@ local function disconnect(self)
 
     if n then
         n:disconnect_signal("destroyed",
-                            self._private.destroy_callback)
+                self._private.destroy_callback)
 
         n:disconnect_signal("property::margin",
-                            self._private.update)
+                self._private.update)
 
         n:disconnect_signal("property::suspended",
-                            self._private.hide)
+                self._private.hide)
     end
 end
 
@@ -219,7 +219,7 @@ end)
 
 local function generate_widget(args, n)
     local w = gpcall(wibox.widget.base.make_widget_from_value,
-                     args.widget_template or (n and n.widget_template) or default_widget
+            args.widget_template or (n and n.widget_template) or default_widget
     )
 
     -- This will happen if the user-provided widget_template is invalid and/or
@@ -359,8 +359,8 @@ local function new(args)
 
     -- Add a weak-table layer for the screen.
     local weak_args = setmetatable({
-                                       screen = args.notification and args.notification.screen or nil
-                                   }, { __mode = "v" })
+        screen = args.notification and args.notification.screen or nil
+    }, { __mode = "v" })
 
     setmetatable(new_args, { __index = weak_args })
 

@@ -127,10 +127,10 @@ end
 local function buttons()
     return awful.util.table.join(
             awful.button({},
-                         event.mouse.button_click_left,
-                         function(c)
-                             c:view_only()
-                         end
+                    event.mouse.button_click_left,
+                    function(c)
+                        c:view_only()
+                    end
             )
     )
 end

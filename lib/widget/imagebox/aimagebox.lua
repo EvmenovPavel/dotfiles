@@ -1,24 +1,24 @@
-local wibox = require("wibox")
+local wibox    = require("wibox")
 
 local imagebox = {}
 
 function imagebox:init()
-    local ret = wmapi.widget:base("imagebox")
+    local ret               = wmapi.widget:base("imagebox")
 
-    local __private = {}
+    local __private         = {}
 
-    __private.image = ""
-    __private.resize = true
-    __private.forced_width = nil
+    __private.image         = ""
+    __private.resize        = true
+    __private.forced_width  = nil
     __private.forced_height = nil
-    __private.clip_shape = nil
+    __private.clip_shape    = nil
 
-    local widget = wibox.widget({
-        image = __private.image,
-        resize = __private.resize,
-        forced_width = __private.forced_width,
+    local widget            = wibox.widget({
+        image         = __private.image,
+        resize        = __private.resize,
+        forced_width  = __private.forced_width,
         forced_height = __private.forced_height,
-        widget = wibox.widget.imagebox(),
+        widget        = wibox.widget.imagebox(),
     })
     ret:set_widget(widget)
 
@@ -26,7 +26,7 @@ function imagebox:init()
         widget:set_image(__private.image)
         widget:set_resize(__private.resize)
 
-        widget.forced_width = __private.forced_width
+        widget.forced_width  = __private.forced_width
         widget.forced_height = __private.forced_width
     end
 

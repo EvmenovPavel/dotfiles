@@ -175,6 +175,34 @@
 --
 --default.action()
 
-local a = true
-a = not a
-print(a)
+LuaTypes    = {
+    null     = "nil",
+    boolean  = "boolean",
+    number   = "number",
+    string   = "string",
+    func     = "function",
+    userdata = "userdata",
+    thread   = "thread",
+    table    = "table",
+    screen   = "screen"
+}
+
+local wmapi = {}
+function wmapi:is_empty(s)
+    -- if nil or "" - error "true"
+    return s == nil or s == ""
+end
+
+local __private = {}
+__private.markup = ""
+
+local function markup(markup)
+    if type(markup) == LuaTypes.string then
+        print(">>", __private.markup)
+        __private.markup = markup
+    end
+
+    return __private.markup
+end
+
+print(markup(""))

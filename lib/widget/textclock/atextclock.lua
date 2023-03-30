@@ -8,9 +8,9 @@ function textclock:init(args)
     local args = args or {}
 
     ret.widget = wibox.widget({
-                                  widget = wibox.widget.textclock,
-                                  type   = "textclock"
-                              })
+        widget = wibox.widget.textclock,
+        type   = "textclock"
+    })
 
     return ret
 end

@@ -299,7 +299,7 @@ function base.fit_widget(parent, context, widget, width, height)
         local children = base.layout_widget(parent, context, widget, width, height)
         for _, info in ipairs(children or {}) do
             local x, y, w2, h2 = matrix.transform_rectangle(info._matrix,
-                                                            0, 0, info._width, info._height)
+                    0, 0, info._width, info._height)
             w, h               = math.max(w, x + w2), math.max(h, y + h2)
         end
     end

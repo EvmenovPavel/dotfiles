@@ -1,20 +1,48 @@
+local awful   = require("awful")
+
 local restart = {}
 
 function restart:init()
-    local w = wmapi.widget:switch()
+    -- {{{ Menu
+    -- Create a launcher widget and a main menu
+    local myawesomemenu = {
+        { "restart", function()
+            awesome.restart()
+        end },
+        { "quit", function()
+            awesome.quit()
+        end },
+    }
+
+    local mymainmenu    = awful.menu({
+        items = {
+            { "awesome", myawesomemenu, resources.checkbox.checkbox },
+            { "open terminal", "kitty" }
+        }
+    })
+
+    --local w             = wmapi.widget:switch()
     --w:image(resources.battery.caution)
 
-    w:checked(function()
-        wmapi.widget:messagebox():information("app", "title", "text")
-    end)
+    --w:checked(function()
+    --    mymainmenu:toggle()
+    --    --wmapi.widget:messagebox():information("app", "title", "text")
+    --end)
+    --
+    --w:unchecked(function()
+    --    mymainmenu:toggle()
+    --    --wmapi.widget:messagebox():information("app", "title", "text")
+    --end)
 
-    local int = 0
-    local str = "restart" .. tostring(int)
+    local w             = wmapi.widget:button()
+
+    local int           = 0
+    local str           = "restart" .. tostring(int)
     wmapi:update(function()
-        int = int + 1
-        --local t = w:textbox()
+        int     = int + 1
+        local t = w:textbox()
 
-        --str = str .. " " .. tostring(int)
+        --str     = str .. " " .. tostring(int)
         --t:text(str)
         --w:visible(not w:visible())
     end, 1)

@@ -273,8 +273,8 @@ local function update_index(n)
 
     -- Add to the index again
     local s                  = get_screen(n.screen
-                                                  or (n.preset and n.preset.screen)
-                                                  or screen.focused())
+            or (n.preset and n.preset.screen)
+            or screen.focused())
     naughty.notifications[s] = naughty.notifications[s] or {}
     table.insert(naughty.notifications[s][n.position], n)
 end
@@ -789,7 +789,7 @@ local function register(notification, args)
     rawset(notification, "get_suspended", get_suspended)
 
     local s = get_screen(notification.screen or args.screen
-                                 or (notification.preset and notification.preset.screen))
+            or (notification.preset and notification.preset.screen))
 
     if not s then
         naughty.emit_signal("request::screen", notification, "new", {})

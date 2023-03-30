@@ -37,9 +37,9 @@ function appname:set_notification(notif)
 
     if old then
         old:disconnect_signal("property::appname",
-                              self._private.message_changed_callback)
+                self._private.message_changed_callback)
         old:disconnect_signal("property::fg",
-                              self._private.message_changed_callback)
+                self._private.message_changed_callback)
     end
 
     markup(self, notif.appname, notif.fg, notif.font)

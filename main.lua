@@ -9,9 +9,9 @@ theme:tasklist(beautiful)
 theme:menu(beautiful)
 theme:wibar(beautiful)
 
-function print(...)
+--function print(...)
     -- log:debug("print:", ...)
-end
+--end
 
 local keybinds = require("keys.keybinds")
 root.keys(keybinds.globalkeys)
@@ -47,20 +47,20 @@ awful.screen.connect_for_each_screen(
 require("awful.autofocus")
 
 client.connect_signal("focus",
-                      function(c)
-                          c.border_color = beautiful.bg_focus
-                          c:raise()
-                          c.opacity = 1
-                      end)
+        function(c)
+            c.border_color = beautiful.bg_focus
+            c:raise()
+            c.opacity = 1
+        end)
 
 client.connect_signal("unfocus",
-                      function(c)
-                          if c.maximized or c.fullscreen then
-                              c.border_color = beautiful.border_normal
-                          else
-                              c.border_color = color.disabled_inner
-                          end
+        function(c)
+            if c.maximized or c.fullscreen then
+                c.border_color = beautiful.border_normal
+            else
+                c.border_color = color.disabled_inner
+            end
 
-                          c.opacity = 0.3
-                          c:raise()
-                      end)
+            c.opacity = 0.3
+            c:raise()
+        end)

@@ -7,54 +7,54 @@
 -- @copyright 2020 Pavel Makhov
 -------------------------------------------------
 
-local awful = require("awful")
-local wibox = require("wibox")
-local gears = require("gears")
-local beautiful = require("beautiful")
+local awful              = require("awful")
+local wibox              = require("wibox")
+local gears              = require("gears")
+local beautiful          = require("beautiful")
 
-local HOME = os.getenv('HOME')
-local ICON_DIR = HOME .. '/.config/awesome/awesome-wm-widgets/logout-menu-widget/icons/'
+local HOME               = os.getenv('HOME')
+local ICON_DIR           = HOME .. '/.config/awesome/awesome-wm-widgets/logout-menu-widget/icons/'
 
 local logout_menu_widget = wibox.widget {
     {
         {
-            image = ICON_DIR .. 'power_w.svg',
+            image  = ICON_DIR .. 'power_w.svg',
             resize = true,
             widget = wibox.widget.imagebox,
         },
         margins = 4,
-        layout = wibox.container.margin
+        layout  = wibox.container.margin
     },
-    shape = function(cr, width, height)
-    gears.shape.rounded_rect(cr, width, height, 4)
+    shape  = function(cr, width, height)
+        gears.shape.rounded_rect(cr, width, height, 4)
     end,
     widget = wibox.container.background,
 }
 
-local popup = awful.popup {
-    ontop = true,
-    visible = false,
-    shape = function(cr, width, height)
+local popup              = awful.popup {
+    ontop         = true,
+    visible       = false,
+    shape         = function(cr, width, height)
         gears.shape.rounded_rect(cr, width, height, 4)
     end,
-    border_width = 1,
-    border_color = beautiful.bg_focus,
+    border_width  = 1,
+    border_color  = beautiful.bg_focus,
     maximum_width = 400,
-    offset = { y = 5 },
-    widget = {}
+    offset        = { y = 5 },
+    widget        = {}
 }
 
 local function worker(user_args)
-    local rows = { layout = wibox.layout.fixed.vertical }
+    local rows       = { layout = wibox.layout.fixed.vertical }
 
-    local args = user_args or {}
+    local args       = user_args or {}
 
-    local font = args.font or beautiful.font
+    local font       = args.font or beautiful.font
 
-    local onlogout = args.onlogout or function () awesome.quit() end
-    local onlock = args.onlock or function() awful.spawn.with_shell("i3lock") end
-    local onreboot = args.onreboot or function() awful.spawn.with_shell("reboot") end
-    local onsuspend = args.onsuspend or function() awful.spawn.with_shell("systemctl suspend") end
+    local onlogout   = args.onlogout or function() awesome.quit() end
+    local onlock     = args.onlock or function() awful.spawn.with_shell("i3lock") end
+    local onreboot   = args.onreboot or function() awful.spawn.with_shell("reboot") end
+    local onsuspend  = args.onsuspend or function() awful.spawn.with_shell("systemctl suspend") end
     local onpoweroff = args.onpoweroff or function() awful.spawn.with_shell("shutdown now") end
 
     local menu_items = {
@@ -71,22 +71,22 @@ local function worker(user_args)
             {
                 {
                     {
-                        image = ICON_DIR .. item.icon_name,
+                        image  = ICON_DIR .. item.icon_name,
                         resize = false,
                         widget = wibox.widget.imagebox
                     },
                     {
-                        text = item.name,
-                        font = font,
+                        text   = item.name,
+                        font   = font,
                         widget = wibox.widget.textbox
                     },
                     spacing = 12,
-                    layout = wibox.layout.fixed.horizontal
+                    layout  = wibox.layout.fixed.horizontal
                 },
                 margins = 8,
-                layout = wibox.container.margin
+                layout  = wibox.container.margin
             },
-            bg = beautiful.bg_normal,
+            bg     = beautiful.bg_normal,
             widget = wibox.container.background
         }
 
@@ -95,14 +95,14 @@ local function worker(user_args)
 
         local old_cursor, old_wibox
         row:connect_signal("mouse::enter", function()
-            local wb = mouse.current_wibox
+            local wb              = mouse.current_wibox
             old_cursor, old_wibox = wb.cursor, wb
-            wb.cursor = "hand1"
+            wb.cursor             = "hand1"
         end)
         row:connect_signal("mouse::leave", function()
             if old_wibox then
                 old_wibox.cursor = old_cursor
-                old_wibox = nil
+                old_wibox        = nil
             end
         end)
 

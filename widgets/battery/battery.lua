@@ -1,4 +1,4 @@
-local wibox = require("wibox")
+local wibox   = require("wibox")
 
 local battery = {}
 
@@ -108,16 +108,16 @@ end
 --icon-name:          'battery-full-charging-symbolic'
 
 function battery:init()
-    local _private = {}
+    local _private    = {}
 
-    _private.notify = 0
-    _private.state = 0
-    _private.value = 0
+    _private.notify   = 0
+    _private.state    = 0
+    _private.value    = 0
 
     local bash_upower = [[bash -c "upower -i $(upower -e | grep 'BAT')"]]
 
-    local imagebox = wmapi.widget:imagebox()
-    local textbox = wmapi.widget:textbox()
+    local imagebox    = wmapi.widget:imagebox()
+    local textbox     = wmapi.widget:textbox()
 
     wmapi:watch(bash_upower, 1,
             function(stdout)
@@ -200,8 +200,8 @@ function battery:init()
                 --_upower.buf.technology
                 --_upower.buf.icon_name
 
-                _private.state = tonumber(self:state_to_number(_upower.buf.state))
-                _private.value = _upower.buf.percentage
+                _private.state     = tonumber(self:state_to_number(_upower.buf.state))
+                _private.value     = _upower.buf.percentage
 
                 local image, value = self:updateWidgetInfo(_private.state, _private.value)
 

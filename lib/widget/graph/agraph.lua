@@ -17,21 +17,21 @@ function graph:init(args)
     })
 
     ret.widget      = wibox.widget({
-                                       type             = "graph",
-                                       widget           = wibox.widget.graph,
+        type             = "graph",
+        widget           = wibox.widget.graph,
 
-                                       max_value        = args.max_value or 100,
+        max_value        = args.max_value or 100,
 
-                                       background_color = args.background_color or "#00000000",
+        background_color = args.background_color or "#00000000",
 
-                                       forced_width     = args.forced_width or 50,
+        forced_width     = args.forced_width or 50,
 
-                                       step_width       = args.step_width or 2,
-                                       step_spacing     = args.step_spacing or 1,
+        step_width       = args.step_width or 2,
+        step_spacing     = args.step_spacing or 1,
 
-                                       color            = beautiful.fg_normal or set_color
-                                       --"linear:0,1:#FFFF00,20:0,#FF0000:0.1,#FFFF00:0.4," .. beautiful.fg_normal
-                                   })
+        color            = beautiful.fg_normal or set_color
+        --"linear:0,1:#FFFF00,20:0,#FF0000:0.1,#FFFF00:0.4," .. beautiful.fg_normal
+    })
 
     return ret
 end

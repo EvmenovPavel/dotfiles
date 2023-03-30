@@ -21,6 +21,19 @@ function widget:checkbox()
 end
 
 ---@overload fun():widget
+function widget:imagebox()
+    return require("lib.widget.imagebox.aimagebox"):init()
+end
+
+function widget:switch()
+    return require("lib.widget.switch.aswitch"):init()
+end
+
+function widget:messagebox()
+    return require("lib.widget.messagebox.messagebox")
+end
+
+---@overload fun():widget
 function widget:combobox()
     return require("lib.widget.combobox.acombobox"):init()
 end
@@ -28,11 +41,6 @@ end
 ---@overload fun():widget
 function widget:graph(argc)
     return require("lib.widget.graph.agraph"):init(argc)
-end
-
----@overload fun():widget
-function widget:imagebox()
-    return require("lib.widget.imagebox.aimagebox"):init()
 end
 
 function widget:launcher(argc)
@@ -67,10 +75,6 @@ function widget:box(argc)
     return require("lib.widget.box.abox"):init(argc)
 end
 
-function widget:switch()
-    return require("lib.widget.switch.aswitch"):init()
-end
-
 function widget:hradiobox()
     return require("lib.widget.hradiobox.ahradiobox"):init()
 end
@@ -85,10 +89,6 @@ end
 
 function widget:horizontallayout(argc)
     return require("lib.widget.horizontallayout.ahorizontallayout"):init(argc)
-end
-
-function widget:messagebox()
-    return require("lib.widget.messagebox.messagebox")
 end
 
 function widget:calendar()

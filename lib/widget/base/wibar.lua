@@ -283,7 +283,7 @@ local function new(args)
 
     ret.drawin    = w
     ret._drawable = wibox.drawable(w.drawable, { wibox = ret },
-                                   "wibox drawable (" .. object.modulename(3) .. ")")
+            "wibox drawable (" .. object.modulename(3) .. ")")
 
     function ret._drawable.get_wibox()
         return ret
@@ -312,7 +312,7 @@ local function new(args)
     local orig_string = tostring(ret)
     mt.__tostring     = function()
         return string.format("wibox: %s (%s)",
-                             tostring(ret._drawable), orig_string)
+                tostring(ret._drawable), orig_string)
     end
     ret               = setmetatable(ret, mt)
 

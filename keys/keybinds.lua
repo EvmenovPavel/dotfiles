@@ -20,31 +20,31 @@ for i in ipairs(beautiful.taglist_icons) do
     end
 
     keys.globalkeys = gears.table.join(keys.globalkeys,
-                                       awful.key({ event.key.mod }, i,
-                                                 function()
-                                                     local screen = awful.screen.focused()
-                                                     local tag    = screen.tags[i]
-                                                     if tag then
-                                                         tag:view_only()
-                                                     end
-                                                 end,
-                                                 descr_view),
+            awful.key({ event.key.mod }, i,
+                    function()
+                        local screen = awful.screen.focused()
+                        local tag    = screen.tags[i]
+                        if tag then
+                            tag:view_only()
+                        end
+                    end,
+                    descr_view),
 
-                                       awful.key({ event.key.mod, event.key.shift }, i,
-                                                 function()
-                                                     if client.focus then
-                                                         local tag = client.focus.screen.tags[i]
-                                                         if tag then
-                                                             client.focus:move_to_tag(tag)
-                                                             local screen  = awful.screen.focused()
-                                                             local focused = screen.tags[i]
-                                                             if focused then
-                                                                 focused:view_only()
-                                                             end
-                                                         end
-                                                     end
-                                                 end,
-                                                 descr_move)
+            awful.key({ event.key.mod, event.key.shift }, i,
+                    function()
+                        if client.focus then
+                            local tag = client.focus.screen.tags[i]
+                            if tag then
+                                client.focus:move_to_tag(tag)
+                                local screen  = awful.screen.focused()
+                                local focused = screen.tags[i]
+                                if focused then
+                                    focused:view_only()
+                                end
+                            end
+                        end
+                    end,
+                    descr_move)
     )
 end
 

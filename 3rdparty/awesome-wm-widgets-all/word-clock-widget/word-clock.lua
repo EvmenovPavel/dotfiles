@@ -8,21 +8,21 @@
 -- @copyright 2020 Pavel Makhov
 -------------------------------------------------
 
-local wibox = require("wibox")
+local wibox     = require("wibox")
 local beautiful = require("beautiful")
-local gears = require("gears")
+local gears     = require("gears")
 
 local function tablelength(T)
-  local count = 0
-  for _ in pairs(T) do count = count + 1 end
-  return count
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
 end
 
 local function split(string_to_split, separator)
     if separator == nil then separator = "%s" end
     local t = {}
 
-    for str in string.gmatch(string_to_split, "([^".. separator .."]+)") do
+    for str in string.gmatch(string_to_split, "([^" .. separator .. "]+)") do
         table.insert(t, str)
     end
 
@@ -30,10 +30,10 @@ local function split(string_to_split, separator)
 end
 
 local function convertNumberToName(num)
-    local lowNames = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
-                 "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen",
-                  "eighteen", "nineteen"};
-    local tensNames = {"twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"}
+    local lowNames  = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+                        "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen",
+                        "eighteen", "nineteen" };
+    local tensNames = { "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" }
     local tens, ones, result
 
     if num < tablelength(lowNames) then
@@ -44,7 +44,7 @@ local function convertNumberToName(num)
         if (tens <= 9) then
             result = tensNames[tens - 2 + 1];
             if (ones > 0) then
-                result =  result .. " " .. lowNames[ones + 1];
+                result = result .. " " .. lowNames[ones + 1];
             end
         else
             result = "unknown"
@@ -57,14 +57,14 @@ local text_clock = {}
 
 local function worker(user_args)
 
-    local args = user_args or {}
+    local args              = user_args or {}
 
-    local main_color = args.main_color or beautiful.fg_normal
-    local accent_color = args.accent_color or beautiful.fg_urgent
-    local font = args.font or beautiful.font
+    local main_color        = args.main_color or beautiful.fg_normal
+    local accent_color      = args.accent_color or beautiful.fg_urgent
+    local font              = args.font or beautiful.font
     local is_human_readable = args.is_human_readable
-    local military_time = args.military_time
-    local with_spaces = args.with_spaces
+    local military_time     = args.military_time
+    local with_spaces       = args.with_spaces
 
     if military_time == nil then military_time = false end
     if with_spaces == nil then with_spaces = false end
@@ -72,19 +72,19 @@ local function worker(user_args)
 
     text_clock = wibox.widget {
         {
-            id = 'clock',
-            font = font,
+            id     = 'clock',
+            font   = font,
             widget = wibox.widget.textbox,
         },
-        layout = wibox.layout.align.horizontal,
+        layout   = wibox.layout.align.horizontal,
         set_text = function(self, time)
-            local t = split(time)
+            local t   = split(time)
             local res = ''
             for i, v in ipairs(t) do
                 res = res .. '<span color="'
-                .. ((i % 2 == 0) and accent_color or main_color)
-                .. '">' .. v .. '</span>'
-                .. (with_spaces and ' ' or '')
+                        .. ((i % 2 == 0) and accent_color or main_color)
+                        .. '">' .. v .. '</span>'
+                        .. (with_spaces and ' ' or '')
             end
             self:get_children_by_id('clock')[1]:set_markup(res)
         end
@@ -95,9 +95,9 @@ local function worker(user_args)
         call_now  = true,
         autostart = true,
         callback  = function()
-            local time = os.date((military_time and '%H' or '%I') ..  ':%M')
-            local h,m = time:match('(%d+):(%d+)')
-            local min = tonumber(m)
+            local time = os.date((military_time and '%H' or '%I') .. ':%M')
+            local h, m = time:match('(%d+):(%d+)')
+            local min  = tonumber(m)
             local hour = tonumber(h)
 
             if is_human_readable then
@@ -120,7 +120,7 @@ local function worker(user_args)
                         to_past = 'past'
                     else
                         to_past = 'to'
-                        hour = hour + 1
+                        hour    = hour + 1
                     end
 
                     text_clock:set_text(mm .. ' ' .. to_past .. ' ' .. convertNumberToName(hour))

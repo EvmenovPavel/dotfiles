@@ -37,9 +37,9 @@ function wbutton:new(args)
     w:buttons(abutton({}, 1, function()
         orig_set_image(w, img_press)
     end,
-                      function()
-                          orig_set_image(w, img_release)
-                      end))
+            function()
+                orig_set_image(w, img_release)
+            end))
 
     w:connect_signal("mouse::leave", function(self)
         orig_set_image(self, img_release)
@@ -84,9 +84,9 @@ function button:new(args)
 
     for _, set in ipairs(subsets) do
         ret[#ret + 1] = self.button({
-                                        modifiers = gtable.join(mod, set),
-                                        button    = _button
-                                    })
+            modifiers = gtable.join(mod, set),
+            button    = _button
+        })
         if press then
             ret[#ret]:connect_signal("press", function(_, ...)
                 press(...)
@@ -121,18 +121,18 @@ function dropdown:create(args)
     local b
     if args.command then
         b = gtable.join(w:buttons(),
-                        button:new({
-                                       release = function()
-                                           spawn(args.command)
-                                       end
-                                   }))
+                button:new({
+                    release = function()
+                        spawn(args.command)
+                    end
+                }))
     elseif args.menu then
         b = gtable.join(w:buttons(),
-                        button:new({
-                                       release = function()
-                                           args.menu:toggle()
-                                       end
-                                   }))
+                button:new({
+                    release = function()
+                        args.menu:toggle()
+                    end
+                }))
     end
 
     w:buttons(b)

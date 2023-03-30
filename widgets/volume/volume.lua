@@ -87,19 +87,19 @@ local function widget_volume_adjust()
 end
 
 awesome.connect_signal("volume_change",
-                       function(stdout)
-                           if stdout == "+" or stdout == "-" then
-                               local v = string.format("amixer -D pulse set Master %d%s%s", volume_increase, "%", stdout)
-                               --log:debug(v)
-                               awful.spawn(v, false)
-                               widget_volume_adjust()
-                           elseif stdout == "off" then
-                               awful.spawn("amixer -D pulse set Master 1+ toggle", false)
-                               widget_volume_adjust()
-                           elseif stdout == "disable" then
-                               volume_adjust.visible = false
-                           end
-                       end
+        function(stdout)
+            if stdout == "+" or stdout == "-" then
+                local v = string.format("amixer -D pulse set Master %d%s%s", volume_increase, "%", stdout)
+                --log:debug(v)
+                awful.spawn(v, false)
+                widget_volume_adjust()
+            elseif stdout == "off" then
+                awful.spawn("amixer -D pulse set Master 1+ toggle", false)
+                widget_volume_adjust()
+            elseif stdout == "disable" then
+                volume_adjust.visible = false
+            end
+        end
 )
 
 function volume:init()
@@ -123,16 +123,16 @@ function volume:init()
     end
 
     volume_adjust = wibox({
-                              x       = width - offsetx - 100,
-                              y       = wmapi:screen_height() / 2 - offsety / 2,
+        x       = width - offsetx - 100,
+        y       = wmapi:screen_height() / 2 - offsety / 2,
 
-                              width   = offsetx,
-                              height  = offsety,
+        width   = offsetx,
+        height  = offsety,
 
-                              shape   = gears.shape.rounded_rect,
-                              visible = false,
-                              ontop   = true
-                          })
+        shape   = gears.shape.rounded_rect,
+        visible = false,
+        ontop   = true
+    })
 
     volume_adjust:setup {
         layout = wibox.layout.align.vertical,

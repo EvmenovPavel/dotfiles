@@ -531,7 +531,7 @@ local notification = {}
 function notification:destroy(reason, keep_visible)
     if self._private.is_destroyed then
         gdebug.print_warning("Trying to destroy the same notification twice. It" ..
-                                     " was destroyed because: " .. self._private.destroy_reason)
+                " was destroyed because: " .. self._private.destroy_reason)
         return false
     end
 
@@ -1190,8 +1190,8 @@ local function create(args)
     -- Because otherwise the setter logic would not be executed
     if ret._private.timeout then
         ret:set_timeout(ret._private.timeout
-                                or (ret.preset and ret.preset.timeout)
-                                or cst.config.timeout
+                or (ret.preset and ret.preset.timeout)
+                or cst.config.timeout
         )
     end
 

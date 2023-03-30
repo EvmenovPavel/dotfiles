@@ -26,26 +26,26 @@ local function init()
     }
 
     watch([[bash -c "pacmd list-modules | grep latency_msec=5"]], 1,
-          function(widget, stdout)
-              --log:debug(stdout)
+            function(widget, stdout)
+                --log:debug(stdout)
 
-              if wmapi:is_empty(stdout) then
-                  --awful.spawn("pacmd load-module module-loopback latency_msec=5", false)
-                  widget.checked = false
-              else
-                  widget.checked = true
-              end
+                if wmapi:is_empty(stdout) then
+                    --awful.spawn("pacmd load-module module-loopback latency_msec=5", false)
+                    widget.checked = false
+                else
+                    widget.checked = true
+                end
 
-              --pacmd unload-module module-loopback
+                --pacmd unload-module module-loopback
 
-              --pacmd list-modules | grep latency_msec=5
+                --pacmd list-modules | grep latency_msec=5
 
-              --pacmd load-module module-loopback latency_msec=5
+                --pacmd load-module module-loopback latency_msec=5
 
 
-              --widget:add_value()
-          end,
-          pacmd_widget
+                --widget:add_value()
+            end,
+            pacmd_widget
     )
 
     local margin_widget = wibox.container.margin(wibox.container.mirror(pacmd_widget, { horizontal = true }), 2, 2, 2, 2)

@@ -15,7 +15,7 @@ end
 
 naughty.action       = require("lib.naughty.action")
 naughty.list         = require("lib.naughty.list")
-naughty.layout = require("lib.naughty.layout")
+naughty.layout       = require("lib.naughty.layout")
 naughty.widget       = require("lib.naughty.widget")
 naughty.container    = require("lib.naughty.container")
 naughty.action       = require("lib.naughty.action")

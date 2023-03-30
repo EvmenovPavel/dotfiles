@@ -8,32 +8,32 @@
 -- @copyright 2019 Pavel Makhov
 -------------------------------------------------
 
-local awful = require("awful")
-local gfs = require("gears.filesystem")
-local wibox = require("wibox")
-local gears = require("gears")
-local naughty = require("naughty")
+local awful      = require("awful")
+local gfs        = require("gears.filesystem")
+local wibox      = require("wibox")
+local gears      = require("gears")
+local naughty    = require("naughty")
 local completion = require("awful.completion")
 
-local run_shell = awful.widget.prompt()
+local run_shell  = awful.widget.prompt()
 
-local widget = {}
+local widget     = {}
 
 function widget.new()
     local widget_instance = {
         _cached_wiboxes = {},
-        _cmd_pixelate = [[sh -c 'ffmpeg -loglevel panic -f x11grab -video_size 1920x1060 -y -i :0.0+%s,20 -vf ]]
-            .. [[frei0r=pixeliz0r -vframes 1 /tmp/i3lock-%s.png ; echo done']],
-        _cmd_blur = [[sh -c 'ffmpeg -loglevel panic -f x11grab -video_size 1920x1060 -y -i :0.0+%s,20 ]]
-            .. [[-filter_complex "boxblur=9" -vframes 1 /tmp/i3lock-%s.png ; echo done']]
+        _cmd_pixelate   = [[sh -c 'ffmpeg -loglevel panic -f x11grab -video_size 1920x1060 -y -i :0.0+%s,20 -vf ]]
+                .. [[frei0r=pixeliz0r -vframes 1 /tmp/i3lock-%s.png ; echo done']],
+        _cmd_blur       = [[sh -c 'ffmpeg -loglevel panic -f x11grab -video_size 1920x1060 -y -i :0.0+%s,20 ]]
+                .. [[-filter_complex "boxblur=9" -vframes 1 /tmp/i3lock-%s.png ; echo done']]
     }
 
     function widget_instance:_create_wibox()
         local w = wibox {
             visible = false,
-            ontop = true,
-            height = mouse.screen.geometry.height,
-            width = mouse.screen.geometry.width,
+            ontop   = true,
+            height  = mouse.screen.geometry.height,
+            width   = mouse.screen.geometry.width,
         }
 
         w:setup {
@@ -44,27 +44,27 @@ function widget.new()
                             markup = '<span font="awesomewm-font 14" color="#ffffff">a</span>',
                             widget = wibox.widget.textbox,
                         },
-                        id = 'icon',
-                        left = 10,
+                        id     = 'icon',
+                        left   = 10,
                         layout = wibox.container.margin
                     },
                     {
                         run_shell,
-                        left = 10,
+                        left   = 10,
                         layout = wibox.container.margin,
                     },
-                    id = 'left',
+                    id     = 'left',
                     layout = wibox.layout.fixed.horizontal
                 },
-                widget = wibox.container.background,
-                bg = '#333333',
-                shape = function(cr, width, height)
+                widget             = wibox.container.background,
+                bg                 = '#333333',
+                shape              = function(cr, width, height)
                     gears.shape.rounded_rect(cr, width, height, 3)
                 end,
                 shape_border_color = '#74aeab',
                 shape_border_width = 1,
-                forced_width = 200,
-                forced_height = 50
+                forced_width       = 200,
+                forced_height      = 50
             },
             layout = wibox.container.place
         }
@@ -80,34 +80,34 @@ function widget.new()
         if not self._cached_wiboxes[s][1] then
             self._cached_wiboxes[s][1] = self:_create_wibox()
         end
-        local w = self._cached_wiboxes[s][1]
+        local w   = self._cached_wiboxes[s][1]
         local rnd = math.random()
         awful.spawn.with_line_callback(
-            string.format(self._cmd_blur, tostring(awful.screen.focused().geometry.x), rnd), {
-            stdout = function()
-                w.visible = true
-                w.bgimage = '/tmp/i3lock-' .. rnd ..'.png'
-                awful.placement.top(w, { margins = { top = 20 }, parent = awful.screen.focused() })
-                awful.prompt.run {
-                    prompt = 'Run: ',
-                    bg_cursor = '#74aeab',
-                    textbox = run_shell.widget,
-                    completion_callback = completion.shell,
-                    exe_callback = function(...)
-                        run_shell:spawn_and_handle_error(...)
+                string.format(self._cmd_blur, tostring(awful.screen.focused().geometry.x), rnd), {
+                    stdout = function()
+                        w.visible = true
+                        w.bgimage = '/tmp/i3lock-' .. rnd .. '.png'
+                        awful.placement.top(w, { margins = { top = 20 }, parent = awful.screen.focused() })
+                        awful.prompt.run {
+                            prompt              = 'Run: ',
+                            bg_cursor           = '#74aeab',
+                            textbox             = run_shell.widget,
+                            completion_callback = completion.shell,
+                            exe_callback        = function(...)
+                                run_shell:spawn_and_handle_error(...)
+                            end,
+                            history_path        = gfs.get_cache_dir() .. "/history",
+                            done_callback       = function()
+                                w.visible = false
+                                w.bgimage = ''
+                                awful.spawn([[bash -c 'rm -f /tmp/i3lock*']])
+                            end
+                        }
                     end,
-                    history_path = gfs.get_cache_dir() .. "/history",
-                    done_callback = function()
-                        w.visible = false
-                        w.bgimage = ''
-                        awful.spawn([[bash -c 'rm -f /tmp/i3lock*']])
-                    end
-                }
-            end,
-            stderr = function(line)
-                naughty.notify { text = "ERR:" .. line }
-            end,
-        })
+                    stderr = function(line)
+                        naughty.notify { text = "ERR:" .. line }
+                    end,
+                })
 
     end
 

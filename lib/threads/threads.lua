@@ -142,9 +142,9 @@ function Threads:specific(flag)
             if self.__specific then
                 for i = 1, self.N do
                     self:addjob(i,
-                                function()
-                                    __queue_specific = false
-                                end)
+                            function()
+                                __queue_specific = false
+                            end)
                 end
             else
                 for i = 1, self.N do

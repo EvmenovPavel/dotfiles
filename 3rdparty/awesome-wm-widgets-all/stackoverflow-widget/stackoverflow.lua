@@ -8,68 +8,68 @@
 -- @copyright 2019 Pavel Makhov
 -------------------------------------------------
 
-local awful = require("awful")
-local wibox = require("wibox")
-local watch = require("awful.widget.watch")
-local json = require("json")
-local spawn = require("awful.spawn")
-local gears = require("gears")
-local beautiful = require("beautiful")
+local awful                = require("awful")
+local wibox                = require("wibox")
+local watch                = require("awful.widget.watch")
+local json                 = require("json")
+local spawn                = require("awful.spawn")
+local gears                = require("gears")
+local beautiful            = require("beautiful")
 
-local HOME_DIR = os.getenv("HOME")
+local HOME_DIR             = os.getenv("HOME")
 
-local GET_QUESTIONS_CMD = [[bash -c "curl --compressed -s -X GET]]
-    .. [[ 'http://api.stackexchange.com/2.2/questions/no-answers]]
-    .. [[?page=1&pagesize=%s&order=desc&sort=activity&tagged=%s&site=stackoverflow'"]]
+local GET_QUESTIONS_CMD    = [[bash -c "curl --compressed -s -X GET]]
+        .. [[ 'http://api.stackexchange.com/2.2/questions/no-answers]]
+        .. [[?page=1&pagesize=%s&order=desc&sort=activity&tagged=%s&site=stackoverflow'"]]
 
 local stackoverflow_widget = {}
 
 local function worker(user_args)
 
-    local args = user_args or {}
+    local args           = user_args or {}
 
-    local icon = args.icon or HOME_DIR .. '/.config/awesome/awesome-wm-widgets/stackoverflow-widget/so-icon.svg'
-    local limit = args.limit or 5
-    local tagged = args.tagged or 'awesome-wm'
-    local timeout = args.timeout or 300
+    local icon           = args.icon or HOME_DIR .. '/.config/awesome/awesome-wm-widgets/stackoverflow-widget/so-icon.svg'
+    local limit          = args.limit or 5
+    local tagged         = args.tagged or 'awesome-wm'
+    local timeout        = args.timeout or 300
 
-    local rows = {
+    local rows           = {
         { widget = wibox.widget.textbox },
         layout = wibox.layout.fixed.vertical,
     }
 
-    local popup = awful.popup{
-        ontop = true,
-        visible = false,
-        shape = gears.shape.rounded_rect,
-        border_width = 1,
-        border_color = beautiful.bg_focus,
-        maximum_width = 400,
+    local popup          = awful.popup {
+        ontop               = true,
+        visible             = false,
+        shape               = gears.shape.rounded_rect,
+        border_width        = 1,
+        border_color        = beautiful.bg_focus,
+        maximum_width       = 400,
         preferred_positions = 'top',
-        offset = { y = 5 },
-        widget = {}
+        offset              = { y = 5 },
+        widget              = {}
     }
 
     stackoverflow_widget = wibox.widget {
         {
-            image = icon,
+            image  = icon,
             widget = wibox.widget.imagebox
         },
         {
-            id = "txt",
+            id     = "txt",
             widget = wibox.widget.textbox
         },
-        layout = wibox.layout.fixed.horizontal,
+        layout   = wibox.layout.fixed.horizontal,
         set_text = function(self, new_value)
             self.txt.text = new_value
         end,
     }
 
-    local update_widget = function(_, stdout, _, _, _)
+    local update_widget  = function(_, stdout, _, _, _)
 
         local result = json.decode(stdout)
 
-        for i = 0, #rows do rows[i]=nil end
+        for i = 0, #rows do rows[i] = nil end
         for _, item in ipairs(result.items) do
             local tags = ''
             for i = 1, #item.tags do tags = tags .. item.tags[i] .. ' ' end
@@ -77,18 +77,18 @@ local function worker(user_args)
                 {
                     {
                         {
-                            text = item.title,
+                            text   = item.title,
                             widget = wibox.widget.textbox
                         },
                         {
-                            text = tags,
-                            align = 'right',
+                            text   = tags,
+                            align  = 'right',
                             widget = wibox.widget.textbox
                         },
                         layout = wibox.layout.align.vertical
                     },
                     margins = 8,
-                    layout = wibox.container.margin
+                    layout  = wibox.container.margin
                 },
                 widget = wibox.container.background
             }
@@ -118,7 +118,7 @@ local function worker(user_args)
                     end)
             )
     )
-    watch(string.format(GET_QUESTIONS_CMD, limit, tagged),  timeout, update_widget, stackoverflow_widget)
+    watch(string.format(GET_QUESTIONS_CMD, limit, tagged), timeout, update_widget, stackoverflow_widget)
     return stackoverflow_widget
 end
 

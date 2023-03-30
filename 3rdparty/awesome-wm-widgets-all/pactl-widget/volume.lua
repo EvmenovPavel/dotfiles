@@ -7,37 +7,36 @@
 -- @copyright 2023 Stefan Huber
 -------------------------------------------------
 
-local awful = require("awful")
-local wibox = require("wibox")
-local spawn = require("awful.spawn")
-local gears = require("gears")
-local beautiful = require("beautiful")
+local awful        = require("awful")
+local wibox        = require("wibox")
+local spawn        = require("awful.spawn")
+local gears        = require("gears")
+local beautiful    = require("beautiful")
 
-local pactl = require("awesome-wm-widgets.pactl-widget.pactl")
-local utils = require("awesome-wm-widgets.pactl-widget.utils")
-
+local pactl        = require("awesome-wm-widgets.pactl-widget.pactl")
+local utils        = require("awesome-wm-widgets.pactl-widget.utils")
 
 local widget_types = {
-    icon_and_text = require("awesome-wm-widgets.volume-widget.widgets.icon-and-text-widget"),
-    icon = require("awesome-wm-widgets.volume-widget.widgets.icon-widget"),
-    arc = require("awesome-wm-widgets.volume-widget.widgets.arc-widget"),
+    icon_and_text  = require("awesome-wm-widgets.volume-widget.widgets.icon-and-text-widget"),
+    icon           = require("awesome-wm-widgets.volume-widget.widgets.icon-widget"),
+    arc            = require("awesome-wm-widgets.volume-widget.widgets.arc-widget"),
     horizontal_bar = require("awesome-wm-widgets.volume-widget.widgets.horizontal-bar-widget"),
-    vertical_bar = require("awesome-wm-widgets.volume-widget.widgets.vertical-bar-widget")
+    vertical_bar   = require("awesome-wm-widgets.volume-widget.widgets.vertical-bar-widget")
 }
-local volume = {}
+local volume       = {}
 
-local rows  = { layout = wibox.layout.fixed.vertical }
+local rows         = { layout = wibox.layout.fixed.vertical }
 
-local popup = awful.popup{
-    bg = beautiful.bg_normal,
-    ontop = true,
-    visible = false,
-    shape = gears.shape.rounded_rect,
-    border_width = 1,
-    border_color = beautiful.bg_focus,
+local popup        = awful.popup {
+    bg            = beautiful.bg_normal,
+    ontop         = true,
+    visible       = false,
+    shape         = gears.shape.rounded_rect,
+    border_width  = 1,
+    border_color  = beautiful.bg_focus,
     maximum_width = 400,
-    offset = { y = 5 },
-    widget = {}
+    offset        = { y = 5 },
+    widget        = {}
 }
 
 local function build_main_line(device)
@@ -49,18 +48,18 @@ local function build_main_line(device)
 end
 
 local function build_rows(devices, on_checkbox_click, device_type)
-    local device_rows  = { layout = wibox.layout.fixed.vertical }
+    local device_rows = { layout = wibox.layout.fixed.vertical }
     for _, device in pairs(devices) do
 
         local checkbox = wibox.widget {
-            checked = device.is_default,
-            color = beautiful.bg_normal,
-            paddings = 2,
-            shape = gears.shape.circle,
-            forced_width = 20,
+            checked       = device.is_default,
+            color         = beautiful.bg_normal,
+            paddings      = 2,
+            shape         = gears.shape.circle,
+            forced_width  = 20,
             forced_height = 20,
-            check_color = beautiful.fg_urgent,
-            widget = wibox.widget.checkbox
+            check_color   = beautiful.fg_urgent,
+            widget        = wibox.widget.checkbox
         }
 
         checkbox:connect_signal("button::press", function()
@@ -78,20 +77,20 @@ local function build_rows(devices, on_checkbox_click, device_type)
                     },
                     {
                         {
-                            text = build_main_line(device),
-                            align = 'left',
+                            text   = build_main_line(device),
+                            align  = 'left',
                             widget = wibox.widget.textbox
                         },
-                        left = 10,
+                        left   = 10,
                         layout = wibox.container.margin
                     },
                     spacing = 8,
-                    layout = wibox.layout.align.horizontal
+                    layout  = wibox.layout.align.horizontal
                 },
                 margins = 4,
-                layout = wibox.container.margin
+                layout  = wibox.container.margin
             },
-            bg = beautiful.bg_normal,
+            bg     = beautiful.bg_normal,
             widget = wibox.container.background
         }
 
@@ -100,14 +99,14 @@ local function build_rows(devices, on_checkbox_click, device_type)
 
         local old_cursor, old_wibox
         row:connect_signal("mouse::enter", function()
-            local wb = mouse.current_wibox
+            local wb              = mouse.current_wibox
             old_cursor, old_wibox = wb.cursor, wb
-            wb.cursor = "hand1"
+            wb.cursor             = "hand1"
         end)
         row:connect_signal("mouse::leave", function()
             if old_wibox then
                 old_wibox.cursor = old_cursor
-                old_wibox = nil
+                old_wibox        = nil
             end
         end)
 
@@ -123,20 +122,20 @@ local function build_rows(devices, on_checkbox_click, device_type)
 end
 
 local function build_header_row(text)
-    return wibox.widget{
+    return wibox.widget {
         {
             markup = "<b>" .. text .. "</b>",
-            align = 'center',
+            align  = 'center',
             widget = wibox.widget.textbox
         },
-        bg = beautiful.bg_normal,
+        bg     = beautiful.bg_normal,
         widget = wibox.container.background
     }
 end
 
 local function rebuild_popup()
     for i = 0, #rows do
-        rows[i]=nil
+        rows[i] = nil
     end
 
     local sinks, sources = pactl.get_sinks_and_sources()
@@ -150,13 +149,13 @@ end
 
 local function worker(user_args)
 
-    local args = user_args or {}
+    local args         = user_args or {}
 
-    local mixer_cmd = args.mixer_cmd or 'pavucontrol'
-    local widget_type = args.widget_type
+    local mixer_cmd    = args.mixer_cmd or 'pavucontrol'
+    local widget_type  = args.widget_type
     local refresh_rate = args.refresh_rate or 1
-    local step = args.step or 5
-    local device = args.device or '@DEFAULT_SINK@'
+    local step         = args.step or 5
+    local device       = args.device or '@DEFAULT_SINK@'
 
     if widget_types[widget_type] == nil then
         volume.widget = widget_types['icon_and_text'].get_widget(args.icon_and_text_args)
@@ -228,6 +227,5 @@ local function worker(user_args)
 
     return volume.widget
 end
-
 
 return setmetatable(volume, { __call = function(_, ...) return worker(...) end })

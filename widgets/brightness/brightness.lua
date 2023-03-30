@@ -1,16 +1,16 @@
-local wibox                  = require("wibox")
-local awful                  = require("awful")
-local gears                  = require("gears")
+local wibox               = require("wibox")
+local awful               = require("awful")
+local gears               = require("gears")
 
-local brightness             = {}
-local brightness_adjust      = {}
+local brightness          = {}
+local brightness_adjust   = {}
 
-local brightness_current     = 0
-local brightness_max         = 1.0
-local brightness_min         = 0.3
-local brightness_increase    = 0.02
+local brightness_current  = 0
+local brightness_max      = 1.0
+local brightness_min      = 0.3
+local brightness_increase = 0.02
 
-local w_brightness_bar       = wibox.widget {
+local w_brightness_bar    = wibox.widget {
     widget           = wibox.widget.progressbar,
     shape            = gears.shape.rounded_bar,
     color            = "#efefef",
@@ -19,7 +19,7 @@ local w_brightness_bar       = wibox.widget {
     value            = 0
 }
 
-local w_volume_icon          = wmapi.widget:imagebox()
+local w_volume_icon       = wmapi.widget:imagebox()
 w_volume_icon:image(resources.widgets.volume.on)
 local hide_brightness_adjust = wmapi:update(function()
     brightness_adjust.visible = false
@@ -51,21 +51,21 @@ function brightness:set_brightness(name, value)
 end
 
 awesome.connect_signal("brightness_change",
-                       function(stdout)
-                           if ((stdout == "+") or (stdout == "-")) then
-                               if (stdout == "+") then
-                                   brightness_current = brightness_current + brightness_increase
-                               elseif (stdout == "-") then
-                                   brightness_current = brightness_current - brightness_increase
-                               end
+        function(stdout)
+            if ((stdout == "+") or (stdout == "-")) then
+                if (stdout == "+") then
+                    brightness_current = brightness_current + brightness_increase
+                elseif (stdout == "-") then
+                    brightness_current = brightness_current - brightness_increase
+                end
 
-                               brightness:update_widget()
-                               brightness:set_brightness("eDP", brightness_current)
-                               brightness:widget_brightness_adjust()
-                           elseif (stdout == "disable") then
-                               brightness_adjust.visible = false
-                           end
-                       end
+                brightness:update_widget()
+                brightness:set_brightness("eDP", brightness_current)
+                brightness:widget_brightness_adjust()
+            elseif (stdout == "disable") then
+                brightness_adjust.visible = false
+            end
+        end
 )
 
 function brightness:init()
@@ -95,16 +95,16 @@ function brightness:init()
     end
 
     brightness_adjust = wibox({
-                                  x       = width - offsetx - 10,
-                                  y       = wmapi:screen_height() / 2 - offsety / 2,
+        x       = width - offsetx - 10,
+        y       = wmapi:screen_height() / 2 - offsety / 2,
 
-                                  width   = offsetx,
-                                  height  = offsety,
+        width   = offsetx,
+        height  = offsety,
 
-                                  shape   = gears.shape.rounded_rect,
-                                  visible = false,
-                                  ontop   = true
-                              })
+        shape   = gears.shape.rounded_rect,
+        visible = false,
+        ontop   = true
+    })
 
     brightness_adjust:setup {
         layout = wibox.layout.align.vertical,
