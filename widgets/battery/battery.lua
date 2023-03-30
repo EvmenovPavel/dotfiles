@@ -116,8 +116,8 @@ function battery:init()
 
     local bash_upower = [[bash -c "upower -i $(upower -e | grep 'BAT')"]]
 
-    local imagebox    = wmapi.widget:imagebox()
-    local textbox     = wmapi.widget:textbox()
+    local w_imagebox  = wmapi.widget:imagebox()
+    local w_textbox   = wmapi.widget:textbox()
 
     wmapi:watch(bash_upower, 1,
             function(stdout)
@@ -205,8 +205,8 @@ function battery:init()
 
                 local image, value = self:updateWidgetInfo(_private.state, _private.value)
 
-                imagebox:image(image)
-                textbox:text(value)
+                w_imagebox:image(image)
+                w_textbox:text(value)
 
                 if _private.state == 1 and _private.notify ~= _private.state then
                     self:notify_power(_private.state)
@@ -219,11 +219,11 @@ function battery:init()
                 _private.notify = _private.state
             end)
 
-    local ret = wibox.widget {
-        imagebox:get(),
-        textbox:get(),
+    local ret = wibox.widget({
+        w_imagebox:get(),
+        w_textbox:get(),
         layout = wibox.layout.align.horizontal
-    }
+    })
 
     --ret:connect_signal("mouse::leave", function()
     --    --widget.state = ""

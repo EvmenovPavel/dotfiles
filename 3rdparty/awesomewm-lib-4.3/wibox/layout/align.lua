@@ -6,21 +6,21 @@
 -- @classmod wibox.layout.align
 ---------------------------------------------------------------------------
 
-local table = table
-local pairs = pairs
-local type = type
-local floor = math.floor
+local table  = table
+local pairs  = pairs
+local type   = type
+local floor  = math.floor
 local gtable = require("gears.table")
-local base = require("wibox.widget.base")
+local base   = require("wibox.widget.base")
 
-local align = {}
+local align  = {}
 
 -- Calculate the layout of an align layout.
 -- @param context The context in which we are drawn.
 -- @param width The available width.
 -- @param height The available height.
 function align:layout(context, width, height)
-    local result = {}
+    local result       = {}
 
     -- Draw will have to deal with all three align modes and should work in a
     -- way that makes sense if one or two of the widgets are missing (if they
@@ -29,7 +29,7 @@ function align:layout(context, width, height)
     -- outside widgets when the expand mode is "inside" or any of the widgets
     -- when the expand mode is "none" wants to take up more space than is
     -- allowed.
-    local size_first = 0
+    local size_first   = 0
     -- start with all the space given by the parent, subtract as we go along
     local size_remains = self._private.dir == "y" and height or width
     -- This is only set & used if expand ~= "inside" and we have second width.
@@ -41,7 +41,7 @@ function align:layout(context, width, height)
     --  if the second widget doesn't exist, we will prioritise the first one
     --  instead
     if self._private.expand ~= "inside" and self._private.second then
-        local w, h = base.fit_widget(self, context, self._private.second, width, height)
+        local w, h  = base.fit_widget(self, context, self._private.second, width, height)
         size_second = self._private.dir == "y" and h or w
         -- if all the space is taken, skip the rest, and draw just the middle
         -- widget
@@ -60,7 +60,7 @@ function align:layout(context, width, height)
         --  into the remaining space
         if self._private.expand ~= "outside" then
             if self._private.dir == "y" then
-                _, h = base.fit_widget(self, context, self._private.first, width, size_remains)
+                _, h       = base.fit_widget(self, context, self._private.first, width, size_remains)
                 size_first = h
                 -- for "inside", the third widget will get a chance to use the
                 --  remaining space, then the middle widget. For "none" we give
@@ -71,7 +71,7 @@ function align:layout(context, width, height)
                     size_remains = size_remains - h
                 end
             else
-                w, _ = base.fit_widget(self, context, self._private.first, size_remains, height)
+                w, _       = base.fit_widget(self, context, self._private.first, size_remains, height)
                 size_first = w
                 if self._private.expand == "inside" or not self._private.second then
                     size_remains = size_remains - w
@@ -118,20 +118,20 @@ function align:layout(context, width, height)
         local x, y, w, h = 0, 0, width, height
         if self._private.expand == "inside" then
             if self._private.dir == "y" then
-                h = size_remains
+                h    = size_remains
                 x, y = 0, size_first
             else
-                w = size_remains
+                w    = size_remains
                 x, y = size_first, 0
             end
         else
             local _
             if self._private.dir == "y" then
                 _, h = base.fit_widget(self, context, self._private.second, width, size_second)
-                y = floor( (height - h)/2 )
+                y    = floor((height - h) / 2)
             else
                 w, _ = base.fit_widget(self, context, self._private.second, size_second, height)
-                x = floor( (width -w)/2 )
+                x    = floor((width - w) / 2)
             end
         end
         table.insert(result, base.place_widget_at(self._private.second, x, y, w, h))
@@ -174,8 +174,8 @@ function align:set_third(widget)
     self:emit_signal("widget::layout_changed")
 end
 
-for _, prop in ipairs {"first", "second", "third", "expand" } do
-    align["get_"..prop] = function(self)
+for _, prop in ipairs { "first", "second", "third", "expand" } do
+    align["get_" .. prop] = function(self)
         return self._private[prop]
     end
 end
@@ -186,7 +186,7 @@ end
 -- @property children
 
 function align:get_children()
-    return gtable.from_sparse {self._private.first, self._private.second, self._private.third}
+    return gtable.from_sparse { self._private.first, self._private.second, self._private.third }
 end
 
 function align:set_children(children)
@@ -202,13 +202,13 @@ end
 -- @param orig_width The available width.
 -- @param orig_height The available height.
 function align:fit(context, orig_width, orig_height)
-    local used_in_dir = 0
+    local used_in_dir   = 0
     local used_in_other = 0
 
-    for _, v in pairs{self._private.first, self._private.second, self._private.third} do
+    for _, v in pairs { self._private.first, self._private.second, self._private.third } do
         local w, h = base.fit_widget(self, context, v, orig_width, orig_height)
 
-        local max = self._private.dir == "y" and w or h
+        local max  = self._private.dir == "y" and w or h
         if max > used_in_other then
             used_in_other = max
         end
@@ -255,7 +255,7 @@ function align:reset()
 end
 
 local function get_layout(dir, first, second, third)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret        = base.make_widget(nil, nil, { enable_properties = true })
     ret._private.dir = dir
 
     for k, v in pairs(align) do
@@ -285,9 +285,9 @@ end
 function align.horizontal(left, middle, right)
     local ret = get_layout("x", left, middle, right)
 
-    rawset(ret, "set_left"  , ret.set_first  )
-    rawset(ret, "set_middle", ret.set_second )
-    rawset(ret, "set_right" , ret.set_third  )
+    rawset(ret, "set_left", ret.set_first)
+    rawset(ret, "set_middle", ret.set_second)
+    rawset(ret, "set_right", ret.set_third)
 
     return ret
 end
@@ -302,9 +302,9 @@ end
 function align.vertical(top, middle, bottom)
     local ret = get_layout("y", top, middle, bottom)
 
-    rawset(ret, "set_top"   , ret.set_first  )
-    rawset(ret, "set_middle", ret.set_second )
-    rawset(ret, "set_bottom", ret.set_third  )
+    rawset(ret, "set_top", ret.set_first)
+    rawset(ret, "set_middle", ret.set_second)
+    rawset(ret, "set_bottom", ret.set_third)
 
     return ret
 end

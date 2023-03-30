@@ -40,11 +40,11 @@
 -- @copyright 2011-2016 Emmanuel Lepage Vallee
 -- @module gears.shape
 ---------------------------------------------------------------------------
-local g_matrix = require( "gears.matrix" )
+local g_matrix = require("gears.matrix")
 local unpack   = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
 local atan2    = math.atan2 or math.atan -- lua 5.3 compat
 
-local module = {}
+local module   = {}
 
 --- Add a rounded rectangle to the current path.
 -- Note: If the radius is bigger than either half side, it will be reduced.
@@ -69,10 +69,10 @@ function module.rounded_rect(cr, width, height, radius)
 
     cr:move_to(0, radius)
 
-    cr:arc( radius      , radius       , radius,    math.pi   , 3*(math.pi/2) )
-    cr:arc( width-radius, radius       , radius, 3*(math.pi/2),    math.pi*2  )
-    cr:arc( width-radius, height-radius, radius,    math.pi*2 ,    math.pi/2  )
-    cr:arc( radius      , height-radius, radius,    math.pi/2 ,    math.pi    )
+    cr:arc(radius, radius, radius, math.pi, 3 * (math.pi / 2))
+    cr:arc(width - radius, radius, radius, 3 * (math.pi / 2), math.pi * 2)
+    cr:arc(width - radius, height - radius, radius, math.pi * 2, math.pi / 2)
+    cr:arc(radius, height - radius, radius, math.pi / 2, math.pi)
 
     cr:close_path()
 end
@@ -112,28 +112,28 @@ function module.partially_rounded_rect(cr, width, height, tl, tr, br, bl, rad)
 
     -- Top left
     if tl then
-        cr:arc( rad, rad, rad, math.pi, 3*(math.pi/2))
+        cr:arc(rad, rad, rad, math.pi, 3 * (math.pi / 2))
     else
-        cr:move_to(0,0)
+        cr:move_to(0, 0)
     end
 
     -- Top right
     if tr then
-        cr:arc( width-rad, rad, rad, 3*(math.pi/2), math.pi*2)
+        cr:arc(width - rad, rad, rad, 3 * (math.pi / 2), math.pi * 2)
     else
         cr:line_to(width, 0)
     end
 
     -- Bottom right
     if br then
-        cr:arc( width-rad, height-rad, rad, math.pi*2 , math.pi/2)
+        cr:arc(width - rad, height - rad, rad, math.pi * 2, math.pi / 2)
     else
         cr:line_to(width, height)
     end
 
     -- Bottom left
     if bl then
-        cr:arc( rad, height-rad, rad, math.pi/2, math.pi)
+        cr:arc(rad, height - rad, rad, math.pi / 2, math.pi)
     else
         cr:line_to(0, height)
     end
@@ -152,25 +152,24 @@ end
 -- @tparam[opt=10] number arrow_size The width and height of the arrow
 -- @tparam[opt=width/2 - arrow_size/2] number arrow_position The position of the arrow
 function module.infobubble(cr, width, height, corner_radius, arrow_size, arrow_position)
-    arrow_size     = arrow_size     or 10
-    corner_radius  = math.min((height-arrow_size)/2, corner_radius or 5)
-    arrow_position = arrow_position or width/2 - arrow_size/2
+    arrow_size     = arrow_size or 10
+    corner_radius  = math.min((height - arrow_size) / 2, corner_radius or 5)
+    arrow_position = arrow_position or width / 2 - arrow_size / 2
 
-
-    cr:move_to(0 ,corner_radius+arrow_size)
+    cr:move_to(0, corner_radius + arrow_size)
 
     -- Top left corner
-    cr:arc(corner_radius, corner_radius+arrow_size, (corner_radius), math.pi, 3*(math.pi/2))
+    cr:arc(corner_radius, corner_radius + arrow_size, (corner_radius), math.pi, 3 * (math.pi / 2))
 
     -- The arrow triangle (still at the top)
-    cr:line_to(arrow_position                , arrow_size )
-    cr:line_to(arrow_position + arrow_size   , 0          )
-    cr:line_to(arrow_position + 2*arrow_size , arrow_size )
+    cr:line_to(arrow_position, arrow_size)
+    cr:line_to(arrow_position + arrow_size, 0)
+    cr:line_to(arrow_position + 2 * arrow_size, arrow_size)
 
     -- Complete the rounded rounded rectangle
-    cr:arc(width-corner_radius, corner_radius+arrow_size  , (corner_radius) , 3*(math.pi/2) , math.pi*2 )
-    cr:arc(width-corner_radius, height-(corner_radius)    , (corner_radius) , math.pi*2     , math.pi/2 )
-    cr:arc(corner_radius      , height-(corner_radius)    , (corner_radius) , math.pi/2     , math.pi   )
+    cr:arc(width - corner_radius, corner_radius + arrow_size, (corner_radius), 3 * (math.pi / 2), math.pi * 2)
+    cr:arc(width - corner_radius, height - (corner_radius), (corner_radius), math.pi * 2, math.pi / 2)
+    cr:arc(corner_radius, height - (corner_radius), (corner_radius), math.pi / 2, math.pi)
 
     -- Close path
     cr:close_path()
@@ -185,19 +184,19 @@ end
 -- @tparam number height The shape height
 -- @tparam[opt=height/2] number arrow_length The length of the arrow part
 function module.rectangular_tag(cr, width, height, arrow_length)
-    arrow_length = arrow_length or height/2
+    arrow_length = arrow_length or height / 2
     if arrow_length > 0 then
-        cr:move_to(0            , height/2 )
-        cr:line_to(arrow_length , 0        )
-        cr:line_to(width        , 0        )
-        cr:line_to(width        , height   )
-        cr:line_to(arrow_length , height   )
+        cr:move_to(0, height / 2)
+        cr:line_to(arrow_length, 0)
+        cr:line_to(width, 0)
+        cr:line_to(width, height)
+        cr:line_to(arrow_length, height)
     else
-        cr:move_to(0            , 0        )
-        cr:line_to(-arrow_length, height/2 )
-        cr:line_to(0            , height   )
-        cr:line_to(width        , height   )
-        cr:line_to(width        , 0        )
+        cr:move_to(0, 0)
+        cr:line_to(-arrow_length, height / 2)
+        cr:line_to(0, height)
+        cr:line_to(width, height)
+        cr:line_to(width, 0)
     end
 
     cr:close_path()
@@ -214,18 +213,18 @@ end
 -- @tparam[opt=width /2] number shaft_width The width of the shaft of the arrow
 -- @tparam[opt=height/2] number shaft_length The head_length of the shaft (the rest is the head)
 function module.arrow(cr, width, height, head_width, shaft_width, shaft_length)
-    shaft_length = shaft_length or height / 2
-    shaft_width  = shaft_width  or width  / 2
-    head_width   = head_width   or width
-    local head_length  = height - shaft_length
+    shaft_length      = shaft_length or height / 2
+    shaft_width       = shaft_width or width / 2
+    head_width        = head_width or width
+    local head_length = height - shaft_length
 
-    cr:move_to    ( width/2                     , 0            )
-    cr:rel_line_to( head_width/2                , head_length  )
-    cr:rel_line_to( -(head_width-shaft_width)/2 , 0            )
-    cr:rel_line_to( 0                           , shaft_length )
-    cr:rel_line_to( -shaft_width                , 0            )
-    cr:rel_line_to( 0           , -shaft_length                )
-    cr:rel_line_to( -(head_width-shaft_width)/2 , 0            )
+    cr:move_to(width / 2, 0)
+    cr:rel_line_to(head_width / 2, head_length)
+    cr:rel_line_to(-(head_width - shaft_width) / 2, 0)
+    cr:rel_line_to(0, shaft_length)
+    cr:rel_line_to(-shaft_width, 0)
+    cr:rel_line_to(0, -shaft_length)
+    cr:rel_line_to(-(head_width - shaft_width) / 2, 0)
 
     cr:close_path()
 end
@@ -238,13 +237,13 @@ end
 -- @tparam number width The shape width
 -- @tparam number height The shape height
 function module.hexagon(cr, width, height)
-    cr:move_to(height/2,0)
-    cr:line_to(width-height/2,0)
-    cr:line_to(width,height/2)
-    cr:line_to(width-height/2,height)
-    cr:line_to(height/2,height)
-    cr:line_to(0,height/2)
-    cr:line_to(height/2,0)
+    cr:move_to(height / 2, 0)
+    cr:line_to(width - height / 2, 0)
+    cr:line_to(width, height / 2)
+    cr:line_to(width - height / 2, height)
+    cr:line_to(height / 2, height)
+    cr:line_to(0, height / 2)
+    cr:line_to(height / 2, 0)
     cr:close_path()
 end
 
@@ -257,21 +256,21 @@ end
 -- @tparam number height The shape height
 -- @tparam[opt=height/2] number arrow_depth The width of the arrow part of the shape
 function module.powerline(cr, width, height, arrow_depth)
-    arrow_depth = arrow_depth or height/2
+    arrow_depth  = arrow_depth or height / 2
     local offset = 0
 
     -- Avoid going out of the (potential) clip area
     if arrow_depth < 0 then
-        width  =  width + 2*arrow_depth
+        width  = width + 2 * arrow_depth
         offset = -arrow_depth
     end
 
-    cr:move_to(offset                       , 0        )
-    cr:line_to(offset + width - arrow_depth , 0        )
-    cr:line_to(offset + width               , height/2 )
-    cr:line_to(offset + width - arrow_depth , height   )
-    cr:line_to(offset                       , height   )
-    cr:line_to(offset + arrow_depth         , height/2 )
+    cr:move_to(offset, 0)
+    cr:line_to(offset + width - arrow_depth, 0)
+    cr:line_to(offset + width, height / 2)
+    cr:line_to(offset + width - arrow_depth, height)
+    cr:line_to(offset, height)
+    cr:line_to(offset + arrow_depth, height / 2)
 
     cr:close_path()
 end
@@ -284,9 +283,9 @@ end
 -- @tparam number width The shape width
 -- @tparam number height The shape height
 function module.isosceles_triangle(cr, width, height)
-    cr:move_to( width/2, 0      )
-    cr:line_to( width  , height )
-    cr:line_to( 0      , height )
+    cr:move_to(width / 2, 0)
+    cr:line_to(width, height)
+    cr:line_to(0, height)
     cr:close_path()
 end
 
@@ -299,21 +298,21 @@ end
 -- @tparam number height The shape height
 -- @tparam[opt=width/3] number thickness The cross section thickness
 function module.cross(cr, width, height, thickness)
-    thickness = thickness or width/3
-    local xpadding   = (width  - thickness) / 2
-    local ypadding   = (height - thickness) / 2
+    thickness      = thickness or width / 3
+    local xpadding = (width - thickness) / 2
+    local ypadding = (height - thickness) / 2
     cr:move_to(xpadding, 0)
     cr:line_to(width - xpadding, 0)
     cr:line_to(width - xpadding, ypadding)
-    cr:line_to(width           , ypadding)
-    cr:line_to(width           , height-ypadding)
-    cr:line_to(width - xpadding, height-ypadding)
-    cr:line_to(width - xpadding, height         )
-    cr:line_to(xpadding        , height         )
-    cr:line_to(xpadding        , height-ypadding)
-    cr:line_to(0               , height-ypadding)
-    cr:line_to(0               , ypadding       )
-    cr:line_to(xpadding        , ypadding       )
+    cr:line_to(width, ypadding)
+    cr:line_to(width, height - ypadding)
+    cr:line_to(width - xpadding, height - ypadding)
+    cr:line_to(width - xpadding, height)
+    cr:line_to(xpadding, height)
+    cr:line_to(xpadding, height - ypadding)
+    cr:line_to(0, height - ypadding)
+    cr:line_to(0, ypadding)
+    cr:line_to(xpadding, ypadding)
     cr:close_path()
 end
 
@@ -326,16 +325,16 @@ end
 -- @tparam number height The shape height
 -- @tparam number corner_radius
 function module.octogon(cr, width, height, corner_radius)
-    corner_radius = corner_radius or math.min(10, math.min(width, height)/4)
-    local offset = math.sqrt( (corner_radius*corner_radius) / 2 )
+    corner_radius = corner_radius or math.min(10, math.min(width, height) / 4)
+    local offset  = math.sqrt((corner_radius * corner_radius) / 2)
 
     cr:move_to(offset, 0)
-    cr:line_to(width-offset, 0)
+    cr:line_to(width - offset, 0)
     cr:line_to(width, offset)
-    cr:line_to(width, height-offset)
-    cr:line_to(width-offset, height)
+    cr:line_to(width, height - offset)
+    cr:line_to(width - offset, height)
     cr:line_to(offset, height)
-    cr:line_to(0, height-offset)
+    cr:line_to(0, height - offset)
     cr:line_to(0, offset)
     cr:close_path()
 end
@@ -350,8 +349,8 @@ end
 -- @tparam[opt=math.min(width  height) / 2)] number radius The radius
 function module.circle(cr, width, height, radius)
     radius = radius or math.min(width, height) / 2
-    cr:move_to(width/2+radius, height/2)
-    cr:arc(width / 2, height / 2, radius, 0, 2*math.pi)
+    cr:move_to(width / 2 + radius, height / 2)
+    cr:arc(width / 2, height / 2, radius, 0, 2 * math.pi)
     cr:close_path()
 end
 
@@ -376,11 +375,11 @@ end
 -- @tparam number height The shape height
 -- @tparam[opt=width/3] number base_width The parallelogram base width
 function module.parallelogram(cr, width, height, base_width)
-    base_width = base_width or width/3
-    cr:move_to(width-base_width, 0      )
-    cr:line_to(width           , 0      )
-    cr:line_to(base_width      , height )
-    cr:line_to(0               , height )
+    base_width = base_width or width / 3
+    cr:move_to(width - base_width, 0)
+    cr:line_to(width, 0)
+    cr:line_to(base_width, height)
+    cr:line_to(0, height)
     cr:close_path()
 end
 
@@ -392,10 +391,10 @@ end
 -- @tparam number width The shape width
 -- @tparam number height The shape height
 function module.losange(cr, width, height)
-    cr:move_to(width/2 , 0        )
-    cr:line_to(width   , height/2 )
-    cr:line_to(width/2 , height   )
-    cr:line_to(0       , height/2 )
+    cr:move_to(width / 2, 0)
+    cr:line_to(width, height / 2)
+    cr:line_to(width / 2, height)
+    cr:line_to(0, height / 2)
     cr:close_path()
 end
 
@@ -412,19 +411,19 @@ end
 -- @tparam[opt=math.pi/2] number end_angle The end angle (in radian)
 -- @tparam[opt=math.min(width height)/2] number radius The shape height
 function module.pie(cr, width, height, start_angle, end_angle, radius)
-    radius = radius or math.floor(math.min(width, height)/2)
-    start_angle, end_angle = start_angle or 0, end_angle or math.pi/2
+    radius                 = radius or math.floor(math.min(width, height) / 2)
+    start_angle, end_angle = start_angle or 0, end_angle or math.pi / 2
 
     -- If the shape is a circle, then avoid the lines
-    if math.abs(start_angle + end_angle - 2*math.pi) <= 0.01  then
-        cr:arc(width/2, height/2, radius, 0, 2*math.pi)
+    if math.abs(start_angle + end_angle - 2 * math.pi) <= 0.01 then
+        cr:arc(width / 2, height / 2, radius, 0, 2 * math.pi)
     else
-        cr:move_to(width/2, height/2)
+        cr:move_to(width / 2, height / 2)
         cr:line_to(
-            width/2 + math.cos(start_angle)*radius,
-            height/2 + math.sin(start_angle)*radius
+                width / 2 + math.cos(start_angle) * radius,
+                height / 2 + math.sin(start_angle) * radius
         )
-        cr:arc(width/2, height/2, radius, start_angle, end_angle)
+        cr:arc(width / 2, height / 2, radius, start_angle, end_angle)
     end
 
     cr:close_path()
@@ -445,13 +444,13 @@ end
 -- @tparam[opt=false] boolean start_rounded if the arc start rounded
 -- @tparam[opt=false] boolean end_rounded if the arc end rounded
 function module.arc(cr, width, height, thickness, start_angle, end_angle, start_rounded, end_rounded)
-    start_angle = start_angle or 0
-    end_angle   = end_angle   or math.pi/2
+    start_angle        = start_angle or 0
+    end_angle          = end_angle or math.pi / 2
 
     -- This shape is a partial circle
-    local radius = math.min(width, height)/2
+    local radius       = math.min(width, height) / 2
 
-    thickness = thickness or radius/2
+    thickness          = thickness or radius / 2
 
     local inner_radius = radius - thickness
 
@@ -459,23 +458,23 @@ function module.arc(cr, width, height, thickness, start_angle, end_angle, start_
     -- line, a small subset of the arc circumference has to be substracted
     -- that's (less or more) equal to the thickness/2 (a little longer given
     -- it is an arc and not a line, but it wont show)
-    local arc_percent = math.abs(end_angle-start_angle)/(2*math.pi)
-    local arc_length  = ((radius-thickness/2)*2*math.pi)*arc_percent
+    local arc_percent  = math.abs(end_angle - start_angle) / (2 * math.pi)
+    local arc_length   = ((radius - thickness / 2) * 2 * math.pi) * arc_percent
 
     if start_rounded then
-        arc_length = arc_length - thickness/2
+        arc_length  = arc_length - thickness / 2
 
         -- And back to angles
-        start_angle = end_angle - (arc_length/(radius - thickness/2))
+        start_angle = end_angle - (arc_length / (radius - thickness / 2))
     end
 
     if end_rounded then
-        arc_length = arc_length - thickness/2
+        arc_length = arc_length - thickness / 2
 
         -- And back to angles. Also make sure to avoid underflowing when the
         -- rounded edge radius is greater than the angle delta.
-        end_angle = start_angle + math.max(
-            0, arc_length/(radius - thickness/2)
+        end_angle  = start_angle + math.max(
+                0, arc_length / (radius - thickness / 2)
         )
     end
 
@@ -483,68 +482,68 @@ function module.arc(cr, width, height, thickness, start_angle, end_angle, start_
 
     -- Outer first corner
     local start_p1 = {
-        width /2 + math.cos(start_angle)*radius,
-        height/2 + math.sin(start_angle)*radius
+        width / 2 + math.cos(start_angle) * radius,
+        height / 2 + math.sin(start_angle) * radius
     }
 
     if start_rounded then
 
         -- Inner first corner
-        local start_p2 = {
-            width /2 + math.cos(start_angle)*inner_radius,
-            height/2 + math.sin(start_angle)*inner_radius
+        local start_p2     = {
+            width / 2 + math.cos(start_angle) * inner_radius,
+            height / 2 + math.sin(start_angle) * inner_radius
         }
 
         local median_angle = atan2(
-              start_p2[1] - start_p1[1],
-            -(start_p2[2] - start_p1[2])
+                start_p2[1] - start_p1[1],
+                -(start_p2[2] - start_p1[2])
         )
 
-        local arc_center = {
-            (start_p1[1] + start_p2[1])/2,
-            (start_p1[2] + start_p2[2])/2,
+        local arc_center   = {
+            (start_p1[1] + start_p2[1]) / 2,
+            (start_p1[2] + start_p2[2]) / 2,
         }
 
-        cr:arc(arc_center[1], arc_center[2], thickness/2,
-            median_angle-math.pi/2, median_angle+math.pi/2
+        cr:arc(arc_center[1], arc_center[2], thickness / 2,
+                median_angle - math.pi / 2, median_angle + math.pi / 2
         )
 
     else
         cr:move_to(unpack(start_p1))
     end
 
-    cr:arc(width/2, height/2, radius, start_angle, end_angle)
+    cr:arc(width / 2, height / 2, radius, start_angle, end_angle)
 
     if end_rounded then
 
         -- Outer second corner
-        local end_p1 = {
-            width /2 + math.cos(end_angle)*radius,
-            height/2 + math.sin(end_angle)*radius
+        local end_p1       = {
+            width / 2 + math.cos(end_angle) * radius,
+            height / 2 + math.sin(end_angle) * radius
         }
 
         -- Inner first corner
-        local end_p2 = {
-            width /2 + math.cos(end_angle)*inner_radius,
-            height/2 + math.sin(end_angle)*inner_radius
+        local end_p2       = {
+            width / 2 + math.cos(end_angle) * inner_radius,
+            height / 2 + math.sin(end_angle) * inner_radius
         }
         local median_angle = atan2(
-              end_p2[1] - end_p1[1],
-            -(end_p2[2] - end_p1[2])
+                end_p2[1] - end_p1[1],
+                -(end_p2[2] - end_p1[2])
         ) - math.pi
 
-        local arc_center = {
-            (end_p1[1] + end_p2[1])/2,
-            (end_p1[2] + end_p2[2])/2,
+        local arc_center   = {
+            (end_p1[1] + end_p2[1]) / 2,
+            (end_p1[2] + end_p2[2]) / 2,
         }
 
-        cr:arc(arc_center[1], arc_center[2], thickness/2,
-            median_angle-math.pi/2, median_angle+math.pi/2
+        cr:arc(arc_center[1], arc_center[2], thickness / 2,
+                median_angle - math.pi / 2, median_angle + math.pi / 2
         )
 
     end
 
-    cr:arc_negative(width/2, height/2, inner_radius, end_angle, start_angle)
+    cr:arc_negative(width / 2, height / 2, inner_radius, end_angle, start_angle)
 
     cr:close_path()
 end
@@ -563,56 +562,56 @@ end
 -- @tparam number percent The progressbar percent
 -- @tparam boolean hide_left Do not draw the left side of the shape
 function module.radial_progress(cr, w, h, percent, hide_left)
-    percent = percent or 1
-    local total_length = (2*(w-h))+2*((h/2)*math.pi)
-    local bar_percent  = (w-h)/total_length
-    local arc_percent  = ((h/2)*math.pi)/total_length
+    percent            = percent or 1
+    local total_length = (2 * (w - h)) + 2 * ((h / 2) * math.pi)
+    local bar_percent  = (w - h) / total_length
+    local arc_percent  = ((h / 2) * math.pi) / total_length
 
     -- Bottom line
     if percent > bar_percent then
-        cr:move_to(h/2,h)
-        cr:line_to((h/2) + (w-h),h)
+        cr:move_to(h / 2, h)
+        cr:line_to((h / 2) + (w - h), h)
         cr:stroke()
     elseif percent < bar_percent then
-        cr:move_to(h/2,h)
-        cr:line_to(h/2+(total_length*percent),h)
+        cr:move_to(h / 2, h)
+        cr:line_to(h / 2 + (total_length * percent), h)
         cr:stroke()
     end
 
     -- Right arc
-    if percent >= bar_percent+arc_percent then
-        cr:arc(w-h/2 , h/2, h/2,3*(math.pi/2),math.pi/2)
+    if percent >= bar_percent + arc_percent then
+        cr:arc(w - h / 2, h / 2, h / 2, 3 * (math.pi / 2), math.pi / 2)
         cr:stroke()
-    elseif percent > bar_percent and percent < bar_percent+(arc_percent/2) then
-        cr:arc(w-h/2 , h/2, h/2,(math.pi/2)-((math.pi/2)*((percent-bar_percent)/(arc_percent/2))),math.pi/2)
+    elseif percent > bar_percent and percent < bar_percent + (arc_percent / 2) then
+        cr:arc(w - h / 2, h / 2, h / 2, (math.pi / 2) - ((math.pi / 2) * ((percent - bar_percent) / (arc_percent / 2))), math.pi / 2)
         cr:stroke()
-    elseif percent >= bar_percent+arc_percent/2 and percent < bar_percent+arc_percent then
-        cr:arc(w-h/2 , h/2, h/2,0,math.pi/2)
+    elseif percent >= bar_percent + arc_percent / 2 and percent < bar_percent + arc_percent then
+        cr:arc(w - h / 2, h / 2, h / 2, 0, math.pi / 2)
         cr:stroke()
-        local add = (math.pi/2)*((percent-bar_percent-arc_percent/2)/(arc_percent/2))
-        cr:arc(w-h/2 , h/2, h/2,2*math.pi-add,0)
+        local add = (math.pi / 2) * ((percent - bar_percent - arc_percent / 2) / (arc_percent / 2))
+        cr:arc(w - h / 2, h / 2, h / 2, 2 * math.pi - add, 0)
         cr:stroke()
     end
 
     -- Top line
-    if percent > 2*bar_percent+arc_percent then
-        cr:move_to((h/2) + (w-h),0)
-        cr:line_to(h/2,0)
+    if percent > 2 * bar_percent + arc_percent then
+        cr:move_to((h / 2) + (w - h), 0)
+        cr:line_to(h / 2, 0)
         cr:stroke()
-    elseif percent > bar_percent+arc_percent and percent < 2*bar_percent+arc_percent then
-        cr:move_to((h/2) + (w-h),0)
-        cr:line_to(((h/2) + (w-h))-total_length*(percent-bar_percent-arc_percent),0)
+    elseif percent > bar_percent + arc_percent and percent < 2 * bar_percent + arc_percent then
+        cr:move_to((h / 2) + (w - h), 0)
+        cr:line_to(((h / 2) + (w - h)) - total_length * (percent - bar_percent - arc_percent), 0)
         cr:stroke()
     end
 
     -- Left arc
     if not hide_left then
         if percent > 0.985 then
-            cr:arc(h/2, h/2, h/2,math.pi/2,3*(math.pi/2))
+            cr:arc(h / 2, h / 2, h / 2, math.pi / 2, 3 * (math.pi / 2))
             cr:stroke()
-        elseif percent  > 2*bar_percent+arc_percent then
-            local relpercent = (percent - 2*bar_percent - arc_percent)/arc_percent
-            cr:arc(h/2, h/2, h/2,3*(math.pi/2)-(math.pi)*relpercent,3*(math.pi/2))
+        elseif percent > 2 * bar_percent + arc_percent then
+            local relpercent = (percent - 2 * bar_percent - arc_percent) / arc_percent
+            cr:arc(h / 2, h / 2, h / 2, 3 * (math.pi / 2) - (math.pi) * relpercent, 3 * (math.pi / 2))
             cr:stroke()
         end
     end
@@ -648,7 +647,7 @@ function module.transform(shape)
     local result = setmetatable({
         matrix = g_matrix.identity
     }, {
-        __call = apply,
+        __call  = apply,
         __index = index
     })
 

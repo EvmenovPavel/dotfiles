@@ -193,7 +193,7 @@ function wmapi:is_empty(s)
     return s == nil or s == ""
 end
 
-local __private = {}
+local __private  = {}
 __private.markup = ""
 
 local function markup(markup)
@@ -205,4 +205,4 @@ local function markup(markup)
     return __private.markup
 end
 
-print(markup(""))
+print("")

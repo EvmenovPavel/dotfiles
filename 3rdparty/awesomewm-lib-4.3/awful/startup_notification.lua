@@ -7,16 +7,15 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local ipairs = ipairs
-local table = table
-local capi =
-{
+local ipairs         = ipairs
+local table          = table
+local capi           = {
     awesome = awesome,
-    root = root
+    root    = root
 }
-local beautiful = require("beautiful")
+local beautiful      = require("beautiful")
 
-local app_starting = {}
+local app_starting   = {}
 
 local cursor_waiting = "watch"
 

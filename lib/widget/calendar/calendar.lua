@@ -22,7 +22,6 @@
 local gtable      = require("gears.table")
 local vertical    = require("wibox.layout.fixed").vertical
 local grid        = require("wibox.layout.grid")
-local textbox     = require("wibox.widget.textbox")
 local bgcontainer = require("wibox.container.background")
 local base        = require("wibox.widget.base")
 local beautiful   = require("beautiful")
@@ -46,12 +45,12 @@ local align       = {
 local function make_cell(text, font, _align)
     local w = wmapi.widget:textbox()
 
-    w:markup(text)
-    w:align(_align or align.center)
-    w:valign(align.center)
-    w:font(font)
+    w:set_markup(text)
+    w:set_align(_align or align.center)
+    w:set_valign(align.center)
+    w:set_font(font)
 
-    return w:get()
+    return w
 end
 
 --- Create a grid layout with the month calendar

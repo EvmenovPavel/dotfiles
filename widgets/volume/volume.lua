@@ -22,26 +22,26 @@ local volume_increase     = 5
 local volume              = {}
 local volume_adjust       = {}
 
-local widget_progressbar  = wibox.widget {
+local widget_progressbar  = wibox.widget({
     widget           = wibox.widget.progressbar,
     shape            = gears.shape.rounded_bar,
     color            = "#efefef",
     background_color = "#000000",
     max_value        = volume_max,
     value            = volume_min
-}
+})
 
 local widget_image        = wmapi.widget:imagebox()
-widget_image:image(resources.widgets.volume.on)
+widget_image:set_image(resources.widgets.volume.on)
 
 local function on_images()
     awful.spawn.easy_async_with_shell(
             amixer_active,
             function(stdout)
                 if string.sub(stdout, 0, 2) == "on" then
-                    widget_image:image(resources.widgets.volume.on)
+                    widget_image:set_image(resources.widgets.volume.on)
                 elseif string.sub(stdout, 0, 3) == "off" then
-                    widget_image:image(resources.widgets.volume.off)
+                    widget_image:set_image(resources.widgets.volume.off)
                 end
             end,
             false
@@ -145,12 +145,12 @@ function volume:init()
             layout        = wibox.container.rotate,
         },
         wibox.container.margin(
-                widget_image:get(),
+                widget_image,
                 7, 7, 14, 14
         )
     }
 
-    return widget_image:get()
+    return widget_image
 end
 
 return setmetatable(volume, { __call = function(_, ...)

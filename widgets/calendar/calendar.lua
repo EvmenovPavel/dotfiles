@@ -146,7 +146,7 @@ function calendar:init()
         widget:set_date(a)
     end
 
-    btn_next:textbox():text(">")
+    btn_next:textbox():set_text(">")
     btn_next:clicked(function()
         update_calendar(widgetCalendar, 1)
         update_calendar(widgetMonthName, 1)
@@ -155,7 +155,7 @@ function calendar:init()
         popupWidget:set_widget(layout)
     end)
 
-    btn_prev:textbox():text("<")
+    btn_prev:textbox():set_text("<")
     btn_prev:clicked(function()
         update_calendar(widgetCalendar, -1)
         update_calendar(widgetMonthName, -1)

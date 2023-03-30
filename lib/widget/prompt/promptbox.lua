@@ -5,7 +5,6 @@ local completion   = require("awful.completion")
 local gfs          = require("gears.filesystem")
 local spawn        = require("awful.spawn")
 local beautiful    = require("beautiful")
-local textbox      = require("wibox.widget.textbox")
 local background   = require("wibox.container.background")
 local type         = type
 
@@ -53,7 +52,7 @@ end
 function widgetprompt:init()
     local args       = {}
     local promptbox  = background()
-    promptbox.widget = textbox()
+    promptbox.widget = wmapi.widget:textbox()
     promptbox.widget:set_ellipsize("start")
     promptbox.run                    = run
     promptbox.focus                  = focus

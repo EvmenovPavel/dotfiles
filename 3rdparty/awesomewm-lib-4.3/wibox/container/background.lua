@@ -8,17 +8,17 @@
 -- @classmod wibox.container.background
 ---------------------------------------------------------------------------
 
-local base = require("wibox.widget.base")
-local color = require("gears.color")
-local surface = require("gears.surface")
-local beautiful = require("beautiful")
-local cairo = require("lgi").cairo
-local gtable = require("gears.table")
+local base         = require("wibox.widget.base")
+local color        = require("gears.color")
+local surface      = require("gears.surface")
+local beautiful    = require("beautiful")
+local cairo        = require("lgi").cairo
+local gtable       = require("gears.table")
 local setmetatable = setmetatable
-local type = type
-local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local type         = type
+local unpack       = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
 
-local background = { mt = {} }
+local background   = { mt = {} }
 
 -- Draw this widget
 function background:draw(context, cr, width, height)
@@ -32,10 +32,10 @@ function background:draw(context, cr, width, height)
     if self._private.shape then
         -- Only add the offset if there is something to draw
         local offset = ((self._private.shape_border_width and self._private.shape_border_color)
-            and self._private.shape_border_width or 0) / 2
+                and self._private.shape_border_width or 0) / 2
 
         cr:translate(offset, offset)
-        self._private.shape(cr, width - 2*offset, height - 2*offset, unpack(self._private.shape_args or {}))
+        self._private.shape(cr, width - 2 * offset, height - 2 * offset, unpack(self._private.shape_args or {}))
         cr:translate(-offset, -offset)
         self._private.path = cr:copy_path()
         cr:clip()
@@ -47,7 +47,7 @@ function background:draw(context, cr, width, height)
     end
     if self._private.bgimage then
         if type(self._private.bgimage) == "function" then
-            self._private.bgimage(context, cr, width, height,unpack(self._private.bgimage_args))
+            self._private.bgimage(context, cr, width, height, unpack(self._private.bgimage_args))
         else
             local pattern = cairo.Pattern.create_for_surface(self._private.bgimage)
             cr:set_source(pattern)
@@ -119,7 +119,7 @@ end
 -- Get children element
 -- @treturn table The children
 function background:get_children()
-    return {self._private.widget}
+    return { self._private.widget }
 end
 
 -- Replace the layout children
@@ -184,12 +184,12 @@ end
 -- @see gears.shape
 -- @see shape
 function background:set_shape(shape, ...)
-    local args = {...}
+    local args = { ... }
 
     if shape == self._private.shape and #args == 0 then return end
 
-    self._private.shape = shape
-    self._private.shape_args = {...}
+    self._private.shape      = shape
+    self._private.shape_args = { ... }
     self:emit_signal("widget::redraw_needed")
 end
 
@@ -256,8 +256,8 @@ end
 -- @see gears.surface
 
 function background:set_bgimage(image, ...)
-    self._private.bgimage = type(image) == "function" and image or surface.load(image)
-    self._private.bgimage_args = {...}
+    self._private.bgimage      = type(image) == "function" and image or surface.load(image)
+    self._private.bgimage_args = { ... }
     self:emit_signal("widget::redraw_needed")
 end
 

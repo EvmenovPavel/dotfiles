@@ -36,8 +36,10 @@ function restart:init()
 
     local w             = wmapi.widget:button()
 
-    local int           = 0
-    local str           = "restart" .. tostring(int)
+    w:imagebox():set_image(resources.checkbox.checkbox)
+
+    local int = 0
+    local str = "restart" .. tostring(int)
     wmapi:update(function()
         int     = int + 1
         local t = w:textbox()

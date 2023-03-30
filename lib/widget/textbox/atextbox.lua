@@ -1,255 +1,350 @@
-local wibox   = require("wibox")
+---------------------------------------------------------------------------
+--
+--@DOC_wibox_widget_defaults_textbox_EXAMPLE@
+-- @author Uli Schlachter
+-- @author dodo
+-- @copyright 2010, 2011 Uli Schlachter, dodo
+-- @classmod wibox.widget.textbox
+---------------------------------------------------------------------------
 
-local textbox = {}
+local base       = require("wibox.widget.base")
+local gdebug     = require("gears.debug")
+local beautiful  = require("beautiful")
+local lgi        = require("lgi")
+local gtable     = require("gears.table")
+local Pango      = lgi.Pango
+local PangoCairo = lgi.PangoCairo
 
-local function is_empty(value, type)
+local textbox    = { mt = {} }
 
+--- The textbox font.
+-- @beautiful beautiful.font
+
+--- Set the DPI of a Pango layout
+local function setup_dpi(box, dpi)
+    assert(dpi, "No DPI provided")
+
+    if box._private.dpi ~= dpi then
+        box._private.dpi = dpi
+        box._private.ctx:set_resolution(dpi)
+        box._private.layout:context_changed()
+    end
 end
 
-function textbox:init()
-    local ret               = wmapi.widget:base("textbox")
+--- Setup a pango layout for the given textbox and dpi
+local function setup_layout(box, width, height, dpi)
+    box._private.layout.width  = Pango.units_from_double(width)
+    box._private.layout.height = Pango.units_from_double(height)
 
-    local __private         = {}
+    setup_dpi(box, dpi)
+end
 
-    --Set the text of the textbox (with Pango markup).
-    __private.markup        = ""
-    --Set a textbox' text.
-    __private.text          = "textbox"
-    --Set a textbox' ellipsize mode.
-    __private.ellipsize     = "start"
-    --Set a textbox' wrap mode.<
-    __private.wrap          = "char"
-    --The textbox' vertical alignment
-    --Where should the textbox be drawn? “top”, “center” or “bottom”
-    __private.valign        = "center"
-    --Set a textbox' horizontal alignment.
-    __private.align         = "center"
-    --Set a textbox' font
-    __private.family        = ret:font():family()
-    --Force a widget height.
-    __private.forced_height = nil
-    --Force a widget width.
-    __private.forced_width  = nil
-    --The widget opacity (transparency).
-    __private.opacity       = 1
+-- Draw the given textbox on the given cairo context in the given geometry
+function textbox:draw(context, cr, width, height)
+    setup_layout(self, width, height, context.dpi)
 
-    --The widget
-    local widget            = wibox.widget.textbox()
-    ret:set_widget(widget, function()
-        if not wmapi:is_empty(__private.markup) then
-            widget:set_markup(__private.markup)
-        end
+    cr:update_layout(self._private.layout)
 
-        if not wmapi:is_empty(__private.text) then
-            widget:set_text(__private.text)
-        end
+    local _, logical = self._private.layout:get_pixel_extents()
+    local offset     = 0
 
-        widget:set_ellipsize(__private.ellipsize)
-        widget:set_wrap(__private.wrap)
-        widget:set_valign(__private.valign)
-        widget:set_align(__private.align)
-
-        widget:set_font(__private.family)
-
-        widget:set_forced_width(__private.forced_width)
-        widget:set_forced_height(__private.forced_height)
-
-        widget:set_opacity(__private.opacity)
-    end)
-
-    ret:update_widget()
-
-    function ret:markup(markup)
-        if type(markup) == LuaTypes.string and not wmapi:is_empty(markup) then
-            __private.text   = ""
-            __private.markup = markup
-        end
-
-        return __private.markup
+    if self._private.valign == "center" then
+        offset = (height - logical.height) / 2
+    elseif self._private.valign == "bottom" then
+        offset = height - logical.height
     end
 
-    function ret:text(text)
-        if type(text) == LuaTypes.string and not wmapi:is_empty(text) then
-            __private.markup = ""
-            __private.text   = text
-        end
+    cr:move_to(0, offset)
+    cr:show_layout(self._private.layout)
+end
 
-        return __private.text
+local function do_fit_return(self)
+    local _, logical = self._private.layout:get_pixel_extents()
+
+    if logical.width == 0 or logical.height == 0 then
+        return 0, 0
     end
 
-    function ret:wrap(wrap)
-        if type(wrap) == LuaTypes.string then
-            if wrap == "word" or wrap == "char" or wrap == "word_char" then
-                __private.wrap = wrap
-                return __private.wrap
-            end
-        end
+    return logical.width, logical.height
+end
 
-        local _wrap = {}
+-- Fit the given textbox
+function textbox:fit(context, width, height)
+    setup_layout(self, width, height, context.dpi)
 
-        function _wrap:word()
-            __private.wrap = "word"
-            return __private.wrap
-        end
-        function _wrap:char()
-            __private.wrap = "char"
-        end
-        function _wrap:word_char()
-            __private.wrap = "word_char"
-        end
+    return do_fit_return(self)
+end
 
-        return _wrap
+--- Get the preferred size of a textbox.
+-- This returns the size that the textbox would use if infinite space were
+-- available.
+-- @tparam integer|screen s The screen on which the textbox will be displayed.
+-- @treturn number The preferred width.
+-- @treturn number The preferred height.
+function textbox:get_preferred_size(s)
+    local dpi
+
+    if s then
+        dpi = screen[s].dpi
+    else
+        gdebug.deprecate("textbox:get_preferred_size() requires a screen argument", { deprecated_in = 5, raw = true })
+        dpi = beautiful.xresources.get_dpi()
     end
 
-    function ret:valign(valign)
-        if type(valign) == LuaTypes.string then
-            if valign == "top" or valign == "center" or valign == "bottom" then
-                __private.valign = valign
-                return __private.valign
-            end
-        end
+    return self:get_preferred_size_at_dpi(dpi)
+end
 
-        local _valign = {}
+--- Get the preferred height of a textbox at a given width.
+-- This returns the height that the textbox would use when it is limited to the
+-- given width.
+-- @tparam number width The available width.
+-- @tparam integer|screen s The screen on which the textbox will be displayed.
+-- @treturn number The needed height.
+function textbox:get_height_for_width(width, s)
+    local dpi
 
-        function _valign:top()
-            __private.valign = "top"
-        end
-        function _valign:center()
-            __private.valign = "center"
-        end
-        function _valign:bottom()
-            __private.valign = "bottom"
-        end
-
-        return _valign
+    if s then
+        dpi = screen[s].dpi
+    else
+        gdebug.deprecate("textbox:get_preferred_size() requires a screen argument", { deprecated_in = 5, raw = true })
+        dpi = beautiful.xresources.get_dpi()
     end
 
-    function ret:ellipsize(ellipsize)
-        if type(ellipsize) == LuaTypes.string then
-            if ellipsize == "start" or ellipsize == "middle" or ellipsize == "end" then
-                __private.ellipsize = ellipsize
-                return __private.ellipsize
-            end
-        end
+    return self:get_height_for_width_at_dpi(width, dpi)
+end
 
-        local _ellipsize = {}
+--- Get the preferred size of a textbox.
+-- This returns the size that the textbox would use if infinite space were
+-- available.
+-- @tparam number dpi The DPI value to render at.
+-- @treturn number The preferred width.
+-- @treturn number The preferred height.
+function textbox:get_preferred_size_at_dpi(dpi)
+    local max_lines = 2 ^ 20
 
-        function _ellipsize:start()
-            __private.ellipsize = "start"
-        end
-        function _ellipsize:middle()
-            __private.ellipsize = "middle"
-        end
-        function _ellipsize:the_end()
-            __private.ellipsize = "end"
-        end
+    setup_dpi(self, dpi)
 
-        return _ellipsize
+    self._private.layout.width  = -1 -- no width set
+    self._private.layout.height = -max_lines -- show this many lines per paragraph
+
+    return do_fit_return(self)
+end
+
+--- Get the preferred height of a textbox at a given width.
+-- This returns the height that the textbox would use when it is limited to the
+-- given width.
+-- @tparam number width The available width.
+-- @tparam number dpi The DPI value to render at.
+-- @treturn number The needed height.
+function textbox:get_height_for_width_at_dpi(width, dpi)
+    local max_lines = 2 ^ 20
+
+    setup_dpi(self, dpi)
+
+    self._private.layout.width  = Pango.units_from_double(width)
+    self._private.layout.height = -max_lines -- show this many lines per paragraph
+
+    local _, h                  = do_fit_return(self)
+
+    return h
+end
+
+--- Set the text of the textbox (with
+-- [Pango markup](https://developer.gnome.org/pango/stable/PangoMarkupFormat.html)).
+-- @tparam string text The text to set. This can contain pango markup (e.g.
+--   `<b>bold</b>`). You can use `gears.string.escape` to escape
+--   parts of it.
+-- @treturn[1] boolean true
+-- @treturn[2] boolean false
+-- @treturn[2] string Error message explaining why the markup was invalid.
+function textbox:set_markup_silently(text)
+    if self._private.markup == text then
+        return true
     end
 
-    function ret:align(align)
-        if type(align) == LuaTypes.string then
-            if align == "left" or align == "center" or align == "right" then
-                __private.align = align
-                return __private.align
-            end
-        end
-
-        local _align = {}
-        function _align:left()
-            __private.align = "left"
-            return __private.align
-        end
-        function _align:center()
-            __private.align = "center"
-            return __private.align
-        end
-        function _align:right()
-            __private.align = "right"
-            return __private.align
-        end
-
-        return _align
+    local attr, parsed = Pango.parse_markup(text, -1, 0)
+    -- In case of error, attr is false and parsed is a GLib.Error instance.
+    if not attr then
+        return false, parsed.message or tostring(parsed)
     end
 
-    function ret:family(family)
-        if type(family) == LuaTypes.string then
-            __private.family = family
-        end
+    self._private.markup            = text
+    self._private.layout.text       = parsed
+    self._private.layout.attributes = attr
+    self:emit_signal("widget::redraw_needed")
+    self:emit_signal("widget::layout_changed")
 
-        return __private.family
+    return true
+end
+
+--- Set the text of the textbox (with
+-- [Pango markup](https://developer.gnome.org/pango/stable/PangoMarkupFormat.html)).
+-- @property markup
+-- @tparam string text The text to set. This can contain pango markup (e.g.
+--   `<b>bold</b>`). You can use `gears.string.escape` to escape
+--   parts of it.
+-- @see text
+
+function textbox:set_markup(text)
+    local success, message = self:set_markup_silently(text)
+
+    if not success then
+        gdebug.print_error(message)
+    end
+end
+
+function textbox:get_markup()
+    return self._private.markup
+end
+
+--- Set a textbox' text.
+-- @property text
+-- @param text The text to display. Pango markup is ignored and shown as-is.
+-- @see markup
+
+function textbox:set_text(text)
+    if self._private.layout.text == text and self._private.layout.attributes == nil then
+        return
     end
 
-    function ret:font(font)
-        if type(font) == LuaTypes.string then
-            __private.family = font
+    self._private.markup            = nil
+    self._private.layout.text       = text
+    self._private.layout.attributes = nil
+
+    self:emit_signal("widget::redraw_needed")
+    self:emit_signal("widget::layout_changed")
+end
+
+function textbox:get_text()
+    return self._private.layout.text
+end
+
+--- Set a textbox' ellipsize mode.
+-- @property ellipsize
+-- @param mode Where should long lines be shortened? "start", "middle" or "end"
+
+function textbox:set_ellipsize(mode)
+    local allowed = { none = "NONE", start = "START", middle = "MIDDLE", ["end"] = "END" }
+
+    if allowed[mode] then
+        if self._private.layout:get_ellipsize() == allowed[mode] then
+            return
         end
 
-        return __private.family
-    end
+        self._private.layout:set_ellipsize(allowed[mode])
 
-    function ret:forced_width(forced_width)
-        if type(forced_width) == LuaTypes.number then
-            __private.forced_width = forced_width
+        self:emit_signal("widget::redraw_needed")
+        self:emit_signal("widget::layout_changed")
+    end
+end
+
+--- Set a textbox' wrap mode.
+-- @property wrap
+-- @param mode Where to wrap? After "word", "char" or "word_char"
+
+function textbox:set_wrap(mode)
+    local allowed = { word = "WORD", char = "CHAR", word_char = "WORD_CHAR" }
+
+    if allowed[mode] then
+        if self._private.layout:get_wrap() == allowed[mode] then
+            return
         end
 
-        return __private.forced_width
-    end
+        self._private.layout:set_wrap(allowed[mode])
 
-    function ret:forced_height(forced_height)
-        if type(forced_height) == LuaTypes.number then
-            __private.forced_height = forced_height
+        self:emit_signal("widget::redraw_needed")
+        self:emit_signal("widget::layout_changed")
+    end
+end
+
+--- The textbox' vertical alignment
+-- @property valign
+-- @param mode Where should the textbox be drawn? "top", "center" or "bottom"
+
+function textbox:set_valign(mode)
+    local allowed = { top = true, center = true, bottom = true }
+
+    if allowed[mode] then
+        if self._private.valign == mode then
+            return
         end
 
-        return __private.forced_height
-    end
+        self._private.valign = mode
 
-    function ret:opacity(opacity)
-        if type(opacity) == LuaTypes.number then
-            __private.opacity = opacity
+        self:emit_signal("widget::redraw_needed")
+        self:emit_signal("widget::layout_changed")
+    end
+end
+
+--- Set a textbox' horizontal alignment.
+-- @property align
+-- @param mode Where should the textbox be drawn? "left", "center" or "right"
+
+function textbox:set_align(mode)
+    local allowed = { left = "LEFT", center = "CENTER", right = "RIGHT" }
+
+    if allowed[mode] then
+        if self._private.layout:get_alignment() == allowed[mode] then
+            return
         end
 
-        return __private.opacity
-    end
+        self._private.layout:set_alignment(allowed[mode])
 
-    function ret:get()
-        ret:update_widget()
-        return widget
+        self:emit_signal("widget::redraw_needed")
+        self:emit_signal("widget::layout_changed")
+    end
+end
+
+--- Set a textbox' font
+-- @property font
+-- @param font The font description as string
+
+function textbox:set_font(font)
+    self._private.layout:set_font_description(beautiful.get_font(font))
+
+    self:emit_signal("widget::redraw_needed")
+    self:emit_signal("widget::layout_changed")
+end
+
+--- Create a new textbox.
+-- @tparam[opt=""] string text The textbox content
+-- @tparam[opt=false] boolean ignore_markup Ignore the pango/HTML markup
+-- @treturn table A new textbox widget
+-- @function wibox.widget.textbox
+local function new(text, ignore_markup)
+    local ret = base.make_widget(nil, nil, { enable_properties = true })
+
+    gtable.crush(ret, textbox, true)
+
+    ret._private.dpi    = -1
+    ret._private.ctx    = PangoCairo.font_map_get_default():create_context()
+    ret._private.layout = Pango.Layout.new(ret._private.ctx)
+
+    ret:set_ellipsize("end")
+    ret:set_wrap("word_char")
+    ret:set_valign("center")
+    ret:set_align("left")
+    ret:set_font(beautiful and beautiful.font)
+
+    if text then
+        if ignore_markup then
+            ret:set_text(text)
+        else
+            ret:set_markup(text)
+        end
     end
 
     return ret
 end
 
-return setmetatable(textbox, { __call = function()
-    return textbox
-end })
+function textbox.mt.__call(_, ...)
+    return new(...)
+end
 
---[[
-    :set_text(text) - устанавливает текст для виджета.
-    :get_text() - возвращает текущий текст виджета.
-    :set_align(align) - устанавливает выравнивание текста в виджете. Значение align должно быть одним из следующих: "left", "center" или "right".
-    :set_valign(valign) - устанавливает вертикальное выравнивание текста в виджете. Значение valign должно быть одним из следующих: "top", "center" или "bottom".
-    :set_font(font) - устанавливает шрифт для текста виджета.
-    :set_markup(markup) - устанавливает текст с использованием формата Pango markup. Формат Pango markup позволяет задавать различные свойства текста, такие как цвет, размер шрифта, стиль и т.д.
-    :set_markup_preformatted(markup) - устанавливает текст с использованием формата Pango markup, при этом игнорирует пробельные символы и сохраняет оригинальный форматированный текст.
-    :set_max_width(width) - устанавливает максимальную ширину виджета. Если текст в виджете превышает установленную ширину, то он обрезается.
-    :set_max_height(height) - устанавливает максимальную высоту виджета. Если текст в виджете превышает установленную высоту, то он обрезается.
-    :set_wrap_mode(mode) - устанавливает режим переноса текста в виджете. Значение mode должно быть одним из следующих: "none", "char", "word", "word_char".
-    :set_ellipsize(ellipsize) - устанавливает тип многоточия, которое используется при обрезании текста в виджете. Значение ellipsize должно быть одним из следующих: "none", "start", "middle", "end".
-    :set_single_line(single_line) - устанавливает режим отображения текста в виджете. Если single_line установлен в true, то текст будет отображаться в одну строку без переноса.
-    :set_color(color) - устанавливает цвет текста в виджете.
-    :set_bg(bg) - устанавливает фоновый цвет виджета.
-    :set_fg(fg) - устанавливает цвет текста в виджете.
-    :set_underline(underline) - устанавливает стиль подчеркивания для текста в виджете. Если параметр underline установлен в true, то текст будет подчеркнут. Если underline установлен в false, то подчеркивание будет отключено.
-    :set_strikethrough(strikethrough) - устанавливает стиль перечеркивания для текста в виджете. Если strikethrough установлен в true, то текст будет перечеркнут. Если strikethrough установлен в false, то перечеркивание будет отключено.
-    :set_font_size(size) - устанавливает размер шрифта для текста в виджете.
-    :set_font_family(family) - устанавливает семейство шрифта для текста в виджете.
-    :set_font_slant(slant) - устанавливает стиль наклона шрифта для текста в виджете. Значение slant должно быть одним из следующих: "normal", "italic" или "oblique".
-    :set_font_weight(weight) - устанавливает насыщенность шрифта для текста в виджете. Значение weight должно быть одним из следующих: "ultralight", "light", "normal", "medium", "semibold", "bold", "ultrabold" или "heavy".
-    :set_opacity(opacity) - устанавливает прозрачность виджета. Значение opacity должно быть числом от 0 до 1, где 0 - виджет полностью прозрачен, а 1 - виджет полностью непрозрачен.
-    :fit(width, height) - изменяет размеры виджета так, чтобы он соответствовал указанным размерам width и height.
-    :set_forced_width(width) - устанавливает принудительную ширину виджета.
-    :set_forced_height(height) - устанавливает принудительную высоту виджета.
-    :get_preferred_size() - возвращает предпочтительные размеры виджета.
-    :get_pixel_size() - возвращает текущий размер виджета в пикселях.
-]]
+--@DOC_widget_COMMON@
+
+--@DOC_object_COMMON@
+
+return setmetatable(textbox, textbox.mt)
+
+-- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

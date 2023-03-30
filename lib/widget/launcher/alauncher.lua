@@ -1,8 +1,6 @@
 local setmetatable     = setmetatable
 local gtable           = require("gears.table")
-local spawn            = require("awful.spawn")
 local abutton          = require("awful.button")
-local imagebox         = require("wibox.widget.imagebox")
 local widget           = require("wibox.widget.base")
 local surface          = require("gears.surface")
 local cairo            = require("lgi").cairo
@@ -26,7 +24,7 @@ function wbutton:new(args)
         return widget.empty_widget()
     end
 
-    local w              = imagebox()
+    local w              = wmapi.widget:imagebox()
     local orig_set_image = w.set_image
     local img_release
     local img_press
@@ -73,9 +71,9 @@ function button:new(mod, _button, press, release)
 end
 
 function launcher:init(args)
-    local ret       = wmapi.widget:base("launcher")
+    local ret      = wmapi.widget:base("launcher")
 
-    local w_button  = wmapi.widget:button()
+    local w_button = wmapi.widget:button()
     w_button:clicked(function()
         args.menu:toggle()
     end)

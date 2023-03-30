@@ -8,9 +8,9 @@
 local gdebug = require("gears.debug")
 
 return gdebug.deprecate_class(
-    require("wibox.widget.textclock"),
-    "awful.widget.textclock",
-    "wibox.widget.textclock"
+        require("wibox.widget.textclock"),
+        "awful.widget.textclock",
+        "wibox.widget.textclock"
 )
 
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

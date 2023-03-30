@@ -7,13 +7,13 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local setmetatable = setmetatable
-local ipairs = ipairs
-local capi = { button = button }
-local gmath = require("gears.math")
-local gtable = require("gears.table")
+local setmetatable     = setmetatable
+local ipairs           = ipairs
+local capi             = { button = button }
+local gmath            = require("gears.math")
+local gtable           = require("gears.table")
 
-local button = { mt = {} }
+local button           = { mt = {} }
 
 --- Modifiers to ignore.
 --
@@ -38,16 +38,16 @@ local ignore_modifiers = { "Lock", "Mod2" }
 -- @see button
 -- @treturn table A table with one or several button objects.
 function button.new(mod, _button, press, release)
-    local ret = {}
+    local ret     = {}
     local subsets = gmath.subsets(ignore_modifiers)
     for _, set in ipairs(subsets) do
         ret[#ret + 1] = capi.button({ modifiers = gtable.join(mod, set),
-                                      button = _button })
+                                      button    = _button })
         if press then
             ret[#ret]:connect_signal("press", function(_, ...) press(...) end)
         end
         if release then
-            ret[#ret]:connect_signal("release", function (_, ...) release(...) end)
+            ret[#ret]:connect_signal("release", function(_, ...) release(...) end)
         end
     end
     return ret

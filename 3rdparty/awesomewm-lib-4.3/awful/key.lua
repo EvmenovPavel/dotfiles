@@ -7,13 +7,13 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local setmetatable = setmetatable
-local ipairs = ipairs
-local capi = { key = key, root = root, awesome = awesome }
-local gmath = require("gears.math")
-local gtable = require("gears.table")
+local setmetatable   = setmetatable
+local ipairs         = ipairs
+local capi           = { key = key, root = root, awesome = awesome }
+local gmath          = require("gears.math")
+local gtable         = require("gears.table")
 
-local key = { mt = {}, hotkeys = {} }
+local key            = { mt = {}, hotkeys = {} }
 
 --- Modifiers to ignore.
 -- By default this is initialized as { "Lock", "Mod2" }
@@ -24,7 +24,7 @@ local key = { mt = {}, hotkeys = {} }
 key.ignore_modifiers = { "Lock", "Mod2" }
 
 --- Convert the modifiers into pc105 key names
-local conversion = nil
+local conversion     = nil
 
 local function generate_conversion_map()
     if conversion then return conversion end
@@ -37,7 +37,7 @@ local function generate_conversion_map()
     for mod, keysyms in pairs(mods) do
         for _, keysym in ipairs(keysyms) do
             assert(keysym.keysym)
-            conversion[mod] = conversion[mod] or keysym.keysym
+            conversion[mod]           = conversion[mod] or keysym.keysym
             conversion[keysym.keysym] = mod
         end
     end
@@ -45,7 +45,7 @@ local function generate_conversion_map()
     return conversion
 end
 
-capi.awesome.connect_signal("xkb::map_changed"  , function() conversion = nil end)
+capi.awesome.connect_signal("xkb::map_changed", function() conversion = nil end)
 
 --- Execute a key combination.
 -- If an awesome keybinding is assigned to the combination, it should be
@@ -76,7 +76,7 @@ function key.execute(mod, k)
         end
     end
 
-    root.fake_input("key_press"  , k)
+    root.fake_input("key_press", k)
     root.fake_input("key_release", k)
 
     for _, v in ipairs(mod) do
@@ -112,15 +112,15 @@ end
 -- for example {description="select next tag", group="tag"}.
 -- @treturn table A table with one or several key objects.
 function key.new(mod, _key, press, release, data)
-    if type(release)=='table' then
-        data=release
-        release=nil
+    if type(release) == 'table' then
+        data    = release
+        release = nil
     end
-    local ret = {}
+    local ret     = {}
     local subsets = gmath.subsets(key.ignore_modifiers)
     for _, set in ipairs(subsets) do
         ret[#ret + 1] = capi.key({ modifiers = gtable.join(mod, set),
-                                   key = _key })
+                                   key       = _key })
         if press then
             ret[#ret]:connect_signal("press", function(_, ...) press(...) end)
         end
@@ -130,10 +130,10 @@ function key.new(mod, _key, press, release, data)
     end
 
     -- append custom userdata (like description) to a hotkey
-    data = data and gtable.clone(data) or {}
-    data.mod = mod
-    data.key = _key
-    data.press = press
+    data         = data and gtable.clone(data) or {}
+    data.mod     = mod
+    data.key     = _key
+    data.press   = press
     data.release = release
     table.insert(key.hotkeys, data)
     data.execute = function(_) key.execute(mod, _key) end

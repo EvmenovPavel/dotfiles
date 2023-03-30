@@ -10,7 +10,7 @@ theme:menu(beautiful)
 theme:wibar(beautiful)
 
 --function print(...)
-    -- log:debug("print:", ...)
+-- log:debug("print:", ...)
 --end
 
 local keybinds = require("keys.keybinds")

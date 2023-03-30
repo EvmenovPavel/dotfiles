@@ -10,26 +10,25 @@
 local layout = require("awful.layout")
 local aplace = require("awful.placement")
 local gdebug = require("gears.debug")
-local type = type
+local type   = type
 local ipairs = ipairs
-local capi =
-{
-    root = root,
-    mouse = mouse,
-    screen = screen,
-    client = client,
+local capi   = {
+    root         = root,
+    mouse        = mouse,
+    screen       = screen,
+    client       = client,
     mousegrabber = mousegrabber,
 }
 
-local mouse = {
-    resize = require("awful.mouse.resize"),
-    snap   = require("awful.mouse.snap"),
+local mouse  = {
+    resize      = require("awful.mouse.resize"),
+    snap        = require("awful.mouse.snap"),
     drag_to_tag = require("awful.mouse.drag_to_tag")
 }
 
 mouse.object = {}
 mouse.client = {}
-mouse.wibox = {}
+mouse.wibox  = {}
 
 --- The default snap distance.
 -- @tfield integer awful.mouse.snap.default_distance
@@ -66,7 +65,7 @@ mouse.wibox = {}
 -- @return The client object under the pointer, if one can be found.
 -- @see current_client
 function mouse.client_under_pointer()
-    gdebug.deprecate("Use mouse.current_client instead of awful.mouse.client_under_pointer()", {deprecated_in=4})
+    gdebug.deprecate("Use mouse.current_client instead of awful.mouse.client_under_pointer()", { deprecated_in = 4 })
 
     return mouse.object.get_current_client()
 end
@@ -76,26 +75,27 @@ end
 -- @param c The client to move, or the focused one if nil.
 -- @param snap The pixel to snap clients.
 -- @param finished_cb Deprecated, do not use
-function mouse.client.move(c, snap, finished_cb) --luacheck: no unused args
+function mouse.client.move(c, snap, finished_cb)
+    --luacheck: no unused args
     if finished_cb then
-        gdebug.deprecate("The mouse.client.move `finished_cb` argument is no longer"..
-            " used, please use awful.mouse.resize.add_leave_callback(f, 'mouse.move')", {deprecated_in=4})
+        gdebug.deprecate("The mouse.client.move `finished_cb` argument is no longer" ..
+                " used, please use awful.mouse.resize.add_leave_callback(f, 'mouse.move')", { deprecated_in = 4 })
     end
 
     c = c or capi.client.focus
 
     if not c
-        or c.fullscreen
-        or c.maximized
-        or c.type == "desktop"
-        or c.type == "splash"
-        or c.type == "dock" then
+            or c.fullscreen
+            or c.maximized
+            or c.type == "desktop"
+            or c.type == "splash"
+            or c.type == "dock" then
         return
     end
 
     -- Compute the offset
     local coords = capi.mouse.coords()
-    local geo    = aplace.centered(capi.mouse,{parent=c, pretend=true})
+    local geo    = aplace.centered(capi.mouse, { parent = c, pretend = true })
 
     local offset = {
         x = geo.x - coords.x,
@@ -115,8 +115,8 @@ mouse.client.dragtotag = { }
 -- @deprecated awful.mouse.client.dragtotag.border
 -- @param c The client to move
 function mouse.client.dragtotag.border(c)
-    gdebug.deprecate("Use awful.mouse.snap.drag_to_tag_enabled = true instead "..
-        "of awful.mouse.client.dragtotag.border(c). It will now be enabled.", {deprecated_in=4})
+    gdebug.deprecate("Use awful.mouse.snap.drag_to_tag_enabled = true instead " ..
+            "of awful.mouse.client.dragtotag.border(c). It will now be enabled.", { deprecated_in = 4 })
 
     -- Enable drag to border
     mouse.snap.drag_to_tag_enabled = true
@@ -132,15 +132,15 @@ function mouse.wibox.move(w)
     if not w then return end
 
     if not w
-        or w.type == "desktop"
-        or w.type == "splash"
-        or w.type == "dock" then
+            or w.type == "desktop"
+            or w.type == "splash"
+            or w.type == "dock" then
         return
     end
 
     -- Compute the offset
     local coords = capi.mouse.coords()
-    local geo    = aplace.centered(capi.mouse,{parent=w, pretend=true})
+    local geo    = aplace.centered(capi.mouse, { parent = w, pretend = true })
 
     local offset = {
         x = geo.x - coords.x,
@@ -164,8 +164,8 @@ end
 -- @treturn number y The vertical position
 function mouse.client.corner(c, corner)
     gdebug.deprecate(
-        "Use awful.placement.closest_corner(mouse) or awful.placement[corner](mouse)"..
-        " instead of awful.mouse.client.corner", {deprecated_in=4}
+            "Use awful.placement.closest_corner(mouse) or awful.placement[corner](mouse)" ..
+                    " instead of awful.mouse.client.corner", { deprecated_in = 4 }
     )
 
     c = c or capi.client.focus
@@ -174,9 +174,9 @@ function mouse.client.corner(c, corner)
     local ngeo = nil
 
     if (not corner) or corner == "auto" then
-        ngeo, corner = aplace.closest_corner(mouse, {parent = c})
+        ngeo, corner = aplace.closest_corner(mouse, { parent = c })
     elseif corner and aplace[corner] then
-        ngeo = aplace[corner](mouse, {parent = c})
+        ngeo = aplace[corner](mouse, { parent = c })
     end
 
     return corner, ngeo and ngeo.x or nil, ngeo and ngeo.y or nil
@@ -194,26 +194,26 @@ function mouse.client.resize(c, corner, args)
     if not c then return end
 
     if c.fullscreen
-        or c.maximized
-        or c.type == "desktop"
-        or c.type == "splash"
-        or c.type == "dock" then
+            or c.maximized
+            or c.type == "desktop"
+            or c.type == "splash"
+            or c.type == "dock" then
         return
     end
 
     -- Set some default arguments
     local new_args = setmetatable(
-        {
-            include_sides = (not args) or args.include_sides ~= false
-        },
-        {
-            __index = args or {}
-        }
+            {
+                include_sides = (not args) or args.include_sides ~= false
+            },
+            {
+                __index = args or {}
+            }
     )
 
     -- Move the mouse to the corner
     if corner and aplace[corner] then
-        aplace[corner](capi.mouse, {parent=c})
+        aplace[corner](capi.mouse, { parent = c })
     else
         local _
         _, corner = aplace.closest_corner(capi.mouse, {
@@ -238,7 +238,7 @@ function mouse.resize_handler(c, context, hints)
     if hints and context and context:find("mouse.*") then
         -- This handler only handle the floating clients. If the client is tiled,
         -- then it let the layouts handle it.
-        local t = c.screen.selected_tag
+        local t   = c.screen.selected_tag
         local lay = t and t.layout or nil
 
         if (lay and lay == layout.suit.floating) or c.floating then
@@ -258,7 +258,8 @@ end
 -- @tparam client c The client
 -- @tparam table args Additional arguments
 -- @treturn boolean This return false when the resize need to be aborted
-mouse.resize.add_enter_callback(function(c, args) --luacheck: no unused args
+mouse.resize.add_enter_callback(function(c, args)
+    --luacheck: no unused args
     if c.floating then return end
 
     local l = c.screen.selected_tag and c.screen.selected_tag.layout or nil
@@ -267,7 +268,7 @@ mouse.resize.add_enter_callback(function(c, args) --luacheck: no unused args
     if l ~= layout.suit.floating and l.mouse_resize_handler then
         capi.mousegrabber.stop()
 
-        local geo, corner = aplace.closest_corner(capi.mouse, {parent=c})
+        local geo, corner = aplace.closest_corner(capi.mouse, { parent = c })
 
         l.mouse_resize_handler(c, corner, geo.x, geo.y)
 
@@ -310,9 +311,9 @@ function mouse.object.get_current_widgets()
     if w then
         local geo, coords = w:geometry(), capi.mouse:coords()
 
-        local list = w:find_widgets(coords.x - geo.x, coords.y - geo.y)
+        local list        = w:find_widgets(coords.x - geo.x, coords.y - geo.y)
 
-        local ret = {}
+        local ret         = {}
 
         for k, v in ipairs(list) do
             ret[k] = v.widget
@@ -370,8 +371,8 @@ end
 -- @property is_middle_mouse_button_pressed
 -- @param boolean
 
-for _, b in ipairs {"left", "right", "middle"} do
-    mouse.object["is_".. b .."_mouse_button_pressed"] = function()
+for _, b in ipairs { "left", "right", "middle" } do
+    mouse.object["is_" .. b .. "_mouse_button_pressed"] = function()
         return capi.mouse.coords().buttons[1]
     end
 end
@@ -384,10 +385,10 @@ capi.root.cursor("left_ptr")
 -- Implement the custom property handler
 local props = {}
 
-capi.mouse.set_newindex_miss_handler(function(_,key,value)
-    if mouse.object["set_"..key] then
-        mouse.object["set_"..key](value)
-    elseif not mouse.object["get_"..key] then
+capi.mouse.set_newindex_miss_handler(function(_, key, value)
+    if mouse.object["set_" .. key] then
+        mouse.object["set_" .. key](value)
+    elseif not mouse.object["get_" .. key] then
         props[key] = value
     else
         -- If there is a getter, but no setter, then the property is read-only
@@ -395,9 +396,9 @@ capi.mouse.set_newindex_miss_handler(function(_,key,value)
     end
 end)
 
-capi.mouse.set_index_miss_handler(function(_,key)
-    if mouse.object["get_"..key] then
-        return mouse.object["get_"..key]()
+capi.mouse.set_index_miss_handler(function(_, key)
+    if mouse.object["get_" .. key] then
+        return mouse.object["get_" .. key]()
     else
         return props[key]
     end

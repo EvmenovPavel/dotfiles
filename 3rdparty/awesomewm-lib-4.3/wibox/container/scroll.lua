@@ -23,21 +23,21 @@
 -- @classmod wibox.container.scroll
 ---------------------------------------------------------------------------
 
-local cache = require("gears.cache")
-local timer = require("gears.timer")
+local cache     = require("gears.cache")
+local timer     = require("gears.timer")
 local hierarchy = require("wibox.hierarchy")
-local base = require("wibox.widget.base")
-local gtable = require("gears.table")
-local lgi = require("lgi")
-local GLib = lgi.GLib
+local base      = require("wibox.widget.base")
+local gtable    = require("gears.table")
+local lgi       = require("lgi")
+local GLib      = lgi.GLib
 
-local scroll = {}
+local scroll    = {}
 local _need_scroll_redraw
 
 -- "Strip" a context so that we can use it for our own drawing
 local function cleanup_context(context)
     local skip = { wibox = true, drawable = true, client = true, position = true }
-    local res = {}
+    local res  = {}
     for k, v in pairs(context) do
         if not skip[k] then
             res[k] = v
@@ -49,7 +49,7 @@ end
 -- Create a hierarchy (and some more stuff) for drawing the given widget. This
 -- allows "some stuff" to be re-used instead of re-created all the time.
 local hierarchy_cache = cache.new(function(context, widget, width, height)
-    context = cleanup_context(context)
+    context       = cleanup_context(context)
     local layouts = setmetatable({}, { __mode = "k" })
 
     -- Create a widget hierarchy and update when needed
@@ -97,17 +97,17 @@ local function calculate_info(self, context, width, height)
     assert(self._private.widget)
 
     -- First, get the size of the widget (and the size of extra space)
-    local surface_width, surface_height = width, height
+    local surface_width, surface_height    = width, height
     local extra_width, extra_height, extra = 0, 0, self._private.expand and self._private.extra_space or 0
     local w, h
     if self._private.dir == "h" then
-        w, h = base.fit_widget(self, context, self._private.widget, self._private.space_for_scrolling, height)
+        w, h          = base.fit_widget(self, context, self._private.widget, self._private.space_for_scrolling, height)
         surface_width = w
-        extra_width = extra
+        extra_width   = extra
     else
-        w, h = base.fit_widget(self, context, self._private.widget, width, self._private.space_for_scrolling)
+        w, h           = base.fit_widget(self, context, self._private.widget, width, self._private.space_for_scrolling)
         surface_height = h
-        extra_height = extra
+        extra_height   = extra
     end
     result.fit_width, result.fit_height = w, h
     if self._private.dir == "h" then
@@ -125,13 +125,13 @@ local function calculate_info(self, context, width, height)
 
         surface_width, surface_height = surface_width + extra_width, surface_height + extra_height
 
-        local x, y = 0, 0
+        local x, y                    = 0, 0
         local function get_scroll_offset(size, visible_size)
             return self._private.step_function(self._private.timer:elapsed(),
-                                               size,
-                                               visible_size,
-                                               self._private.speed,
-                                               self._private.extra_space)
+                    size,
+                    visible_size,
+                    self._private.speed,
+                    self._private.extra_space)
         end
         if self._private.dir == "h" then
             x = -get_scroll_offset(surface_width - extra, width)
@@ -140,7 +140,7 @@ local function calculate_info(self, context, width, height)
         end
         result.first_x, result.first_y = x, y
         -- Was the extra space already included elsewhere?
-        local extra_spacer = self._private.expand and 0 or self._private.extra_space
+        local extra_spacer             = self._private.expand and 0 or self._private.extra_space
         if self._private.dir == "h" then
             x = x + surface_width + extra_spacer
         else
@@ -153,10 +153,10 @@ local function calculate_info(self, context, width, height)
     result.surface_width, result.surface_height = surface_width, surface_height
 
     -- Get the hierarchy and subscribe ourselves to updates
-    local hier, do_pending_updates, ctx = hierarchy_cache:get(context,
+    local hier, do_pending_updates, ctx         = hierarchy_cache:get(context,
             self._private.widget, surface_width, surface_height)
-    result.hierarchy = hier
-    result.context = ctx
+    result.hierarchy                            = hier
+    result.context                              = ctx
     do_pending_updates(self)
 
     return result
@@ -288,7 +288,7 @@ end
 --- Get the number of children element
 -- @treturn table The children
 function scroll:get_children()
-    return {self._private.widget}
+    return { self._private.widget }
 end
 
 --- Replace the layout children
@@ -397,10 +397,10 @@ function scroll:set_space_for_scrolling(space_for_scrolling)
 end
 
 local function get_layout(dir, widget, fps, speed, extra_space, expand, max_size, step_function, space_for_scrolling)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret                 = base.make_widget(nil, nil, { enable_properties = true })
 
-    ret._private.paused = false
-    ret._private.timer = GLib.Timer()
+    ret._private.paused       = false
+    ret._private.timer        = GLib.Timer()
     ret._private.scroll_timer = nil
 
     gtable.crush(ret, scroll, true)
@@ -413,7 +413,7 @@ local function get_layout(dir, widget, fps, speed, extra_space, expand, max_size
     ret:set_expand(expand)
     ret:set_max_size(max_size)
     ret:set_step_function(step_function or scroll.step_functions.linear_increase)
-    ret:set_space_for_scrolling(space_for_scrolling or 2^1024)
+    ret:set_space_for_scrolling(space_for_scrolling or 2 ^ 1024)
 
     return ret
 end
@@ -466,7 +466,7 @@ end
 -- beginning, then back to its end, etc. The speed is constant.
 function scroll.step_functions.linear_back_and_forth(elapsed, size, visible_size, speed)
     local state = ((elapsed * speed) % (2 * size)) / size
-    state = state <= 1 and state or 2 - state
+    state       = state <= 1 and state or 2 - state
     return (size - visible_size) * state
 end
 
@@ -474,20 +474,20 @@ end
 -- beginning, then back to its end, etc. The speed is null at the ends and
 -- maximal in the middle.
 function scroll.step_functions.nonlinear_back_and_forth(elapsed, size, visible_size, speed)
-    local state = ((elapsed * speed) % (2 * size)) / size
+    local state  = ((elapsed * speed) % (2 * size)) / size
     local negate = false
     if state > 1 then
         negate = true
-        state = state - 1
+        state  = state - 1
     end
-    if state < 1/3 then
+    if state < 1 / 3 then
         -- In the first 1/3rd of time, do a quadratic increase in speed
         state = 2 * state * state
-    elseif state < 2/3 then
+    elseif state < 2 / 3 then
         -- In the center, do a linear increase. That means we need:
         -- If state is 1/3, result is 2/9 = 2 * 1/3 * 1/3
         -- If state is 2/3, result is 7/9 = 1 - 2 * (1 - 2/3) * (1 - 2/3)
-        state = 5/3*state - 3/9
+        state = 5 / 3 * state - 3 / 9
     else
         -- In the last 1/3rd of time, do a quadratic decrease in speed
         state = 1 - 2 * (1 - state) * (1 - state)
@@ -502,25 +502,25 @@ end
 -- beginning, then back to its end, etc. The speed is null at the ends and
 -- maximal in the middle. At both ends the widget stands still for a moment.
 function scroll.step_functions.waiting_nonlinear_back_and_forth(elapsed, size, visible_size, speed)
-    local state = ((elapsed * speed) % (2 * size)) / size
+    local state  = ((elapsed * speed) % (2 * size)) / size
     local negate = false
     if state > 1 then
         negate = true
-        state = state - 1
+        state  = state - 1
     end
-    if state < 1/5 or state > 4/5 then
+    if state < 1 / 5 or state > 4 / 5 then
         -- One fifth of time, nothing moves
-        state = state < 1/5 and 0 or 1
+        state = state < 1 / 5 and 0 or 1
     else
-        state = (state - 1/5) * 5/3
-        if state < 1/3 then
+        state = (state - 1 / 5) * 5 / 3
+        if state < 1 / 3 then
             -- In the first 1/3rd of time, do a quadratic increase in speed
             state = 2 * state * state
-        elseif state < 2/3 then
+        elseif state < 2 / 3 then
             -- In the center, do a linear increase. That means we need:
             -- If state is 1/3, result is 2/9 = 2 * 1/3 * 1/3
             -- If state is 2/3, result is 7/9 = 1 - 2 * (1 - 2/3) * (1 - 2/3)
-            state = 5/3*state - 3/9
+            state = 5 / 3 * state - 3 / 9
         else
             -- In the last 1/3rd of time, do a quadratic decrease in speed
             state = 1 - 2 * (1 - state) * (1 - state)

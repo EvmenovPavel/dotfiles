@@ -43,19 +43,19 @@
 ---------------------------------------------------------------------------
 
 local setmetatable = setmetatable
-local string = string
-local table = table
-local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
-local tonumber = tonumber
-local ipairs = ipairs
-local pairs = pairs
-local type = type
-local lgi = require("lgi")
-local cairo = lgi.cairo
-local Pango = lgi.Pango
-local surface = require("gears.surface")
+local string       = string
+local table        = table
+local unpack       = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local tonumber     = tonumber
+local ipairs       = ipairs
+local pairs        = pairs
+local type         = type
+local lgi          = require("lgi")
+local cairo        = lgi.cairo
+local Pango        = lgi.Pango
+local surface      = require("gears.surface")
 
-local color = { mt = {} }
+local color        = { mt = {} }
 local pattern_cache
 
 --- Parse a HTML-color.
@@ -84,8 +84,8 @@ function color.parse_color(col)
             return nil
         end
         local dividor = (0x10 ^ chars_per_channel) - 1
-        for idx=1,#hex_str,chars_per_channel do
-            local channel_val = tonumber(hex_str:sub(idx,idx+chars_per_channel-1), 16)
+        for idx = 1, #hex_str, chars_per_channel do
+            local channel_val = tonumber(hex_str:sub(idx, idx + chars_per_channel - 1), 16)
             table.insert(rgb, channel_val / dividor)
         end
         if channels == 3 then
@@ -140,7 +140,7 @@ function color.create_png_pattern(file)
     if type(file) == "table" then
         file = file.file
     end
-    local image = surface.load(file)
+    local image   = surface.load(file)
     local pattern = cairo.Pattern.create_for_surface(image)
     pattern:set_extend(cairo.Extend.REPEAT)
     return pattern
@@ -152,7 +152,7 @@ end
 --   should be in the form place,color where place is in [0, 1].
 local function add_iterator_stops(p, iterator)
     for k in iterator do
-        local sub = string.gmatch(k, "[^,]+")
+        local sub        = string.gmatch(k, "[^,]+")
         local point, clr = sub(), sub()
         p:add_color_stop_rgba(point, color.parse_color(clr))
     end
@@ -169,8 +169,8 @@ end
 local function string_pattern(creator, arg)
     local iterator = string.gmatch(arg, "[^:]+")
     -- Create a table where each entry is a number from the original string
-    local args = { parse_numbers(iterator()) }
-    local to = { parse_numbers(iterator()) }
+    local args     = { parse_numbers(iterator()) }
+    local to       = { parse_numbers(iterator()) }
     -- Now merge those two tables
     for _, v in pairs(to) do
         table.insert(args, v)
@@ -234,8 +234,8 @@ end
 
 --- Mapping of all supported color types. New entries can be added.
 color.types = {
-    solid = color.create_solid_pattern,
-    png = color.create_png_pattern,
+    solid  = color.create_solid_pattern,
+    png    = color.create_png_pattern,
     linear = color.create_linear_pattern,
     radial = color.create_radial_pattern
 }
@@ -287,7 +287,7 @@ end
 -- @return The pattern if it is surely opaque, else nil
 function color.create_opaque_pattern(col)
     local pattern = color.create_pattern(col)
-    local kind = pattern:get_type()
+    local kind    = pattern:get_type()
 
     if kind == "SOLID" then
         local _, _, _, _, alpha = pattern:get_rgba()
@@ -352,7 +352,7 @@ end
 function color.ensure_pango_color(check_color, fallback)
     check_color = tostring(check_color)
     -- Pango markup supports alpha, PangoColor does not. Thus, check for this.
-    local len = #check_color
+    local len   = #check_color
     if string.match(check_color, "^#%x+$") and (len == 5 or len == 9 or len == 17) then
         return check_color
     end
@@ -363,7 +363,7 @@ function color.mt.__call(_, ...)
     return color.create_pattern(...)
 end
 
-pattern_cache = require("gears.cache").new(color.create_pattern_uncached)
+pattern_cache     = require("gears.cache").new(color.create_pattern_uncached)
 
 --- No color
 color.transparent = color.create_pattern("#00000000")

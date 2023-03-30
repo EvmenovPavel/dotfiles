@@ -9,19 +9,18 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local capi =
-{
+local capi         = {
     screen = screen,
     client = client
 }
 local setmetatable = setmetatable
-local tostring = tostring
-local ipairs = ipairs
-local error = error
-local wibox = require("wibox")
-local beautiful = require("beautiful")
-local gdebug = require("gears.debug")
-local placement = require("awful.placement")
+local tostring     = tostring
+local ipairs       = ipairs
+local error        = error
+local wibox        = require("wibox")
+local beautiful    = require("beautiful")
+local gdebug       = require("gears.debug")
+local placement    = require("awful.placement")
 
 local function get_screen(s)
     return s and capi.screen[s]
@@ -31,7 +30,7 @@ local awfulwibar = { mt = {} }
 
 --- Array of table with wiboxes inside.
 -- It's an array so it is ordered.
-local wiboxes = setmetatable({}, {__mode = "v"})
+local wiboxes    = setmetatable({}, { __mode = "v" })
 
 --- If the wibar needs to be stretched to fill the screen.
 -- @property stretch
@@ -100,7 +99,7 @@ local wiboxes = setmetatable({}, {__mode = "v"})
 -- Compute the margin on one side
 local function get_margin(w, position, auto_stop)
     local h_or_w = (position == "top" or position == "bottom") and "height" or "width"
-    local ret = 0
+    local ret    = 0
 
     for _, v in ipairs(wiboxes) do
         -- Ignore the wibars placed after this one
@@ -120,13 +119,13 @@ local function get_margins(w)
     local position = w.position
     assert(position)
 
-    local margins = {left=0, right=0, top=0, bottom=0}
+    local margins     = { left = 0, right = 0, top = 0, bottom = 0 }
 
     margins[position] = get_margin(w, position, true)
 
     -- Avoid overlapping wibars
     if position == "left" or position == "right" then
-        margins.top    = get_margin(w, "top"   )
+        margins.top    = get_margin(w, "top")
         margins.bottom = get_margin(w, "bottom")
     end
 
@@ -136,7 +135,7 @@ end
 -- Create the placement function
 local function gen_placement(position, stretch)
     local maximize = (position == "right" or position == "left") and
-        "maximize_vertically" or "maximize_horizontally"
+            "maximize_vertically" or "maximize_horizontally"
 
     return placement[position] + (stretch and placement[maximize] or nil)
 end
@@ -194,10 +193,10 @@ local function set_position(wb, position, skip_reattach)
 
     -- In case the position changed, it may be necessary to reset the size
     if (wb._position == "left" or wb._position == "right")
-      and (position == "top" or position == "bottom") then
+            and (position == "top" or position == "bottom") then
         wb.height = math.ceil(beautiful.get_font_height(wb.font) * 1.5)
     elseif (wb._position == "top" or wb._position == "bottom")
-      and (position == "left" or position == "right") then
+            and (position == "left" or position == "right") then
         wb.width = math.ceil(beautiful.get_font_height(wb.font) * 1.5)
     end
 
@@ -256,7 +255,7 @@ end
 -- @deprecated awful.wibar.get_position
 -- @return The wibox position.
 function awfulwibar.get_position(wb)
-    gdebug.deprecate("Use wb:get_position() instead of awful.wibar.get_position", {deprecated_in=4})
+    gdebug.deprecate("Use wb:get_position() instead of awful.wibar.get_position", { deprecated_in = 4 })
     return get_position(wb)
 end
 
@@ -265,8 +264,9 @@ end
 -- @param position The position: top, bottom left or right.
 -- @param screen This argument is deprecated, use wb.screen directly.
 -- @deprecated awful.wibar.set_position
-function awfulwibar.set_position(wb, position, screen) --luacheck: no unused args
-    gdebug.deprecate("Use wb:set_position(position) instead of awful.wibar.set_position", {deprecated_in=4})
+function awfulwibar.set_position(wb, position, screen)
+    --luacheck: no unused args
+    gdebug.deprecate("Use wb:set_position(position) instead of awful.wibar.set_position", { deprecated_in = 4 })
 
     set_position(wb, position)
 end
@@ -281,10 +281,11 @@ end
 -- @param screen The screen to attach to
 -- @see awful.placement
 -- @deprecated awful.wibar.attach
-function awfulwibar.attach(wb, position, screen) --luacheck: no unused args
-    gdebug.deprecate("awful.wibar.attach is deprecated, use the 'attach' property"..
-        " of awful.placement. This method doesn't do anything anymore",
-        {deprecated_in=4}
+function awfulwibar.attach(wb, position, screen)
+    --luacheck: no unused args
+    gdebug.deprecate("awful.wibar.attach is deprecated, use the 'attach' property" ..
+            " of awful.placement. This method doesn't do anything anymore",
+            { deprecated_in = 4 }
     )
 end
 
@@ -310,14 +311,15 @@ end
 --  directly.
 -- @deprecated awful.wibar.align
 -- @see awful.placement.align
-function awfulwibar.align(wb, align, screen) --luacheck: no unused args
+function awfulwibar.align(wb, align, screen)
+    --luacheck: no unused args
     if align == "center" then
-        gdebug.deprecate("awful.wibar.align(wb, 'center' is deprecated, use 'centered'", {deprecated_in=4})
+        gdebug.deprecate("awful.wibar.align(wb, 'center' is deprecated, use 'centered'", { deprecated_in = 4 })
         align = "centered"
     end
 
     if screen then
-        gdebug.deprecate("awful.wibar.align 'screen' argument is deprecated", {deprecated_in=4})
+        gdebug.deprecate("awful.wibar.align 'screen' argument is deprecated", { deprecated_in = 4 })
     end
 
     if placement[align] then
@@ -346,23 +348,23 @@ end
 -- @return The new wibar
 -- @function awful.wibar
 function awfulwibar.new(args)
-    args = args or {}
-    local position = args.position or "top"
+    args                 = args or {}
+    local position       = args.position or "top"
     local has_to_stretch = true
-    local screen = get_screen(args.screen or 1)
+    local screen         = get_screen(args.screen or 1)
 
-    args.type = args.type or "dock"
+    args.type            = args.type or "dock"
 
-    if position ~= "top" and position ~="bottom"
+    if position ~= "top" and position ~= "bottom"
             and position ~= "left" and position ~= "right" then
         error("Invalid position in awful.wibar(), you may only use"
-            .. " 'top', 'bottom', 'left' and 'right'")
+                .. " 'top', 'bottom', 'left' and 'right'")
     end
 
     -- Set default size
     if position == "left" or position == "right" then
         args.width = args.width or beautiful["wibar_width"]
-            or math.ceil(beautiful.get_font_height(args.font) * 1.5)
+                or math.ceil(beautiful.get_font_height(args.font) * 1.5)
         if args.height then
             has_to_stretch = false
             if args.screen then
@@ -374,7 +376,7 @@ function awfulwibar.new(args)
         end
     else
         args.height = args.height or beautiful["wibar_height"]
-            or math.ceil(beautiful.get_font_height(args.font) * 1.5)
+                or math.ceil(beautiful.get_font_height(args.font) * 1.5)
         if args.width then
             has_to_stretch = false
             if args.screen then
@@ -393,23 +395,23 @@ function awfulwibar.new(args)
         "border_width", "border_color", "font", "opacity", "ontop", "cursor",
         "bgimage", "bg", "fg", "type", "stretch", "shape"
     } do
-        if (args[prop] == nil) and beautiful["wibar_"..prop] ~= nil then
-            args[prop] = beautiful["wibar_"..prop]
+        if (args[prop] == nil) and beautiful["wibar_" .. prop] ~= nil then
+            args[prop] = beautiful["wibar_" .. prop]
         end
     end
 
-    local w = wibox(args)
+    local w        = wibox(args)
 
-    w.screen   = screen
-    w._screen  = screen --HACK When a screen is removed, then getbycoords wont work
-    w._stretch = args.stretch == nil and has_to_stretch or args.stretch
+    w.screen       = screen
+    w._screen      = screen --HACK When a screen is removed, then getbycoords wont work
+    w._stretch     = args.stretch == nil and has_to_stretch or args.stretch
 
     w.get_position = get_position
     w.set_position = set_position
 
-    w.get_stretch = get_stretch
-    w.set_stretch = set_stretch
-    w.remove      = remove
+    w.get_stretch  = get_stretch
+    w.set_stretch  = set_stretch
+    w.remove       = remove
 
     if args.visible == nil then w.visible = true end
 

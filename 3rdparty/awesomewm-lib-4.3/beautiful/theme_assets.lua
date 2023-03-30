@@ -6,13 +6,13 @@
 -- @submodule beautiful
 ----------------------------------------------------------------------------
 
-local cairo = require("lgi").cairo
-local surface = require("gears.surface")
-local gears_color = require("gears.color")
+local cairo         = require("lgi").cairo
+local surface       = require("gears.surface")
+local gears_color   = require("gears.color")
 local recolor_image = gears_color.recolor_image
-local screen = screen
+local screen        = screen
 
-local theme_assets = {}
+local theme_assets  = {}
 
 
 --- Generate selected taglist square.
@@ -21,7 +21,7 @@ local theme_assets = {}
 -- @return Image with the square.
 function theme_assets.taglist_squares_sel(size, fg)
     local img = cairo.ImageSurface(cairo.Format.ARGB32, size, size)
-    local cr = cairo.Context(img)
+    local cr  = cairo.Context(img)
     cr:set_source(gears_color(fg))
     cr:paint()
     return img
@@ -33,16 +33,16 @@ end
 -- @return Image with the square.
 function theme_assets.taglist_squares_unsel(size, fg)
     local img = cairo.ImageSurface(cairo.Format.ARGB32, size, size)
-    local cr = cairo.Context(img)
+    local cr  = cairo.Context(img)
     cr:set_source(gears_color(fg))
-    cr:set_line_width(size/4)
+    cr:set_line_width(size / 4)
     cr:rectangle(0, 0, size, size)
     cr:stroke()
     return img
 end
 
 local function make_letter(cr, n, lines, size, bg, fg, alt_fg)
-    local letter_gap  = size/6
+    local letter_gap = size / 6
 
     local function make_line(coords)
         for i, coord in ipairs(coords) do
@@ -55,12 +55,12 @@ local function make_letter(cr, n, lines, size, bg, fg, alt_fg)
         cr:stroke()
     end
 
-    lines = lines or {}
+    lines       = lines or {}
     local color = alt_fg or fg
     cr:set_source(gears_color(color))
     cr:rectangle(
-        0, (size+letter_gap)*n,
-        size, size
+            0, (size + letter_gap) * n,
+            size, size
     )
     cr:fill()
 
@@ -71,7 +71,7 @@ local function make_letter(cr, n, lines, size, bg, fg, alt_fg)
     end
 
     for _, line in ipairs(lines) do
-        cr:move_to(0, (size+letter_gap)*n)
+        cr:move_to(0, (size + letter_gap) * n)
         make_line(line)
     end
 
@@ -85,65 +85,65 @@ end
 -- @tparam color fg Main foreground color.
 -- @tparam color alt_fg Accent foreground color.
 function theme_assets.gen_awesome_name(cr, height, bg, fg, alt_fg)
-    local ls = height/10 -- letter_size
-    local letter_line = ls/18
+    local ls          = height / 10 -- letter_size
+    local letter_line = ls / 18
 
     cr:set_line_width(letter_line)
 
     -- a
     make_letter(cr, 0, { {
-        { 0, ls/3 },
-        { ls*2/3, 0 },
-    }, {
-        { ls/3, ls*2/3 },
-        { ls/3, 0 },
-        { 0, ls/3 },
-    } }, ls, bg, fg, alt_fg)
+                             { 0, ls / 3 },
+                             { ls * 2 / 3, 0 },
+                         }, {
+                             { ls / 3, ls * 2 / 3 },
+                             { ls / 3, 0 },
+                             { 0, ls / 3 },
+                         } }, ls, bg, fg, alt_fg)
     -- w
     make_letter(cr, 1, { {
-        { ls/3, 0 },
-        { 0,ls*2/3 },
-    }, {
-        { ls*2/3, 0 },
-        { 0,ls*2/3 },
-    } }, ls, bg, fg)
+                             { ls / 3, 0 },
+                             { 0, ls * 2 / 3 },
+                         }, {
+                             { ls * 2 / 3, 0 },
+                             { 0, ls * 2 / 3 },
+                         } }, ls, bg, fg)
     -- e
     make_letter(cr, 2, { {
-        { ls/3, ls/3 },
-        { ls*2/3, 0 },
-    }, {
-        { ls/3, ls*2/3 },
-        { ls*2/3, 0 },
-    } }, ls, bg, fg)
+                             { ls / 3, ls / 3 },
+                             { ls * 2 / 3, 0 },
+                         }, {
+                             { ls / 3, ls * 2 / 3 },
+                             { ls * 2 / 3, 0 },
+                         } }, ls, bg, fg)
     -- s
     make_letter(cr, 3, { {
-        { ls/3, ls/3 },
-        { ls*2/3, 0 },
-    }, {
-        { 0, ls*2/3 },
-        { ls*2/3, 0 },
-    } }, ls, bg, fg)
+                             { ls / 3, ls / 3 },
+                             { ls * 2 / 3, 0 },
+                         }, {
+                             { 0, ls * 2 / 3 },
+                             { ls * 2 / 3, 0 },
+                         } }, ls, bg, fg)
     -- o
     make_letter(cr, 4, { {
-        { ls/2, ls/3 },
-        { 0, ls/3 },
-    } }, ls, bg, fg)
+                             { ls / 2, ls / 3 },
+                             { 0, ls / 3 },
+                         } }, ls, bg, fg)
     -- m
     make_letter(cr, 5, { {
-        { ls/3, ls/3 },
-        { 0,ls*2/3 },
-    }, {
-        { ls*2/3, ls/3 },
-        { 0,ls*2/3 },
-    } }, ls, bg, fg)
+                             { ls / 3, ls / 3 },
+                             { 0, ls * 2 / 3 },
+                         }, {
+                             { ls * 2 / 3, ls / 3 },
+                             { 0, ls * 2 / 3 },
+                         } }, ls, bg, fg)
     -- e
     make_letter(cr, 6, { {
-        { ls/3, ls/3 },
-        { ls*2/3, 0 },
-    }, {
-        { ls/3, ls*2/3 },
-        { ls*2/3, 0 },
-    } }, ls, bg, fg)
+                             { ls / 3, ls / 3 },
+                             { ls * 2 / 3, 0 },
+                         }, {
+                             { ls / 3, ls * 2 / 3 },
+                             { ls * 2 / 3, 0 },
+                         } }, ls, bg, fg)
 end
 
 --- Put Awesome WM logo onto cairo surface.
@@ -153,20 +153,20 @@ end
 -- @tparam color bg Background color.
 -- @tparam color fg Foreground color.
 function theme_assets.gen_logo(cr, width, height, bg, fg)
-    local ls = math.min(width, height)
+    local ls          = math.min(width, height)
 
-    local letter_line = ls/18
+    local letter_line = ls / 18
 
     cr:set_line_width(letter_line)
 
     make_letter(cr, 0, { {
-        { 0, ls/3 },
-        { ls*2/3, 0 },
-    }, {
-        { ls/3, ls*2/3 },
-        { ls/3, 0 },
-        { 0, ls/3 },
-    } }, ls, bg, fg)
+                             { 0, ls / 3 },
+                             { ls * 2 / 3, 0 },
+                         }, {
+                             { ls / 3, ls * 2 / 3 },
+                             { ls / 3, 0 },
+                             { 0, ls / 3 },
+                         } }, ls, bg, fg)
 end
 
 --- Generate Awesome WM logo.
@@ -176,7 +176,7 @@ end
 -- @return Image with the logo.
 function theme_assets.awesome_icon(size, bg, fg)
     local img = cairo.ImageSurface(cairo.Format.ARGB32, size, size)
-    local cr = cairo.Context(img)
+    local cr  = cairo.Context(img)
     theme_assets.gen_logo(cr, size, size, fg, bg)
     return img
 end
@@ -188,12 +188,12 @@ end
 -- @tparam screen s Screen (to get wallpaper size).
 -- @return Wallpaper image.
 function theme_assets.wallpaper(bg, fg, alt_fg, s)
-    s = s or screen.primary
-    local height = s.geometry.height
-    local width = s.geometry.width
-    local img = cairo.RecordingSurface(cairo.Content.COLOR,
-        cairo.Rectangle { x = 0, y = 0, width = width, height = height })
-    local cr = cairo.Context(img)
+    s                    = s or screen.primary
+    local height         = s.geometry.height
+    local width          = s.geometry.width
+    local img            = cairo.RecordingSurface(cairo.Content.COLOR,
+            cairo.Rectangle { x = 0, y = 0, width = width, height = height })
+    local cr             = cairo.Context(img)
 
     local letter_start_x = width - width / 10
     local letter_start_y = height / 10
@@ -215,25 +215,25 @@ end
 -- @tparam string postfix `nil`, `"hover"` or `"press"`.
 -- @treturn table Beautiful theme table with the images recolored.
 function theme_assets.recolor_titlebar(theme, color, state, postfix)
-    if postfix then postfix='_'..postfix end
+    if postfix then postfix = '_' .. postfix end
     for _, titlebar_icon_name in ipairs({
-        'titlebar_close_button_'..state..'',
-        'titlebar_minimize_button_'..state..'',
-        'titlebar_ontop_button_'..state..'_inactive',
-        'titlebar_ontop_button_'..state..'_active',
-        'titlebar_sticky_button_'..state..'_inactive',
-        'titlebar_sticky_button_'..state..'_active',
-        'titlebar_floating_button_'..state..'_inactive',
-        'titlebar_floating_button_'..state..'_active',
-        'titlebar_maximized_button_'..state..'_inactive',
-        'titlebar_maximized_button_'..state..'_active',
+        'titlebar_close_button_' .. state .. '',
+        'titlebar_minimize_button_' .. state .. '',
+        'titlebar_ontop_button_' .. state .. '_inactive',
+        'titlebar_ontop_button_' .. state .. '_active',
+        'titlebar_sticky_button_' .. state .. '_inactive',
+        'titlebar_sticky_button_' .. state .. '_active',
+        'titlebar_floating_button_' .. state .. '_inactive',
+        'titlebar_floating_button_' .. state .. '_active',
+        'titlebar_maximized_button_' .. state .. '_inactive',
+        'titlebar_maximized_button_' .. state .. '_active',
     }) do
         local full_name = postfix and (
-            titlebar_icon_name .. postfix
+                titlebar_icon_name .. postfix
         ) or titlebar_icon_name
-        local image = theme[full_name] or theme[titlebar_icon_name]
+        local image     = theme[full_name] or theme[titlebar_icon_name]
         if image then
-            image = surface.duplicate_surface(image)
+            image            = surface.duplicate_surface(image)
             theme[full_name] = recolor_image(image, color)
         end
     end

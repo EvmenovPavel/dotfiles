@@ -6,15 +6,15 @@
 -- @classmod wibox.container.mirror
 ---------------------------------------------------------------------------
 
-local type = type
-local error = error
-local ipairs = ipairs
+local type         = type
+local error        = error
+local ipairs       = ipairs
 local setmetatable = setmetatable
-local base = require("wibox.widget.base")
-local matrix = require("gears.matrix")
-local gtable = require("gears.table")
+local base         = require("wibox.widget.base")
+local matrix       = require("gears.matrix")
+local gtable       = require("gears.table")
 
-local mirror = { mt = {} }
+local mirror       = { mt = {} }
 
 -- Layout this layout
 function mirror:layout(_, width, height)
@@ -64,7 +64,7 @@ end
 --- Get the number of children element
 -- @treturn table The children
 function mirror:get_children()
-    return {self._private.widget}
+    return { self._private.widget }
 end
 
 --- Replace the layout children
@@ -77,16 +77,16 @@ end
 --- Reset this layout. The widget will be removed and the axes reset.
 function mirror:reset()
     self._private.horizontal = false
-    self._private.vertical = false
+    self._private.vertical   = false
     self:set_widget(nil)
 end
 
 function mirror:set_reflection(reflection)
     if type(reflection) ~= 'table' then
         error("Invalid type of reflection for mirror layout: " ..
-              type(reflection) .. " (should be a table)")
+                type(reflection) .. " (should be a table)")
     end
-    for _, ref in ipairs({"horizontal", "vertical"}) do
+    for _, ref in ipairs({ "horizontal", "vertical" }) do
         if reflection[ref] ~= nil then
             self._private[ref] = reflection[ref]
         end
@@ -114,9 +114,9 @@ end
 -- @treturn table A new mirror container
 -- @function wibox.container.mirror
 local function new(widget, reflection)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret               = base.make_widget(nil, nil, { enable_properties = true })
     ret._private.horizontal = false
-    ret._private.vertical = false
+    ret._private.vertical   = false
 
     gtable.crush(ret, mirror, true)
 

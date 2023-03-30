@@ -17,15 +17,15 @@
 ---------------------------------------------------------------------------
 
 local setmetatable = setmetatable
-local ipairs = ipairs
-local math = math
-local table = table
-local type = type
-local color = require("gears.color")
-local base = require("wibox.widget.base")
-local beautiful = require("beautiful")
+local ipairs       = ipairs
+local math         = math
+local table        = table
+local type         = type
+local color        = require("gears.color")
+local base         = require("wibox.widget.base")
+local beautiful    = require("beautiful")
 
-local graph = { mt = {} }
+local graph        = { mt = {} }
 
 --- Set the graph border color.
 -- If the value is nil, no border will be drawn.
@@ -104,20 +104,20 @@ local graph = { mt = {} }
 --- The graph border color.
 -- @beautiful beautiful.graph_border_color
 
-local properties = { "width", "height", "border_color", "stack",
-                     "stack_colors", "color", "background_color",
-                     "max_value", "scale", "min_value", "step_shape",
-                     "step_spacing", "step_width" }
+local properties   = { "width", "height", "border_color", "stack",
+                       "stack_colors", "color", "background_color",
+                       "max_value", "scale", "min_value", "step_shape",
+                       "step_spacing", "step_width" }
 
 function graph.draw(_graph, _, cr, width, height)
-    local max_value = _graph._private.max_value
-    local min_value = _graph._private.min_value or (
-        _graph._private.scale and math.huge or 0)
-    local values = _graph._private.values
+    local max_value    = _graph._private.max_value
+    local min_value    = _graph._private.min_value or (
+            _graph._private.scale and math.huge or 0)
+    local values       = _graph._private.values
 
-    local step_shape = _graph._private.step_shape
+    local step_shape   = _graph._private.step_shape
     local step_spacing = _graph._private.step_spacing or 0
-    local step_width = _graph._private.step_width or 1
+    local step_width   = _graph._private.step_width or 1
 
     cr:set_line_width(1)
 
@@ -184,12 +184,12 @@ function graph.draw(_graph, _, cr, width, height)
             for i = 0, #values - 1 do
                 local value = values[#values - i]
                 if value >= 0 then
-                    local x = i*step_width + ((i-1)*step_spacing) + 0.5
-                    value = (value - min_value) / max_value
+                    local x = i * step_width + ((i - 1) * step_spacing) + 0.5
+                    value   = (value - min_value) / max_value
                     cr:move_to(x, height * (1 - value))
 
                     if step_shape then
-                        cr:translate(step_width + (i>1 and step_spacing or 0), height * (1 - value))
+                        cr:translate(step_width + (i > 1 and step_spacing or 0), height * (1 - value))
                         step_shape(cr, step_width, height)
                         cr:translate(0, -(height * (1 - value)))
                     elseif step_width > 1 then
@@ -234,17 +234,17 @@ end
 -- @param value The value to be added to the graph
 -- @param group The stack color group index.
 function graph:add_value(value, group)
-    value = value or 0
-    local values = self._private.values
+    value           = value or 0
+    local values    = self._private.values
     local max_value = self._private.max_value
-    value = math.max(0, value)
+    value           = math.max(0, value)
     if not self._private.scale then
         value = math.min(max_value, value)
     end
 
     if self._private.stack and group then
-        if not  self._private.values[group]
-        or type(self._private.values[group]) ~= "table"
+        if not self._private.values[group]
+                or type(self._private.values[group]) ~= "table"
         then
             self._private.values[group] = {}
         end
@@ -315,14 +315,14 @@ end
 -- @return A new graph widget.
 -- @function wibox.widget.graph
 function graph.new(args)
-    args = args or {}
+    args         = args or {}
 
-    local width = args.width or 100
+    local width  = args.width or 100
     local height = args.height or 20
 
     if width < 5 or height < 5 then return end
 
-    local _graph = base.make_widget(nil, nil, {enable_properties = true})
+    local _graph              = base.make_widget(nil, nil, { enable_properties = true })
 
     _graph._private.width     = width
     _graph._private.height    = height
@@ -330,10 +330,10 @@ function graph.new(args)
     _graph._private.max_value = 1
 
     -- Set methods
-    _graph.add_value = graph["add_value"]
-    _graph.clear = graph["clear"]
-    _graph.draw = graph.draw
-    _graph.fit = graph.fit
+    _graph.add_value          = graph["add_value"]
+    _graph.clear              = graph["clear"]
+    _graph.draw               = graph.draw
+    _graph.fit                = graph.fit
 
     for _, prop in ipairs(properties) do
         _graph["set_" .. prop] = graph["set_" .. prop]

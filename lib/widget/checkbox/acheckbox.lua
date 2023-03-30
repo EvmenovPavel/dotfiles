@@ -16,19 +16,20 @@ function checkbox:init()
         log:debug("checkbox:unchecked")
     end
 
-    local w_textbox          = wmapi.widget:textbox("checkbox")
+    local w_textbox          = wmapi.widget:textbox()
+    w_textbox:set_text("checkbox")
     function ret:textbox()
         return w_textbox
     end
 
     local w_imagebox = wmapi.widget:imagebox()
-    w_imagebox:image(resources.checkbox.checkbox)
+    w_imagebox:set_image(resources.checkbox.checkbox)
     function ret:imagebox()
         return w_imagebox
     end
 
     local w_checkbox = wibox.widget({
-        w_imagebox:get(),
+        w_imagebox,
         bg     = ret:color():border(),
         widget = wibox.container.background,
     })
@@ -39,11 +40,9 @@ function checkbox:init()
             margins = 2,
             widget  = wibox.container.margin,
         },
-
         shape              = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, 5)
         end,
-
         bg                 = ret:color():border(),
         shape_border_color = ret:color():border_hover(),
         widget             = wibox.container.background,
@@ -59,13 +58,13 @@ function checkbox:init()
             widget = wibox.container.margin,
         },
         {
-            w_textbox:get(),
+            w_textbox,
             widget = wibox.container.background,
         },
         layout = wibox.layout.fixed.horizontal,
     })
-    ret:set_widget(widget, function(check)
-        __private.checked = check
+    ret:set_widget(widget, function(checked)
+        __private.checked = checked
 
         if __private.checked then
             w_bg.bg       = ret:color():border_hover()

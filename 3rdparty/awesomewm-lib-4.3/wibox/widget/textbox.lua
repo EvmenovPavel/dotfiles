@@ -7,16 +7,16 @@
 -- @classmod wibox.widget.textbox
 ---------------------------------------------------------------------------
 
-local base = require("wibox.widget.base")
-local gdebug = require("gears.debug")
-local beautiful = require("beautiful")
-local lgi = require("lgi")
-local gtable = require("gears.table")
-local Pango = lgi.Pango
-local PangoCairo = lgi.PangoCairo
+local base         = require("wibox.widget.base")
+local gdebug       = require("gears.debug")
+local beautiful    = require("beautiful")
+local lgi          = require("lgi")
+local gtable       = require("gears.table")
+local Pango        = lgi.Pango
+local PangoCairo   = lgi.PangoCairo
 local setmetatable = setmetatable
 
-local textbox = { mt = {} }
+local textbox      = { mt = {} }
 
 --- The textbox font.
 -- @beautiful beautiful.font
@@ -33,7 +33,7 @@ end
 
 --- Setup a pango layout for the given textbox and dpi
 local function setup_layout(box, width, height, dpi)
-    box._private.layout.width = Pango.units_from_double(width)
+    box._private.layout.width  = Pango.units_from_double(width)
     box._private.layout.height = Pango.units_from_double(height)
     setup_dpi(box, dpi)
 end
@@ -43,7 +43,7 @@ function textbox:draw(context, cr, width, height)
     setup_layout(self, width, height, context.dpi)
     cr:update_layout(self._private.layout)
     local _, logical = self._private.layout:get_pixel_extents()
-    local offset = 0
+    local offset     = 0
     if self._private.valign == "center" then
         offset = (height - logical.height) / 2
     elseif self._private.valign == "bottom" then
@@ -78,7 +78,7 @@ function textbox:get_preferred_size(s)
     if s then
         dpi = screen[s].dpi
     else
-        gdebug.deprecate("textbox:get_preferred_size() requires a screen argument", {deprecated_in=5, raw=true})
+        gdebug.deprecate("textbox:get_preferred_size() requires a screen argument", { deprecated_in = 5, raw = true })
         dpi = beautiful.xresources.get_dpi()
     end
 
@@ -96,7 +96,7 @@ function textbox:get_height_for_width(width, s)
     if s then
         dpi = screen[s].dpi
     else
-        gdebug.deprecate("textbox:get_preferred_size() requires a screen argument", {deprecated_in=5, raw=true})
+        gdebug.deprecate("textbox:get_preferred_size() requires a screen argument", { deprecated_in = 5, raw = true })
         dpi = beautiful.xresources.get_dpi()
     end
     return self:get_height_for_width_at_dpi(width, dpi)
@@ -109,9 +109,9 @@ end
 -- @treturn number The preferred width.
 -- @treturn number The preferred height.
 function textbox:get_preferred_size_at_dpi(dpi)
-    local max_lines = 2^20
+    local max_lines = 2 ^ 20
     setup_dpi(self, dpi)
-    self._private.layout.width = -1 -- no width set
+    self._private.layout.width  = -1 -- no width set
     self._private.layout.height = -max_lines -- show this many lines per paragraph
     return do_fit_return(self)
 end
@@ -123,11 +123,11 @@ end
 -- @tparam number dpi The DPI value to render at.
 -- @treturn number The needed height.
 function textbox:get_height_for_width_at_dpi(width, dpi)
-    local max_lines = 2^20
+    local max_lines = 2 ^ 20
     setup_dpi(self, dpi)
-    self._private.layout.width = Pango.units_from_double(width)
+    self._private.layout.width  = Pango.units_from_double(width)
     self._private.layout.height = -max_lines -- show this many lines per paragraph
-    local _, h = do_fit_return(self)
+    local _, h                  = do_fit_return(self)
     return h
 end
 
@@ -150,8 +150,8 @@ function textbox:set_markup_silently(text)
         return false, parsed.message or tostring(parsed)
     end
 
-    self._private.markup = text
-    self._private.layout.text = parsed
+    self._private.markup            = text
+    self._private.layout.text       = parsed
     self._private.layout.attributes = attr
     self:emit_signal("widget::redraw_needed")
     self:emit_signal("widget::layout_changed")
@@ -186,8 +186,8 @@ function textbox:set_text(text)
     if self._private.layout.text == text and self._private.layout.attributes == nil then
         return
     end
-    self._private.markup = nil
-    self._private.layout.text = text
+    self._private.markup            = nil
+    self._private.layout.text       = text
     self._private.layout.attributes = nil
     self:emit_signal("widget::redraw_needed")
     self:emit_signal("widget::layout_changed")
@@ -277,12 +277,12 @@ end
 -- @treturn table A new textbox widget
 -- @function wibox.widget.textbox
 local function new(text, ignore_markup)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret = base.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, textbox, true)
 
-    ret._private.dpi = -1
-    ret._private.ctx = PangoCairo.font_map_get_default():create_context()
+    ret._private.dpi    = -1
+    ret._private.ctx    = PangoCairo.font_map_get_default():create_context()
     ret._private.layout = Pango.Layout.new(ret._private.ctx)
 
     ret:set_ellipsize("end")

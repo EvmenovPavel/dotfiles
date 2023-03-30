@@ -8,15 +8,14 @@
 
 local urgent = {}
 
-local capi =
-{
+local capi   = {
     client = client,
 }
 
 local client
 do
     client = setmetatable({}, {
-        __index = function(_, k)
+        __index    = function(_, k)
             client = require("awful.client")
             return client[k]
         end,

@@ -8,18 +8,18 @@
 -- @classmod wibox.container.place
 ---------------------------------------------------------------------------
 
-local setmetatable = setmetatable
-local base = require("wibox.widget.base")
-local gtable = require("gears.table")
+local setmetatable              = setmetatable
+local base                      = require("wibox.widget.base")
+local gtable                    = require("gears.table")
 
-local place = { mt = {} }
+local place                     = { mt = {} }
 
 -- Take the widget width/height and compute the position from the full
 -- width/height
-local align_fct = {
-    left   = function(_  , _   ) return 0                         end,
-    center = function(wdg, orig) return math.max(0, (orig-wdg)/2) end,
-    right  = function(wdg, orig) return math.max(0, orig-wdg    ) end,
+local align_fct                 = {
+    left   = function(_, _) return 0 end,
+    center = function(wdg, orig) return math.max(0, (orig - wdg) / 2) end,
+    right  = function(wdg, orig) return math.max(0, orig - wdg) end,
 }
 align_fct.top, align_fct.bottom = align_fct.left, align_fct.right
 
@@ -43,7 +43,7 @@ function place:layout(context, width, height)
     local valign = self._private.valign or "center"
     local halign = self._private.halign or "center"
 
-    local x, y = align_fct[halign](w, width), align_fct[valign](h, height)
+    local x, y   = align_fct[halign](w, width), align_fct[valign](h, height)
 
     return { base.place_widget_at(self._private.widget, x, y, w, h) }
 end
@@ -57,9 +57,9 @@ function place:fit(context, width, height)
     local w, h = base.fit_widget(self, context, self._private.widget, width, height)
 
     return (self._private.fill_horizontal or self._private.content_fill_horizontal)
-        and width or w,
+            and width or w,
     (self._private.fill_vertical or self._private.content_fill_vertical)
-        and height or h
+            and height or h
 end
 
 --- The widget to be placed.
@@ -81,7 +81,7 @@ end
 --- Get the number of children element
 -- @treturn table The children
 function place:get_children()
-    return {self._private.widget}
+    return { self._private.widget }
 end
 
 --- Replace the layout children
@@ -179,7 +179,7 @@ end
 -- @treturn table A new place container.
 -- @function wibox.container.place
 local function new(widget, halign, valign)
-    local ret = base.make_widget(nil, nil, {enable_properties = true})
+    local ret = base.make_widget(nil, nil, { enable_properties = true })
 
     gtable.crush(ret, place, true)
 

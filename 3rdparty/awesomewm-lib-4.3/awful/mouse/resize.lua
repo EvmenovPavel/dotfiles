@@ -9,26 +9,26 @@
 -- @submodule mouse
 ---------------------------------------------------------------------------
 
-local aplace = require("awful.placement")
-local capi = {mousegrabber = mousegrabber}
+local aplace    = require("awful.placement")
+local capi      = { mousegrabber = mousegrabber }
 local beautiful = require("beautiful")
 
-local module = {}
+local module    = {}
 
 local mode      = "live"
 local req       = "request::geometry"
-local callbacks = {enter={}, move={}, leave={}}
+local callbacks = { enter = {}, move = {}, leave = {} }
 
-local cursors = {
-    ["mouse.move"               ] = "fleur",
-    ["mouse.resize"             ] = "cross",
-    ["mouse.resize_left"        ] = "sb_h_double_arrow",
-    ["mouse.resize_right"       ] = "sb_h_double_arrow",
-    ["mouse.resize_top"         ] = "sb_v_double_arrow",
-    ["mouse.resize_bottom"      ] = "sb_v_double_arrow",
-    ["mouse.resize_top_left"    ] = "top_left_corner",
-    ["mouse.resize_top_right"   ] = "top_right_corner",
-    ["mouse.resize_bottom_left" ] = "bottom_left_corner",
+local cursors   = {
+    ["mouse.move"]                = "fleur",
+    ["mouse.resize"]              = "cross",
+    ["mouse.resize_left"]         = "sb_h_double_arrow",
+    ["mouse.resize_right"]        = "sb_h_double_arrow",
+    ["mouse.resize_top"]          = "sb_v_double_arrow",
+    ["mouse.resize_bottom"]       = "sb_v_double_arrow",
+    ["mouse.resize_top_left"]     = "top_left_corner",
+    ["mouse.resize_top_right"]    = "top_right_corner",
+    ["mouse.resize_bottom_left"]  = "bottom_left_corner",
     ["mouse.resize_bottom_right"] = "bottom_right_corner",
 }
 
@@ -61,7 +61,7 @@ end
 -- @tparam function cb The callback (or nil)
 -- @tparam[default=other] string context The callback context
 function module.add_enter_callback(cb, context)
-    context = context or "other"
+    context                  = context or "other"
     callbacks.enter[context] = callbacks.enter[context] or {}
     table.insert(callbacks.enter[context], cb)
 end
@@ -73,8 +73,8 @@ end
 -- @tparam function cb The callback (or nil)
 -- @tparam[default=other] string context The callback context
 function module.add_move_callback(cb, context)
-    context = context or  "other"
-    callbacks.move[context] = callbacks.move[context]  or {}
+    context                 = context or "other"
+    callbacks.move[context] = callbacks.move[context] or {}
     table.insert(callbacks.move[context], cb)
 end
 
@@ -84,8 +84,8 @@ end
 -- @tparam function cb The callback (or nil)
 -- @tparam[default=other] string context The callback context
 function module.add_leave_callback(cb, context)
-    context = context or  "other"
-    callbacks.leave[context] = callbacks.leave[context]  or {}
+    context                  = context or "other"
+    callbacks.leave[context] = callbacks.leave[context] or {}
     table.insert(callbacks.leave[context], cb)
 end
 
@@ -103,9 +103,10 @@ end
 -- @tparam[default=mouse.resize] string context The resizing context.
 -- @tparam[opt={}] table args A set of `awful.placement` arguments.
 
-local function handler(_, client, context, args) --luacheck: no unused_args
-    args = args or {}
-    context = context or "mouse.resize"
+local function handler(_, client, context, args)
+    --luacheck: no unused_args
+    args            = args or {}
+    context         = context or "mouse.resize"
 
     local placement = args.placement
 
@@ -115,12 +116,12 @@ local function handler(_, client, context, args) --luacheck: no unused_args
 
     -- Extend the table with the default arguments
     args = setmetatable(
-        {
-            placement = placement or aplace.resize_to_mouse,
-            mode      = args.mode or mode,
-            pretend   = true,
-        },
-        {__index = args or {}}
+            {
+                placement = placement or aplace.resize_to_mouse,
+                mode      = args.mode or mode,
+                pretend   = true,
+            },
+            { __index = args or {} }
     )
 
     local geo
@@ -141,26 +142,26 @@ local function handler(_, client, context, args) --luacheck: no unused_args
         end
     end
 
-    geo = nil
+    geo            = nil
 
     -- Select the cursor
     local tcontext = context:gsub('[.]', '_')
-    local corner = args.corner and ("_".. args.corner) or ""
+    local corner   = args.corner and ("_" .. args.corner) or ""
 
-    local cursor = beautiful["cursor_"..tcontext]
-        or cursors[context..corner]
-        or cursors[context]
-        or "fleur"
+    local cursor   = beautiful["cursor_" .. tcontext]
+            or cursors[context .. corner]
+            or cursors[context]
+            or "fleur"
 
     -- Execute the placement function and use request::geometry
-    capi.mousegrabber.run(function (_mouse)
+    capi.mousegrabber.run(function(_mouse)
         if not client.valid then return end
 
         -- Resize everytime the mouse moves (default behavior) in live mode,
         -- otherwise keep the current geometry
         geo = setmetatable(
-            args.mode == "live" and args.placement(client, args) or client:geometry(),
-            {__index=args}
+                args.mode == "live" and args.placement(client, args) or client:geometry(),
+                { __index = args }
         )
 
         -- Execute the move callbacks. This can be used to add features such as
@@ -184,7 +185,7 @@ local function handler(_, client, context, args) --luacheck: no unused_args
 
         -- In case it was modified
         if geo then
-            setmetatable(geo, {__index=args})
+            setmetatable(geo, { __index = args })
         end
 
         if args.mode == "live" then
@@ -193,7 +194,7 @@ local function handler(_, client, context, args) --luacheck: no unused_args
         end
 
         -- Quit when the button is released
-        for _,v in pairs(_mouse.buttons) do
+        for _, v in pairs(_mouse.buttons) do
             if v then return true end
         end
 
@@ -221,7 +222,7 @@ local function handler(_, client, context, args) --luacheck: no unused_args
         if not geo then return false end
 
         -- In case it was modified
-        setmetatable(geo,{__index=args})
+        setmetatable(geo, { __index = args })
 
         client:emit_signal(req, context, geo)
 
@@ -229,6 +230,6 @@ local function handler(_, client, context, args) --luacheck: no unused_args
     end, cursor)
 end
 
-return setmetatable(module, {__call=handler})
+return setmetatable(module, { __call = handler })
 
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

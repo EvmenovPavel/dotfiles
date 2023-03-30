@@ -9,9 +9,9 @@
 local gdebug = require("gears.debug")
 
 return gdebug.deprecate_class(
-    require("wibox.container.margin"),
-    "wibox.layout.margin",
-    "wibox.container.margin"
+        require("wibox.container.margin"),
+        "wibox.layout.margin",
+        "wibox.container.margin"
 )
 
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

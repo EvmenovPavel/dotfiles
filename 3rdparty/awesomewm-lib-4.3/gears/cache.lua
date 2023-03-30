@@ -4,11 +4,11 @@
 -- @classmod gears.cache
 ---------------------------------------------------------------------------
 
-local select = select
+local select       = select
 local setmetatable = setmetatable
-local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local unpack       = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
 
-local cache = {}
+local cache        = {}
 
 --- Get an entry from the cache, creating it if it's missing.
 -- @param ... Arguments for the creation callback. These are checked against the
@@ -17,17 +17,17 @@ local cache = {}
 function cache:get(...)
     local result = self._cache
     for i = 1, select("#", ...) do
-        local arg = select(i, ...)
+        local arg  = select(i, ...)
         local next = result[arg]
         if not next then
-            next = {}
+            next        = {}
             result[arg] = next
         end
         result = next
     end
     local ret = result._entry
     if not ret then
-        ret = { self._creation_cb(...) }
+        ret           = { self._creation_cb(...) }
         result._entry = ret
     end
     return unpack(ret)
@@ -39,7 +39,7 @@ end
 -- @return A new cache object.
 function cache.new(creation_cb)
     return setmetatable({
-        _cache = setmetatable({}, { __mode = "v" }),
+        _cache       = setmetatable({}, { __mode = "v" }),
         _creation_cb = creation_cb
     }, {
         __index = cache

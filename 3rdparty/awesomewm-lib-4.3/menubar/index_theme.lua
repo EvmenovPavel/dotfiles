@@ -10,25 +10,25 @@
 --  Icon Theme Specification 0.12
 --  http://standards.freedesktop.org/icon-theme-spec/icon-theme-spec-0.12.html
 
-local ipairs = ipairs
-local setmetatable = setmetatable
-local string = string
-local table = table
-local io = io
+local ipairs                   = ipairs
+local setmetatable             = setmetatable
+local string                   = string
+local table                    = table
+local io                       = io
 
 -- index.theme groups
-local ICON_THEME = "Icon Theme"
+local ICON_THEME               = "Icon Theme"
 -- index.theme keys
-local DIRECTORIES = "Directories"
-local INHERITS = "Inherits"
+local DIRECTORIES              = "Directories"
+local INHERITS                 = "Inherits"
 -- per-directory subkeys
-local TYPE = "Type"
-local SIZE = "Size"
-local MINSIZE = "MinSize"
-local MAXSIZE = "MaxSize"
-local THRESHOLD = "Threshold"
+local TYPE                     = "Type"
+local SIZE                     = "Size"
+local MINSIZE                  = "MinSize"
+local MAXSIZE                  = "MaxSize"
+local THRESHOLD                = "Threshold"
 
-local index_theme = { mt = {} }
+local index_theme              = { mt = {} }
 
 --- Class constructor of `index_theme`
 -- @deprecated menubar.index_theme.new
@@ -36,20 +36,20 @@ local index_theme = { mt = {} }
 -- @tparam string icon_theme_name Internal name of icon theme
 -- @tparam table base_directories Paths used for lookup
 -- @treturn table An instance of the class `index_theme`
-index_theme.new = function(cls, icon_theme_name, base_directories)
+index_theme.new                = function(cls, icon_theme_name, base_directories)
     local self = {}
     setmetatable(self, { __index = cls })
 
     -- Initialize the fields
-    self.icon_theme_name = icon_theme_name
-    self.base_directory = nil
-    self[DIRECTORIES] = {}
-    self[INHERITS] = {}
+    self.icon_theme_name    = icon_theme_name
+    self.base_directory     = nil
+    self[DIRECTORIES]       = {}
+    self[INHERITS]          = {}
     self.per_directory_keys = {}
 
     -- base_directory
-    local basedir = nil
-    local handler = nil
+    local basedir           = nil
+    local handler           = nil
     for _, dir in ipairs(base_directories) do
         basedir = dir .. "/" .. self.icon_theme_name
         handler = io.open(basedir .. "/index.theme", "r")
@@ -71,7 +71,7 @@ index_theme.new = function(cls, icon_theme_name, base_directories)
         end
 
         local group_header = "^%[(.+)%]$"
-        local group = line:match(group_header)
+        local group        = line:match(group_header)
         if group then
             if group == ICON_THEME then
                 while true do
@@ -142,7 +142,7 @@ end
 --- Table of the values of the `Inherits` key
 -- @deprecated menubar.index_theme:get_inherits
 -- @treturn table Values of the `Inherits` key
-index_theme.get_inherits = function(self)
+index_theme.get_inherits       = function(self)
     return self[INHERITS]
 end
 

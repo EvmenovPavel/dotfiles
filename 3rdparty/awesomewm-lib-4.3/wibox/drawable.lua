@@ -6,22 +6,22 @@
 -- @classmod wibox.drawable
 ---------------------------------------------------------------------------
 
-local drawable = {}
-local capi = {
+local drawable          = {}
+local capi              = {
     awesome = awesome,
-    root = root,
-    screen = screen
+    root    = root,
+    screen  = screen
 }
-local beautiful = require("beautiful")
-local cairo = require("lgi").cairo
-local color = require("gears.color")
-local object = require("gears.object")
-local surface = require("gears.surface")
-local timer = require("gears.timer")
-local grect =  require("gears.geometry").rectangle
-local matrix = require("gears.matrix")
-local hierarchy = require("wibox.hierarchy")
-local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local beautiful         = require("beautiful")
+local cairo             = require("lgi").cairo
+local color             = require("gears.color")
+local object            = require("gears.object")
+local surface           = require("gears.surface")
+local timer             = require("gears.timer")
+local grect             = require("gears.geometry").rectangle
+local matrix            = require("gears.matrix")
+local hierarchy         = require("wibox.hierarchy")
+local unpack            = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
 
 local visible_drawables = {}
 
@@ -32,7 +32,7 @@ local systray_widget
 local function get_widget_context(self)
     local geom = self.drawable:geometry()
 
-    local s = self._forced_screen
+    local s    = self._forced_screen
     if not s then
         local sgeos = {}
 
@@ -44,17 +44,17 @@ local function get_widget_context(self)
     end
 
     local context = self._widget_context
-    local dpi = s.dpi
+    local dpi     = s.dpi
     if (not context) or context.screen ~= s or context.dpi ~= dpi then
         context = {
-            screen = s,
-            dpi = dpi,
+            screen   = s,
+            dpi      = dpi,
             drawable = self,
         }
         for k, v in pairs(self._widget_context_skeleton) do
             context[k] = v
         end
-        self._widget_context = context
+        self._widget_context        = context
 
         -- Give widgets a chance to react to the new context
         self._need_complete_repaint = true
@@ -69,10 +69,10 @@ local function do_redraw(self)
     local surf = surface.load_silently(self.drawable.surface, false)
     -- The surface can be nil if the drawable's parent was already finalized
     if not surf then return end
-    local cr = cairo.Context(surf)
-    local geom = self.drawable:geometry();
+    local cr                  = cairo.Context(surf)
+    local geom                = self.drawable:geometry();
     local x, y, width, height = geom.x, geom.y, geom.width, geom.height
-    local context = get_widget_context(self)
+    local context             = get_widget_context(self)
 
     -- Relayout
     if self._need_relayout or self._need_complete_repaint then
@@ -81,7 +81,7 @@ local function do_redraw(self)
             local had_systray = systray_widget and self._widget_hierarchy:get_count(systray_widget) > 0
 
             self._widget_hierarchy:update(context,
-                self.widget, width, height, self._dirty_area)
+                    self.widget, width, height, self._dirty_area)
 
             local has_systray = systray_widget and self._widget_hierarchy:get_count(systray_widget) > 0
             if had_systray and not has_systray then
@@ -91,7 +91,7 @@ local function do_redraw(self)
             self._need_complete_repaint = true
             if self.widget then
                 self._widget_hierarchy_callback_arg = {}
-                self._widget_hierarchy = hierarchy.new(context, self.widget, width, height,
+                self._widget_hierarchy              = hierarchy.new(context, self.widget, width, height,
                         self._redraw_callback, self._layout_callback, self._widget_hierarchy_callback_arg)
             else
                 self._widget_hierarchy = nil
@@ -100,7 +100,7 @@ local function do_redraw(self)
 
         if self._need_complete_repaint then
             self._need_complete_repaint = false
-            self._dirty_area:union_rectangle(cairo.RectangleInt{
+            self._dirty_area:union_rectangle(cairo.RectangleInt {
                 x = 0, y = 0, width = width, height = height
             })
         end
@@ -123,7 +123,7 @@ local function do_redraw(self)
     if not capi.awesome.composite_manager_running then
         -- This is pseudo-transparency: We draw the wallpaper in the background
         local wallpaper = surface.load_silently(capi.root.wallpaper(), false)
-        cr.operator = cairo.Operator.SOURCE
+        cr.operator     = cairo.Operator.SOURCE
         if wallpaper then
             cr:set_source_surface(wallpaper, -x, -y)
         else
@@ -166,10 +166,10 @@ local function do_redraw(self)
 end
 
 local function find_widgets(_drawable, result, _hierarchy, x, y)
-    local m = _hierarchy:get_matrix_from_device()
+    local m              = _hierarchy:get_matrix_from_device()
 
     -- Is (x,y) inside of this hierarchy or any child (aka the draw extents)
-    local x1, y1 = m:transform_point(x, y)
+    local x1, y1         = m:transform_point(x, y)
     local x2, y2, w2, h2 = _hierarchy:get_draw_extents()
     if x1 < x2 or x1 >= x2 + w2 then
         return
@@ -183,14 +183,14 @@ local function find_widgets(_drawable, result, _hierarchy, x, y)
     if x1 >= 0 and y1 >= 0 and x1 <= width and y1 <= height then
         -- Get the extents of this widget in the device space
         local x3, y3, w3, h3 = matrix.transform_rectangle(_hierarchy:get_matrix_to_device(),
-            0, 0, width, height)
+                0, 0, width, height)
         table.insert(result, {
-            x = x3, y = y3, width = w3, height = h3,
-            widget_width = width,
+            x             = x3, y = y3, width = w3, height = h3,
+            widget_width  = width,
             widget_height = height,
-            drawable = _drawable,
-            widget = _hierarchy:get_widget(),
-            hierarchy = _hierarchy
+            drawable      = _drawable,
+            widget        = _hierarchy:get_widget(),
+            hierarchy     = _hierarchy
         })
     end
     for _, child in ipairs(_hierarchy:get_children()) do
@@ -226,7 +226,7 @@ end
 
 --- Set the widget that the drawable displays
 function drawable:set_widget(widget)
-    self.widget = widget
+    self.widget         = widget
 
     -- Make sure the widget gets drawn
     self._need_relayout = true
@@ -238,7 +238,7 @@ end
 --   nil or a string that gears.color() understands.
 -- @see gears.color
 function drawable:set_bg(c)
-    c = c or "#000000"
+    c       = c or "#000000"
     local t = type(c)
 
     if t == "string" or t == "table" then
@@ -275,8 +275,8 @@ function drawable:set_bgimage(image, ...)
         image = surface(image)
     end
 
-    self.background_image = image
-    self.background_image_args = {...}
+    self.background_image      = image
+    self.background_image_args = { ... }
 
     self._do_complete_repaint()
 end
@@ -321,7 +321,7 @@ local function emit_difference(name, list, skip)
 
     for _, v in pairs(list) do
         if not in_table(skip, v) then
-            v.widget:emit_signal(name,v)
+            v.widget:emit_signal(name, v)
         end
     end
 end
@@ -369,12 +369,12 @@ local function setup_signals(_drawable)
 end
 
 function drawable.new(d, widget_context_skeleton, drawable_name)
-    local ret = object()
-    ret.drawable = d
+    local ret                    = object()
+    ret.drawable                 = d
     ret._widget_context_skeleton = widget_context_skeleton
-    ret._need_complete_repaint = true
-    ret._need_relayout = true
-    ret._dirty_area = cairo.Region.create()
+    ret._need_complete_repaint   = true
+    ret._need_relayout           = true
+    ret._dirty_area              = cairo.Region.create()
     setup_signals(ret)
 
     for k, v in pairs(drawable) do
@@ -384,14 +384,14 @@ function drawable.new(d, widget_context_skeleton, drawable_name)
     end
 
     -- Only redraw a drawable once, even when we get told to do so multiple times.
-    ret._redraw_pending = false
-    ret._do_redraw = function()
+    ret._redraw_pending      = false
+    ret._do_redraw           = function()
         ret._redraw_pending = false
         do_redraw(ret)
     end
 
     -- Connect our signal when we need a redraw
-    ret.draw = function()
+    ret.draw                 = function()
         if not ret._redraw_pending then
             timer.delayed_call(ret._do_redraw)
             ret._redraw_pending = true
@@ -428,7 +428,7 @@ function drawable.new(d, widget_context_skeleton, drawable_name)
             for _, v in pairs(widgets) do
                 -- Calculate x/y inside of the widget
                 local lx, ly = v.hierarchy:get_matrix_from_device():transform_point(x, y)
-                v.widget:emit_signal(name, lx, ly, button, modifiers,v)
+                v.widget:emit_signal(name, lx, ly, button, modifiers, v)
             end
         end)
     end
@@ -447,11 +447,11 @@ function drawable.new(d, widget_context_skeleton, drawable_name)
         if ret._widget_hierarchy_callback_arg ~= arg then
             return
         end
-        local m = hierar:get_matrix_to_device()
+        local m                   = hierar:get_matrix_to_device()
         local x, y, width, height = matrix.transform_rectangle(m, hierar:get_draw_extents())
-        local x1, y1 = math.floor(x), math.floor(y)
-        local x2, y2 = math.ceil(x + width), math.ceil(y + height)
-        ret._dirty_area:union_rectangle(cairo.RectangleInt{
+        local x1, y1              = math.floor(x), math.floor(y)
+        local x2, y2              = math.ceil(x + width), math.ceil(y + height)
+        ret._dirty_area:union_rectangle(cairo.RectangleInt {
             x = x1, y = y1, width = x2 - x1, height = y2 - y1
         })
         ret:draw()
@@ -469,13 +469,13 @@ function drawable.new(d, widget_context_skeleton, drawable_name)
     end
 
     -- Add __tostring method to metatable.
-    ret.drawable_name = drawable_name or object.modulename(3)
-    local mt = {}
-    local orig_string = tostring(ret)
-    mt.__tostring = function()
+    ret.drawable_name    = drawable_name or object.modulename(3)
+    local mt             = {}
+    local orig_string    = tostring(ret)
+    mt.__tostring        = function()
         return string.format("%s (%s)", ret.drawable_name, orig_string)
     end
-    ret = setmetatable(ret, mt)
+    ret                  = setmetatable(ret, mt)
 
     -- Make sure the drawable is drawn at least once
     ret._do_complete_repaint()

@@ -20,20 +20,20 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local capi = {
+local capi    = {
     client = client,
-    mouse = mouse,
+    mouse  = mouse,
     screen = screen
 }
-local gmath = require("gears.math")
-local awful = require("awful")
-local gfs = require("gears.filesystem")
-local common = require("awful.widget.common")
-local theme = require("beautiful")
-local wibox = require("wibox")
-local gcolor = require("gears.color")
+local gmath   = require("gears.math")
+local awful   = require("awful")
+local gfs     = require("gears.filesystem")
+local common  = require("awful.widget.common")
+local theme   = require("beautiful")
+local wibox   = require("wibox")
+local gcolor  = require("gears.color")
 local gstring = require("gears.string")
-local gdebug = require("gears.debug")
+local gdebug  = require("gears.debug")
 
 local function get_screen(s)
     return s and capi.screen[s]
@@ -61,9 +61,9 @@ end
 
 
 -- menubar
-local menubar = { menu_entries = {} }
-menubar.menu_gen = require("menubar.menu_gen")
-menubar.utils = require("menubar.utils")
+local menubar            = { menu_entries = {} }
+menubar.menu_gen         = require("menubar.menu_gen")
+menubar.utils            = require("menubar.utils")
 local compute_text_width = menubar.utils.compute_text_width
 
 -- Options section
@@ -72,12 +72,12 @@ local compute_text_width = menubar.utils.compute_text_width
 -- extension is initialized. Use this if menubar takes much time to
 -- open.
 -- @tfield[opt=true] boolean cache_entries
-menubar.cache_entries = true
+menubar.cache_entries    = true
 
 --- When true the categories will be shown alongside application
 -- entries.
 -- @tfield[opt=true] boolean show_categories
-menubar.show_categories = true
+menubar.show_categories  = true
 
 --- Specifies the geometry of the menubar. This is a table with the keys
 -- x, y, width and height. Missing values are replaced via the screen's
@@ -87,42 +87,42 @@ menubar.show_categories = true
 -- @tfield number geometry.y A forced vertical position
 -- @tfield number geometry.width A forced width
 -- @tfield number geometry.height A forced height
-menubar.geometry = { width = nil,
-                     height = nil,
-                     x = nil,
-                     y = nil }
+menubar.geometry         = { width  = nil,
+                             height = nil,
+                             x      = nil,
+                             y      = nil }
 
 --- Width of blank space left in the right side.
 -- @tfield number right_margin
-menubar.right_margin = theme.xresources.apply_dpi(8)
+menubar.right_margin     = theme.xresources.apply_dpi(8)
 
 --- Label used for "Next page", default "▶▶".
 -- @tfield[opt="▶▶"] string right_label
-menubar.right_label = "▶▶"
+menubar.right_label      = "▶▶"
 
 --- Label used for "Previous page", default "◀◀".
 -- @tfield[opt="◀◀"] string left_label
-menubar.left_label = "◀◀"
+menubar.left_label       = "◀◀"
 
 -- awful.widget.common.list_update adds three times a margin of dpi(4)
 -- for each item:
 -- @tfield number list_interspace
-local list_interspace = theme.xresources.apply_dpi(4) * 3
+local list_interspace    = theme.xresources.apply_dpi(4) * 3
 
 --- Allows user to specify custom parameters for prompt.run function
 -- (like colors).
 -- @see awful.prompt
-menubar.prompt_args = {}
+menubar.prompt_args      = {}
 
 -- Private section
-local current_item = 1
-local previous_item = nil
-local current_category = nil
-local shownitems = nil
-local instance = nil
+local current_item       = 1
+local previous_item      = nil
+local current_category   = nil
+local shownitems         = nil
+local instance           = nil
 
-local common_args = { w = wibox.layout.fixed.horizontal(),
-                      data = setmetatable({}, { __mode = 'kv' }) }
+local common_args        = { w    = wibox.layout.fixed.horizontal(),
+                             data = setmetatable({}, { __mode = 'kv' }) }
 
 --- Wrap the text with the color span tag.
 -- @param s The text.
@@ -143,18 +143,18 @@ local function label(o)
         bg_color = theme.menubar_bg_focus or theme.menu_bg_focus or theme.bg_focus
     end
     return colortext(gstring.xml_escape(o.name), fg_color),
-           bg_color,
-           nil,
-           o.icon
+    bg_color,
+    nil,
+    o.icon
 end
 
 local function load_count_table()
     if instance.count_table then
         return instance.count_table
     end
-    instance.count_table = {}
+    instance.count_table  = {}
     local count_file_name = gfs.get_cache_dir() .. "/menu_count_file"
-    local count_file = io.open (count_file_name, "r")
+    local count_file      = io.open(count_file_name, "r")
     if count_file then
         for line in count_file:lines() do
             local name, count = string.match(line, "([^;]+);([^;]+)")
@@ -168,9 +168,9 @@ local function load_count_table()
 end
 
 local function write_count_table(count_table)
-    count_table = count_table or instance.count_table
+    count_table           = count_table or instance.count_table
     local count_file_name = gfs.get_cache_dir() .. "/menu_count_file"
-    local count_file = assert(io.open(count_file_name, "w"))
+    local count_file      = assert(io.open(count_file_name, "w"))
     for name, count in pairs(count_table) do
         local str = string.format("%s;%d\n", name, count)
         count_file:write(str)
@@ -186,15 +186,15 @@ local function perform_action(o)
     if o.key then
         current_category = o.key
         local new_prompt = shownitems[current_item].name .. ": "
-        previous_item = current_item
-        current_item = 1
+        previous_item    = current_item
+        current_item     = 1
         return true, "", new_prompt
     elseif shownitems[current_item].cmdline then
         awful.spawn(shownitems[current_item].cmdline)
         -- load count_table from cache file
-        local count_table = load_count_table()
+        local count_table    = load_count_table()
         -- increase count
-        local curname = shownitems[current_item].name
+        local curname        = shownitems[current_item].name
         count_table[curname] = (count_table[curname] or 0) + 1
         -- write updated count table to cache file
         write_count_table(count_table)
@@ -221,22 +221,22 @@ local function get_current_page(all_items, query, scr)
         menubar.right_label_width = compute_text_width(menubar.right_label, scr)
     end
     local available_space = instance.geometry.width - menubar.right_margin -
-        menubar.right_label_width - menubar.left_label_width -
-        compute_text_width(query, scr) - instance.prompt.width
+            menubar.right_label_width - menubar.left_label_width -
+            compute_text_width(query, scr) - instance.prompt.width
 
-    local width_sum = 0
-    local current_page = {}
+    local width_sum       = 0
+    local current_page    = {}
     for i, item in ipairs(all_items) do
         item.width = item.width or
-            compute_text_width(item.name, scr) +
-            (item.icon and instance.geometry.height or 0) + list_interspace
+                compute_text_width(item.name, scr) +
+                        (item.icon and instance.geometry.height or 0) + list_interspace
         if width_sum + item.width > available_space then
             if current_item < i then
                 table.insert(current_page, { name = menubar.right_label, icon = nil })
                 break
             end
             current_page = { { name = menubar.left_label, icon = nil }, item, }
-            width_sum = item.width
+            width_sum    = item.width
         else
             table.insert(current_page, item)
             width_sum = width_sum + item.width
@@ -248,9 +248,9 @@ end
 --- Update the menubar according to the command entered by user.
 -- @tparam number|screen scr Screen
 local function menulist_update(scr)
-    local query = instance.query or ""
-    shownitems = {}
-    local pattern = gstring.query_to_pattern(query)
+    local query               = instance.query or ""
+    shownitems                = {}
+    local pattern             = gstring.query_to_pattern(query)
 
     -- All entries are added to a list that will be sorted
     -- according to the priority (first) and weight (second) of its
@@ -260,10 +260,10 @@ local function menulist_update(scr)
     -- displayed first. Afterwards the non-category entries are added.
     -- All entries are weighted according to the number of times they
     -- have been executed previously (stored in count_table).
-    local count_table = load_count_table()
-    local command_list = {}
+    local count_table         = load_count_table()
+    local command_list        = {}
 
-    local PRIO_NONE = 0
+    local PRIO_NONE           = 0
     local PRIO_CATEGORY_MATCH = 2
 
     -- Add the categories
@@ -276,7 +276,7 @@ local function menulist_update(scr)
                 if string.match(v.name, pattern) then
 
                     v.weight = 0
-                    v.prio = PRIO_CATEGORY_MATCH
+                    v.prio   = PRIO_CATEGORY_MATCH
 
                     -- get use count from count_table if present
                     -- and use it as weight
@@ -292,7 +292,7 @@ local function menulist_update(scr)
                         v.prio = PRIO_CATEGORY_MATCH
                     end
 
-                    table.insert (command_list, v)
+                    table.insert(command_list, v)
                 end
             end
         end
@@ -306,10 +306,10 @@ local function menulist_update(scr)
             -- check if the query matches either the name or the commandline
             -- of some entry
             if string.match(v.name, pattern)
-                or string.match(v.cmdline, pattern) then
+                    or string.match(v.cmdline, pattern) then
 
                 v.weight = 0
-                v.prio = PRIO_NONE
+                v.prio   = PRIO_NONE
 
                 -- get use count from count_table if present
                 -- and use it as weight
@@ -319,14 +319,14 @@ local function menulist_update(scr)
 
                 -- check for prefix match
                 if string.match(v.name, "^" .. pattern)
-                    or string.match(v.cmdline, "^" .. pattern) then
+                        or string.match(v.cmdline, "^" .. pattern) then
                     -- increase default priority
                     v.prio = PRIO_NONE + 1
                 else
                     v.prio = PRIO_NONE
                 end
 
-                table.insert (command_list, v)
+                table.insert(command_list, v)
             end
         end
     end
@@ -356,8 +356,8 @@ local function menulist_update(scr)
     end
 
     common.list_update(common_args.w, nil, label,
-                       common_args.data,
-                       get_current_page(shownitems, query, scr))
+            common_args.data,
+            get_current_page(shownitems, query, scr))
 end
 
 --- Refresh menubar's cache by reloading .desktop files.
@@ -387,13 +387,13 @@ local function prompt_keypressed_callback(mod, key, comm)
     elseif key == "BackSpace" then
         if comm == "" and current_category then
             current_category = nil
-            current_item = previous_item
+            current_item     = previous_item
             return true, nil, "Run: "
         end
     elseif key == "Escape" then
         if current_category then
             current_category = nil
-            current_item = previous_item
+            current_item     = previous_item
             return true, nil, "Run: "
         end
     elseif key == "Home" then
@@ -419,9 +419,9 @@ end
 --- Show the menubar on the given screen.
 -- @param[opt] scr Screen.
 function menubar.show(scr)
-    scr = get_screen(scr or awful.screen.focused() or 1)
-    local fg_color = theme.menubar_fg_normal or theme.menu_fg_normal or theme.fg_normal
-    local bg_color = theme.menubar_bg_normal or theme.menu_bg_normal or theme.bg_normal
+    scr                = get_screen(scr or awful.screen.focused() or 1)
+    local fg_color     = theme.menubar_fg_normal or theme.menu_fg_normal or theme.fg_normal
+    local bg_color     = theme.menubar_bg_normal or theme.menu_bg_normal or theme.bg_normal
     local border_width = theme.menubar_border_width or theme.menu_border_width or 0
     local border_color = theme.menubar_border_color or theme.menu_border_color
 
@@ -435,17 +435,17 @@ function menubar.show(scr)
             menubar.refresh(scr)
         end
 
-        instance = {
-            wibox = wibox{
-                ontop = true,
-                bg = bg_color,
-                fg = fg_color,
+        instance     = {
+            wibox       = wibox {
+                ontop        = true,
+                bg           = bg_color,
+                fg           = fg_color,
                 border_width = border_width,
                 border_color = border_color,
             },
-            widget = common_args.w,
-            prompt = awful.widget.prompt(),
-            query = nil,
+            widget      = common_args.w,
+            prompt      = awful.widget.prompt(),
+            query       = nil,
             count_table = nil,
         }
         local layout = wibox.layout.fixed.horizontal()
@@ -454,22 +454,23 @@ function menubar.show(scr)
         instance.wibox:set_widget(layout)
     end
 
-    if instance.wibox.visible then -- Menu already shown, exit
+    if instance.wibox.visible then
+        -- Menu already shown, exit
         return
     elseif not menubar.cache_entries then
         menubar.refresh(scr)
     end
 
     -- Set position and size
-    local scrgeom = scr.workarea
-    local geometry = menubar.geometry
-    instance.geometry = {x = geometry.x or scrgeom.x,
-                             y = geometry.y or scrgeom.y,
-                             height = geometry.height or gmath.round(theme.get_font_height() * 1.5),
-                             width = (geometry.width or scrgeom.width) - border_width * 2}
+    local scrgeom     = scr.workarea
+    local geometry    = menubar.geometry
+    instance.geometry = { x      = geometry.x or scrgeom.x,
+                          y      = geometry.y or scrgeom.y,
+                          height = geometry.height or gmath.round(theme.get_font_height() * 1.5),
+                          width  = (geometry.width or scrgeom.width) - border_width * 2 }
     instance.wibox:geometry(instance.geometry)
 
-    current_item = 1
+    current_item     = 1
     current_category = nil
     menulist_update(scr)
 
@@ -486,7 +487,7 @@ function menubar.show(scr)
             menulist_update(scr)
         end,
         keypressed_callback = prompt_keypressed_callback
-    }, {__index=prompt_args}))
+    }, { __index = prompt_args }))
 
     instance.wibox.visible = true
 end
@@ -495,7 +496,7 @@ end
 function menubar.hide()
     if instance then
         instance.wibox.visible = false
-        instance.query = nil
+        instance.query         = nil
     end
 end
 

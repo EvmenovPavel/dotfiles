@@ -4,11 +4,11 @@
 -- @module gears.protected_call
 ---------------------------------------------------------------------------
 
-local gdebug = require("gears.debug")
-local tostring = tostring
-local traceback = debug.traceback
-local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
-local xpcall = xpcall
+local gdebug         = require("gears.debug")
+local tostring       = tostring
+local traceback      = debug.traceback
+local unpack         = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local xpcall         = xpcall
 
 local protected_call = {}
 

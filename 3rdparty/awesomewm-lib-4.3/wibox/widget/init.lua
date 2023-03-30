@@ -4,23 +4,23 @@
 -- @classmod wibox.widget
 ---------------------------------------------------------------------------
 
-local cairo = require("lgi").cairo
+local cairo     = require("lgi").cairo
 local hierarchy = require("wibox.hierarchy")
 
-local widget = {
-    base = require("wibox.widget.base");
-    textbox = require("wibox.widget.textbox");
-    imagebox = require("wibox.widget.imagebox");
-    background = require("wibox.widget.background");
-    systray = require("wibox.widget.systray");
-    textclock = require("wibox.widget.textclock");
+local widget    = {
+    base        = require("wibox.widget.base");
+    textbox     = require("wibox.widget.textbox");
+    imagebox    = require("wibox.widget.imagebox");
+    background  = require("wibox.widget.background");
+    systray     = require("wibox.widget.systray");
+    textclock   = require("wibox.widget.textclock");
     progressbar = require("wibox.widget.progressbar");
-    graph = require("wibox.widget.graph");
-    checkbox = require("wibox.widget.checkbox");
-    piechart = require("wibox.widget.piechart");
-    slider = require("wibox.widget.slider");
-    calendar = require("wibox.widget.calendar");
-    separator = require("wibox.widget.separator");
+    graph       = require("wibox.widget.graph");
+    checkbox    = require("wibox.widget.checkbox");
+    piechart    = require("wibox.widget.piechart");
+    slider      = require("wibox.widget.slider");
+    calendar    = require("wibox.widget.calendar");
+    separator   = require("wibox.widget.separator");
 }
 
 setmetatable(widget, {
@@ -39,7 +39,7 @@ setmetatable(widget, {
 -- @tparam[opt={dpi=96}] table context The context information to give to the widget.
 function widget.draw_to_cairo_context(wdg, cr, width, height, context)
     local function no_op() end
-    context = context or {dpi=96}
+    context = context or { dpi = 96 }
     local h = hierarchy.new(context, wdg, width, height, no_op, no_op, {})
     h:draw(context, cr)
 end
@@ -52,7 +52,7 @@ end
 -- @tparam[opt={dpi=96}] table context The context information to give to the widget.
 function widget.draw_to_svg_file(wdg, path, width, height, context)
     local img = cairo.SvgSurface.create(path, width, height)
-    local cr = cairo.Context(img)
+    local cr  = cairo.Context(img)
     widget.draw_to_cairo_context(wdg, cr, width, height, context)
     img:finish()
 end
@@ -66,7 +66,7 @@ end
 -- @return The cairo surface
 function widget.draw_to_image_surface(wdg, width, height, format, context)
     local img = cairo.ImageSurface(format or cairo.Format.ARGB32, width, height)
-    local cr = cairo.Context(img)
+    local cr  = cairo.Context(img)
     widget.draw_to_cairo_context(wdg, cr, width, height, context)
     return img
 end

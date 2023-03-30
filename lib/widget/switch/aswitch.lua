@@ -68,7 +68,7 @@ function switch:init()
             widget = wibox.container.margin,
         },
         {
-            w_textbox:get(),
+            w_textbox,
             widget = wibox.container.background,
         },
         layout = wibox.layout.fixed.horizontal,

@@ -8,33 +8,33 @@
 ----------------------------------------------------------------------------
 
 -- Grab environment
-local os = os
-local pairs = pairs
-local type = type
-local dofile = dofile
-local setmetatable = setmetatable
-local lgi = require("lgi")
-local Pango = lgi.Pango
-local PangoCairo = lgi.PangoCairo
-local gears_debug = require("gears.debug")
-local Gio = require("lgi").Gio
+local os             = os
+local pairs          = pairs
+local type           = type
+local dofile         = dofile
+local setmetatable   = setmetatable
+local lgi            = require("lgi")
+local Pango          = lgi.Pango
+local PangoCairo     = lgi.PangoCairo
+local gears_debug    = require("gears.debug")
+local Gio            = require("lgi").Gio
 local protected_call = require("gears.protected_call")
 
-local xresources = require("beautiful.xresources")
-local theme_assets = require("beautiful.theme_assets")
-local gtk = require("beautiful.gtk")
+local xresources     = require("beautiful.xresources")
+local theme_assets   = require("beautiful.theme_assets")
+local gtk            = require("beautiful.gtk")
 
-local beautiful = {
-    xresources = xresources,
+local beautiful      = {
+    xresources   = xresources,
     theme_assets = theme_assets,
-    gtk = gtk,
-    mt = {}
+    gtk          = gtk,
+    mt           = {}
 }
 
 -- Local data
-local theme = {}
-local descs = setmetatable({}, { __mode = 'k' })
-local fonts = setmetatable({}, { __mode = 'v' })
+local theme          = {}
+local descs          = setmetatable({}, { __mode = 'k' })
+local fonts          = setmetatable({}, { __mode = 'v' })
 local active_font
 
 --- The default font.
@@ -121,7 +121,7 @@ local function load_font(name)
 
     -- Load new font
     local desc = Pango.FontDescription.from_string(name)
-    local ctx = PangoCairo.font_map_get_default():create_context()
+    local ctx  = PangoCairo.font_map_get_default():create_context()
     ctx:set_resolution(beautiful.xresources.get_dpi())
 
     -- Apply default values from the context (e.g. a default font size)
@@ -129,15 +129,15 @@ local function load_font(name)
 
     -- Calculate font height.
     local metrics = ctx:get_metrics(desc, nil)
-    local height = math.ceil((metrics:get_ascent() + metrics:get_descent()) / Pango.SCALE)
+    local height  = math.ceil((metrics:get_ascent() + metrics:get_descent()) / Pango.SCALE)
     if height == 0 then
         height = desc:get_size() / Pango.SCALE
         gears_debug.print_warning(string.format(
-            "beautiful.load_font: could not get height for '%s' (likely missing font), using %d.",
-            name, height))
+                "beautiful.load_font: could not get height for '%s' (likely missing font), using %d.",
+                name, height))
     end
 
-    local font = { name = name, description = desc, height = height }
+    local font  = { name = name, description = desc, height = height }
     fonts[name] = font
     descs[desc] = name
     return font
@@ -166,8 +166,8 @@ end
 -- @tparam string merge Attributes that should be merged, e.g. "bold".
 -- @treturn lgi.Pango.FontDescription
 function beautiful.get_merged_font(name, merge)
-    local font = beautiful.get_font(name)
-    merge = Pango.FontDescription.from_string(merge)
+    local font   = beautiful.get_font(name)
+    merge        = Pango.FontDescription.from_string(merge)
     local merged = font:copy_static()
     merged:merge(merge, true)
     return beautiful.get_font(merged:to_string())
@@ -211,19 +211,19 @@ end
 function beautiful.init(config)
     if config then
         local state, t_theme = nil, nil
-        local homedir = os.getenv("HOME")
+        local homedir        = os.getenv("HOME")
 
         -- If `config` is the path to a theme file, run this file,
         -- otherwise if it is a theme table, save it.
-        local t_config = type(config)
+        local t_config       = type(config)
         if t_config == 'string' then
             -- Expand the '~' $HOME shortcut
-            config = config:gsub("^~/", homedir .. "/")
+            config    = config:gsub("^~/", homedir .. "/")
             local dir = Gio.File.new_for_path(config):get_parent()
-            rawset(beautiful, "theme_path", dir and (dir:get_path().."/") or nil)
-            theme = protected_call(dofile, config)
+            rawset(beautiful, "theme_path", dir and (dir:get_path() .. "/") or nil)
+            theme   = protected_call(dofile, config)
             t_theme = type(theme)
-            state = t_theme == 'table' and next(theme)
+            state   = t_theme == 'table' and next(theme)
         elseif t_config == 'table' then
             rawset(beautiful, "theme_path", nil)
             theme = config
@@ -242,12 +242,12 @@ function beautiful.init(config)
             return true
         else
             rawset(beautiful, "theme_path", nil)
-            theme = {}
+            theme      = {}
             local file = t_config == 'string' and (" from: " .. config)
-            local err = (file and t_theme == 'table' and "got an empty table" .. file)
-                     or (file and t_theme ~= 'table' and "got a " .. t_theme .. file)
-                     or (t_config == 'table' and "got an empty table")
-                     or ("got a " .. t_config)
+            local err  = (file and t_theme == 'table' and "got an empty table" .. file)
+                    or (file and t_theme ~= 'table' and "got a " .. t_theme .. file)
+                    or (t_config == 'table' and "got an empty table")
+                    or ("got a " .. t_config)
             return gears_debug.print_error("beautiful: error loading theme: " .. err)
         end
     else

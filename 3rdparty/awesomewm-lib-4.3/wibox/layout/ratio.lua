@@ -9,16 +9,16 @@
 -- @classmod wibox.layout.ratio
 ---------------------------------------------------------------------------
 
-local base  = require("wibox.widget.base" )
-local flex  = require("wibox.layout.flex" )
-local table = table
-local pairs = pairs
-local floor = math.floor
-local gmath = require("gears.math")
+local base   = require("wibox.widget.base")
+local flex   = require("wibox.layout.flex")
+local table  = table
+local pairs  = pairs
+local floor  = math.floor
+local gmath  = require("gears.math")
 local gtable = require("gears.table")
 local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
 
-local ratio = {}
+local ratio  = {}
 
 --@DOC_fixed_COMMON@
 
@@ -40,7 +40,7 @@ local ratio = {}
 
 -- Compute the sum of all ratio (ideally, it should be 1)
 local function gen_sum(self, i_s, i_e)
-    local sum, new_w = 0,0
+    local sum, new_w = 0, 0
 
     for i = i_s or 1, i_e or #self._private.widgets do
         if self._private.ratios[i] then
@@ -71,23 +71,23 @@ local function normalize(self)
     local sum, new_w = gen_sum(self)
     local old_count  = #self._private.widgets - new_w
 
-    local to_add = (sum == 0) and 1 or (sum / old_count)
+    local to_add     = (sum == 0) and 1 or (sum / old_count)
 
     -- Make sure all widgets have a ratio
-    for i=1, #self._private.widgets do
+    for i = 1, #self._private.widgets do
         if not self._private.ratios[i] then
             self._private.ratios[i] = to_add
         end
     end
 
-    sum = sum + to_add*new_w
+    sum                  = sum + to_add * new_w
 
-    local delta, new_sum =  (1 - sum) / count,0
+    local delta, new_sum = (1 - sum) / count, 0
 
     -- Increase or decrease each ratio so it the sum become 1
-    for i=1, #self._private.widgets do
+    for i = 1, #self._private.widgets do
         self._private.ratios[i] = self._private.ratios[i] + delta
-        new_sum = new_sum + self._private.ratios[i]
+        new_sum                 = new_sum + self._private.ratios[i]
     end
 
     -- Floating points is not an exact science, but it should still be close
@@ -96,17 +96,17 @@ local function normalize(self)
 end
 
 function ratio:layout(context, width, height)
-    local preliminary_results = {}
-    local pos,spacing = 0, self._private.spacing
-    local strategy = self:get_inner_fill_strategy()
-    local has_stragety = strategy ~= "default"
+    local preliminary_results         = {}
+    local pos, spacing                = 0, self._private.spacing
+    local strategy                    = self:get_inner_fill_strategy()
+    local has_stragety                = strategy ~= "default"
     local to_redistribute, void_count = 0, 0
-    local dir = self._private.dir or "x"
-    local spacing_widget = self._private.spacing_widget
-    local abspace = math.abs(spacing)
-    local spoffset = spacing < 0 and 0 or spacing
-    local is_y = self._private.dir == "y"
-    local is_x = not is_y
+    local dir                         = self._private.dir or "x"
+    local spacing_widget              = self._private.spacing_widget
+    local abspace                     = math.abs(spacing)
+    local spoffset                    = spacing < 0 and 0 or spacing
+    local is_y                        = self._private.dir == "y"
+    local is_x                        = not is_y
 
     for k, v in ipairs(self._private.widgets) do
         local space, is_void
@@ -114,59 +114,59 @@ function ratio:layout(context, width, height)
 
         if dir == "y" then
             space = height * self._private.ratios[k]
-            x, y = 0, gmath.round(pos)
-            w, h = width, floor(space)
+            x, y  = 0, gmath.round(pos)
+            w, h  = width, floor(space)
         else
             space = width * self._private.ratios[k]
-            x, y = gmath.round(pos), 0
-            w, h = floor(space), height
+            x, y  = gmath.round(pos), 0
+            w, h  = floor(space), height
         end
 
         -- Keep track of the unused entries
         if has_stragety then
             fit_h, fit_w = base.fit_widget(
-                self, context, v,
-                dir == "x" and floor(space) or w,
-                dir == "y" and floor(space) or h
+                    self, context, v,
+                    dir == "x" and floor(space) or w,
+                    dir == "y" and floor(space) or h
             )
 
-            is_void = (v.visible == false)
-                or (dir == "x" and fit_w == 0)
-                or (dir == "y" and fit_h == 0)
+            is_void      = (v.visible == false)
+                    or (dir == "x" and fit_w == 0)
+                    or (dir == "y" and fit_h == 0)
 
             if is_void then
                 to_redistribute = to_redistribute + space + spacing
-                void_count = void_count + 1
+                void_count      = void_count + 1
             end
         end
 
-        table.insert(preliminary_results, {v, x, y, w, h, is_void})
+        table.insert(preliminary_results, { v, x, y, w, h, is_void })
 
         pos = pos + space + spacing
 
         -- Make sure all widgets fit in the layout, if they aren't, something
         -- went wrong
         if (dir == "y" and gmath.round(pos) >= height) or
-            (dir ~= "y" and gmath.round(pos) >= width) then
+                (dir ~= "y" and gmath.round(pos) >= width) then
             break
         end
     end
 
-    local active = #preliminary_results - void_count
+    local active                        = #preliminary_results - void_count
     local result, real_pos, space_front = {}, 0, strategy == "right" and
-        to_redistribute or (
-            strategy == "center" and math.floor(to_redistribute/2) or 0
-        )
+            to_redistribute or (
+            strategy == "center" and math.floor(to_redistribute / 2) or 0
+    )
 
     -- The number of spaces between `n` element is `n-1`, if there is spaces
     -- outside, then it is `n+1`
     if strategy == "spacing" then
-        space_front = (space_front+to_redistribute/(active + 1))
-        to_redistribute = (to_redistribute/(active + 1))*(active - 1)
+        space_front     = (space_front + to_redistribute / (active + 1))
+        to_redistribute = (to_redistribute / (active + 1)) * (active - 1)
     end
 
-    spacing = strategy:match("spacing")
-        and to_redistribute/(active - 1) or 0
+    spacing         = strategy:match("spacing")
+            and to_redistribute / (active - 1) or 0
 
     -- Only the `justify` strategy changes the original widget size.
     to_redistribute = (strategy == "justify") and to_redistribute or 0
@@ -177,21 +177,21 @@ function ratio:layout(context, width, height)
         -- Redistribute the space or move the widgets
         if strategy ~= "default" then
             if dir == "y" then
-                h = is_void and 0 or h + (to_redistribute / (active))
-                y = space_front + real_pos
+                h        = is_void and 0 or h + (to_redistribute / (active))
+                y        = space_front + real_pos
                 real_pos = real_pos + h + (is_void and 0 or spacing)
 
             else
-                w = is_void and 0 or w + (to_redistribute / (active))
-                x = space_front + real_pos
+                w        = is_void and 0 or w + (to_redistribute / (active))
+                x        = space_front + real_pos
                 real_pos = real_pos + w + (is_void and 0 or spacing)
             end
         end
 
         if k > 1 and abspace > 0 and spacing_widget then
             table.insert(result, base.place_widget_at(
-                spacing_widget, is_x and (x - spoffset) or x, is_y and (y - spoffset) or y,
-                is_x and abspace or w, is_y and abspace or h
+                    spacing_widget, is_x and (x - spoffset) or x, is_y and (y - spoffset) or y,
+                    is_x and abspace or w, is_y and abspace or h
             ))
         end
 
@@ -211,8 +211,8 @@ end
 -- @tparam number increment An floating point value between -1 and 1 where the
 --   end result is within 0 and 1
 function ratio:inc_ratio(index, increment)
-    if #self._private.widgets ==  1 or (not index) or (not self._private.ratios[index])
-      or increment < -1 or increment > 1 then
+    if #self._private.widgets == 1 or (not index) or (not self._private.ratios[index])
+            or increment < -1 or increment > 1 then
         return
     end
 
@@ -239,15 +239,15 @@ end
 -- @tparam number index The index of the widget to change
 -- @tparam number percent An floating point value between 0 and 1
 function ratio:set_ratio(index, percent)
-    if not percent or #self._private.widgets ==  1 or not index or not self._private.widgets[index]
-        or percent < 0 or percent > 1 then
+    if not percent or #self._private.widgets == 1 or not index or not self._private.widgets[index]
+            or percent < 0 or percent > 1 then
         return
     end
 
-    local old = self._private.ratios[index]
+    local old   = self._private.ratios[index]
 
     -- Remove what has to be cleared from all widget
-    local delta = ( (percent-old) / (#self._private.widgets-1) )
+    local delta = ((percent - old) / (#self._private.widgets - 1))
 
     for k in pairs(self._private.widgets) do
         self._private.ratios[k] = self._private.ratios[k] - delta
@@ -300,20 +300,20 @@ function ratio:ajust_ratio(index, before, itself, after)
     if sum > 1.01 or sum < -0.99 then return end
 
     -- Compute the before and after offset to be applied to each widgets
-    local before_count, after_count = index-1, #self._private.widgets - index
+    local before_count, after_count = index - 1, #self._private.widgets - index
 
-    local b, a = gen_sum(self, 1, index-1), gen_sum(self, index+1)
+    local b, a                      = gen_sum(self, 1, index - 1), gen_sum(self, index + 1)
 
-    local db, da = (before - b)/before_count, (after - a)/after_count
+    local db, da                    = (before - b) / before_count, (after - a) / after_count
 
     -- Apply the new ratio
-    self._private.ratios[index] = itself
+    self._private.ratios[index]     = itself
 
     -- Equality split the delta among widgets before and after
-    for i = 1, index -1 do
+    for i = 1, index - 1 do
         self._private.ratios[i] = self._private.ratios[i] + db
     end
-    for i = index+1, #self._private.widgets do
+    for i = index + 1, #self._private.widgets do
         self._private.ratios[i] = self._private.ratios[i] + da
     end
 
@@ -338,9 +338,9 @@ end
 -- @tparam widget ... Widgets that should be added (must at least be one)
 function ratio:add(...)
     -- No table.pack in Lua 5.1 :-(
-    local args = { n=select('#', ...), ... }
+    local args = { n = select('#', ...), ... }
     assert(args.n > 0, "need at least one widget to add")
-    for i=1, args.n do
+    for i = 1, args.n do
         base.check_widget(args[i])
         table.insert(self._private.widgets, args[i])
     end
@@ -419,7 +419,7 @@ local valid_strategies = {
 }
 
 function ratio:set_inner_fill_strategy(strategy)
-    assert(valid_strategies[strategy] ~= nil, "Invalid strategy: "..(strategy or ""))
+    assert(valid_strategies[strategy] ~= nil, "Invalid strategy: " .. (strategy or ""))
 
     self._private.inner_fill_strategy = strategy
     self:emit_signal("widget::layout_changed")
@@ -432,7 +432,7 @@ local function get_layout(dir, widget1, ...)
 
     ret._private.fill_space = nil
 
-    ret._private.ratios = {}
+    ret._private.ratios     = {}
 
     return ret
 end

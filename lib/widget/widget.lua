@@ -6,23 +6,23 @@ function widget:base(name)
 end
 
 ---@overload fun():widget
+function widget:textbox(...)
+    return require("lib.widget.textbox.atextbox")(...)
+end
+
+---@overload fun():widget
+function widget:imagebox(...)
+    return require("lib.widget.imagebox.aimagebox")(...)
+end
+
+---@overload fun():widget
 function widget:button()
     return require("lib.widget.button.abutton"):init()
 end
 
 ---@overload fun():widget
-function widget:textbox()
-    return require("lib.widget.textbox.atextbox"):init()
-end
-
----@overload fun():widget
 function widget:checkbox()
     return require("lib.widget.checkbox.acheckbox"):init()
-end
-
----@overload fun():widget
-function widget:imagebox()
-    return require("lib.widget.imagebox.aimagebox"):init()
 end
 
 function widget:switch()

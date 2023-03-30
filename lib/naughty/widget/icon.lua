@@ -17,7 +17,6 @@
 -- @supermodule wibox.widget.imagebox
 -- @see wibox.widget.imagebox
 ----------------------------------------------------------------------------
-local imagebox  = require("wibox.widget.imagebox")
 local gtable    = require("gears.table")
 local beautiful = require("beautiful")
 local gsurface  = require("gears.surface")
@@ -166,7 +165,7 @@ end
 
 local function new(args)
     args     = args or {}
-    local tb = imagebox()
+    local tb = wmapi.widget:imagebox()
 
     gtable.crush(tb, icon, true)
     tb._private.notification = {}

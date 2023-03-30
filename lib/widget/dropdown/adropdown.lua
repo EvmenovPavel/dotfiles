@@ -2,7 +2,6 @@ local gtable     = require("gears.table")
 local spawn      = require("awful.spawn")
 local gmath      = require("gears.math")
 local abutton    = require("awful.button")
-local imagebox   = require("wibox.widget.imagebox")
 local widget     = require("wibox.widget.base")
 local surface    = require("gears.surface")
 local cairo      = require("lgi").cairo
@@ -19,7 +18,7 @@ function wbutton:new(args)
         return widget.empty_widget()
     end
 
-    local w              = imagebox()
+    local w              = wmapi.widget:imagebox()
     local orig_set_image = w.set_image
     local img_release
     local img_press

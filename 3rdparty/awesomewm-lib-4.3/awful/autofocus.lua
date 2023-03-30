@@ -9,9 +9,9 @@
 -- @module awful.autofocus
 ---------------------------------------------------------------------------
 
-local client = client
+local client  = client
 local aclient = require("awful.client")
-local timer = require("gears.timer")
+local timer   = require("gears.timer")
 
 local function filter_sticky(c)
     return not c.sticky and aclient.focus.filter(c)
@@ -30,7 +30,7 @@ local function check_focus(obj)
         end
         if c then
             c:emit_signal("request::activate", "autofocus.check_focus",
-                          {raise=false})
+                    { raise = false })
         end
     end
 end
@@ -38,7 +38,7 @@ end
 --- Check client focus (delayed).
 -- @param obj An object that should have a .screen property.
 local function check_focus_delayed(obj)
-    timer.delayed_call(check_focus, {screen = obj.screen})
+    timer.delayed_call(check_focus, { screen = obj.screen })
 end
 
 --- Give focus on tag selection change.
@@ -56,19 +56,19 @@ local function check_focus_tag(t)
         end
         if c then
             c:emit_signal("request::activate", "autofocus.check_focus_tag",
-                          {raise=false})
+                    { raise = false })
         end
     end
 end
 
-tag.connect_signal("property::selected", function (t)
+tag.connect_signal("property::selected", function(t)
     timer.delayed_call(check_focus_tag, t)
 end)
-client.connect_signal("unmanage",            check_focus_delayed)
-client.connect_signal("tagged",              check_focus_delayed)
-client.connect_signal("untagged",            check_focus_delayed)
-client.connect_signal("property::hidden",    check_focus_delayed)
+client.connect_signal("unmanage", check_focus_delayed)
+client.connect_signal("tagged", check_focus_delayed)
+client.connect_signal("untagged", check_focus_delayed)
+client.connect_signal("property::hidden", check_focus_delayed)
 client.connect_signal("property::minimized", check_focus_delayed)
-client.connect_signal("property::sticky",    check_focus_delayed)
+client.connect_signal("property::sticky", check_focus_delayed)
 
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

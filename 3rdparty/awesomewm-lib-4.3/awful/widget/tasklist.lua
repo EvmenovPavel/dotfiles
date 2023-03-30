@@ -74,26 +74,26 @@
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
-local capi = { screen = screen,
-               client = client }
-local ipairs = ipairs
+local capi         = { screen = screen,
+                       client = client }
+local ipairs       = ipairs
 local setmetatable = setmetatable
-local table = table
-local common = require("awful.widget.common")
-local beautiful = require("beautiful")
-local tag = require("awful.tag")
-local flex = require("wibox.layout.flex")
-local timer = require("gears.timer")
-local gcolor = require("gears.color")
-local gstring = require("gears.string")
-local gdebug = require("gears.debug")
-local base = require("wibox.widget.base")
+local table        = table
+local common       = require("awful.widget.common")
+local beautiful    = require("beautiful")
+local tag          = require("awful.tag")
+local flex         = require("wibox.layout.flex")
+local timer        = require("gears.timer")
+local gcolor       = require("gears.color")
+local gstring      = require("gears.string")
+local gdebug       = require("gears.debug")
+local base         = require("wibox.widget.base")
 
 local function get_screen(s)
     return s and screen[s]
 end
 
-local tasklist = { mt = {} }
+local tasklist                   = { mt = {} }
 
 local instances
 
@@ -249,46 +249,46 @@ tasklist.filter, tasklist.source = {}, {}
 
 local function tasklist_label(c, args, tb)
     if not args then args = {} end
-    local theme = beautiful.get()
-    local align = args.align or theme.tasklist_align or "left"
-    local fg_normal = gcolor.ensure_pango_color(args.fg_normal or theme.tasklist_fg_normal or theme.fg_normal, "white")
-    local bg_normal = args.bg_normal or theme.tasklist_bg_normal or theme.bg_normal or "#000000"
-    local fg_focus = gcolor.ensure_pango_color(args.fg_focus or theme.tasklist_fg_focus or theme.fg_focus, fg_normal)
-    local bg_focus = args.bg_focus or theme.tasklist_bg_focus or theme.bg_focus or bg_normal
-    local fg_urgent = gcolor.ensure_pango_color(args.fg_urgent or theme.tasklist_fg_urgent or theme.fg_urgent,
-                                                fg_normal)
-    local bg_urgent = args.bg_urgent or theme.tasklist_bg_urgent or theme.bg_urgent or bg_normal
-    local fg_minimize = gcolor.ensure_pango_color(args.fg_minimize or theme.tasklist_fg_minimize or theme.fg_minimize,
-                                                  fg_normal)
-    local bg_minimize = args.bg_minimize or theme.tasklist_bg_minimize or theme.bg_minimize or bg_normal
+    local theme                 = beautiful.get()
+    local align                 = args.align or theme.tasklist_align or "left"
+    local fg_normal             = gcolor.ensure_pango_color(args.fg_normal or theme.tasklist_fg_normal or theme.fg_normal, "white")
+    local bg_normal             = args.bg_normal or theme.tasklist_bg_normal or theme.bg_normal or "#000000"
+    local fg_focus              = gcolor.ensure_pango_color(args.fg_focus or theme.tasklist_fg_focus or theme.fg_focus, fg_normal)
+    local bg_focus              = args.bg_focus or theme.tasklist_bg_focus or theme.bg_focus or bg_normal
+    local fg_urgent             = gcolor.ensure_pango_color(args.fg_urgent or theme.tasklist_fg_urgent or theme.fg_urgent,
+            fg_normal)
+    local bg_urgent             = args.bg_urgent or theme.tasklist_bg_urgent or theme.bg_urgent or bg_normal
+    local fg_minimize           = gcolor.ensure_pango_color(args.fg_minimize or theme.tasklist_fg_minimize or theme.fg_minimize,
+            fg_normal)
+    local bg_minimize           = args.bg_minimize or theme.tasklist_bg_minimize or theme.bg_minimize or bg_normal
     -- FIXME v5, remove the fallback theme.bg_image_* variables, see GH#1403
-    local bg_image_normal = args.bg_image_normal or theme.tasklist_bg_image_normal or theme.bg_image_normal
-    local bg_image_focus = args.bg_image_focus or theme.tasklist_bg_image_focus or theme.bg_image_focus
-    local bg_image_urgent = args.bg_image_urgent or theme.tasklist_bg_image_urgent or theme.bg_image_urgent
-    local bg_image_minimize = args.bg_image_minimize or theme.tasklist_bg_image_minimize or theme.bg_image_minimize
+    local bg_image_normal       = args.bg_image_normal or theme.tasklist_bg_image_normal or theme.bg_image_normal
+    local bg_image_focus        = args.bg_image_focus or theme.tasklist_bg_image_focus or theme.bg_image_focus
+    local bg_image_urgent       = args.bg_image_urgent or theme.tasklist_bg_image_urgent or theme.bg_image_urgent
+    local bg_image_minimize     = args.bg_image_minimize or theme.tasklist_bg_image_minimize or theme.bg_image_minimize
     local tasklist_disable_icon = args.tasklist_disable_icon or theme.tasklist_disable_icon or false
-    local disable_task_name = args.disable_task_name or theme.tasklist_disable_task_name or false
-    local font = args.font or theme.tasklist_font or theme.font or ""
-    local font_focus = args.font_focus or theme.tasklist_font_focus or theme.font_focus or font or ""
-    local font_minimized = args.font_minimized or theme.tasklist_font_minimized or theme.font_minimized or font or ""
-    local font_urgent = args.font_urgent or theme.tasklist_font_urgent or theme.font_urgent or font or ""
-    local text = ""
-    local name = ""
+    local disable_task_name     = args.disable_task_name or theme.tasklist_disable_task_name or false
+    local font                  = args.font or theme.tasklist_font or theme.font or ""
+    local font_focus            = args.font_focus or theme.tasklist_font_focus or theme.font_focus or font or ""
+    local font_minimized        = args.font_minimized or theme.tasklist_font_minimized or theme.font_minimized or font or ""
+    local font_urgent           = args.font_urgent or theme.tasklist_font_urgent or theme.font_urgent or font or ""
+    local text                  = ""
+    local name                  = ""
     local bg
     local bg_image
-    local shape              = args.shape or theme.tasklist_shape
-    local shape_border_width = args.shape_border_width or theme.tasklist_shape_border_width
-    local shape_border_color = args.shape_border_color or theme.tasklist_shape_border_color
+    local shape                 = args.shape or theme.tasklist_shape
+    local shape_border_width    = args.shape_border_width or theme.tasklist_shape_border_width
+    local shape_border_color    = args.shape_border_color or theme.tasklist_shape_border_color
 
     -- symbol to use to indicate certain client properties
-    local sticky = args.sticky or theme.tasklist_sticky or "▪"
-    local ontop = args.ontop or theme.tasklist_ontop or '⌃'
-    local above = args.above or theme.tasklist_above or '▴'
-    local below = args.below or theme.tasklist_below or '▾'
-    local floating = args.floating or theme.tasklist_floating or '✈'
-    local maximized = args.maximized or theme.tasklist_maximized or '<b>+</b>'
-    local maximized_horizontal = args.maximized_horizontal or theme.tasklist_maximized_horizontal or '⬌'
-    local maximized_vertical = args.maximized_vertical or theme.tasklist_maximized_vertical or '⬍'
+    local sticky                = args.sticky or theme.tasklist_sticky or "▪"
+    local ontop                 = args.ontop or theme.tasklist_ontop or '⌃'
+    local above                 = args.above or theme.tasklist_above or '▴'
+    local below                 = args.below or theme.tasklist_below or '▾'
+    local floating              = args.floating or theme.tasklist_floating or '✈'
+    local maximized             = args.maximized or theme.tasklist_maximized or '<b>+</b>'
+    local maximized_horizontal  = args.maximized_horizontal or theme.tasklist_maximized_horizontal or '⬌'
+    local maximized_vertical    = args.maximized_vertical or theme.tasklist_maximized_vertical or '⬍'
 
     if tb then
         tb:set_align(align)
@@ -313,7 +313,7 @@ local function tasklist_label(c, args, tb)
     if not disable_task_name then
         if c.minimized then
             name = name .. (gstring.xml_escape(c.icon_name) or gstring.xml_escape(c.name) or
-                            gstring.xml_escape("<untitled>"))
+                    gstring.xml_escape("<untitled>"))
         else
             name = name .. (gstring.xml_escape(c.name) or gstring.xml_escape("<untitled>"))
         end
@@ -323,17 +323,17 @@ local function tasklist_label(c, args, tb)
     -- Handle transient_for: the first parent that does not skip the taskbar
     -- is considered to be focused, if the real client has skip_taskbar.
     if not focused and capi.client.focus and capi.client.focus.skip_taskbar
-        and capi.client.focus:get_transient_for_matching(function(cl)
-                                                             return not cl.skip_taskbar
-                                                         end) == c then
+            and capi.client.focus:get_transient_for_matching(function(cl)
+        return not cl.skip_taskbar
+    end) == c then
         focused = true
     end
 
     if focused then
-        bg = bg_focus
-        text = text .. "<span color='"..fg_focus.."'>"..name.."</span>"
+        bg       = bg_focus
+        text     = text .. "<span color='" .. fg_focus .. "'>" .. name .. "</span>"
         bg_image = bg_image_focus
-        font = font_focus
+        font     = font_focus
 
         if args.shape_focus or theme.tasklist_shape_focus then
             shape = args.shape_focus or theme.tasklist_shape_focus
@@ -347,10 +347,10 @@ local function tasklist_label(c, args, tb)
             shape_border_color = args.shape_border_color_focus or theme.tasklist_shape_border_color_focus
         end
     elseif c.urgent then
-        bg = bg_urgent
-        text = text .. "<span color='"..fg_urgent.."'>"..name.."</span>"
+        bg       = bg_urgent
+        text     = text .. "<span color='" .. fg_urgent .. "'>" .. name .. "</span>"
         bg_image = bg_image_urgent
-        font = font_urgent
+        font     = font_urgent
 
         if args.shape_urgent or theme.tasklist_shape_urgent then
             shape = args.shape_urgent or theme.tasklist_shape_urgent
@@ -364,10 +364,10 @@ local function tasklist_label(c, args, tb)
             shape_border_color = args.shape_border_color_urgent or theme.tasklist_shape_border_color_urgent
         end
     elseif c.minimized then
-        bg = bg_minimize
-        text = text .. "<span color='"..fg_minimize.."'>"..name.."</span>"
+        bg       = bg_minimize
+        text     = text .. "<span color='" .. fg_minimize .. "'>" .. name .. "</span>"
         bg_image = bg_image_minimize
-        font = font_minimized
+        font     = font_minimized
 
         if args.shape_minimized or theme.tasklist_shape_minimized then
             shape = args.shape_minimized or theme.tasklist_shape_minimized
@@ -381,8 +381,8 @@ local function tasklist_label(c, args, tb)
             shape_border_color = args.shape_border_color_minimized or theme.tasklist_shape_border_color_minimized
         end
     else
-        bg = bg_normal
-        text = text .. "<span color='"..fg_normal.."'>"..name.."</span>"
+        bg       = bg_normal
+        text     = text .. "<span color='" .. fg_normal .. "'>" .. name .. "</span>"
         bg_image = bg_image_normal
     end
 
@@ -402,13 +402,13 @@ end
 local function tasklist_update(s, w, buttons, filter, data, style, update_function, args)
     local clients = {}
 
-    local source = args and args.source or tasklist.source.all_clients or nil
-    local list   = source and source(s, args) or capi.client.get()
+    local source  = args and args.source or tasklist.source.all_clients or nil
+    local list    = source and source(s, args) or capi.client.get()
 
     for _, c in ipairs(list) do
         if not (c.skip_taskbar or c.hidden
-            or c.type == "splash" or c.type == "dock" or c.type == "desktop")
-            and filter(c, s) then
+                or c.type == "splash" or c.type == "dock" or c.type == "desktop")
+                and filter(c, s) then
             table.insert(clients, c)
         end
     end
@@ -477,18 +477,18 @@ end
 -- @param base_widget **DEPRECATED** use args.base_widget
 -- @function awful.tasklist
 function tasklist.new(args, filter, buttons, style, update_function, base_widget)
-    local screen = nil
+    local screen   = nil
 
     local argstype = type(args)
 
     -- Detect the old function signature
     if argstype == "number" or argstype == "screen" or
-      (argstype == "table" and args.index and args == capi.screen[args.index]) then
+            (argstype == "table" and args.index and args == capi.screen[args.index]) then
         gdebug.deprecate("The `screen` paramater is deprecated, use `args.screen`.",
-            {deprecated_in=5})
+                { deprecated_in = 5 })
 
         screen = get_screen(args)
-        args = {}
+        args   = {}
     end
 
     assert(type(args) == "table")
@@ -499,20 +499,20 @@ function tasklist.new(args, filter, buttons, style, update_function, base_widget
                         update_function = update_function,
                         layout          = base_widget
     } do
-        gdebug.deprecate("The `awful.widget.tasklist()` `"..k
-            .."` paramater is deprecated, use `args."..k.."`.",
-        {deprecated_in=5})
+        gdebug.deprecate("The `awful.widget.tasklist()` `" .. k
+                .. "` paramater is deprecated, use `args." .. k .. "`.",
+                { deprecated_in = 5 })
         args[k] = v
     end
 
-    screen = screen or get_screen(args.screen)
-    local uf = args.update_function or common.list_update
-    local w = base.make_widget_from_value(args.layout or flex.horizontal)
+    screen        = screen or get_screen(args.screen)
+    local uf      = args.update_function or common.list_update
+    local w       = base.make_widget_from_value(args.layout or flex.horizontal)
 
-    local data = setmetatable({}, { __mode = 'k' })
+    local data    = setmetatable({}, { __mode = 'k' })
 
     local spacing = args.style and args.style.spacing or args.layout and args.layout.spacing
-                    or beautiful.tasklist_spacing
+            or beautiful.tasklist_spacing
     if w.set_spacing and spacing then
         w:set_spacing(spacing)
     end
@@ -596,7 +596,7 @@ function tasklist.new(args, filter, buttons, style, update_function, base_widget
     w._do_tasklist_update()
     local list = instances[screen]
     if not list then
-        list = setmetatable({}, { __mode = "v" })
+        list              = setmetatable({}, { __mode = "v" })
         instances[screen] = list
     end
     table.insert(list, w)

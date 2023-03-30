@@ -12,27 +12,26 @@
 -- @classmod awful.titlebar
 ---------------------------------------------------------------------------
 
-local error = error
-local type = type
-local gmath = require("gears.math")
-local abutton = require("awful.button")
-local aclient = require("awful.client")
-local atooltip = require("awful.tooltip")
-local clienticon = require("awful.widget.clienticon")
-local beautiful = require("beautiful")
-local drawable = require("wibox.drawable")
-local imagebox = require("wibox.widget.imagebox")
-local textbox = require("wibox.widget.textbox")
-local base = require("wibox.widget.base")
-local capi = {
+local error         = error
+local type          = type
+local gmath         = require("gears.math")
+local abutton       = require("awful.button")
+local aclient       = require("awful.client")
+local atooltip      = require("awful.tooltip")
+local clienticon    = require("awful.widget.clienticon")
+local beautiful     = require("beautiful")
+local drawable      = require("wibox.drawable")
+local imagebox      = require("wibox.widget.imagebox")
+local textbox       = require("wibox.widget.textbox")
+local base          = require("wibox.widget.base")
+local capi          = {
     client = client
 }
 
-
-local titlebar = {
-    widget = {},
+local titlebar      = {
+    widget         = {},
     enable_tooltip = true,
-    fallback_name = '<unknown>'
+    fallback_name  = '<unknown>'
 }
 
 
@@ -444,7 +443,7 @@ local function get_color(name, c, args)
         suffix = "_focus"
     end
     local function get(array)
-        return array["titlebar_"..name..suffix] or array["titlebar_"..name] or array[name..suffix] or array[name]
+        return array["titlebar_" .. name .. suffix] or array["titlebar_" .. name] or array[name .. suffix] or array[name]
     end
     return get(args) or get(beautiful)
 end
@@ -477,7 +476,7 @@ local function load_titlebars(c, hide_all, keep)
     if hide_all then
         -- Don't bother checking if it has been created, `.hide` don't works
         -- anyway.
-        for _, tb in ipairs {"top", "bottom", "left", "right"} do
+        for _, tb in ipairs { "top", "bottom", "left", "right" } do
             if tb ~= keep then
                 titlebar.hide(c, tb)
             end
@@ -504,25 +503,25 @@ end
 -- @tparam[opt=top] string args.font
 -- @function awful.titlebar
 local function new(c, args)
-    args = args or {}
+    args           = args or {}
     local position = args.position or "top"
-    local size = args.size or gmath.round(beautiful.get_font_height(args.font) * 1.5)
-    local d = get_titlebar_function(c, position)(c, size)
+    local size     = args.size or gmath.round(beautiful.get_font_height(args.font) * 1.5)
+    local d        = get_titlebar_function(c, position)(c, size)
 
     -- Make sure that there is never more than one titlebar for any given client
-    local bars = all_titlebars[c]
+    local bars     = all_titlebars[c]
     if not bars then
-        bars = {}
+        bars             = {}
         all_titlebars[c] = bars
     end
 
     local ret
     if not bars[position] then
         local context = {
-            client = c,
+            client   = c,
             position = position
         }
-        ret = drawable(d, context, "awful.titlebar")
+        ret           = drawable(d, context, "awful.titlebar")
         ret:_inform_visible(true)
         local function update_colors()
             local args_ = bars[position].args
@@ -532,8 +531,8 @@ local function new(c, args)
         end
 
         bars[position] = {
-            args = args,
-            drawable = ret,
+            args          = args,
+            drawable      = ret,
             update_colors = update_colors
         }
 
@@ -545,16 +544,16 @@ local function new(c, args)
         c:connect_signal("unmanage", function() ret:_inform_visible(false) end)
     else
         bars[position].args = args
-        ret = bars[position].drawable
+        ret                 = bars[position].drawable
     end
 
     -- Make sure the titlebar has the right colors applied
     bars[position].update_colors()
 
     -- Handle declarative/recursive widget container
-    ret.setup = base.widget.setup
+    ret.setup            = base.widget.setup
 
-    c._private = c._private or {}
+    c._private           = c._private or {}
     c._private.titlebars = bars
 
     return ret
@@ -639,7 +638,7 @@ function titlebar.widget.button(c, name, selector, action)
     local ret = imagebox()
 
     if titlebar.enable_tooltip then
-        ret._private.tooltip = atooltip({ objects = {ret}, delay_show = 1 })
+        ret._private.tooltip = atooltip({ objects = { ret }, delay_show = 1 })
         ret._private.tooltip:set_text(name)
     end
 
@@ -669,9 +668,9 @@ function titlebar.widget.button(c, name, selector, action)
             -- then try again without that prefix if nothing was found,
             -- and finally, try a fallback for compatibility with Awesome 3.5 themes
             local theme = beautiful["titlebar_" .. name .. "_button_" .. prefix .. img .. state]
-                       or beautiful["titlebar_" .. name .. "_button_" .. prefix .. img]
-                       or beautiful["titlebar_" .. name .. "_button_" .. img]
-                       or beautiful["titlebar_" .. name .. "_button_" .. prefix .. "_inactive"]
+                    or beautiful["titlebar_" .. name .. "_button_" .. prefix .. img]
+                    or beautiful["titlebar_" .. name .. "_button_" .. img]
+                    or beautiful["titlebar_" .. name .. "_button_" .. prefix .. "_inactive"]
             if theme then
                 img = theme
             end
@@ -740,8 +739,8 @@ end
 -- @param c The client for which the button is wanted.
 function titlebar.widget.minimizebutton(c)
     local widget = titlebar.widget.button(c, "minimize",
-                                          function() return "" end,
-                                          function(cl) cl.minimized = not cl.minimized end)
+            function() return "" end,
+            function(cl) cl.minimized = not cl.minimized end)
     c:connect_signal("property::minimized", widget.update)
     return widget
 end
@@ -756,8 +755,8 @@ end
 -- @param c The client for which the button is wanted.
 function titlebar.widget.ontopbutton(c)
     local widget = titlebar.widget.button(c, "ontop",
-                                          function(cl) return cl.ontop end,
-                                          function(cl, state) cl.ontop = not state end)
+            function(cl) return cl.ontop end,
+            function(cl, state) cl.ontop = not state end)
     c:connect_signal("property::ontop", widget.update)
     return widget
 end
@@ -766,8 +765,8 @@ end
 -- @param c The client for which the button is wanted.
 function titlebar.widget.stickybutton(c)
     local widget = titlebar.widget.button(c, "sticky",
-                                          function(cl) return cl.sticky end,
-                                          function(cl, state) cl.sticky = not state end)
+            function(cl) return cl.sticky end,
+            function(cl, state) cl.sticky = not state end)
     c:connect_signal("property::sticky", widget.update)
     return widget
 end
@@ -776,6 +775,6 @@ client.connect_signal("unmanage", function(c)
     all_titlebars[c] = nil
 end)
 
-return setmetatable(titlebar, { __call = function(_, ...) return new(...) end})
+return setmetatable(titlebar, { __call = function(_, ...) return new(...) end })
 
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

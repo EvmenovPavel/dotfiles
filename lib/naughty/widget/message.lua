@@ -15,7 +15,6 @@
 -- @supermodule wibox.widget.textbox
 -- @see wibox.widget.textbox
 ----------------------------------------------------------------------------
-local textbox   = require("wibox.widget.textbox")
 local gtable    = require("gears.table")
 local beautiful = require("beautiful")
 local markup    = require("lib.naughty.widget._markup").set_markup
@@ -60,7 +59,7 @@ end
 
 local function new(args)
     args     = args or {}
-    local tb = textbox()
+    local tb = wmapi.widget:textbox()
     tb:set_wrap("word")
     tb:set_font(beautiful.notification_font)
     tb._private.notification = {}

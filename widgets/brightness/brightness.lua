@@ -20,7 +20,7 @@ local w_brightness_bar    = wibox.widget {
 }
 
 local w_volume_icon       = wmapi.widget:imagebox()
-w_volume_icon:image(resources.widgets.volume.on)
+w_volume_icon:set_image(resources.widgets.volume.on)
 local hide_brightness_adjust = wmapi:update(function()
     brightness_adjust.visible = false
 end, 3)
@@ -106,7 +106,7 @@ function brightness:init()
         ontop   = true
     })
 
-    brightness_adjust:setup {
+    brightness_adjust:setup({
         layout = wibox.layout.align.vertical,
         {
             wibox.container.margin(
@@ -117,10 +117,10 @@ function brightness:init()
             layout        = wibox.container.rotate,
         },
         wibox.container.margin(
-                w_volume_icon:get(),
+                w_volume_icon,
                 7, 7, 14, 14
         )
-    }
+    })
 end
 
 return setmetatable(brightness, { __call = function(_, ...)

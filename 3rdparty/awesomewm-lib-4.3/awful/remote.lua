@@ -8,13 +8,13 @@
 
 -- Grab environment we need
 require("awful.dbus")
-local load = loadstring or load -- luacheck: globals loadstring (compatibility with Lua 5.1)
+local load     = loadstring or load -- luacheck: globals loadstring (compatibility with Lua 5.1)
 local tostring = tostring
-local ipairs = ipairs
-local table = table
-local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
-local dbus = dbus
-local type = type
+local ipairs   = ipairs
+local table    = table
+local unpack   = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local dbus     = dbus
+local type     = type
 
 if dbus then
     dbus.connect_signal("org.awesomewm.awful.Remote", function(data, code)

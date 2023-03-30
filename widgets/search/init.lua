@@ -1,1 +1,0 @@
-return require("widgets.search.search")

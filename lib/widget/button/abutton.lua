@@ -1,19 +1,21 @@
 local wibox  = require("wibox")
 local gears  = require("gears")
 
-local button = { mt = {} }
+local button = {}
 
 function button:init()
     local ret       = wmapi.widget:base("button")
 
     local __private = {}
 
+    __private.image = ""
+
     __private.func  = function()
         log:debug("button:create")
     end
 
     local w_textbox = wmapi.widget:textbox()
-    w_textbox:text("button")
+    w_textbox:set_text("button")
     function ret:textbox()
         return w_textbox
     end
@@ -24,13 +26,13 @@ function button:init()
     end
 
     local w_mImagebox      = wibox.widget({
-        w_imagebox:get(),
+        w_imagebox,
         margins = 5,
         widget  = wibox.container.margin,
     })
 
     local w_mTextbox       = wibox.widget({
-        w_textbox:get(),
+        w_textbox,
         right  = 5,
         widget = wibox.container.margin,
     })
@@ -58,10 +60,10 @@ function button:init()
         layout = wibox.layout.fixed.horizontal,
     })
     ret:set_widget(widget, function()
-        if wmapi:is_empty(w_imagebox:image()) then
+        if wmapi:is_empty(w_imagebox:get_image()) then
             w_mImagebox.left = 0
         else
-            w_mImagebox.margins = 5
+            w_mImagebox.left = 5
         end
     end)
 
