@@ -45,11 +45,9 @@ function button:init()
 
     local w_bg             = wibox.widget({
         w_text_image_box,
-
         shape              = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, 5)
         end,
-
         bg                 = ret:color():border(),
         shape_border_color = ret:color():border_hover(),
         widget             = wibox.container.background,

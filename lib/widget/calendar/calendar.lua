@@ -26,6 +26,7 @@ local bgcontainer = require("wibox.container.background")
 local base        = require("wibox.widget.base")
 local beautiful   = require("beautiful")
 local wibox       = require("wibox")
+local gears       = require("gears")
 
 local calendar    = { mt = {} }
 
@@ -43,14 +44,14 @@ local align       = {
 -- @tparam boolean center Center the text horizontally
 -- @treturn wibox.widget.textbox
 local function make_cell(text, font, _align)
-    local w = wmapi.widget:textbox()
+    local w_textbox = wmapi.widget:textbox()
 
-    w:set_markup(text)
-    w:set_align(_align or align.center)
-    w:set_valign(align.center)
-    w:set_font(font)
+    w_textbox:set_markup(text)
+    w_textbox:set_align(_align or align.center)
+    w_textbox:set_valign(align.center)
+    w_textbox:set_font(font)
 
-    return w
+    return w_textbox
 end
 
 --- Create a grid layout with the month calendar
@@ -433,18 +434,8 @@ function calendar:month(date, font)
     return get_calendar("month", date, font)
 end
 
---- A year calendar widget.
---
--- A calendar widget is a grid containing the calendar for one year.
---
---@DOC_wibox_widget_calendar_year_EXAMPLE@
--- @tparam table date Date of the calendar
--- @tparam number date.year Date year
--- @tparam number|nil date.month Date month
--- @tparam number|nil date.day Date day
--- @tparam[opt="Monospace 10"] string font Font of the calendar
--- @treturn widget The year calendar widget
--- @function wibox.widget.calendar.year
+--- A text calendar widget.
+-- @function wibox.widget.calendar.years
 function calendar:years(date, font)
     return get_calendar("years", date, font)
 end

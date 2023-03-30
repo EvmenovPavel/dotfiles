@@ -1,107 +1,20 @@
-local awful      = require("awful")
-local gears      = require("gears")
-local wibox      = require("wibox")
-local grid       = require("wibox.layout.grid")
-local gmath      = require("gears.math")
+local awful     = require("awful")
+local wibox     = require("wibox")
 
-local keygrabber = require("awful.keygrabber")
-local gtable     = require("gears.table")
-local object     = require("gears.object")
+local beautiful = require("beautiful")
 
-local beautiful  = require("beautiful")
-local xrdb       = beautiful.xresources.get_current_theme()
+local calendar  = {}
 
-local calendar   = {}
-
-local x          = {
-    --           xrdb variable
-    background = xrdb.background,
-    foreground = xrdb.foreground,
-    color0     = xrdb.color0,
-    color1     = xrdb.color1,
-    color2     = xrdb.color2,
-    color3     = xrdb.color3,
-    color4     = xrdb.color4,
-    color5     = xrdb.color5,
-    color6     = xrdb.color6,
-    color7     = xrdb.color7,
-    color8     = xrdb.color8,
-    color9     = xrdb.color9,
-    color10    = xrdb.color10,
-    color11    = xrdb.color11,
-    color12    = xrdb.color12,
-    color13    = xrdb.color13,
-    color14    = xrdb.color14,
-    color15    = xrdb.color15,
-}
-
-local styles     = {}
-styles.month     = {
-    padding      = 20,
-    fg_color     = x.color7,
-    bg_color     = x.background .. "00",
-    border_width = 1,
-}
-
-styles.normal    = {}
-
-styles.focus     = {
-    fg_color = x.color1,
-    bg_color = x.color5 .. 00,
-    markup   = function(t)
-        return '<b>' .. t .. '</b>'
-    end,
-}
-
-styles.header    = {
-    fg_color = x.color4,
-    bg_color = x.color1 .. "00",
-    -- markup   = function(t) return '<b>' .. t .. '</b>' end,
-    markup   = function(t)
-        return '<span font_desc="sans bold 22">' .. t .. '</span>'
-    end,
-}
-
-styles.weekday   = {
-    fg_color = x.color7,
-    bg_color = x.color1 .. "00",
-    padding  = 3,
-    markup   = function(t)
-        return '<b>' .. t .. '</b>'
-    end,
-}
-
-styles.disable   = {
-    fg_color = x.color7,
-    bg_color = x.color1 .. "00",
-    padding  = 3,
-    markup   = function(t)
-        return '<b>' .. t .. '</b>'
-    end,
-}
-
-local menu       = {}
-
-menu.menu_keys   = { up    = { "Up", "k" },
-                     down  = { "Down", "j" },
-                     back  = { "Left", "h" },
-                     exec  = { "Return" },
-                     enter = { "Right", "l" },
-                     close = { "Escape" } }
-
---return calendar_widget
 function calendar:init()
-    local w_calendar       = wmapi.widget:calendar()
-
-    local widgetCalendar   = wibox.widget({
+    local w_calendar = wibox.widget({
         date          = os.date("*t"),
         font          = beautiful.get_font(),
         --fn_embed      = theme_calendar,
         long_weekdays = true,
-        widget        = w_calendar.month,
+        widget        = wmapi.widget:calendar().month,
     })
 
-    local widgetMonthName  = wibox.widget({
+    local widget_month_name = wibox.widget({
         date          = os.date("*t"),
         long_weekdays = true,
         forced_width  = 200,
@@ -111,16 +24,16 @@ function calendar:init()
     local btn_next         = wmapi.widget:button()
     local btn_prev         = wmapi.widget:button()
 
-    local widget_btn_title = wibox.widget({
+    local widget_btn_title  = wibox.widget({
         btn_prev:get(),
-        widgetMonthName,
+        widget_month_name,
         btn_next:get(),
         layout = wibox.layout.fixed.horizontal,
     })
 
-    local widget           = wibox.widget({
+    local widget     = wibox.widget({
         widget_btn_title,
-        widgetCalendar,
+        w_calendar,
         layout = wibox.layout.fixed.vertical,
     })
 
@@ -146,19 +59,21 @@ function calendar:init()
         widget:set_date(a)
     end
 
-    btn_next:textbox():set_text(">")
+    local textbox_next = btn_next:textbox()
+    textbox_next:set_text(">")
     btn_next:clicked(function()
-        update_calendar(widgetCalendar, 1)
-        update_calendar(widgetMonthName, 1)
+        update_calendar(w_calendar, 1)
+        update_calendar(widget_month_name, 1)
 
         popupWidget:set_widget(nil)
         popupWidget:set_widget(layout)
     end)
 
-    btn_prev:textbox():set_text("<")
+    local textbox_prev = btn_prev:textbox()
+    textbox_prev:set_text("<")
     btn_prev:clicked(function()
-        update_calendar(widgetCalendar, -1)
-        update_calendar(widgetMonthName, -1)
+        update_calendar(w_calendar, -1)
+        update_calendar(widget_month_name, -1)
 
         popupWidget:set_widget(nil)
         popupWidget:set_widget(layout)
@@ -174,8 +89,8 @@ function calendar:init()
 
     local function toggle()
         if popupWidget.visible then
-            widgetCalendar:set_date(nil)
-            widgetCalendar:set_date(os.date("*t"))
+            w_calendar:set_date(nil)
+            w_calendar:set_date(os.date("*t"))
 
             popupWidget:set_widget(nil)
             popupWidget:set_widget(layout)
