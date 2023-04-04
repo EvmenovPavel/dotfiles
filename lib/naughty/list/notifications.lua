@@ -16,6 +16,7 @@ local abutton         = require("awful.button")
 local gtable          = require("gears.table")
 local gtimer          = require("gears.timer")
 local beautiful       = require("beautiful")
+local gears           = require("gears")
 local naughty         = require("lib.naughty.core")
 
 local default_widget  = require("lib.naughty.widget._default")

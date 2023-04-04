@@ -18,8 +18,13 @@ local imagebox     = { mt = {} }
 
 -- Draw an imagebox with the given cairo context in the given geometry.
 function imagebox:draw(_, cr, width, height)
-    if not self._private.image then return end
-    if width == 0 or height == 0 then return end
+    if not self._private.image then
+        return
+    end
+
+    if width == 0 or height == 0 then
+        return
+    end
 
     if not self._private.resize_forbidden then
         -- Let's scale the image so that it fits into (width, height)
@@ -111,6 +116,7 @@ function imagebox:set_image(image)
 
     self:emit_signal("widget::redraw_needed")
     self:emit_signal("widget::layout_changed")
+
     return true
 end
 

@@ -52,6 +52,7 @@ function icon:draw(_, cr, width, height)
     if not self._private.image then
         return
     end
+
     if width == 0 or height == 0 then
         return
     end

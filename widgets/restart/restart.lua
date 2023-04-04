@@ -38,6 +38,11 @@ function restart:init()
 
     w:imagebox():set_image(resources.checkbox.checkbox)
 
+    w:clicked(function()
+        local msg = wmapi.widget:messagebox()
+        msg:information("app name", "title", "Привет. 100.", resources.battery.full)
+    end)
+
     local int = 0
     local str = "restart" .. tostring(int)
     wmapi:update(function()

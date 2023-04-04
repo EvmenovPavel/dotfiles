@@ -102,6 +102,25 @@ function wmapi:table_length(T)
     return count
 end
 
+function wmapi:sublen(message, len)
+    local sub_str = ""
+
+    if utf8.len(message) > len then
+        -- итератор utf8.codes() возвращает кодовые точки символов в строке
+        for _, code in utf8.codes(message) do
+            sub_str = sub_str .. utf8.char(code) -- добавляем символ в подстроку
+            if utf8.len(sub_str) >= len then
+                sub_str = sub_str .. "..."
+                break -- прерываем цикл после добавления len символов в подстроку
+            end
+        end
+    else
+        sub_str = message
+    end
+
+    return sub_str
+end
+
 function wmapi:is_empty(s)
     -- if nil or "" - error "true"
     return s == nil or s == ""

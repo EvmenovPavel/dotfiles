@@ -91,7 +91,7 @@ do
         local msg   = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
 
         local mgbox = wmapi.widget.messagebox()
-        mgbox:warning("", "Error", msg)
+        mgbox:warning("print_warning", "Error", msg)
 
         log:warning(msg)
     end
@@ -100,7 +100,7 @@ do
         local msg   = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
 
         local mgbox = wmapi.widget.messagebox()
-        mgbox:error("", "Error", msg)
+        mgbox:error("print_error", "Error", msg)
 
         log:error(msg)
     end

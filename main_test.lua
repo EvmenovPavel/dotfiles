@@ -205,4 +205,21 @@ local function markup(markup)
     return __private.markup
 end
 
-print("")
+local information = "Привет. Давай такой сценарий: на смешениях каналов 0% ТВ, 50% ТВ, 100%ТВ выполнить следующее:"
+
+local function sublen(message, len)
+    local sub_str = ""
+
+    -- итератор utf8.codes() возвращает кодовые точки символов в строке
+    for _, code in utf8.codes(message) do
+        sub_str = sub_str .. utf8.char(code) -- добавляем символ в подстроку
+        if utf8.len(sub_str) >= len then
+            break -- прерываем цикл после добавления 2 символов в подстроку
+        end
+    end
+
+    return sub_str
+end
+
+--print(information)
+print(sublen(information, 11))

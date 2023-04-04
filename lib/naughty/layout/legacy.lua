@@ -36,6 +36,7 @@ local gfs       = require("gears.filesystem")
 local gtable    = require("gears.table")
 local timer     = require("gears.timer")
 local gmath     = require("gears.math")
+local gears     = require("gears")
 local cairo     = require("lgi").cairo
 local util      = require("awful.util")
 
@@ -243,6 +244,7 @@ local function set_escaped_text(self)
 
     local app_name = self.app_name or ""
     local message  = self.message or ""
+    message        = wmapi:sublen(message, 30)
     local title    = self.title or ""
     local textbox  = self.textbox
 
@@ -514,6 +516,7 @@ function naughty.default_notification_handler(notification, args)
                 return string.char(tonumber(x, 16))
             end)
         end
+
         -- try to guess icon if the provided one is non-existent/readable
         if type(icon) == "string" and not gfs.file_readable(icon) then
             icon = util.geticonpath(icon, naughty.config.icon_formats, naughty.config.icon_dirs, icon_size) or icon
@@ -523,7 +526,7 @@ function naughty.default_notification_handler(notification, args)
         local had_icon = type(icon) == "string"
         icon           = surface.load_uncached_silently(icon)
         if icon then
-            iconbox    = wibox.widget.imagebox()
+            iconbox    = wmapi.widget:imagebox()
             iconmargin = wibox.container.margin(iconbox, margin, margin, margin, margin)
         end
 
@@ -558,7 +561,8 @@ function naughty.default_notification_handler(notification, args)
                     size_info.icon_w = icn:get_width()
                     size_info.icon_h = icn:get_height()
                 end
-                iconbox:set_resize(false)
+
+                iconbox:set_resize(true)
                 iconbox:set_image(icn)
             end
         end
@@ -587,7 +591,9 @@ function naughty.default_notification_handler(notification, args)
                                    border_width       = border_width,
                                    shape_border_color = shape and border_color,
                                    shape_border_width = shape and border_width,
-                                   shape              = shape,
+                                   shape              = function(cr, width, height)
+                                       gears.shape.rounded_rect(cr, width, height, 10)
+                                   end,
                                    type               = "notification" })
     else
         notification.box = notification.reuse_box

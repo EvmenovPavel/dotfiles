@@ -73,6 +73,7 @@ function switch:init()
         },
         layout = wibox.layout.fixed.horizontal,
     })
+
     ret:set_widget(widget, function(checked)
         if type(checked) == LuaTypes.boolean then
             __private.checked = checked
