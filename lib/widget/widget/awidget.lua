@@ -1,7 +1,7 @@
 local widget = {}
 
 function widget:init()
-    local ret = widget:base()
+	local ret = widget:base()
 
-    return ret
+	return ret
 end

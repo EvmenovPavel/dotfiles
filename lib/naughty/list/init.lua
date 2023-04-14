@@ -5,6 +5,6 @@
 ---------------------------------------------------------------------------
 
 return {
-    actions       = require("lib.naughty.list.actions");
-    notifications = require("lib.naughty.list.notifications");
+	actions       = require("lib.naughty.list.actions");
+	notifications = require("lib.naughty.list.notifications");
 }

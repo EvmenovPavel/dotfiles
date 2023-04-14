@@ -16,17 +16,17 @@ local hierarchy                       = require("wibox.hierarchy")
 -- Keep this in sync with build-utils/lgi-check.c!
 local ver_major, ver_minor, ver_patch = string.match(require('lgi.version'), '(%d)%.(%d)%.(%d)')
 if tonumber(ver_major) <= 0 and (tonumber(ver_minor) < 8 or (tonumber(ver_minor) == 8 and tonumber(ver_patch) < 0)) then
-    error("lgi too old, need at least version 0.8.0")
+	error("lgi too old, need at least version 0.8.0")
 end
 
 local surface       = { mt = {} }
 local surface_cache = setmetatable({}, { __mode = 'v' })
 
 local function get_default(arg)
-    if type(arg) == 'nil' then
-        return cairo.ImageSurface(cairo.Format.ARGB32, 0, 0)
-    end
-    return arg
+	if type(arg) == 'nil' then
+		return cairo.ImageSurface(cairo.Format.ARGB32, 0, 0)
+	end
+	return arg
 end
 
 --- Try to convert the argument into an lgi cairo surface.
@@ -37,30 +37,30 @@ end
 -- @return The loaded surface, or the replacement default
 -- @return An error message, or nil on success
 function surface.load_uncached_silently(_surface, default)
-    -- On nil, return some sane default
-    if not _surface then
-        return get_default(default)
-    end
-    -- lgi cairo surfaces don't get changed either
-    if cairo.Surface:is_type_of(_surface) then
-        return _surface
-    end
-    -- Strings are assumed to be file names and get loaded
-    if type(_surface) == "string" then
-        local pixbuf, err = GdkPixbuf.Pixbuf.new_from_file(_surface)
-        if not pixbuf then
-            return get_default(default), tostring(err)
-        end
-        _surface = capi.awesome.pixbuf_to_surface(pixbuf._native, _surface)
+	-- On nil, return some sane default
+	if not _surface then
+		return get_default(default)
+	end
+	-- lgi cairo surfaces don't get changed either
+	if cairo.Surface:is_type_of(_surface) then
+		return _surface
+	end
+	-- Strings are assumed to be file names and get loaded
+	if type(_surface) == "string" then
+		local pixbuf, err = GdkPixbuf.Pixbuf.new_from_file(_surface)
+		if not pixbuf then
+			return get_default(default), tostring(err)
+		end
+		_surface = capi.awesome.pixbuf_to_surface(pixbuf._native, _surface)
 
-        -- The shims implement load_image() to return a surface directly,
-        -- instead of a lightuserdatum.
-        if cairo.Surface:is_type_of(_surface) then
-            return _surface
-        end
-    end
-    -- Everything else gets forced into a surface
-    return cairo.Surface(_surface, true)
+		-- The shims implement load_image() to return a surface directly,
+		-- instead of a lightuserdatum.
+		if cairo.Surface:is_type_of(_surface) then
+			return _surface
+		end
+	end
+	-- Everything else gets forced into a surface
+	return cairo.Surface(_surface, true)
 end
 
 --- Try to convert the argument into an lgi cairo surface.
@@ -73,32 +73,32 @@ end
 -- nil.
 -- @return An error message, or nil on success
 function surface.load_silently(_surface, default)
-    if type(_surface) == "string" then
-        local cache = surface_cache[_surface]
-        if cache then
-            return cache
-        end
-        local result, err = surface.load_uncached_silently(_surface, default)
-        if not err then
-            -- Cache the file
-            surface_cache[_surface] = result
-        end
-        return result, err
-    end
-    return surface.load_uncached_silently(_surface, default)
+	if type(_surface) == "string" then
+		local cache = surface_cache[_surface]
+		if cache then
+			return cache
+		end
+		local result, err = surface.load_uncached_silently(_surface, default)
+		if not err then
+			-- Cache the file
+			surface_cache[_surface] = result
+		end
+		return result, err
+	end
+	return surface.load_uncached_silently(_surface, default)
 end
 
 local function do_load_and_handle_errors(_surface, func)
-    if type(_surface) == 'nil' then
-        return get_default()
-    end
-    local result, err = func(_surface, false)
-    if result then
-        return result
-    end
-    gdebug.print_error(debug.traceback(
-            "Failed to load '" .. tostring(_surface) .. "': " .. tostring(err)))
-    return get_default()
+	if type(_surface) == 'nil' then
+		return get_default()
+	end
+	local result, err = func(_surface, false)
+	if result then
+		return result
+	end
+	gdebug.print_error(debug.traceback(
+			"Failed to load '" .. tostring(_surface) .. "': " .. tostring(err)))
+	return get_default()
 end
 
 --- Try to convert the argument into an lgi cairo surface.
@@ -107,7 +107,7 @@ end
 -- @param _surface The surface to load or nil
 -- @return The loaded surface, or nil
 function surface.load_uncached(_surface)
-    return do_load_and_handle_errors(_surface, surface.load_uncached_silently)
+	return do_load_and_handle_errors(_surface, surface.load_uncached_silently)
 end
 
 --- Try to convert the argument into an lgi cairo surface.
@@ -116,20 +116,20 @@ end
 -- @param _surface The surface to load or nil
 -- @return The loaded surface, or nil
 function surface.load(_surface)
-    return do_load_and_handle_errors(_surface, surface.load_silently)
+	return do_load_and_handle_errors(_surface, surface.load_silently)
 end
 
 function surface.mt.__call(_, ...)
-    return surface.load(...)
+	return surface.load(...)
 end
 
 --- Get the size of a cairo surface
 -- @param surf The surface you are interested in
 -- @return The surface's width and height
 function surface.get_size(surf)
-    local cr         = cairo.Context(surf)
-    local x, y, w, h = cr:clip_extents()
-    return w - x, h - y
+	local cr         = cairo.Context(surf)
+	local x, y, w, h = cr:clip_extents()
+	return w - x, h - y
 end
 
 --- Create a copy of a cairo surface.
@@ -143,19 +143,19 @@ end
 -- @param s Source surface.
 -- @return The surface's duplicate.
 function surface.duplicate_surface(s)
-    s                = surface.load(s)
+	s                = surface.load(s)
 
-    -- Figure out surface size (this does NOT work for unbounded recording surfaces)
-    local cr         = cairo.Context(s)
-    local x, y, w, h = cr:clip_extents()
+	-- Figure out surface size (this does NOT work for unbounded recording surfaces)
+	local cr         = cairo.Context(s)
+	local x, y, w, h = cr:clip_extents()
 
-    -- Create a copy
-    local result     = s:create_similar(s.content, w - x, h - y)
-    cr               = cairo.Context(result)
-    cr:set_source_surface(s, 0, 0)
-    cr.operator = cairo.Operator.SOURCE
-    cr:paint()
-    return result
+	-- Create a copy
+	local result     = s:create_similar(s.content, w - x, h - y)
+	cr               = cairo.Context(result)
+	cr:set_source_surface(s, 0, 0)
+	cr.operator = cairo.Operator.SOURCE
+	cr:paint()
+	return result
 end
 
 --- Create a surface from a `gears.shape`
@@ -167,21 +167,21 @@ end
 -- @param[opt=transparent] bg_color The surface background color
 -- @treturn cairo.surface the new surface
 function surface.load_from_shape(width, height, shape, shape_color, bg_color, ...)
-    color     = color or require("gears.color")
+	color     = color or require("gears.color")
 
-    local img = cairo.ImageSurface(cairo.Format.ARGB32, width, height)
-    local cr  = cairo.Context(img)
+	local img = cairo.ImageSurface(cairo.Format.ARGB32, width, height)
+	local cr  = cairo.Context(img)
 
-    cr:set_source(color(bg_color or "#00000000"))
-    cr:paint()
+	cr:set_source(color(bg_color or "#00000000"))
+	cr:paint()
 
-    cr:set_source(color(shape_color or "#000000"))
+	cr:set_source(color(shape_color or "#000000"))
 
-    shape(cr, width, height, ...)
+	shape(cr, width, height, ...)
 
-    cr:fill()
+	cr:fill()
 
-    return img
+	return img
 end
 
 --- Apply a shape to a client or a wibox.
@@ -193,32 +193,32 @@ end
 --   width and height as parameter.
 -- @param[opt] Any additional parameters will be passed to the shape function
 function surface.apply_shape_bounding(draw, shape, ...)
-    local geo = draw:geometry()
+	local geo = draw:geometry()
 
-    local img = cairo.ImageSurface(cairo.Format.A1, geo.width, geo.height)
-    local cr  = cairo.Context(img)
+	local img = cairo.ImageSurface(cairo.Format.A1, geo.width, geo.height)
+	local cr  = cairo.Context(img)
 
-    cr:set_operator(cairo.Operator.CLEAR)
-    cr:set_source_rgba(0, 0, 0, 1)
-    cr:paint()
-    cr:set_operator(cairo.Operator.SOURCE)
-    cr:set_source_rgba(1, 1, 1, 1)
+	cr:set_operator(cairo.Operator.CLEAR)
+	cr:set_source_rgba(0, 0, 0, 1)
+	cr:paint()
+	cr:set_operator(cairo.Operator.SOURCE)
+	cr:set_source_rgba(1, 1, 1, 1)
 
-    shape(cr, geo.width, geo.height, ...)
+	shape(cr, geo.width, geo.height, ...)
 
-    cr:fill()
+	cr:fill()
 
-    draw.shape_bounding = img._native
-    img:finish()
+	draw.shape_bounding = img._native
+	img:finish()
 end
 
 local function no_op() end
 
 local function run_in_hierarchy(self, cr, width, height)
-    local context = { dpi = 96 }
-    local h       = hierarchy.new(context, self, width, height, no_op, no_op, {})
-    h:draw(context, cr)
-    return h
+	local context = { dpi = 96 }
+	local h       = hierarchy.new(context, self, width, height, no_op, no_op, {})
+	h:draw(context, cr)
+	return h
 end
 
 --- Create an SVG file with this widget content.
@@ -232,12 +232,12 @@ end
 -- @return The cairo surface
 -- @return The hierarchy
 function surface.widget_to_svg(widget, path, width, height)
-    gdebug.deprecate("Use wibox.widget.draw_to_svg_file instead of " ..
-            "gears.surface.render_to_svg", { deprecated_in = 5 })
-    local img = cairo.SvgSurface.create(path, width, height)
-    local cr  = cairo.Context(img)
+	gdebug.deprecate("Use wibox.widget.draw_to_svg_file instead of " ..
+			"gears.surface.render_to_svg", { deprecated_in = 5 })
+	local img = cairo.SvgSurface.create(path, width, height)
+	local cr  = cairo.Context(img)
 
-    return img, run_in_hierarchy(widget, cr, width, height)
+	return img, run_in_hierarchy(widget, cr, width, height)
 end
 
 --- Create a cairo surface with this widget content.
@@ -251,12 +251,12 @@ end
 -- @return The cairo surface
 -- @return The hierarchy
 function surface.widget_to_surface(widget, width, height, format)
-    gdebug.deprecate("Use wibox.widget.draw_to_image_surface instead of " ..
-            "gears.surface.render_to_surface", { deprecated_in = 5 })
-    local img = cairo.ImageSurface(format or cairo.Format.ARGB32, width, height)
-    local cr  = cairo.Context(img)
+	gdebug.deprecate("Use wibox.widget.draw_to_image_surface instead of " ..
+			"gears.surface.render_to_surface", { deprecated_in = 5 })
+	local img = cairo.ImageSurface(format or cairo.Format.ARGB32, width, height)
+	local cr  = cairo.Context(img)
 
-    return img, run_in_hierarchy(widget, cr, width, height)
+	return img, run_in_hierarchy(widget, cr, width, height)
 end
 
 return setmetatable(surface, surface.mt)

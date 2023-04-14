@@ -22,14 +22,14 @@ intptr_t ngx_atoi(const unsigned char *line, size_t n);
 local str_type = ffi.typeof("uint8_t[?]")
 
 function _M.to_hex(s)
-    local len = #s * 2
-    local buf = ffi_new(str_type, len)
-    C.ngx_hex_dump(buf, s, #s)
-    return ffi_str(buf, len)
+	local len = #s * 2
+	local buf = ffi_new(str_type, len)
+	C.ngx_hex_dump(buf, s, #s)
+	return ffi_str(buf, len)
 end
 
 function _M.atoi(s)
-    return tonumber(C.ngx_atoi(s, #s))
+	return tonumber(C.ngx_atoi(s, #s))
 end
 
 return _M

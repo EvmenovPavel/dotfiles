@@ -529,20 +529,20 @@ local notification = {}
 -- @emitstparam destroyed boolean keep_visible If the notification should be kept.
 -- @see naughty.notification_closed_reason
 function notification:destroy(reason, keep_visible)
-    if self._private.is_destroyed then
-        gdebug.print_warning("Trying to destroy the same notification twice. It" ..
-                " was destroyed because: " .. self._private.destroy_reason)
-        return false
-    end
+	if self._private.is_destroyed then
+		gdebug.print_warning("Trying to destroy the same notification twice. It" ..
+				" was destroyed because: " .. self._private.destroy_reason)
+		return false
+	end
 
-    reason = reason or cst.notification_closed_reason.dismissed_by_user
+	reason = reason or cst.notification_closed_reason.dismissed_by_user
 
-    self:emit_signal("destroyed", reason, keep_visible)
+	self:emit_signal("destroyed", reason, keep_visible)
 
-    self._private.is_destroyed   = true
-    self._private.destroy_reason = reason
+	self._private.is_destroyed   = true
+	self._private.destroy_reason = reason
 
-    return true
+	return true
 end
 
 --- Set new notification timeout.
@@ -550,312 +550,312 @@ end
 -- @tparam number new_timeout Time in seconds after which notification disappears.
 -- @noreturn
 function notification:reset_timeout(new_timeout)
-    if self.timer then
-        self.timer:stop()
-    end
+	if self.timer then
+		self.timer:stop()
+	end
 
-    -- Do not set `self.timeout` to `self.timeout` since that would create the
-    -- timer before the constructor ends.
-    if new_timeout and self.timer then
-        self.timeout = new_timeout
-    elseif new_timeout and new_timeout ~= self._private.timeout then
-        local previous_timer = self._private.timeout
-        timer.delayed_call(function()
-            if self._private.timeout == previous_timer then
-                self.timeout = new_timeout
-            end
-        end)
-    end
+	-- Do not set `self.timeout` to `self.timeout` since that would create the
+	-- timer before the constructor ends.
+	if new_timeout and self.timer then
+		self.timeout = new_timeout
+	elseif new_timeout and new_timeout ~= self._private.timeout then
+		local previous_timer = self._private.timeout
+		timer.delayed_call(function()
+			if self._private.timeout == previous_timer then
+				self.timeout = new_timeout
+			end
+		end)
+	end
 
-    if self.timer and not self.timer.started then
-        self.timer:start()
-    end
+	if self.timer and not self.timer.started then
+		self.timer:start()
+	end
 end
 
 function notification:set_id(new_id)
-    assert(self._private.id == nil, "Notification identifier can only be set once")
-    self._private.id = new_id
-    self:emit_signal("property::id", new_id)
+	assert(self._private.id == nil, "Notification identifier can only be set once")
+	self._private.id = new_id
+	self:emit_signal("property::id", new_id)
 end
 
 -- Return true if `self` is suspended.
 local function get_suspended(self)
-    return naughty.suspended and (not self._private.ignore_suspend)
+	return naughty.suspended and (not self._private.ignore_suspend)
 end
 
 function notification:set_timeout(timeout)
-    timeout   = timeout or 0
+	timeout   = timeout or 0
 
-    local die = function(reason)
-        if reason == cst.notification_closed_reason.expired then
-            self.is_expired = true
-            if naughty.expiration_paused then
-                table.insert(naughty.notifications._expired[1], self)
-                return
-            end
-        end
+	local die = function(reason)
+		if reason == cst.notification_closed_reason.expired then
+			self.is_expired = true
+			if naughty.expiration_paused then
+				table.insert(naughty.notifications._expired[1], self)
+				return
+			end
+		end
 
-        self:destroy(reason)
-    end
+		self:destroy(reason)
+	end
 
-    if self.timer and self._private.timeout == timeout then
-        return
-    end
+	if self.timer and self._private.timeout == timeout then
+		return
+	end
 
-    -- 0 == never
-    if timeout > 0 then
-        local timer_die = timer { timeout = timeout }
+	-- 0 == never
+	if timeout > 0 then
+		local timer_die = timer { timeout = timeout }
 
-        timer_die:connect_signal("timeout", function()
-            pcall(die, cst.notification_closed_reason.expired)
+		timer_die:connect_signal("timeout", function()
+			pcall(die, cst.notification_closed_reason.expired)
 
-            -- Prevent infinite timers events on errors.
-            if timer_die.started then
-                timer_die:stop()
-            end
-        end)
+			-- Prevent infinite timers events on errors.
+			if timer_die.started then
+				timer_die:stop()
+			end
+		end)
 
-        --FIXME there's still a dependency loop to fix before it works
-        if not get_suspended(self) then
-            timer_die:start()
-        end
+		--FIXME there's still a dependency loop to fix before it works
+		if not get_suspended(self) then
+			timer_die:start()
+		end
 
-        -- Prevent a memory leak and the accumulation of active timers
-        if self.timer and self.timer.started then
-            self.timer:stop()
-        end
+		-- Prevent a memory leak and the accumulation of active timers
+		if self.timer and self.timer.started then
+			self.timer:stop()
+		end
 
-        self.timer = timer_die
-    end
+		self.timer = timer_die
+	end
 
-    self.die              = die
-    self._private.timeout = timeout
-    self:emit_signal("property::timeout", timeout)
+	self.die              = die
+	self._private.timeout = timeout
+	self:emit_signal("property::timeout", timeout)
 end
 
 function notification:get_message()
-    -- This property was called "text" in older versions.
-    -- Some modules like `lain` abused of the presets (they
-    -- had little choice at the time) to set the message on
-    -- an existing popup.
-    local p       = rawget(self, "preset") or {}
-    local message = self._private.message or p.message or ""
+	-- This property was called "text" in older versions.
+	-- Some modules like `lain` abused of the presets (they
+	-- had little choice at the time) to set the message on
+	-- an existing popup.
+	local p       = rawget(self, "preset") or {}
+	local message = self._private.message or p.message or ""
 
-    if message == "" and p.text and p.text ~= "" then
-        gdebug.deprecate(
-                "Using the preset configuration to set the notification " ..
-                        "message is not supported. Please use `n.message = 'text'`.",
-                { deprecated_in = 5 }
-        )
+	if message == "" and p.text and p.text ~= "" then
+		gdebug.deprecate(
+				"Using the preset configuration to set the notification " ..
+						"message is not supported. Please use `n.message = 'text'`.",
+				{ deprecated_in = 5 }
+		)
 
-        return p.text
-    end
+		return p.text
+	end
 
-    return message
+	return message
 end
 
 function notification:set_text(txt)
-    gdebug.deprecate(
-            "The `text` attribute is deprecated, use `message`",
-            { deprecated_in = 5 }
-    )
-    self:set_message(txt)
+	gdebug.deprecate(
+			"The `text` attribute is deprecated, use `message`",
+			{ deprecated_in = 5 }
+	)
+	self:set_message(txt)
 end
 
 function notification:get_text()
-    gdebug.deprecate(
-            "The `text` attribute is deprecated, use `message`",
-            { deprecated_in = 5 }
-    )
-    return self:get_message()
+	gdebug.deprecate(
+			"The `text` attribute is deprecated, use `message`",
+			{ deprecated_in = 5 }
+	)
+	return self:get_message()
 end
 
 local properties = {
-    "message", "title", "timeout", "hover_timeout",
-    "app_name", "position", "ontop", "border_width",
-    "width", "font", "icon", "icon_size",
-    "fg", "bg", "height", "border_color",
-    "shape", "opacity", "margin", "ignore_suspend",
-    "destroy", "preset", "callback", "actions",
-    "run", "id", "ignore", "auto_reset_timeout",
-    "urgency", "image", "images", "widget_template",
-    "max_width", "app_icon",
+	"message", "title", "timeout", "hover_timeout",
+	"app_name", "position", "ontop", "border_width",
+	"width", "font", "icon", "icon_size",
+	"fg", "bg", "height", "border_color",
+	"shape", "opacity", "margin", "ignore_suspend",
+	"destroy", "preset", "callback", "actions",
+	"run", "id", "ignore", "auto_reset_timeout",
+	"urgency", "image", "images", "widget_template",
+	"max_width", "app_icon",
 }
 
 for _, prop in ipairs(properties) do
-    notification["get_" .. prop] = notification["get_" .. prop] or function(self)
-        -- It's possible this could be called from the `request::preset` handler.
-        -- `rawget()` is necessary to avoid a stack overflow.
-        local preset = rawget(self, "preset")
+	notification["get_" .. prop] = notification["get_" .. prop] or function(self)
+		-- It's possible this could be called from the `request::preset` handler.
+		-- `rawget()` is necessary to avoid a stack overflow.
+		local preset = rawget(self, "preset")
 
-        return self._private[prop]
-                or (preset and preset[prop])
-                or cst.config.defaults[prop]
-    end
+		return self._private[prop]
+				or (preset and preset[prop])
+				or cst.config.defaults[prop]
+	end
 
-    notification["set_" .. prop] = notification["set_" .. prop] or function(self, value)
-        self._private[prop] = value
-        self:emit_signal("property::" .. prop, value)
+	notification["set_" .. prop] = notification["set_" .. prop] or function(self, value)
+		self._private[prop] = value
+		self:emit_signal("property::" .. prop, value)
 
-        -- When a notification is updated over dbus or by setting a property,
-        -- it is usually convenient to reset the timeout.
-        local reset = ((not self.suspended) or self._private.ignore_suspend)
-                and self.auto_reset_timeout ~= false
-                and naughty.auto_reset_timeout
+		-- When a notification is updated over dbus or by setting a property,
+		-- it is usually convenient to reset the timeout.
+		local reset = ((not self.suspended) or self._private.ignore_suspend)
+				and self.auto_reset_timeout ~= false
+				and naughty.auto_reset_timeout
 
-        if reset then
-            self:reset_timeout()
-        end
-    end
+		if reset then
+			self:reset_timeout()
+		end
+	end
 
 end
 
 -- Changing the image will change the icon, make sure property::icon is emitted.
 for _, prop in ipairs { "image", "images" } do
-    local cur                    = notification["set_" .. prop]
+	local cur                    = notification["set_" .. prop]
 
-    notification["set_" .. prop] = function(self, value)
-        cur(self, value)
-        self._private.icon = nil
-        self:emit_signal("property::icon")
-    end
+	notification["set_" .. prop] = function(self, value)
+		cur(self, value)
+		self._private.icon = nil
+		self:emit_signal("property::icon")
+	end
 end
 
 local hints_default = {
-    urgency  = "normal",
-    resident = false,
+	urgency  = "normal",
+	resident = false,
 }
 
 for _, prop in ipairs { "category", "resident" } do
-    notification["get_" .. prop] = notification["get_" .. prop] or function(self)
-        return self._private[prop] or (
-                self._private.freedesktop_hints and self._private.freedesktop_hints[prop]
-        ) or hints_default[prop]
-    end
+	notification["get_" .. prop] = notification["get_" .. prop] or function(self)
+		return self._private[prop] or (
+				self._private.freedesktop_hints and self._private.freedesktop_hints[prop]
+		) or hints_default[prop]
+	end
 
-    notification["set_" .. prop] = notification["set_" .. prop] or function(self, value)
-        self._private[prop] = value
-        self:emit_signal("property::" .. prop, value)
-    end
+	notification["set_" .. prop] = notification["set_" .. prop] or function(self, value)
+		self._private[prop] = value
+		self:emit_signal("property::" .. prop, value)
+	end
 end
 
 -- Stop the request::icon when one is found.
 local function request_filter(self, context, _)
-    if not pcommon.check(self, "notification", "icon", context) then
-        return true
-    end
-    if self._private.icon then
-        return true
-    end
+	if not pcommon.check(self, "notification", "icon", context) then
+		return true
+	end
+	if self._private.icon then
+		return true
+	end
 end
 
 -- Convert encoded local URI to Unix paths.
 local function check_path(input)
-    if type(input) ~= "string" then
-        return nil
-    end
+	if type(input) ~= "string" then
+		return nil
+	end
 
-    if input:sub(1, 7) == "file://" then
-        input = input:sub(8)
-    end
+	if input:sub(1, 7) == "file://" then
+		input = input:sub(8)
+	end
 
-    -- urldecode
-    input = input:gsub("%%(%x%x)", function(x)
-        return string.char(tonumber(x, 16))
-    end)
+	-- urldecode
+	input = input:gsub("%%(%x%x)", function(x)
+		return string.char(tonumber(x, 16))
+	end)
 
-    return gfs.file_readable(input) and input or nil
+	return gfs.file_readable(input) and input or nil
 end
 
 function notification.get_icon(self)
-    -- Honor all overrides.
-    if self._private.icon then
-        return self._private.icon == "" and nil or self._private.icon
-    end
+	-- Honor all overrides.
+	if self._private.icon then
+		return self._private.icon == "" and nil or self._private.icon
+	end
 
-    -- First, check if the image is passed as a surface or a path.
-    if self.image and self.image ~= "" then
-        naughty._emit_signal_if("request::icon", request_filter, self, "image", {
-            image = self.image
-        })
-    elseif self.images then
-        naughty._emit_signal_if("request::icon", request_filter, self, "images", {
-            images = self.images
-        })
-    end
+	-- First, check if the image is passed as a surface or a path.
+	if self.image and self.image ~= "" then
+		naughty._emit_signal_if("request::icon", request_filter, self, "image", {
+			image = self.image
+		})
+	elseif self.images then
+		naughty._emit_signal_if("request::icon", request_filter, self, "images", {
+			images = self.images
+		})
+	end
 
-    if self._private.icon then
-        return self._private.icon == "" and nil or self._private.icon
-    end
+	if self._private.icon then
+		return self._private.icon == "" and nil or self._private.icon
+	end
 
-    -- Second level of fallback, icon paths.
-    local path = check_path(self._private.app_icon)
+	-- Second level of fallback, icon paths.
+	local path = check_path(self._private.app_icon)
 
-    if path then
-        naughty._emit_signal_if("request::icon", request_filter, self, "path", {
-            path = path
-        })
-    end
+	if path then
+		naughty._emit_signal_if("request::icon", request_filter, self, "path", {
+			path = path
+		})
+	end
 
-    if self._private.icon then
-        return self._private.icon == "" and nil or self._private.icon
-    end
+	if self._private.icon then
+		return self._private.icon == "" and nil or self._private.icon
+	end
 
-    -- Third level fallback is `app_icon`.
-    if self._private.app_icon then
-        naughty._emit_signal_if("request::icon", request_filter, self, "app_icon", {
-            app_icon = self._private.app_icon
-        })
-    end
+	-- Third level fallback is `app_icon`.
+	if self._private.app_icon then
+		naughty._emit_signal_if("request::icon", request_filter, self, "app_icon", {
+			app_icon = self._private.app_icon
+		})
+	end
 
-    -- Finally, the clients.
-    naughty._emit_signal_if("request::icon", request_filter, self, "clients", {})
+	-- Finally, the clients.
+	naughty._emit_signal_if("request::icon", request_filter, self, "clients", {})
 
-    return self._private.icon == "" and nil or self._private.icon
+	return self._private.icon == "" and nil or self._private.icon
 end
 
 function notification.get_clients(self)
-    -- Clients from the future don't send notification, it's useless to reload
-    -- the list over and over.
-    if self._private.clients then
-        return self._private.clients
-    end
+	-- Clients from the future don't send notification, it's useless to reload
+	-- the list over and over.
+	if self._private.clients then
+		return self._private.clients
+	end
 
-    if not self._private._unique_sender then
-        return {}
-    end
+	if not self._private._unique_sender then
+		return {}
+	end
 
-    self._private.clients = require("lib.naughty.dbus").get_clients(self)
+	self._private.clients = require("lib.naughty.dbus").get_clients(self)
 
-    return self._private.clients
+	return self._private.clients
 end
 
 function notification.set_actions(self, new_actions)
-    for _, a in ipairs(self._private.actions or {}) do
-        a:disconnect_signal("_changed", self._private.action_cb)
-        a:disconnect_signal("invoked", self._private.invoked_cb)
-    end
+	for _, a in ipairs(self._private.actions or {}) do
+		a:disconnect_signal("_changed", self._private.action_cb)
+		a:disconnect_signal("invoked", self._private.invoked_cb)
+	end
 
-    -- Clone so `append_actions` doesn't add unwanted actions to other
-    -- notifications.
-    self._private.actions = gtable.clone(new_actions, false)
+	-- Clone so `append_actions` doesn't add unwanted actions to other
+	-- notifications.
+	self._private.actions = gtable.clone(new_actions, false)
 
-    for _, a in ipairs(self._private.actions or {}) do
-        a:connect_signal("_changed", self._private.action_cb)
-        a:connect_signal("invoked", self._private.invoked_cb)
-    end
+	for _, a in ipairs(self._private.actions or {}) do
+		a:connect_signal("_changed", self._private.action_cb)
+		a:connect_signal("invoked", self._private.invoked_cb)
+	end
 
-    self:emit_signal("property::actions", new_actions)
+	self:emit_signal("property::actions", new_actions)
 
-    -- When a notification is updated over dbus or by setting a property,
-    -- it is usually convenient to reset the timeout.
-    local reset = (not get_suspended(self))
-            and self.auto_reset_timeout ~= false
-            and naughty.auto_reset_timeout
+	-- When a notification is updated over dbus or by setting a property,
+	-- it is usually convenient to reset the timeout.
+	local reset = (not get_suspended(self))
+			and self.auto_reset_timeout ~= false
+			and naughty.auto_reset_timeout
 
-    if reset then
-        self:reset_timeout()
-    end
+	if reset then
+		self:reset_timeout()
+	end
 end
 
 --- Add more actions to the notification.
@@ -864,77 +864,77 @@ end
 -- @noreturn
 
 function notification:append_actions(new_actions)
-    self._private.actions = self._private.actions or {}
+	self._private.actions = self._private.actions or {}
 
-    for _, a in ipairs(new_actions or {}) do
-        a:connect_signal("_changed", self._private.action_cb)
-        a:connect_signal("invoked", self._private.invoked_cb)
-        table.insert(self._private.actions, a)
-    end
+	for _, a in ipairs(new_actions or {}) do
+		a:connect_signal("_changed", self._private.action_cb)
+		a:connect_signal("invoked", self._private.invoked_cb)
+		table.insert(self._private.actions, a)
+	end
 
 end
 
 function notification:set_screen(s)
-    assert(not self._private.screen)
+	assert(not self._private.screen)
 
-    s = s and capi.screen[s] or nil
+	s = s and capi.screen[s] or nil
 
-    -- Avoid an infinite loop in the management code.
-    if s == self._private.weak_screen[1] then
-        return
-    end
+	-- Avoid an infinite loop in the management code.
+	if s == self._private.weak_screen[1] then
+		return
+	end
 
-    self._private.weak_screen = setmetatable({ s }, { __mode = "v" })
+	self._private.weak_screen = setmetatable({ s }, { __mode = "v" })
 
-    self:emit_signal("property::screen", s)
+	self:emit_signal("property::screen", s)
 end
 
 function notification:get_screen()
-    return self._private.weak_screen[1]
+	return self._private.weak_screen[1]
 end
 
 --TODO v6: remove this
 local function convert_actions(actions)
-    gdebug.deprecate(
-            "The notification actions should now be of type `naughty.action`, " ..
-                    "not strings or callback functions",
-            { deprecated_in = 5 }
-    )
+	gdebug.deprecate(
+			"The notification actions should now be of type `naughty.action`, " ..
+					"not strings or callback functions",
+			{ deprecated_in = 5 }
+	)
 
-    local naction     = require("lib.naughty.action")
+	local naction     = require("lib.naughty.action")
 
-    local new_actions = {}
+	local new_actions = {}
 
-    -- Does not attempt to handle when there is a mix of strings and objects
-    for idx, name in pairs(actions) do
-        local cb, old_idx = nil, idx
+	-- Does not attempt to handle when there is a mix of strings and objects
+	for idx, name in pairs(actions) do
+		local cb, old_idx = nil, idx
 
-        if type(name) == "function" then
-            cb = name
-        end
+		if type(name) == "function" then
+			cb = name
+		end
 
-        if type(idx) == "string" then
-            name, idx = idx, #actions + 1
-        end
+		if type(idx) == "string" then
+			name, idx = idx, #actions + 1
+		end
 
-        local a = naction {
-            position = idx,
-            name     = name,
-        }
+		local a = naction {
+			position = idx,
+			name     = name,
+		}
 
-        if cb then
-            a:connect_signal("invoked", cb)
-        end
+		if cb then
+			a:connect_signal("invoked", cb)
+		end
 
-        new_actions[old_idx] = a
-    end
+		new_actions[old_idx] = a
+	end
 
-    -- Yes, it modifies `args`, this is legacy code, cloning the args
-    -- just for this isn't worth it.
-    for old_idx, a in pairs(new_actions) do
-        actions[a.position] = a
-        actions[old_idx]    = nil
-    end
+	-- Yes, it modifies `args`, this is legacy code, cloning the args
+	-- just for this isn't worth it.
+	for old_idx, a in pairs(new_actions) do
+		actions[a.position] = a
+		actions[old_idx]    = nil
+	end
 end
 
 -- The old API used monkey-patched variable presets.
@@ -943,33 +943,33 @@ end
 -- doing anything without stepping on each other foot. In the background,
 -- presets were selected with a rule-like API anyway.
 local function select_legacy_preset(n, args)
-    for _, obj in pairs(cst.config.mapping) do
-        local filter, preset = obj[1], obj[2]
-        if (not filter.urgency or filter.urgency == args.urgency) and
-                (not filter.category or filter.category == args.category) and
-                (not filter.appname or filter.appname == args.appname) then
-            args.preset = gtable.join(args.preset or {}, preset)
-        end
-    end
+	for _, obj in pairs(cst.config.mapping) do
+		local filter, preset = obj[1], obj[2]
+		if (not filter.urgency or filter.urgency == args.urgency) and
+				(not filter.category or filter.category == args.category) and
+				(not filter.appname or filter.appname == args.appname) then
+			args.preset = gtable.join(args.preset or {}, preset)
+		end
+	end
 
-    -- gather variables together
-    rawset(n, "preset", gtable.join(
-            cst.config.defaults or {},
-            args.preset or cst.config.presets.normal or {},
-            rawget(n, "preset") or {}
-    ))
+	-- gather variables together
+	rawset(n, "preset", gtable.join(
+			cst.config.defaults or {},
+			args.preset or cst.config.presets.normal or {},
+			rawget(n, "preset") or {}
+	))
 
-    for k, v in pairs(n.preset) do
-        -- Don't keep a strong reference to the screen, Lua 5.1 GC wont be
-        -- smart enough to unwind the mess of circular weak references.
-        if k ~= "screen" then
-            n._private[k] = v
-        end
-    end
+	for k, v in pairs(n.preset) do
+		-- Don't keep a strong reference to the screen, Lua 5.1 GC wont be
+		-- smart enough to unwind the mess of circular weak references.
+		if k ~= "screen" then
+			n._private[k] = v
+		end
+	end
 
-    if n.preset.screen then
-        n._private.weak_screen[1] = capi.screen[n.preset.screen]
-    end
+	if n.preset.screen then
+		n._private.weak_screen[1] = capi.screen[n.preset.screen]
+	end
 end
 
 --- Create a notification.
@@ -1020,186 +1020,186 @@ end
 -- }
 
 local function create(args)
-    if cst.config.notify_callback then
-        args = cst.config.notify_callback(args)
-        if not args then
-            return
-        end
-    end
+	if cst.config.notify_callback then
+		args = cst.config.notify_callback(args)
+		if not args then
+			return
+		end
+	end
 
-    assert(not args.id, "Identifiers cannot be specified externally")
+	assert(not args.id, "Identifiers cannot be specified externally")
 
-    args      = args or {}
+	args      = args or {}
 
-    local ret = gobject {
-        enable_properties = true,
-    }
+	local ret = gobject {
+		enable_properties = true,
+	}
 
-    if args.replaces_id then
-        -- Try to update existing objects when possible
-        local obj = naughty.get_by_id(args.replaces_id)
-        if obj then
-            if not obj._private._unique_sender then
-                -- If this happens, the notification is either trying to
-                -- highjack content created within AwesomeWM or it is garbage
-                -- to begin with.
-                gdebug.print_warning(
-                        "A notification has been received, but tried to update " ..
-                                "the content of a notification it does not own."
-                )
-            elseif obj._private._unique_sender ~= args.sender then
-                -- Nothing says you cannot and some scripts may do it
-                -- accidentally, but this is rather unexpected.
-                gdebug.print_warning(
-                        "Notification " .. obj.title .. " is being updated" ..
-                                "by a different DBus connection (" .. args.sender .. "), this is " ..
-                                "suspicious. The original connection was " ..
-                                obj._private._unique_sender
-                )
-            end
+	if args.replaces_id then
+		-- Try to update existing objects when possible
+		local obj = naughty.get_by_id(args.replaces_id)
+		if obj then
+			if not obj._private._unique_sender then
+				-- If this happens, the notification is either trying to
+				-- highjack content created within AwesomeWM or it is garbage
+				-- to begin with.
+				gdebug.print_warning(
+						"A notification has been received, but tried to update " ..
+								"the content of a notification it does not own."
+				)
+			elseif obj._private._unique_sender ~= args.sender then
+				-- Nothing says you cannot and some scripts may do it
+				-- accidentally, but this is rather unexpected.
+				gdebug.print_warning(
+						"Notification " .. obj.title .. " is being updated" ..
+								"by a different DBus connection (" .. args.sender .. "), this is " ..
+								"suspicious. The original connection was " ..
+								obj._private._unique_sender
+				)
+			end
 
-            for k, v in pairs(args) do
-                if k == "destroy" then
-                    k = "destroy_cb"
-                end
-                obj[k] = v
-            end
+			for k, v in pairs(args) do
+				if k == "destroy" then
+					k = "destroy_cb"
+				end
+				obj[k] = v
+			end
 
-            -- Update the icon if necessary.
-            if args.app_icon ~= obj._private.app_icon then
-                obj._private.app_icon = args.app_icon
+			-- Update the icon if necessary.
+			if args.app_icon ~= obj._private.app_icon then
+				obj._private.app_icon = args.app_icon
 
-                naughty._emit_signal_if(
-                        "request::icon", function()
-                            if obj._private.icon then
-                                return true
-                            end
-                        end, obj, "dbus_clear", {}
-                )
-            end
+				naughty._emit_signal_if(
+						"request::icon", function()
+							if obj._private.icon then
+								return true
+							end
+						end, obj, "dbus_clear", {}
+				)
+			end
 
-            -- Even if no property changed, restart the timeout.
-            obj:reset_timeout()
-            ret.reuse_box = obj.box
-        end
+			-- Even if no property changed, restart the timeout.
+			obj:reset_timeout()
+			ret.reuse_box = obj.box
+		end
 
-        -- ... may use its ID
-        if args.replaces_id <= naughty._gen_id() then
-            ret.id = args.replaces_id
-            require("gears.debug").print_warning("ret.id = args.replaces_id")
-            log:info("Ошибка, тут должно остановиться по идеи!")
-        else
-            -- Only set the sender for new notifications.
-            args._unique_sender = args.sender
+		-- ... may use its ID
+		if args.replaces_id <= naughty._gen_id() then
+			ret.id = args.replaces_id
+			require("gears.debug").print_warning("ret.id = args.replaces_id")
+			log:info("Ошибка, тут должно остановиться по идеи!")
+		else
+			-- Only set the sender for new notifications.
+			args._unique_sender = args.sender
 
-            -- get a brand new ID
-            ret.id              = naughty._gen_next_id()
-        end
-    else
-        -- Only set the sender for new notifications.
-        args._unique_sender = args.sender
-        -- get a brand new ID
-        ret.id              = naughty._gen_next_id()
-    end
+			-- get a brand new ID
+			ret.id              = naughty._gen_next_id()
+		end
+	else
+		-- Only set the sender for new notifications.
+		args._unique_sender = args.sender
+		-- get a brand new ID
+		ret.id              = naughty._gen_next_id()
+	end
 
-    -- Old actions usually have callbacks and names. But this isn't non
-    -- compliant with the spec. The spec has explicit ordering and optional
-    -- icons. The old format doesn't allow these metadata to be stored.
-    local is_old_action = args.actions and (
-            (args.actions[1] and type(args.actions[1]) == "string") or
-                    (type(next(args.actions)) == "string")
-    )
+	-- Old actions usually have callbacks and names. But this isn't non
+	-- compliant with the spec. The spec has explicit ordering and optional
+	-- icons. The old format doesn't allow these metadata to be stored.
+	local is_old_action = args.actions and (
+			(args.actions[1] and type(args.actions[1]) == "string") or
+					(type(next(args.actions)) == "string")
+	)
 
-    if args.text then
-        gdebug.deprecate(
-                "The `text` attribute is deprecated, use `message`",
-                { deprecated_in = 5 }
-        )
-        args.message = args.text
-    end
+	if args.text then
+		gdebug.deprecate(
+				"The `text` attribute is deprecated, use `message`",
+				{ deprecated_in = 5 }
+		)
+		args.message = args.text
+	end
 
-    assert(naughty.emit_signal)
-    -- Make sure all signals bubble up
-    ret:_connect_everything(naughty.emit_signal)
+	assert(naughty.emit_signal)
+	-- Make sure all signals bubble up
+	ret:_connect_everything(naughty.emit_signal)
 
-    -- Avoid modifying the original table
-    local private = { weak_screen = setmetatable({}, { __mode = "v" }) }
-    rawset(ret, "_private", private)
+	-- Avoid modifying the original table
+	local private = { weak_screen = setmetatable({}, { __mode = "v" }) }
+	rawset(ret, "_private", private)
 
-    -- Allow extensions to create override the preset with custom data
-    if not naughty._has_preset_handler then
-        select_legacy_preset(ret, args)
-    end
+	-- Allow extensions to create override the preset with custom data
+	if not naughty._has_preset_handler then
+		select_legacy_preset(ret, args)
+	end
 
-    if is_old_action then
-        convert_actions(args.actions)
-    end
+	if is_old_action then
+		convert_actions(args.actions)
+	end
 
-    for k, v in pairs(args) do
-        -- Don't keep a strong reference to the screen, Lua 5.1 GC wont be
-        -- smart enough to unwind the mess of circular weak references.
-        if k ~= "screen" then
-            private[k] = v
-        end
-    end
+	for k, v in pairs(args) do
+		-- Don't keep a strong reference to the screen, Lua 5.1 GC wont be
+		-- smart enough to unwind the mess of circular weak references.
+		if k ~= "screen" then
+			private[k] = v
+		end
+	end
 
-    -- It's an automatic property
-    ret.is_expired = false
+	-- It's an automatic property
+	ret.is_expired = false
 
-    gtable.crush(ret, notification, true)
+	gtable.crush(ret, notification, true)
 
-    -- Always emit property::actions when any of the action change to allow
-    -- some widgets to be updated without over complicated built-in tracking
-    -- of all options.
-    function ret._private.action_cb()
-        ret:emit_signal("property::actions")
-    end
+	-- Always emit property::actions when any of the action change to allow
+	-- some widgets to be updated without over complicated built-in tracking
+	-- of all options.
+	function ret._private.action_cb()
+		ret:emit_signal("property::actions")
+	end
 
-    -- Listen to action press and destroy non-resident notifications.
-    function ret._private.invoked_cb(a, notif)
-        if (not notif) or notif == ret then
-            ret:emit_signal("invoked", a)
+	-- Listen to action press and destroy non-resident notifications.
+	function ret._private.invoked_cb(a, notif)
+		if (not notif) or notif == ret then
+			ret:emit_signal("invoked", a)
 
-            if not ret.resident then
-                ret:destroy(cst.notification_closed_reason.dismissed_by_user)
-            end
-        end
-    end
+			if not ret.resident then
+				ret:destroy(cst.notification_closed_reason.dismissed_by_user)
+			end
+		end
+	end
 
-    -- notif.actions should not be nil to allow checking if there is actions
-    -- using the shorthand `if #notif.actions > 0 then`
-    private.actions = {}
-    if args.actions then
-        notification.set_actions(ret, args.actions, args)
-    end
+	-- notif.actions should not be nil to allow checking if there is actions
+	-- using the shorthand `if #notif.actions > 0 then`
+	private.actions = {}
+	if args.actions then
+		notification.set_actions(ret, args.actions, args)
+	end
 
-    -- The rules are attached to this.
-    if naughty._has_preset_handler then
-        naughty.emit_signal("request::preset", ret, "new", args)
-    end
+	-- The rules are attached to this.
+	if naughty._has_preset_handler then
+		naughty.emit_signal("request::preset", ret, "new", args)
+	end
 
-    -- Register the notification before requesting a widget
-    ret:emit_signal("new", args)
+	-- Register the notification before requesting a widget
+	ret:emit_signal("new", args)
 
-    -- Let all listeners handle the actual visual aspects
-    if (not ret.ignore) and ((not ret.preset) or ret.preset.ignore ~= true) and (not get_suspended(ret)) then
-        naughty.emit_signal("request::display", ret, "new", args)
-        naughty.emit_signal("request::fallback", ret, "new", args)
-    end
+	-- Let all listeners handle the actual visual aspects
+	if (not ret.ignore) and ((not ret.preset) or ret.preset.ignore ~= true) and (not get_suspended(ret)) then
+		naughty.emit_signal("request::display", ret, "new", args)
+		naughty.emit_signal("request::fallback", ret, "new", args)
+	end
 
-    -- Because otherwise the setter logic would not be executed
-    if ret._private.timeout then
-        ret:set_timeout(ret._private.timeout
-                or (ret.preset and ret.preset.timeout)
-                or cst.config.timeout
-        )
-    end
+	-- Because otherwise the setter logic would not be executed
+	if ret._private.timeout then
+		ret:set_timeout(ret._private.timeout
+				or (ret.preset and ret.preset.timeout)
+				or cst.config.timeout
+		)
+	end
 
-    ret:connect_signal("destroyed", function(_, r)
-        args.destroy(r)
-    end)
+	ret:connect_signal("destroyed", function(_, r)
+		args.destroy(r)
+	end)
 
-    return ret
+	return ret
 end
 
 --- Grant a permission for a notification.
@@ -1223,5 +1223,5 @@ pcommon.setup_grant(notification, "notification")
 --@DOC_object_COMMON@
 
 return setmetatable(notification, { __call = function(_, ...)
-    return create(...)
+	return create(...)
 end })

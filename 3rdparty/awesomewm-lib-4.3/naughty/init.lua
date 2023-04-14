@@ -6,7 +6,7 @@
 
 local naughty = require("naughty.core")
 if dbus then
-    naughty.dbus = require("naughty.dbus")
+	naughty.dbus = require("naughty.dbus")
 end
 
 return naughty

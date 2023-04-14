@@ -48,57 +48,57 @@ local cst     = require("lib.naughty.constants")
 --};
 
 local function question(app_name, title, text, app_icon)
-    naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.low)
+	naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.low)
 end
 
 local function information(app_name, title, text, app_icon)
-    naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.ok)
+	naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.ok)
 end
 
 local function warning(app_name, title, text, app_icon)
-    naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.error)
+	naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.error)
 end
 
 local function critical(app_name, title, text, app_icon)
-    naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.critical)
+	naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.critical)
 end
 
 local function error(app_name, title, text, app_icon)
-    naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.error)
+	naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.error)
 end
 
 local function about(app_name, title, text, app_icon)
-    naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.info)
+	naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.info)
 end
 
 local function new()
-    local ret = {}
+	local ret = {}
 
-    function ret:question(app_name, title, text, app_icon)
-        question(app_name, title, text, app_icon)
-    end
+	function ret:question(app_name, title, text, app_icon)
+		question(app_name, title, text, app_icon)
+	end
 
-    function ret:information(app_name, title, text, app_icon)
-        information(app_name, title, text, app_icon)
-    end
+	function ret:information(app_name, title, text, app_icon)
+		information(app_name, title, text, app_icon)
+	end
 
-    function ret:warning(app_name, title, text, app_icon)
-        warning(app_name, title, text, app_icon)
-    end
+	function ret:warning(app_name, title, text, app_icon)
+		warning(app_name, title, text, app_icon)
+	end
 
-    function ret:critical(app_name, title, text, app_icon)
-        critical(app_name, title, text, app_icon)
-    end
+	function ret:critical(app_name, title, text, app_icon)
+		critical(app_name, title, text, app_icon)
+	end
 
-    function ret:error(app_name, title, text, app_icon)
-        error(app_name, title, text, app_icon)
-    end
+	function ret:error(app_name, title, text, app_icon)
+		error(app_name, title, text, app_icon)
+	end
 
-    function ret:about(app_name, title, text, app_icon)
-        about(app_name, title, text, app_icon)
-    end
+	function ret:about(app_name, title, text, app_icon)
+		about(app_name, title, text, app_icon)
+	end
 
-    return ret
+	return ret
 end
 
 return new()

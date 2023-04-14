@@ -66,56 +66,56 @@ local flex   = {}
 -- @tparam number spacing Spacing between widgets.
 
 function flex:layout(_, width, height)
-    local result         = {}
-    local spacing        = self._private.spacing
-    local num            = #self._private.widgets
-    local total_spacing  = (spacing * (num - 1))
-    local spacing_widget = self._private.spacing_widget
-    local abspace        = math.abs(spacing)
-    local spoffset       = spacing < 0 and 0 or spacing
-    local is_y           = self._private.dir == "y"
-    local is_x           = not is_y
+	local result         = {}
+	local spacing        = self._private.spacing
+	local num            = #self._private.widgets
+	local total_spacing  = (spacing * (num - 1))
+	local spacing_widget = self._private.spacing_widget
+	local abspace        = math.abs(spacing)
+	local spoffset       = spacing < 0 and 0 or spacing
+	local is_y           = self._private.dir == "y"
+	local is_x           = not is_y
 
-    local space_per_item
-    if is_y then
-        space_per_item = height / num - total_spacing / num
-    else
-        space_per_item = width / num - total_spacing / num
-    end
+	local space_per_item
+	if is_y then
+		space_per_item = height / num - total_spacing / num
+	else
+		space_per_item = width / num - total_spacing / num
+	end
 
-    if self._private.max_widget_size then
-        space_per_item = math.min(space_per_item, self._private.max_widget_size)
-    end
+	if self._private.max_widget_size then
+		space_per_item = math.min(space_per_item, self._private.max_widget_size)
+	end
 
-    local pos, pos_rounded = 0, 0
-    for k, v in pairs(self._private.widgets) do
-        local x, y, w, h
+	local pos, pos_rounded = 0, 0
+	for k, v in pairs(self._private.widgets) do
+		local x, y, w, h
 
-        local next_pos         = pos + space_per_item
-        local next_pos_rounded = gmath.round(next_pos)
+		local next_pos         = pos + space_per_item
+		local next_pos_rounded = gmath.round(next_pos)
 
-        if is_y then
-            x, y = 0, pos_rounded
-            w, h = width, next_pos_rounded - pos_rounded
-        else
-            x, y = pos_rounded, 0
-            w, h = next_pos_rounded - pos_rounded, height
-        end
+		if is_y then
+			x, y = 0, pos_rounded
+			w, h = width, next_pos_rounded - pos_rounded
+		else
+			x, y = pos_rounded, 0
+			w, h = next_pos_rounded - pos_rounded, height
+		end
 
-        pos         = next_pos + spacing
-        pos_rounded = next_pos_rounded + spacing
+		pos         = next_pos + spacing
+		pos_rounded = next_pos_rounded + spacing
 
-        table.insert(result, base.place_widget_at(v, x, y, w, h))
+		table.insert(result, base.place_widget_at(v, x, y, w, h))
 
-        if k > 1 and spacing ~= 0 and spacing_widget then
-            table.insert(result, base.place_widget_at(
-                    spacing_widget, is_x and (x - spoffset) or x, is_y and (y - spoffset) or y,
-                    is_x and abspace or w, is_y and abspace or h
-            ))
-        end
-    end
+		if k > 1 and spacing ~= 0 and spacing_widget then
+			table.insert(result, base.place_widget_at(
+					spacing_widget, is_x and (x - spoffset) or x, is_y and (y - spoffset) or y,
+					is_x and abspace or w, is_y and abspace or h
+			))
+		end
+	end
 
-    return result
+	return result
 end
 
 -- Fit the flex layout into the given space.
@@ -123,35 +123,35 @@ end
 -- @param orig_width The available width.
 -- @param orig_height The available height.
 function flex:fit(context, orig_width, orig_height)
-    local used_in_dir   = 0
-    local used_in_other = 0
+	local used_in_dir   = 0
+	local used_in_other = 0
 
-    -- Figure out the maximum size we can give out to sub-widgets
-    local sub_height    = self._private.dir == "x" and orig_height or orig_height / #self._private.widgets
-    local sub_width     = self._private.dir == "y" and orig_width or orig_width / #self._private.widgets
+	-- Figure out the maximum size we can give out to sub-widgets
+	local sub_height    = self._private.dir == "x" and orig_height or orig_height / #self._private.widgets
+	local sub_width     = self._private.dir == "y" and orig_width or orig_width / #self._private.widgets
 
-    for _, v in pairs(self._private.widgets) do
-        local w, h = base.fit_widget(self, context, v, sub_width, sub_height)
+	for _, v in pairs(self._private.widgets) do
+		local w, h = base.fit_widget(self, context, v, sub_width, sub_height)
 
-        local max  = self._private.dir == "y" and w or h
-        if max > used_in_other then
-            used_in_other = max
-        end
+		local max  = self._private.dir == "y" and w or h
+		if max > used_in_other then
+			used_in_other = max
+		end
 
-        used_in_dir = used_in_dir + (self._private.dir == "y" and h or w)
-    end
+		used_in_dir = used_in_dir + (self._private.dir == "y" and h or w)
+	end
 
-    if self._private.max_widget_size then
-        used_in_dir = math.min(used_in_dir,
-                #self._private.widgets * self._private.max_widget_size)
-    end
+	if self._private.max_widget_size then
+		used_in_dir = math.min(used_in_dir,
+				#self._private.widgets * self._private.max_widget_size)
+	end
 
-    local spacing = self._private.spacing * (#self._private.widgets - 1)
+	local spacing = self._private.spacing * (#self._private.widgets - 1)
 
-    if self._private.dir == "y" then
-        return used_in_other, used_in_dir + spacing
-    end
-    return used_in_dir + spacing, used_in_other
+	if self._private.dir == "y" then
+		return used_in_other, used_in_dir + spacing
+	end
+	return used_in_dir + spacing, used_in_other
 end
 
 --- Set the maximum size the widgets in this layout will take.
@@ -160,20 +160,20 @@ end
 -- @param number
 
 function flex:set_max_widget_size(val)
-    if self._private.max_widget_size ~= val then
-        self._private.max_widget_size = val
-        self:emit_signal("widget::layout_changed")
-    end
+	if self._private.max_widget_size ~= val then
+		self._private.max_widget_size = val
+		self:emit_signal("widget::layout_changed")
+	end
 end
 
 local function get_layout(dir, widget1, ...)
-    local ret = fixed[dir](widget1, ...)
+	local ret = fixed[dir](widget1, ...)
 
-    gtable.crush(ret, flex, true)
+	gtable.crush(ret, flex, true)
 
-    ret._private.fill_space = nil
+	ret._private.fill_space = nil
 
-    return ret
+	return ret
 end
 
 --- Returns a new horizontal flex layout. A flex layout shares the available space
@@ -181,7 +181,7 @@ end
 -- @tparam widget ... Widgets that should be added to the layout.
 -- @function wibox.layout.flex.horizontal
 function flex.horizontal(...)
-    return get_layout("horizontal", ...)
+	return get_layout("horizontal", ...)
 end
 
 --- Returns a new vertical flex layout. A flex layout shares the available space
@@ -189,7 +189,7 @@ end
 -- @tparam widget ... Widgets that should be added to the layout.
 -- @function wibox.layout.flex.vertical
 function flex.vertical(...)
-    return get_layout("vertical", ...)
+	return get_layout("vertical", ...)
 end
 
 --@DOC_widget_COMMON@

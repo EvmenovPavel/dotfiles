@@ -8,27 +8,27 @@ local wibar     = require("theme.wibar")
 local beautiful = {}
 
 function beautiful:theme(config)
-    theme:init(config)
+	theme:init(config)
 end
 
 function beautiful:titlebar(config)
-    titlebar:init(config)
+	titlebar:init(config)
 end
 
 function beautiful:taglist(config)
-    taglist:init(config)
+	taglist:init(config)
 end
 
 function beautiful:tasklist(config)
-    tasklist:init(config)
+	tasklist:init(config)
 end
 
 function beautiful:menu(config)
-    menu:init(config)
+	menu:init(config)
 end
 
 function beautiful:wibar(config)
-    wibar:init(config)
+	wibar:init(config)
 end
 
 return beautiful

@@ -10,8 +10,8 @@
 local ipairs         = ipairs
 local table          = table
 local capi           = {
-    awesome = awesome,
-    root    = root
+	awesome = awesome,
+	root    = root
 }
 local beautiful      = require("beautiful")
 
@@ -24,26 +24,26 @@ local cursor_waiting = "watch"
 -- @tparam[opt=true] boolean enable_spawn_cursor
 
 local function update_cursor()
-    if #app_starting > 0 and beautiful.enable_spawn_cursor ~= false then
-        capi.root.cursor(cursor_waiting)
-    else
-        capi.root.cursor("left_ptr")
-    end
+	if #app_starting > 0 and beautiful.enable_spawn_cursor ~= false then
+		capi.root.cursor(cursor_waiting)
+	else
+		capi.root.cursor("left_ptr")
+	end
 end
 
 local function unregister_event(event_id)
-    for k, v in ipairs(app_starting) do
-        if v == event_id then
-            table.remove(app_starting, k)
-            update_cursor()
-            break
-        end
-    end
+	for k, v in ipairs(app_starting) do
+		if v == event_id then
+			table.remove(app_starting, k)
+			update_cursor()
+			break
+		end
+	end
 end
 
 local function register_event(event_id)
-    table.insert(app_starting, event_id)
-    update_cursor()
+	table.insert(app_starting, event_id)
+	update_cursor()
 end
 
 local function unregister_hook(event) unregister_event(event.id) end

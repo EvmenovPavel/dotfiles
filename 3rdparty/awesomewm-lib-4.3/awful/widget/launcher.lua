@@ -17,23 +17,23 @@ local launcher     = { mt = {} }
 -- and command for the command to run on click, or either menu to create menu.
 -- @return A launcher widget.
 function launcher.new(args)
-    if not args.command and not args.menu then return end
-    local w = wbutton(args)
-    if not w then return end
+	if not args.command and not args.menu then return end
+	local w = wbutton(args)
+	if not w then return end
 
-    local b
-    if args.command then
-        b = gtable.join(w:buttons(), button({}, 1, nil, function() spawn(args.command) end))
-    elseif args.menu then
-        b = gtable.join(w:buttons(), button({}, 1, nil, function() args.menu:toggle() end))
-    end
+	local b
+	if args.command then
+		b = gtable.join(w:buttons(), button({}, 1, nil, function() spawn(args.command) end))
+	elseif args.menu then
+		b = gtable.join(w:buttons(), button({}, 1, nil, function() args.menu:toggle() end))
+	end
 
-    w:buttons(b)
-    return w
+	w:buttons(b)
+	return w
 end
 
 function launcher.mt:__call(...)
-    return launcher.new(...)
+	return launcher.new(...)
 end
 
 return setmetatable(launcher, launcher.mt)

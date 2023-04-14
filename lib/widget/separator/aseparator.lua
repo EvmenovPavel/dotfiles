@@ -4,21 +4,21 @@ local beautiful = require("beautiful")
 local separator = {}
 
 function separator:init(args)
-    local ret  = {}
+	local ret  = {}
 
-    local args = args or {}
+	local args = args or {}
 
-    ret.widget = wibox.widget({
-        type          = "separator",
+	ret.widget = wibox.widget({
+		type          = "separator",
 
-        orientation   = args.orientation or "horizontal",
-        forced_height = args.forced_height or 15,
-        color         = args.color or beautiful.bg_focus,
+		orientation   = args.orientation or "horizontal",
+		forced_height = args.forced_height or 15,
+		color         = args.color or beautiful.bg_focus,
 
-        widget        = wibox.widget.separator,
-    })
+		widget        = wibox.widget.separator,
+	})
 
-    return ret
+	return ret
 end
 
 return separator

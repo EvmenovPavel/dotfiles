@@ -4,26 +4,26 @@ local gears = require("gears")
 local box   = {}
 
 function box:init(width, height)
-    local ret    = {}
+	local ret    = {}
 
-    local width  = width or nil
-    local height = height or nil
+	local width  = width or nil
+	local height = height or nil
 
-    ret.widget   = wibox.widget({
-        type   = "box",
+	ret.widget   = wibox.widget({
+		type   = "box",
 
-        shape  = function(cr, width_, height_)
-            gears.shape.rectangle(cr, width or width_, height or height_)
-        end,
+		shape  = function(cr, width_, height_)
+			gears.shape.rectangle(cr, width or width_, height or height_)
+		end,
 
-        widget = wibox.widget.checkbox,
-    })
+		widget = wibox.widget.checkbox,
+	})
 
-    function ret:get()
-        return ret.widget
-    end
+	function ret:get()
+		return ret.widget
+	end
 
-    return ret
+	return ret
 end
 
 return box

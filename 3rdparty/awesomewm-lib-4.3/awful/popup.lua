@@ -34,104 +34,104 @@ local main_widget = {}
 -- Get the optimal direction for the wibox
 -- This (try to) avoid going offscreen
 local function set_position(self)
-    -- First, if there is size to be applied, do it
-    if self._private.next_width then
-        self.width               = self._private.next_width
-        self._private.next_width = nil
-    end
+	-- First, if there is size to be applied, do it
+	if self._private.next_width then
+		self.width               = self._private.next_width
+		self._private.next_width = nil
+	end
 
-    if self._private.next_height then
-        self.height               = self._private.next_height
-        self._private.next_height = nil
-    end
+	if self._private.next_height then
+		self.height               = self._private.next_height
+		self._private.next_height = nil
+	end
 
-    local pf = self._private.placement
+	local pf = self._private.placement
 
-    if pf == false then return end
+	if pf == false then return end
 
-    if pf then
-        pf(self, { bounding_rect = self.screen.geometry })
-        return
-    end
+	if pf then
+		pf(self, { bounding_rect = self.screen.geometry })
+		return
+	end
 
-    local geo = self._private.widget_geo
+	local geo = self._private.widget_geo
 
-    if not geo then return end
+	if not geo then return end
 
-    local _, pos_name, anchor_name = placement.next_to(self, {
-        preferred_positions = self._private.preferred_directions,
-        geometry            = geo,
-        preferred_anchors   = self._private.preferred_anchors,
-        offset              = self._private.offset or { x = 0, y = 0 },
-    })
+	local _, pos_name, anchor_name = placement.next_to(self, {
+		preferred_positions = self._private.preferred_directions,
+		geometry            = geo,
+		preferred_anchors   = self._private.preferred_anchors,
+		offset              = self._private.offset or { x = 0, y = 0 },
+	})
 
-    if pos_name ~= self._private.current_position then
-        local old                      = self._private.current_position
-        self._private.current_position = pos_name
-        self:emit_signal("property::current_position", pos_name, old)
-    end
+	if pos_name ~= self._private.current_position then
+		local old                      = self._private.current_position
+		self._private.current_position = pos_name
+		self:emit_signal("property::current_position", pos_name, old)
+	end
 
-    if anchor_name ~= self._private.current_anchor then
-        local old                    = self._private.current_anchor
-        self._private.current_anchor = anchor_name
-        self:emit_signal("property::current_anchor", anchor_name, old)
-    end
+	if anchor_name ~= self._private.current_anchor then
+		local old                    = self._private.current_anchor
+		self._private.current_anchor = anchor_name
+		self:emit_signal("property::current_anchor", anchor_name, old)
+	end
 end
 
 -- Set the wibox size taking into consideration the limits
 local function apply_size(self, width, height, set_pos)
-    local prev_geo = self:geometry()
+	local prev_geo = self:geometry()
 
-    width          = math.max(self._private.minimum_width or 1, math.ceil(width or 1))
-    height         = math.max(self._private.minimum_height or 1, math.ceil(height or 1))
+	width          = math.max(self._private.minimum_width or 1, math.ceil(width or 1))
+	height         = math.max(self._private.minimum_height or 1, math.ceil(height or 1))
 
-    if self._private.maximum_width then
-        width = math.min(self._private.maximum_width, width)
-    end
+	if self._private.maximum_width then
+		width = math.min(self._private.maximum_width, width)
+	end
 
-    if self._private.maximum_height then
-        height = math.min(self._private.maximum_height, height)
-    end
+	if self._private.maximum_height then
+		height = math.min(self._private.maximum_height, height)
+	end
 
-    self._private.next_width, self._private.next_height = width, height
+	self._private.next_width, self._private.next_height = width, height
 
-    if set_pos or width ~= prev_geo.width or height ~= prev_geo.height then
-        set_position(self)
-    end
+	if set_pos or width ~= prev_geo.width or height ~= prev_geo.height then
+		set_position(self)
+	end
 end
 
 -- Layout this widget
 function main_widget:layout(context, width, height)
-    if self._private.widget then
-        local w, h = wibox.widget.base.fit_widget(
-                self,
-                context,
-                self._private.widget,
-                self._wb._private.maximum_width or 9999,
-                self._wb._private.maximum_height or 9999
-        )
-        timer.delayed_call(function()
-            apply_size(self._wb, w, h, true)
-        end)
-        return { wibox.widget.base.place_widget_at(self._private.widget, 0, 0, width, height) }
-    end
+	if self._private.widget then
+		local w, h = wibox.widget.base.fit_widget(
+				self,
+				context,
+				self._private.widget,
+				self._wb._private.maximum_width or 9999,
+				self._wb._private.maximum_height or 9999
+		)
+		timer.delayed_call(function()
+			apply_size(self._wb, w, h, true)
+		end)
+		return { wibox.widget.base.place_widget_at(self._private.widget, 0, 0, width, height) }
+	end
 end
 
 -- Set the widget that is drawn on top of the background
 function main_widget:set_widget(widget)
-    if widget then
-        wibox.widget.base.check_widget(widget)
-    end
-    self._private.widget = widget
-    self:emit_signal("widget::layout_changed")
+	if widget then
+		wibox.widget.base.check_widget(widget)
+	end
+	self._private.widget = widget
+	self:emit_signal("widget::layout_changed")
 end
 
 function main_widget:get_widget()
-    return self._private.widget
+	return self._private.widget
 end
 
 function main_widget:get_children_by_id(name)
-    return self._wb:get_children_by_id(name)
+	return self._wb:get_children_by_id(name)
 end
 
 local popup = {}
@@ -165,8 +165,8 @@ local popup = {}
 -- @see awful.popup.preferred_anchors
 
 function popup:set_preferred_positions(pref_pos)
-    self._private.preferred_directions = pref_pos
-    set_position(self)
+	self._private.preferred_directions = pref_pos
+	set_position(self)
 end
 
 --- Set the preferred popup anchors relative to the parent.
@@ -191,8 +191,8 @@ end
 -- @see awful.popup.preferred_positions
 
 function popup:set_preferred_anchors(pref_anchors)
-    self._private.preferred_anchors = pref_anchors
-    set_position(self)
+	self._private.preferred_anchors = pref_anchors
+	set_position(self)
 end
 
 --- The current position relative to the parent object.
@@ -206,7 +206,7 @@ end
 -- @tparam string current_position Either "left", "right", "top" or "bottom"
 
 function popup:get_current_position()
-    return self._private.current_position
+	return self._private.current_position
 end
 
 --- Get the current anchor relative to the parent object.
@@ -220,7 +220,7 @@ end
 -- @tparam string current_anchor Either "front", "middle", "back"
 
 function popup:get_current_anchor()
-    return self._private.current_anchor
+	return self._private.current_anchor
 end
 
 --- Move the wibox to a position relative to `geo`.
@@ -234,21 +234,21 @@ end
 -- @see awful.popup.preferred_anchors
 -- @treturn table The new geometry
 function popup:move_next_to(obj)
-    if self._private.is_relative == false then return end
+	if self._private.is_relative == false then return end
 
-    self._private.widget_geo = obj
+	self._private.widget_geo = obj
 
-    obj                      = obj or capi.mouse
+	obj                      = obj or capi.mouse
 
-    if obj._apply_size_now then
-        obj:_apply_size_now(false)
-    end
+	if obj._apply_size_now then
+		obj:_apply_size_now(false)
+	end
 
-    self.visible = true
+	self.visible = true
 
-    self:_apply_size_now(true)
+	self:_apply_size_now(true)
 
-    self._private.widget_geo = nil
+	self._private.widget_geo = nil
 end
 
 --- Bind the popup to a widget button press.
@@ -256,18 +256,18 @@ end
 -- @tparam widget widget The widget
 -- @tparam[opt=1] number button The button index
 function popup:bind_to_widget(widget, button)
-    if not self._private.button_for_widget then
-        self._private.button_for_widget = {}
-    end
+	if not self._private.button_for_widget then
+		self._private.button_for_widget = {}
+	end
 
-    self._private.button_for_widget[widget] = button or 1
-    widget:connect_signal("button::press", self._private.show_fct)
+	self._private.button_for_widget[widget] = button or 1
+	widget:connect_signal("button::press", self._private.show_fct)
 end
 
 --- Unbind the popup from a widget button.
 -- @tparam widget widget The widget
 function popup:unbind_to_widget(widget)
-    widget:disconnect_signal("button::press", self._private.show_fct)
+	widget:disconnect_signal("button::press", self._private.show_fct)
 end
 
 --- Hide the popup when right clicked.
@@ -276,9 +276,9 @@ end
 -- @tparam[opt=false] boolean hide_on_right_click
 
 function popup:set_hide_on_right_click(value)
-    self[value and "connect_signal" or "disconnect_signal"](
-            self, "button::press", self._private.hide_fct
-    )
+	self[value and "connect_signal" or "disconnect_signal"](
+			self, "button::press", self._private.hide_fct
+	)
 end
 
 --- The popup minimum width.
@@ -298,12 +298,12 @@ end
 -- @tparam[opt=1] number The maximum height
 
 for _, orientation in ipairs { "_width", "_height" } do
-    for _, limit in ipairs { "minimum", "maximum" } do
-        popup["set_" .. limit .. orientation] = function(self, value)
-            self._private[limit .. orientation] = value
-            self._private.container:emit_signal("widget::layout_changed")
-        end
-    end
+	for _, limit in ipairs { "minimum", "maximum" } do
+		popup["set_" .. limit .. orientation] = function(self, value)
+			self._private[limit .. orientation] = value
+			self._private.container:emit_signal("widget::layout_changed")
+		end
+	end
 end
 
 --- The distance between the popup and its parent (if any).
@@ -319,22 +319,22 @@ end
 
 function popup:set_offset(offset)
 
-    if type(offset) == "number" then
-        offset = {
-            x = offset or 0,
-            y = offset or 0,
-        }
-    end
+	if type(offset) == "number" then
+		offset = {
+			x = offset or 0,
+			y = offset or 0,
+		}
+	end
 
-    local oldoff = self._private.offset or { x = 0, y = 0 }
+	local oldoff = self._private.offset or { x = 0, y = 0 }
 
-    if oldoff.x == offset.x and oldoff.y == offset.y then return end
+	if oldoff.x == offset.x and oldoff.y == offset.y then return end
 
-    offset.x, offset.y   = offset.x or oldoff.x or 0, offset.y or oldoff.y or 0
+	offset.x, offset.y   = offset.x or oldoff.x or 0, offset.y or oldoff.y or 0
 
-    self._private.offset = offset
+	self._private.offset = offset
 
-    self:_apply_size_now(false)
+	self:_apply_size_now(false)
 end
 
 --- Set the placement function.
@@ -344,44 +344,44 @@ end
 -- @param function
 
 function popup:set_placement(f)
-    if type(f) == "string" then
-        f = placement[f]
-    end
+	if type(f) == "string" then
+		f = placement[f]
+	end
 
-    self._private.placement = f
-    self:_apply_size_now(false)
+	self._private.placement = f
+	self:_apply_size_now(false)
 end
 
 -- For the tests and the race condition when 2 popups are placed next to each
 -- other.
 function popup:_apply_size_now(skip_set)
-    if not self.widget then return end
+	if not self.widget then return end
 
-    local w, h  = wibox.widget.base.fit_widget(
-            self.widget,
-            { dpi = self.screen.dpi or xresources.get_dpi() },
-            self.widget,
-            self._private.maximum_width or 9999,
-            self._private.maximum_height or 9999
-    )
+	local w, h  = wibox.widget.base.fit_widget(
+			self.widget,
+			{ dpi = self.screen.dpi or xresources.get_dpi() },
+			self.widget,
+			self._private.maximum_width or 9999,
+			self._private.maximum_height or 9999
+	)
 
-    -- It is important to do it for the obscure reason that calling `w:geometry()`
-    -- is actually mutating the state due to quantum determinism thanks to XCB
-    -- async nature... It is only true the very first time `w:geometry()` is
-    -- called
-    self.width  = math.max(1, math.ceil(w or 1))
-    self.height = math.max(1, math.ceil(h or 1))
+	-- It is important to do it for the obscure reason that calling `w:geometry()`
+	-- is actually mutating the state due to quantum determinism thanks to XCB
+	-- async nature... It is only true the very first time `w:geometry()` is
+	-- called
+	self.width  = math.max(1, math.ceil(w or 1))
+	self.height = math.max(1, math.ceil(h or 1))
 
-    apply_size(self, w, h, skip_set ~= false)
+	apply_size(self, w, h, skip_set ~= false)
 end
 
 function popup:set_widget(wid)
-    self._private.widget = wid
-    self._private.container:set_widget(wid)
+	self._private.widget = wid
+	self._private.container:set_widget(wid)
 end
 
 function popup:get_widget()
-    return self._private.widget
+	return self._private.widget
 end
 
 --- Create a new popup build around a passed in widget.
@@ -395,70 +395,70 @@ end
 --  right clicks.
 -- @function awful.popup
 local function create_popup(_, args)
-    assert(args)
+	assert(args)
 
-    -- Temporarily remove the widget
-    local original_widget = args.widget
-    args.widget           = nil
+	-- Temporarily remove the widget
+	local original_widget = args.widget
+	args.widget           = nil
 
-    assert(original_widget, "The `awful.popup` requires a `widget` constructor argument")
+	assert(original_widget, "The `awful.popup` requires a `widget` constructor argument")
 
-    local child_widget = wibox.widget.base.make_widget_from_value(original_widget)
+	local child_widget = wibox.widget.base.make_widget_from_value(original_widget)
 
-    local ii           = wibox.widget.base.make_widget(child_widget, "awful.popup", {
-        enable_properties = true
-    })
+	local ii           = wibox.widget.base.make_widget(child_widget, "awful.popup", {
+		enable_properties = true
+	})
 
-    util.table.crush(ii, main_widget, true)
+	util.table.crush(ii, main_widget, true)
 
-    -- Create a wibox to host the widget
-    local w = wibox(args or {})
+	-- Create a wibox to host the widget
+	local w = wibox(args or {})
 
-    rawset(w, "_private", {
-        container            = ii,
-        preferred_directions = { "right", "left", "top", "bottom" },
-        preferred_anchors    = { "back", "front", "middle" },
-        widget               = child_widget
-    })
+	rawset(w, "_private", {
+		container            = ii,
+		preferred_directions = { "right", "left", "top", "bottom" },
+		preferred_anchors    = { "back", "front", "middle" },
+		widget               = child_widget
+	})
 
-    util.table.crush(w, popup)
+	util.table.crush(w, popup)
 
-    ii:set_widget(child_widget)
+	ii:set_widget(child_widget)
 
-    -- Create the signal handlers
-    function w._private.show_fct(wdg, _, _, button, _, geo)
-        if button == w._private.button_for_widget[wdg] then
-            w:move_next_to(geo)
-        end
-    end
-    function w._private.hide_fct()
-        w.visible = false
-    end
+	-- Create the signal handlers
+	function w._private.show_fct(wdg, _, _, button, _, geo)
+		if button == w._private.button_for_widget[wdg] then
+			w:move_next_to(geo)
+		end
+	end
+	function w._private.hide_fct()
+		w.visible = false
+	end
 
-    -- Restore
-    args.widget = original_widget
+	-- Restore
+	args.widget = original_widget
 
-    -- Cross-link the wibox and widget
-    ii._wb      = w
-    wibox.set_widget(w, ii)
+	-- Cross-link the wibox and widget
+	ii._wb      = w
+	wibox.set_widget(w, ii)
 
-    --WARNING The order is important
-    -- First, apply the limits to avoid a flicker with large width or height
-    -- when set_position is called before the limits
-    for _, v in ipairs { "minimum_width", "minimum_height", "maximum_height",
-                         "maximum_width", "offset", "placement", "preferred_positions",
-                         "preferred_anchors", "hide_on_right_click" } do
-        if args[v] ~= nil then
-            w["set_" .. v](w, args[v])
-        end
-    end
+	--WARNING The order is important
+	-- First, apply the limits to avoid a flicker with large width or height
+	-- when set_position is called before the limits
+	for _, v in ipairs { "minimum_width", "minimum_height", "maximum_height",
+	                     "maximum_width", "offset", "placement", "preferred_positions",
+	                     "preferred_anchors", "hide_on_right_click" } do
+		if args[v] ~= nil then
+			w["set_" .. v](w, args[v])
+		end
+	end
 
-    -- Default to visible
-    if args.visible ~= false then
-        w.visible = true
-    end
+	-- Default to visible
+	if args.visible ~= false then
+		w.visible = true
+	end
 
-    return w
+	return w
 end
 
 --@DOC_wibox_COMMON@

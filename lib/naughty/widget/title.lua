@@ -28,27 +28,27 @@ local title     = {}
 -- @propemits true false
 
 function title:set_notification(notif)
-    local old = self._private.notification[1]
+	local old = self._private.notification[1]
 
-    if old == notif then
-        return
-    end
+	if old == notif then
+		return
+	end
 
-    if old then
-        old:disconnect_signal("property::message",
-                self._private.title_changed_callback)
-        old:disconnect_signal("property::fg",
-                self._private.title_changed_callback)
-    end
+	if old then
+		old:disconnect_signal("property::message",
+				self._private.title_changed_callback)
+		old:disconnect_signal("property::fg",
+				self._private.title_changed_callback)
+	end
 
-    markup(self, notif.title, notif.fg, notif.font)
+	markup(self, notif.title, notif.fg, notif.font)
 
-    self._private.notification = setmetatable({ notif }, { __mode = "v" })
-    self._private.title_changed_callback()
+	self._private.notification = setmetatable({ notif }, { __mode = "v" })
+	self._private.title_changed_callback()
 
-    notif:connect_signal("property::title", self._private.title_changed_callback)
-    notif:connect_signal("property::fg", self._private.title_changed_callback)
-    self:emit_signal("property::notification", notif)
+	notif:connect_signal("property::title", self._private.title_changed_callback)
+	notif:connect_signal("property::fg", self._private.title_changed_callback)
+	self:emit_signal("property::notification", notif)
 end
 
 --- Create a new naughty.widget.title.
@@ -59,38 +59,38 @@ end
 -- @usebeautiful beautiful.notification_font
 
 local function new(args)
-    args     = args or {}
-    local tb = wmapi.widget:textbox()
-    tb:set_wrap("word")
-    tb:set_font(beautiful.notification_font)
-    tb._private.notification = {}
+	args     = args or {}
+	local tb = wmapi.widget:textbox()
+	tb:set_wrap("word")
+	tb:set_font(beautiful.notification_font)
+	tb._private.notification = {}
 
-    gtable.crush(tb, title, true)
+	gtable.crush(tb, title, true)
 
-    function tb._private.title_changed_callback()
-        local n = tb._private.notification[1]
+	function tb._private.title_changed_callback()
+		local n = tb._private.notification[1]
 
-        if n then
-            markup(
-                    tb,
-                    n.title,
-                    n.fg,
-                    n.font
-            )
-        else
-            markup("", nil, nil)
-        end
-    end
+		if n then
+			markup(
+					tb,
+					n.title,
+					n.fg,
+					n.font
+			)
+		else
+			markup("", nil, nil)
+		end
+	end
 
-    if args.notification then
-        tb:set_notification(args.notification)
-    end
+	if args.notification then
+		tb:set_notification(args.notification)
+	end
 
-    return tb
+	return tb
 end
 
 --@DOC_object_COMMON@
 
 return setmetatable(title, { __call = function(_, ...)
-    return new(...)
+	return new(...)
 end })

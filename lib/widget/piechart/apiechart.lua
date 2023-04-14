@@ -3,16 +3,16 @@ local wibox    = require("wibox")
 local piechart = {}
 
 function piechart:init(args)
-    local args = args or {}
+	local args = args or {}
 
-    local ret  = {}
+	local ret  = {}
 
-    ret.widget = wibox.widget({
-        type   = "piechart",
-        widget = wibox.widget.piechart,
-    })
+	ret.widget = wibox.widget({
+		type   = "piechart",
+		widget = wibox.widget.piechart,
+	})
 
-    return ret
+	return ret
 end
 
 return piechart

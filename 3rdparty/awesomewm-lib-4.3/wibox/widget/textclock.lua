@@ -22,12 +22,12 @@ local textclock    = { mt = {} }
 -- @tparam string format The new time format.  This can contain pango markup
 
 function textclock:set_format(format)
-    self._private.format = format
-    self:force_update()
+	self._private.format = format
+	self:force_update()
 end
 
 function textclock:get_format()
-    return self._private.format
+	return self._private.format
 end
 
 --- Set the clock's timezone
@@ -35,13 +35,13 @@ end
 -- @tparam string timezone
 
 function textclock:set_timezone(tzid)
-    self._private.tzid     = tzid
-    self._private.timezone = tzid and TimeZone.new(tzid)
-    self:force_update()
+	self._private.tzid     = tzid
+	self._private.timezone = tzid and TimeZone.new(tzid)
+	self:force_update()
 end
 
 function textclock:get_timezone()
-    return self._private.tzid
+	return self._private.tzid
 end
 
 --- Set the clock's refresh rate
@@ -49,23 +49,23 @@ end
 -- @tparam number How often the clock is updated, in seconds
 
 function textclock:set_refresh(refresh)
-    self._private.refresh = refresh or self._private.refresh
-    self:force_update()
+	self._private.refresh = refresh or self._private.refresh
+	self:force_update()
 end
 
 function textclock:get_refresh()
-    return self._private.refresh
+	return self._private.refresh
 end
 
 --- Force a textclock to update now.
 function textclock:force_update()
-    self._timer:emit_signal("timeout")
+	self._timer:emit_signal("timeout")
 end
 
 --- This lowers the timeout so that it occurs "correctly". For example, a timeout
 -- of 60 is rounded so that it occurs the next time the clock reads ":00 seconds".
 local function calc_timeout(real_timeout)
-    return real_timeout - os.time() % real_timeout
+	return real_timeout - os.time() % real_timeout
 end
 
 --- Create a textclock widget. It draws the time it is in a textbox.
@@ -78,34 +78,34 @@ end
 -- @treturn table A textbox widget.
 -- @function wibox.widget.textclock
 local function new(format, refresh, tzid)
-    local w = textbox()
-    gtable.crush(w, textclock, true)
+	local w = textbox()
+	gtable.crush(w, textclock, true)
 
-    w._private.format   = format or " %a %b %d, %H:%M "
-    w._private.refresh  = refresh or 60
-    w._private.tzid     = tzid
-    w._private.timezone = tzid and TimeZone.new(tzid)
+	w._private.format   = format or " %a %b %d, %H:%M "
+	w._private.refresh  = refresh or 60
+	w._private.tzid     = tzid
+	w._private.timezone = tzid and TimeZone.new(tzid)
 
-    function w._private.textclock_update_cb()
-        local str = DateTime.new_now(w._private.timezone or TimeZone.new_local()):format(w._private.format)
-        if str == nil then
-            require("gears.debug").print_warning("textclock: "
-                    .. "g_date_time_format() failed for format "
-                    .. "'" .. w._private.format .. "'")
-        end
-        w:set_markup(str)
-        w._timer.timeout = calc_timeout(w._private.refresh)
-        w._timer:again()
-        return true -- Continue the timer
-    end
+	function w._private.textclock_update_cb()
+		local str = DateTime.new_now(w._private.timezone or TimeZone.new_local()):format(w._private.format)
+		if str == nil then
+			require("gears.debug").print_warning("textclock: "
+					.. "g_date_time_format() failed for format "
+					.. "'" .. w._private.format .. "'")
+		end
+		w:set_markup(str)
+		w._timer.timeout = calc_timeout(w._private.refresh)
+		w._timer:again()
+		return true -- Continue the timer
+	end
 
-    w._timer = timer.weak_start_new(refresh, w._private.textclock_update_cb)
-    w:force_update()
-    return w
+	w._timer = timer.weak_start_new(refresh, w._private.textclock_update_cb)
+	w:force_update()
+	return w
 end
 
 function textclock.mt:__call(...)
-    return new(...)
+	return new(...)
 end
 
 --@DOC_widget_COMMON@

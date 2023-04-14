@@ -36,59 +36,59 @@ local surface         = require("gears.surface")
 local module          = {}
 
 local default_buttons = gtable.join(
-        abutton({ }, 1, function(a) a.callback() end)
+		abutton({ }, 1, function(a) a.callback() end)
 )
 
 local function wb_label(item, _, textbox)
-    local selected = alayout.get(item.screen) == item.layout
+	local selected = alayout.get(item.screen) == item.layout
 
-    -- Apply the built-in customization
-    local bg, fg, shape, shape_bw, shape_bc
+	-- Apply the built-in customization
+	local bg, fg, shape, shape_bw, shape_bc
 
-    -- The layout have only 2 states: normal and selected
-    if selected then
-        bg       = item.style.bg_selected or
-                beautiful.layoutlist_bg_selected or
-                beautiful.bg_focus
-        fg       = item.style.fg_selected or
-                beautiful.layoutlist_fg_selected or
-                beautiful.fg_focus or beautiful.fg_normal
-        shape    = item.style.shape_selected or
-                beautiful.layoutlist_shape_selected
-        shape_bw = item.style.shape_border_width_selected or
-                beautiful.layoutlist_shape_border_width_selected
-        shape_bc = item.style.shape_border_color_selected or
-                beautiful.layoutlist_shape_border_color_selected
-    else
-        bg       = item.style.bg_normal or
-                beautiful.layoutlist_bg_normal or
-                nil
-        fg       = item.style.fg_normal or
-                beautiful.layoutlist_fg_normal or
-                beautiful.fg_normal
-        shape    = item.style.shape or
-                beautiful.layoutlist_shape
-        shape_bw = item.style.shape_border_width or
-                beautiful.layoutlist_shape_border_width
-        shape_bc = item.style.shape_border_color or
-                beautiful.layoutlist_shape_border_color
-    end
+	-- The layout have only 2 states: normal and selected
+	if selected then
+		bg       = item.style.bg_selected or
+				beautiful.layoutlist_bg_selected or
+				beautiful.bg_focus
+		fg       = item.style.fg_selected or
+				beautiful.layoutlist_fg_selected or
+				beautiful.fg_focus or beautiful.fg_normal
+		shape    = item.style.shape_selected or
+				beautiful.layoutlist_shape_selected
+		shape_bw = item.style.shape_border_width_selected or
+				beautiful.layoutlist_shape_border_width_selected
+		shape_bc = item.style.shape_border_color_selected or
+				beautiful.layoutlist_shape_border_color_selected
+	else
+		bg       = item.style.bg_normal or
+				beautiful.layoutlist_bg_normal or
+				nil
+		fg       = item.style.fg_normal or
+				beautiful.layoutlist_fg_normal or
+				beautiful.fg_normal
+		shape    = item.style.shape or
+				beautiful.layoutlist_shape
+		shape_bw = item.style.shape_border_width or
+				beautiful.layoutlist_shape_border_width
+		shape_bc = item.style.shape_border_color or
+				beautiful.layoutlist_shape_border_color
+	end
 
-    if textbox and item.style.align or beautiful.layoutlist_align then
-        textbox:set_align(item.style.align or beautiful.layoutlist_align)
-    end
+	if textbox and item.style.align or beautiful.layoutlist_align then
+		textbox:set_align(item.style.align or beautiful.layoutlist_align)
+	end
 
-    local text = ""
+	local text = ""
 
-    if item.name then
-        text = "<span color='" .. fg .. "'>" .. item.name .. '</span>'
-    end
+	if item.name then
+		text = "<span color='" .. fg .. "'>" .. item.name .. '</span>'
+	end
 
-    return text, bg, nil, item.icon, {
-        shape              = shape,
-        shape_border_width = shape_bw,
-        shape_border_color = shape_bc,
-    }
+	return text, bg, nil, item.icon, {
+		shape              = shape,
+		shape_border_width = shape_bw,
+		shape_border_color = shape_bc,
+	}
 end
 
 module.source = {}
@@ -97,70 +97,70 @@ module.source = {}
 -- @tparam screen s The screen.
 -- @sourcefunction awful.widget.layoutlist.source.for_screen
 function module.source.for_screen(s)
-    s = capi.screen[s or ascreen.focused() or 1]
-    assert(s)
+	s = capi.screen[s or ascreen.focused() or 1]
+	assert(s)
 
-    local t = s.selected_tag or #s.tags > 0 and s.tags[1]
+	local t = s.selected_tag or #s.tags > 0 and s.tags[1]
 
-    return t and t.layouts or {}
+	return t and t.layouts or {}
 end
 
 --- The layouts available for the first selected tag of `awful.screen.focused()`.
 -- @sourcefunction awful.widget.layoutlist.source.current_screen
 function module.source.current_screen()
-    return module.source.for_screen()
+	return module.source.for_screen()
 end
 
 --- The default layout list.
 -- @see awful.layout.layouts
 -- @sourcefunction awful.widget.layoutlist.source.default_layouts
 function module.source.default_layouts()
-    return alayout.layouts
+	return alayout.layouts
 end
 
 local function reload_cache(self)
-    self._private.cache = {}
+	self._private.cache = {}
 
-    local show_text     = (not self._private.style.disable_name) and
-            (not beautiful.layoutlist_disable_name)
+	local show_text     = (not self._private.style.disable_name) and
+			(not beautiful.layoutlist_disable_name)
 
-    local show_icon     = (not self._private.style.disable_icon) and
-            (not beautiful.layoutlist_disable_icon)
+	local show_icon     = (not self._private.style.disable_icon) and
+			(not beautiful.layoutlist_disable_icon)
 
-    local s             = self.screen or ascreen.focused()
+	local s             = self.screen or ascreen.focused()
 
-    -- Get the list.
-    local ls            = self:get_layouts()
+	-- Get the list.
+	local ls            = self:get_layouts()
 
-    for _, l in ipairs(ls or {}) do
-        local icn_path, icon = beautiful["layout_" .. (l.name or "")]
-        if icn_path then
-            icon = surface.load(icn_path)
-        end
+	for _, l in ipairs(ls or {}) do
+		local icn_path, icon = beautiful["layout_" .. (l.name or "")]
+		if icn_path then
+			icon = surface.load(icn_path)
+		end
 
-        table.insert(self._private.cache, {
-            icon     = show_icon and icon or nil,
-            name     = show_text and l.name or nil,
-            layout   = l,
-            screen   = s,
-            callback = function() alayout.set(l) end,
-            style    = self._private.style,
-        })
-    end
+		table.insert(self._private.cache, {
+			icon     = show_icon and icon or nil,
+			name     = show_text and l.name or nil,
+			layout   = l,
+			screen   = s,
+			callback = function() alayout.set(l) end,
+			style    = self._private.style,
+		})
+	end
 end
 
 local function update(self)
-    assert(self._private.layout)
-    awcommon.list_update(
-            self._private.layout,
-            self._private.buttons or default_buttons,
-            wb_label,
-            self._private.data,
-            self._private.cache,
-            {
-                widget_template = self._private.widget_template
-            }
-    )
+	assert(self._private.layout)
+	awcommon.list_update(
+			self._private.layout,
+			self._private.buttons or default_buttons,
+			wb_label,
+			self._private.data,
+			self._private.cache,
+			{
+				widget_template = self._private.widget_template
+			}
+	)
 end
 
 local layoutlist = {}
@@ -280,77 +280,77 @@ local layoutlist = {}
 -- @param layout
 
 function layoutlist:get_layouts()
-    local f = self.source or self._private.source or module.source.for_screen
+	local f = self.source or self._private.source or module.source.for_screen
 
-    return f(self.screen)
+	return f(self.screen)
 end
 
 function layoutlist:get_current_layout()
-    -- Eventually the entire lookup could be removed. All it does is allowing
-    -- `nil` to be returned when there is no selection.
-    local ls         = self:get_layouts()
-    local l          = alayout.get(self.screen or ascreen.focused())
-    local selected_k = gtable.hasitem(ls, l, true)
+	-- Eventually the entire lookup could be removed. All it does is allowing
+	-- `nil` to be returned when there is no selection.
+	local ls         = self:get_layouts()
+	local l          = alayout.get(self.screen or ascreen.focused())
+	local selected_k = gtable.hasitem(ls, l, true)
 
-    return selected_k and ls[selected_k] or nil
+	return selected_k and ls[selected_k] or nil
 end
 
 function layoutlist:set_buttons(buttons)
-    self._private.buttons = buttons
-    update(self)
+	self._private.buttons = buttons
+	update(self)
 end
 
 function layoutlist:get_buttons()
-    return self._private.buttons
+	return self._private.buttons
 end
 
 function layoutlist:set_base_layout(layout)
-    self._private.layout = wibox.widget.base.make_widget_from_value(
-            layout or wibox.layout.fixed.horizontal
-    )
+	self._private.layout = wibox.widget.base.make_widget_from_value(
+			layout or wibox.layout.fixed.horizontal
+	)
 
-    if self._private.layout.set_spacing then
-        self._private.layout:set_spacing(
-                self._private.style.spacing or beautiful.tasklist_spacing or 0
-        )
-    end
+	if self._private.layout.set_spacing then
+		self._private.layout:set_spacing(
+				self._private.style.spacing or beautiful.tasklist_spacing or 0
+		)
+	end
 
-    assert(self._private.layout.is_widget)
+	assert(self._private.layout.is_widget)
 
-    update(self)
+	update(self)
 
-    self:emit_signal("widget::layout_changed")
-    self:emit_signal("widget::redraw_needed")
+	self:emit_signal("widget::layout_changed")
+	self:emit_signal("widget::redraw_needed")
 end
 
 function layoutlist:set_widget_template(widget_template)
-    self._private.widget_template = widget_template
+	self._private.widget_template = widget_template
 
-    -- Remove the existing instances
-    self._private.data            = {}
+	-- Remove the existing instances
+	self._private.data            = {}
 
-    -- Prevent a race condition when the constructor loop to initialize the
-    -- arguments.
-    if self._private.layout then
-        update(self)
-    end
+	-- Prevent a race condition when the constructor loop to initialize the
+	-- arguments.
+	if self._private.layout then
+		update(self)
+	end
 
-    self:emit_signal("widget::layout_changed")
-    self:emit_signal("widget::redraw_needed")
+	self:emit_signal("widget::layout_changed")
+	self:emit_signal("widget::redraw_needed")
 end
 
 function layoutlist:layout(_, width, height)
-    if self._private.layout then
-        return { wibox.widget.base.place_widget_at(self._private.layout, 0, 0, width, height) }
-    end
+	if self._private.layout then
+		return { wibox.widget.base.place_widget_at(self._private.layout, 0, 0, width, height) }
+	end
 end
 
 function layoutlist:fit(context, width, height)
-    if not self._private.layout then
-        return 0, 0
-    end
+	if not self._private.layout then
+		return 0, 0
+	end
 
-    return wibox.widget.base.fit_widget(self, context, self._private.layout, width, height)
+	return wibox.widget.base.fit_widget(self, context, self._private.layout, width, height)
 end
 
 --- Create a layout list.
@@ -387,49 +387,49 @@ end
 local is_connected, instances = false, setmetatable({}, { __mode = "v" })
 
 local function update_common()
-    for _, ll in ipairs(instances) do
-        reload_cache(ll)
-        update(ll)
-    end
+	for _, ll in ipairs(instances) do
+		reload_cache(ll)
+		update(ll)
+	end
 end
 
 local function new(_, args)
-    local ret = wibox.widget.base.make_widget(nil, nil, {
-        enable_properties = true,
-    })
+	local ret = wibox.widget.base.make_widget(nil, nil, {
+		enable_properties = true,
+	})
 
-    gtable.crush(ret, layoutlist, true)
+	gtable.crush(ret, layoutlist, true)
 
-    ret._private.style   = args.style or {}
-    ret._private.buttons = args.buttons
-    ret._private.source  = args.source
-    ret._private.data    = {}
+	ret._private.style   = args.style or {}
+	ret._private.buttons = args.buttons
+	ret._private.source  = args.source
+	ret._private.data    = {}
 
-    reload_cache(ret)
+	reload_cache(ret)
 
-    -- Apply all args properties
-    gtable.crush(ret, args)
+	-- Apply all args properties
+	gtable.crush(ret, args)
 
-    if not ret._private.layout then
-        ret:set_base_layout()
-    end
+	if not ret._private.layout then
+		ret:set_base_layout()
+	end
 
-    assert(ret._private.layout)
+	assert(ret._private.layout)
 
-    -- Do not create a connection per instance, if used in a "volatile"
-    -- popup, this will balloon.
-    if not is_connected then
-        for _, sig in ipairs { "layout", "layouts", "selected", "activated" } do
-            capi.tag.connect_signal("property::" .. sig, update_common)
-        end
-    end
+	-- Do not create a connection per instance, if used in a "volatile"
+	-- popup, this will balloon.
+	if not is_connected then
+		for _, sig in ipairs { "layout", "layouts", "selected", "activated" } do
+			capi.tag.connect_signal("property::" .. sig, update_common)
+		end
+	end
 
-    -- Add to the (weak) list of active instances.
-    table.insert(instances, ret)
+	-- Add to the (weak) list of active instances.
+	table.insert(instances, ret)
 
-    update(ret)
+	update(ret)
 
-    return ret
+	return ret
 end
 
 --@DOC_widget_COMMON@

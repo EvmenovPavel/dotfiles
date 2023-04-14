@@ -20,8 +20,8 @@ local grect    = require("gears.geometry").rectangle
 local gcolor   = require("gears.color")
 local gfs      = require("gears.filesystem")
 local capi     = {
-    awesome = awesome,
-    mouse   = mouse
+	awesome = awesome,
+	mouse   = mouse
 }
 local gdebug   = require("gears.debug")
 local gmath    = require("gears.math")
@@ -47,8 +47,8 @@ util.shell     = os.getenv("SHELL") or "/bin/sh"
 --   version is equal to or greater than deprecated_in.
 -- @see gears.debug
 function util.deprecate(see, args)
-    gdebug.deprecate("gears.debug.deprecate", { deprecated_in = 5 })
-    return gdebug.deprecate(see, args)
+	gdebug.deprecate("gears.debug.deprecate", { deprecated_in = 5 })
+	return gdebug.deprecate(see, args)
 end
 
 --- Create a class proxy with deprecation messages.
@@ -60,8 +60,8 @@ end
 -- @treturn table A proxy class.
 -- @see gears.debug
 function util.deprecate_class(fallback, old_name, new_name)
-    gdebug.deprecate("gears.debug.deprecate_class", { deprecated_in = 5 })
-    return gdebug.deprecate_class(fallback, old_name, new_name)
+	gdebug.deprecate("gears.debug.deprecate_class", { deprecated_in = 5 })
+	return gdebug.deprecate_class(fallback, old_name, new_name)
 end
 
 --- Get a valid color for Pango markup
@@ -71,8 +71,8 @@ end
 -- @treturn string color if it is valid, else fallback.
 -- @see gears.color
 function util.ensure_pango_color(color, fallback)
-    gdebug.deprecate("gears.color.ensure_pango_color", { deprecated_in = 5 })
-    return gcolor.ensure_pango_color(color, fallback)
+	gdebug.deprecate("gears.color.ensure_pango_color", { deprecated_in = 5 })
+	return gcolor.ensure_pango_color(color, fallback)
 end
 
 --- Make i cycle.
@@ -82,8 +82,8 @@ end
 -- @return An integer in (1, t) or nil if t is less than or equal to zero.
 -- @see gears.math
 function util.cycle(t, i)
-    gdebug.deprecate("gears.math.cycle", { deprecated_in = 5 })
-    return gmath.cycle(t, i)
+	gdebug.deprecate("gears.math.cycle", { deprecated_in = 5 })
+	return gmath.cycle(t, i)
 end
 
 --- Create a directory
@@ -92,14 +92,14 @@ end
 -- @return mkdir return code
 -- @see gears.filesystem
 function util.mkdir(dir)
-    gdebug.deprecate("gears.filesystem.make_directories", { deprecated_in = 5 })
-    return gfs.make_directories(dir)
+	gdebug.deprecate("gears.filesystem.make_directories", { deprecated_in = 5 })
+	return gfs.make_directories(dir)
 end
 
 --- Eval Lua code.
 -- @return The return value of Lua code.
 function util.eval(s)
-    return assert(load(s))()
+	return assert(load(s))()
 end
 
 --- Escape a string from XML char.
@@ -109,8 +109,8 @@ end
 -- @return Escape text.
 -- @see gears.string
 function util.escape(text)
-    gdebug.deprecate("gears.string.xml_escape", { deprecated_in = 5 })
-    return gstring.xml_escape(text)
+	gdebug.deprecate("gears.string.xml_escape", { deprecated_in = 5 })
+	return gstring.xml_escape(text)
 end
 
 --- Unescape a string from entities.
@@ -119,8 +119,8 @@ end
 -- @return Unescaped text.
 -- @see gears.string
 function util.unescape(text)
-    gdebug.deprecate("gears.string.xml_unescape", { deprecated_in = 5 })
-    return gstring.xml_unescape(text)
+	gdebug.deprecate("gears.string.xml_unescape", { deprecated_in = 5 })
+	return gstring.xml_unescape(text)
 end
 
 --- Check if a file is a Lua valid file.
@@ -129,10 +129,10 @@ end
 -- @return A function if everything is alright, a string with the error
 -- otherwise.
 function util.checkfile(path)
-    local f, e = loadfile(path)
-    -- Return function if function, otherwise return error.
-    if f then return f end
-    return e
+	local f, e = loadfile(path)
+	-- Return function if function, otherwise return error.
+	if f then return f end
+	return e
 end
 
 --- Try to restart awesome.
@@ -140,13 +140,13 @@ end
 -- If it's not ok, the error will be returned.
 -- @return Never return if awesome restart, or return a string error.
 function util.restart()
-    local c = util.checkfile(capi.awesome.conffile)
+	local c = util.checkfile(capi.awesome.conffile)
 
-    if type(c) ~= "function" then
-        return c
-    end
+	if type(c) ~= "function" then
+		return c
+	end
 
-    capi.awesome.restart()
+	capi.awesome.restart()
 end
 
 --- Get the config home according to the XDG basedir specification.
@@ -154,8 +154,8 @@ end
 -- @return the config home (XDG_CONFIG_HOME) with a slash at the end.
 -- @see gears.filesystem
 function util.get_xdg_config_home()
-    gdebug.deprecate("gears.filesystem.get_xdg_config_home", { deprecated_in = 5 })
-    return gfs.get_xdg_config_home()
+	gdebug.deprecate("gears.filesystem.get_xdg_config_home", { deprecated_in = 5 })
+	return gfs.get_xdg_config_home()
 end
 
 --- Get the cache home according to the XDG basedir specification.
@@ -163,8 +163,8 @@ end
 -- @return the cache home (XDG_CACHE_HOME) with a slash at the end.
 -- @see gears.filesystem
 function util.get_xdg_cache_home()
-    gdebug.deprecate("gears.filesystem.get_xdg_cache_home", { deprecated_in = 5 })
-    return gfs.get_xdg_cache_home()
+	gdebug.deprecate("gears.filesystem.get_xdg_cache_home", { deprecated_in = 5 })
+	return gfs.get_xdg_cache_home()
 end
 
 --- Get the path to the user's config dir.
@@ -173,8 +173,8 @@ end
 -- @return A string with the requested path with a slash at the end.
 -- @see gears.filesystem
 function util.get_configuration_dir()
-    gdebug.deprecate("gears.filesystem.get_configuration_dir", { deprecated_in = 5 })
-    return gfs.get_configuration_dir()
+	gdebug.deprecate("gears.filesystem.get_configuration_dir", { deprecated_in = 5 })
+	return gfs.get_configuration_dir()
 end
 
 --- Get the path to a directory that should be used for caching data.
@@ -182,8 +182,8 @@ end
 -- @return A string with the requested path with a slash at the end.
 -- @see gears.filesystem
 function util.get_cache_dir()
-    gdebug.deprecate("gears.filesystem.get_cache_dir", { deprecated_in = 5 })
-    return gfs.get_cache_dir()
+	gdebug.deprecate("gears.filesystem.get_cache_dir", { deprecated_in = 5 })
+	return gfs.get_cache_dir()
 end
 
 --- Get the path to the directory where themes are installed.
@@ -191,8 +191,8 @@ end
 -- @return A string with the requested path with a slash at the end.
 -- @see gears.filesystem
 function util.get_themes_dir()
-    gdebug.deprecate("gears.filesystem.get_themes_dir", { deprecated_in = 5 })
-    return gfs.get_themes_dir()
+	gdebug.deprecate("gears.filesystem.get_themes_dir", { deprecated_in = 5 })
+	return gfs.get_themes_dir()
 end
 
 --- Get the path to the directory where our icons are installed.
@@ -200,8 +200,8 @@ end
 -- @return A string with the requested path with a slash at the end.
 -- @see gears.filesystem
 function util.get_awesome_icon_dir()
-    gdebug.deprecate("gears.filesystem.get_awesome_icon_dir", { deprecated_in = 5 })
-    return gfs.get_awesome_icon_dir()
+	gdebug.deprecate("gears.filesystem.get_awesome_icon_dir", { deprecated_in = 5 })
+	return gfs.get_awesome_icon_dir()
 end
 
 --- Get the user's config or cache dir.
@@ -212,8 +212,8 @@ end
 -- @return A string containing the requested path.
 -- @see gears.filesystem
 function util.getdir(d)
-    gdebug.deprecate("gears.filesystem.get_dir", { deprecated_in = 5 })
-    return gfs.get_dir(d)
+	gdebug.deprecate("gears.filesystem.get_dir", { deprecated_in = 5 })
+	return gfs.get_dir(d)
 end
 
 --- Search for an icon and return the full path.
@@ -225,27 +225,27 @@ end
 -- @tparam[opt] string size The size. If this is specified, subdirectories `x`
 --   of the dirs are searched first.
 function util.geticonpath(iconname, exts, dirs, size)
-    exts            = exts or { 'png', 'gif' }
-    dirs            = dirs or { '/usr/share/pixmaps/', '/usr/share/icons/hicolor/' }
-    local icontypes = { 'apps', 'actions', 'categories', 'emblems',
-                        'mimetypes', 'status', 'devices', 'extras', 'places', 'stock' }
-    for _, d in pairs(dirs) do
-        local icon
-        for _, e in pairs(exts) do
-            icon = d .. iconname .. '.' .. e
-            if gfs.file_readable(icon) then
-                return icon
-            end
-            if size then
-                for _, t in pairs(icontypes) do
-                    icon = string.format("%s%ux%u/%s/%s.%s", d, size, size, t, iconname, e)
-                    if gfs.file_readable(icon) then
-                        return icon
-                    end
-                end
-            end
-        end
-    end
+	exts            = exts or { 'png', 'gif' }
+	dirs            = dirs or { '/usr/share/pixmaps/', '/usr/share/icons/hicolor/' }
+	local icontypes = { 'apps', 'actions', 'categories', 'emblems',
+	                    'mimetypes', 'status', 'devices', 'extras', 'places', 'stock' }
+	for _, d in pairs(dirs) do
+		local icon
+		for _, e in pairs(exts) do
+			icon = d .. iconname .. '.' .. e
+			if gfs.file_readable(icon) then
+				return icon
+			end
+			if size then
+				for _, t in pairs(icontypes) do
+					icon = string.format("%s%ux%u/%s/%s.%s", d, size, size, t, iconname, e)
+					if gfs.file_readable(icon) then
+						return icon
+					end
+				end
+			end
+		end
+	end
 end
 
 --- Check if a file exists, is readable and not a directory.
@@ -254,8 +254,8 @@ end
 -- @return True if file exists and is readable.
 -- @see gears.filesystem
 function util.file_readable(filename)
-    gdebug.deprecate("gears.filesystem.file_readable", { deprecated_in = 5 })
-    return gfs.file_readable(filename)
+	gdebug.deprecate("gears.filesystem.file_readable", { deprecated_in = 5 })
+	return gfs.file_readable(filename)
 end
 
 --- Check if a path exists, is readable and is a directory.
@@ -264,8 +264,8 @@ end
 -- @treturn boolean True if dir exists and is readable.
 -- @see gears.filesystem
 function util.dir_readable(path)
-    gdebug.deprecate("gears.filesystem.dir_readable", { deprecated_in = 5 })
-    return gfs.dir_readable(path)
+	gdebug.deprecate("gears.filesystem.dir_readable", { deprecated_in = 5 })
+	return gfs.dir_readable(path)
 end
 
 --- Check if a path is a directory.
@@ -274,8 +274,8 @@ end
 -- @treturn bool True if path exists and is a directory.
 -- @see gears.filesystem
 function util.is_dir(path)
-    gdebug.deprecate("gears.filesystem.is_dir", { deprecated_in = 5 })
-    return gfs.is_dir(path)
+	gdebug.deprecate("gears.filesystem.is_dir", { deprecated_in = 5 })
+	return gfs.is_dir(path)
 end
 
 --- Return all subsets of a specific set.
@@ -288,8 +288,8 @@ end
 -- @return A table with all subset.
 -- @see gears.math
 function util.subsets(set)
-    gdebug.deprecate("gears.math.subsets", { deprecated_in = 5 })
-    return gmath.subsets(set)
+	gdebug.deprecate("gears.math.subsets", { deprecated_in = 5 })
+	return gmath.subsets(set)
 end
 
 --- Get the nearest rectangle in the given direction. Every rectangle is specified as a table
@@ -301,8 +301,8 @@ end
 -- @return The index for the rectangle in recttbl closer to cur in the given direction. nil if none found.
 -- @see gears.geometry
 function util.get_rectangle_in_direction(dir, recttbl, cur)
-    gdebug.deprecate("gears.geometry.rectangle.get_in_direction", { deprecated_in = 4 })
-    return grect.get_in_direction(dir, recttbl, cur)
+	gdebug.deprecate("gears.geometry.rectangle.get_in_direction", { deprecated_in = 4 })
+	return grect.get_in_direction(dir, recttbl, cur)
 end
 
 --- Join all tables given as parameters.
@@ -312,8 +312,8 @@ end
 -- @return A new table containing all keys from the arguments.
 -- @see gears.table
 function util.table.join(...)
-    gdebug.deprecate("gears.table.join", { deprecated_in = 5 })
-    return gtable.join(...)
+	gdebug.deprecate("gears.table.join", { deprecated_in = 5 })
+	return gtable.join(...)
 end
 
 --- Override elements in the first table by the one in the second.
@@ -326,8 +326,8 @@ end
 -- @treturn table t (for convenience)
 -- @see gears.table
 function util.table.crush(t, set, raw)
-    gdebug.deprecate("gears.table.crush", { deprecated_in = 5 })
-    return gtable.crush(t, set, raw)
+	gdebug.deprecate("gears.table.crush", { deprecated_in = 5 })
+	return gtable.crush(t, set, raw)
 end
 
 --- Pack all elements with an integer key into a new table
@@ -342,8 +342,8 @@ end
 -- @treturn table A packed table with all numeric keys
 -- @see gears.table
 function util.table.from_sparse(t)
-    gdebug.deprecate("gears.table.from_sparse", { deprecated_in = 5 })
-    return gtable.from_sparse(t)
+	gdebug.deprecate("gears.table.from_sparse", { deprecated_in = 5 })
+	return gtable.from_sparse(t)
 end
 
 --- Check if a table has an item and return its key.
@@ -353,8 +353,8 @@ end
 -- @return The key were the item is found, or nil if not found.
 -- @see gears.table
 function util.table.hasitem(t, item)
-    gdebug.deprecate("gears.table.hasitem", { deprecated_in = 5 })
-    return gtable.hasitem(t, item)
+	gdebug.deprecate("gears.table.hasitem", { deprecated_in = 5 })
+	return gtable.hasitem(t, item)
 end
 
 --- Split a string into multiple lines
@@ -365,8 +365,8 @@ end
 -- @return The string with lines wrapped to width.
 -- @see gears.string
 function util.linewrap(text, width, indent)
-    gdebug.deprecate("gears.string.linewrap", { deprecated_in = 5 })
-    return gstring.linewrap(text, width, indent)
+	gdebug.deprecate("gears.string.linewrap", { deprecated_in = 5 })
+	return gstring.linewrap(text, width, indent)
 end
 
 --- Count number of lines in a string
@@ -375,8 +375,8 @@ end
 -- @treturn int Number of lines.
 -- @see gears.string
 function util.linecount(text)
-    gdebug.deprecate("gears.string.linecount", { deprecated_in = 5 })
-    return gstring.linecount(text)
+	gdebug.deprecate("gears.string.linecount", { deprecated_in = 5 })
+	return gstring.linecount(text)
 end
 
 --- Get a sorted table with all integer keys from a table
@@ -385,8 +385,8 @@ end
 -- @return A table with keys
 -- @see gears.table
 function util.table.keys(t)
-    gdebug.deprecate("gears.table.keys", { deprecated_in = 5 })
-    return gtable.keys(t)
+	gdebug.deprecate("gears.table.keys", { deprecated_in = 5 })
+	return gtable.keys(t)
 end
 
 --- Filter a tables keys for certain content types
@@ -396,8 +396,8 @@ end
 -- @return A filtered table with keys
 -- @see gears.table
 function util.table.keys_filter(t, ...)
-    gdebug.deprecate("gears.table.keys_filter", { deprecated_in = 5 })
-    return gtable.keys_filter(t, ...)
+	gdebug.deprecate("gears.table.keys_filter", { deprecated_in = 5 })
+	return gtable.keys_filter(t, ...)
 end
 
 --- Reverse a table
@@ -406,8 +406,8 @@ end
 -- @return the reversed table
 -- @see gears.table
 function util.table.reverse(t)
-    gdebug.deprecate("gears.table.reverse", { deprecated_in = 5 })
-    return gtable.reverse(t)
+	gdebug.deprecate("gears.table.reverse", { deprecated_in = 5 })
+	return gtable.reverse(t)
 end
 
 --- Clone a table
@@ -417,8 +417,8 @@ end
 -- @return a clone of t
 -- @see gears.table
 function util.table.clone(t, deep)
-    gdebug.deprecate("gears.table.clone", { deprecated_in = 5 })
-    return gtable.clone(t, deep)
+	gdebug.deprecate("gears.table.clone", { deprecated_in = 5 })
+	return gtable.clone(t, deep)
 end
 
 ---
@@ -432,8 +432,8 @@ end
 -- the table)
 -- @see gears.table
 function util.table.iterate(t, filter, start)
-    gdebug.deprecate("gears.table.iterate", { deprecated_in = 5 })
-    return gtable.iterate(t, filter, start)
+	gdebug.deprecate("gears.table.iterate", { deprecated_in = 5 })
+	return gtable.iterate(t, filter, start)
 end
 
 
@@ -444,8 +444,8 @@ end
 -- @treturn table Return `t` for convenience
 -- @see gears.table
 function util.table.merge(t, set)
-    gdebug.deprecate("gears.table.merge", { deprecated_in = 5 })
-    return gtable.merge(t, set)
+	gdebug.deprecate("gears.table.merge", { deprecated_in = 5 })
+	return gtable.merge(t, set)
 end
 
 
@@ -455,8 +455,8 @@ end
 -- @deprecated util.quote_pattern
 -- @see gears.string
 function util.quote_pattern(s)
-    gdebug.deprecate("gears.string.quote_pattern", { deprecated_in = 5 })
-    return gstring.quote_pattern(s)
+	gdebug.deprecate("gears.string.quote_pattern", { deprecated_in = 5 })
+	return gstring.quote_pattern(s)
 end
 
 -- Generate a pattern matching expression that ignores case.
@@ -464,8 +464,8 @@ end
 -- @deprecated util.query_to_pattern
 -- @see gears.string
 function util.query_to_pattern(q)
-    gdebug.deprecate("gears.string.query_to_pattern", { deprecated_in = 5 })
-    return gstring.query_to_pattern(q)
+	gdebug.deprecate("gears.string.query_to_pattern", { deprecated_in = 5 })
+	return gstring.query_to_pattern(q)
 end
 
 --- Round a number to an integer.
@@ -474,8 +474,8 @@ end
 -- @treturn integer
 -- @see gears.math
 function util.round(x)
-    gdebug.deprecate("gears.math.round", { deprecated_in = 5 })
-    return gmath.round(x)
+	gdebug.deprecate("gears.math.round", { deprecated_in = 5 })
+	return gmath.round(x)
 end
 
 return util

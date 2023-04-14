@@ -84,36 +84,36 @@ local timer          = { mt = {} }
 
 --- Start the timer.
 function timer:start()
-    if self.data.source_id ~= nil then
-        print(traceback("timer already started"))
-        return
-    end
-    self.data.source_id = glib.timeout_add(glib.PRIORITY_DEFAULT, self.data.timeout * 1000, function()
-        protected_call(self.emit_signal, self, "timeout")
-        return true
-    end)
-    self:emit_signal("start")
+	if self.data.source_id ~= nil then
+		print(traceback("timer already started"))
+		return
+	end
+	self.data.source_id = glib.timeout_add(glib.PRIORITY_DEFAULT, self.data.timeout * 1000, function()
+		protected_call(self.emit_signal, self, "timeout")
+		return true
+	end)
+	self:emit_signal("start")
 end
 
 --- Stop the timer.
 function timer:stop()
-    if self.data.source_id == nil then
-        print(traceback("timer not started"))
-        return
-    end
-    glib.source_remove(self.data.source_id)
-    self.data.source_id = nil
-    self:emit_signal("stop")
+	if self.data.source_id == nil then
+		print(traceback("timer not started"))
+		return
+	end
+	glib.source_remove(self.data.source_id)
+	self.data.source_id = nil
+	self:emit_signal("stop")
 end
 
 --- Restart the timer.
 -- This is equivalent to stopping the timer if it is running and then starting
 -- it.
 function timer:again()
-    if self.data.source_id ~= nil then
-        self:stop()
-    end
-    self:start()
+	if self.data.source_id ~= nil then
+		self:stop()
+	end
+	self:start()
 end
 
 --- The timer is started.
@@ -126,22 +126,22 @@ end
 -- @param number
 
 local timer_instance_mt = {
-    __index    = function(self, property)
-        if property == "timeout" then
-            return self.data.timeout
-        elseif property == "started" then
-            return self.data.source_id ~= nil
-        end
+	__index    = function(self, property)
+		if property == "timeout" then
+			return self.data.timeout
+		elseif property == "started" then
+			return self.data.source_id ~= nil
+		end
 
-        return timer[property]
-    end,
+		return timer[property]
+	end,
 
-    __newindex = function(self, property, value)
-        if property == "timeout" then
-            self.data.timeout = tonumber(value)
-            self:emit_signal("property::timeout")
-        end
-    end
+	__newindex = function(self, property, value)
+		if property == "timeout" then
+			self.data.timeout = tonumber(value)
+			self:emit_signal("property::timeout")
+		end
+	end
 }
 
 --- Create a new timer object.
@@ -155,32 +155,32 @@ local timer_instance_mt = {
 -- @treturn timer
 -- @function gears.timer
 function timer.new(args)
-    args      = args or {}
-    local ret = object()
+	args      = args or {}
+	local ret = object()
 
-    ret.data  = { timeout = 0 } --TODO v5 rename to ._private
-    setmetatable(ret, timer_instance_mt)
+	ret.data  = { timeout = 0 } --TODO v5 rename to ._private
+	setmetatable(ret, timer_instance_mt)
 
-    for k, v in pairs(args) do
-        ret[k] = v
-    end
+	for k, v in pairs(args) do
+		ret[k] = v
+	end
 
-    if args.autostart then
-        ret:start()
-    end
+	if args.autostart then
+		ret:start()
+	end
 
-    if args.callback then
-        if args.call_now then
-            args.callback()
-        end
-        ret:connect_signal("timeout", args.callback)
-    end
+	if args.callback then
+		if args.call_now then
+			args.callback()
+		end
+		ret:connect_signal("timeout", args.callback)
+	end
 
-    if args.single_shot then
-        ret:connect_signal("timeout", function() ret:stop() end)
-    end
+	if args.single_shot then
+		ret:connect_signal("timeout", function() ret:stop() end)
+	end
 
-    return ret
+	return ret
 end
 
 --- Create a timeout for calling some callback function.
@@ -193,15 +193,15 @@ end
 -- @function gears.timer.start_new
 -- @see gears.timer.weak_start_new
 function timer.start_new(timeout, callback)
-    local t = timer.new({ timeout = timeout })
-    t:connect_signal("timeout", function()
-        local cont = protected_call(callback)
-        if not cont then
-            t:stop()
-        end
-    end)
-    t:start()
-    return t
+	local t = timer.new({ timeout = timeout })
+	t:connect_signal("timeout", function()
+		local cont = protected_call(callback)
+		if not cont then
+			t:stop()
+		end
+	end)
+	t:start()
+	return t
 end
 
 --- Create a timeout for calling some callback function.
@@ -215,22 +215,22 @@ end
 -- @function gears.timer.weak_start_new
 -- @see gears.timer.start_new
 function timer.weak_start_new(timeout, callback)
-    local indirection    = setmetatable({}, { __mode = "v" })
-    indirection.callback = callback
-    return timer.start_new(timeout, function()
-        local cb = indirection.callback
-        if cb then
-            return cb()
-        end
-    end)
+	local indirection    = setmetatable({}, { __mode = "v" })
+	indirection.callback = callback
+	return timer.start_new(timeout, function()
+		local cb = indirection.callback
+		if cb then
+			return cb()
+		end
+	end)
 end
 
 local delayed_calls = {}
 capi.awesome.connect_signal("refresh", function()
-    for _, callback in ipairs(delayed_calls) do
-        protected_call(unpack(callback))
-    end
-    delayed_calls = {}
+	for _, callback in ipairs(delayed_calls) do
+		protected_call(unpack(callback))
+	end
+	delayed_calls = {}
 end)
 
 --- Call the given function at the end of the current main loop iteration
@@ -238,12 +238,12 @@ end)
 -- @param ... Arguments to the callback function
 -- @function gears.timer.delayed_call
 function timer.delayed_call(callback, ...)
-    assert(type(callback) == "function", "callback must be a function, got: " .. type(callback))
-    table.insert(delayed_calls, { callback, ... })
+	assert(type(callback) == "function", "callback must be a function, got: " .. type(callback))
+	table.insert(delayed_calls, { callback, ... })
 end
 
 function timer.mt.__call(_, ...)
-    return timer.new(...)
+	return timer.new(...)
 end
 
 return setmetatable(timer, timer.mt)

@@ -34,28 +34,28 @@ local buf          = ffi_new("char[?]", digest_len)
 local ctx_ptr_type = ffi.typeof("SHA256_CTX[1]")
 
 function _M.new(self)
-    local ctx = ffi_new(ctx_ptr_type)
-    if C.SHA256_Init(ctx) == 0 then
-        return nil
-    end
+	local ctx = ffi_new(ctx_ptr_type)
+	if C.SHA256_Init(ctx) == 0 then
+		return nil
+	end
 
-    return setmetatable({ _ctx = ctx }, mt)
+	return setmetatable({ _ctx = ctx }, mt)
 end
 
 function _M.update(self, s)
-    return C.SHA256_Update(self._ctx, s, #s) == 1
+	return C.SHA256_Update(self._ctx, s, #s) == 1
 end
 
 function _M.final(self)
-    if C.SHA256_Final(buf, self._ctx) == 1 then
-        return ffi_str(buf, digest_len)
-    end
+	if C.SHA256_Final(buf, self._ctx) == 1 then
+		return ffi_str(buf, digest_len)
+	end
 
-    return nil
+	return nil
 end
 
 function _M.reset(self)
-    return C.SHA256_Init(self._ctx) == 1
+	return C.SHA256_Init(self._ctx) == 1
 end
 
 return _M

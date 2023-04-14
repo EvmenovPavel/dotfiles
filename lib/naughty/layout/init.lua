@@ -5,6 +5,6 @@
 ---------------------------------------------------------------------------
 
 return {
-    legacy = require("lib.naughty.layout.legacy");
-    box    = require("lib.naughty.layout.box");
+	legacy = require("lib.naughty.layout.legacy");
+	box    = require("lib.naughty.layout.box");
 }

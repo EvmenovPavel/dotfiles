@@ -8,9 +8,9 @@
 local gdebug = require("gears.debug")
 
 return gdebug.deprecate_class(
-        require("wibox.container.background"),
-        "wibox.widget.background",
-        "wibox.container.background"
+		require("wibox.container.background"),
+		"wibox.widget.background",
+		"wibox.container.background"
 )
 
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

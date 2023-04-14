@@ -13,7 +13,7 @@
 local dbus = dbus
 
 if dbus then
-    dbus.request_name("session", "org.awesomewm.awful")
+	dbus.request_name("session", "org.awesomewm.awful")
 end
 
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

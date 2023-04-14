@@ -133,21 +133,21 @@ rules.rules          = {}
 -- @tab rule The rule to check.
 -- @treturn bool True if it matches, false otherwise.
 function rules.match(c, rule)
-    if not rule then return false end
-    for field, value in pairs(rule) do
-        if c[field] then
-            if type(c[field]) == "string" then
-                if not c[field]:match(value) and c[field] ~= value then
-                    return false
-                end
-            elseif c[field] ~= value then
-                return false
-            end
-        else
-            return false
-        end
-    end
-    return true
+	if not rule then return false end
+	for field, value in pairs(rule) do
+		if c[field] then
+			if type(c[field]) == "string" then
+				if not c[field]:match(value) and c[field] ~= value then
+					return false
+				end
+			elseif c[field] ~= value then
+				return false
+			end
+		else
+			return false
+		end
+	end
+	return true
 end
 
 --- Check if a client matches any part of a rule.
@@ -155,19 +155,19 @@ end
 -- @tab rule The rule to check.
 -- @treturn bool True if at least one rule is matched, false otherwise.
 function rules.match_any(c, rule)
-    if not rule then return false end
-    for field, values in pairs(rule) do
-        if c[field] then
-            for _, value in ipairs(values) do
-                if c[field] == value then
-                    return true
-                elseif type(c[field]) == "string" and c[field]:match(value) then
-                    return true
-                end
-            end
-        end
-    end
-    return false
+	if not rule then return false end
+	for field, values in pairs(rule) do
+		if c[field] then
+			for _, value in ipairs(values) do
+				if c[field] == value then
+					return true
+				elseif type(c[field]) == "string" and c[field]:match(value) then
+					return true
+				end
+			end
+		end
+	end
+	return false
 end
 
 --- Does a given rule entry match a client?
@@ -176,8 +176,8 @@ end
 --   `except_any`).
 -- @treturn bool
 function rules.matches(c, entry)
-    return (rules.match(c, entry.rule) or rules.match_any(c, entry.rule_any)) and
-            (not rules.match(c, entry.except) and not rules.match_any(c, entry.except_any))
+	return (rules.match(c, entry.rule) or rules.match_any(c, entry.rule_any)) and
+			(not rules.match(c, entry.except) and not rules.match_any(c, entry.except_any))
 end
 
 --- Get list of matching rules for a client.
@@ -186,13 +186,13 @@ end
 --   "except_any" keys.
 -- @treturn table The list of matched rules.
 function rules.matching_rules(c, _rules)
-    local result = {}
-    for _, entry in ipairs(_rules) do
-        if (rules.matches(c, entry)) then
-            table.insert(result, entry)
-        end
-    end
-    return result
+	local result = {}
+	for _, entry in ipairs(_rules) do
+		if (rules.matches(c, entry)) then
+			table.insert(result, entry)
+		end
+	end
+	return result
 end
 
 --- Check if a client matches a given set of rules.
@@ -201,12 +201,12 @@ end
 --   `except` and `except_any` keys.
 -- @treturn bool True if at least one rule is matched, false otherwise.
 function rules.matches_list(c, _rules)
-    for _, entry in ipairs(_rules) do
-        if (rules.matches(c, entry)) then
-            return true
-        end
-    end
-    return false
+	for _, entry in ipairs(_rules) do
+		if (rules.matches(c, entry)) then
+			return true
+		end
+	end
+	return false
 end
 
 
@@ -258,83 +258,83 @@ local rule_source_sort = gsort.topological()
 --  priority over.
 -- @treturn boolean Returns false if a dependency conflict was found.
 function rules.add_rule_source(name, callback, depends_on, precede)
-    depends_on = depends_on or {}
-    precede    = precede or {}
-    assert(type(depends_on) == "table")
-    assert(type(precede) == "table")
+	depends_on = depends_on or {}
+	precede    = precede or {}
+	assert(type(depends_on) == "table")
+	assert(type(precede) == "table")
 
-    for _, v in ipairs(rule_sources) do
-        -- Names must be unique
-        assert(
-                v.name ~= name,
-                "Name must be unique, but '" .. name .. "' was already registered."
-        )
-    end
+	for _, v in ipairs(rule_sources) do
+		-- Names must be unique
+		assert(
+				v.name ~= name,
+				"Name must be unique, but '" .. name .. "' was already registered."
+		)
+	end
 
-    local new_sources = rule_source_sort:clone()
+	local new_sources = rule_source_sort:clone()
 
-    new_sources:prepend(name, precede)
-    new_sources:append(name, depends_on)
+	new_sources:prepend(name, precede)
+	new_sources:append(name, depends_on)
 
-    local res, err = new_sources:sort()
+	local res, err = new_sources:sort()
 
-    if err then
-        gdebug.print_warning("Failed to add the rule source: " .. err)
-        return false
-    end
+	if err then
+		gdebug.print_warning("Failed to add the rule source: " .. err)
+		return false
+	end
 
-    -- Only replace the source once the additions have been proven safe
-    rule_source_sort = new_sources
+	-- Only replace the source once the additions have been proven safe
+	rule_source_sort = new_sources
 
-    local callbacks  = {}
+	local callbacks  = {}
 
-    -- Get all callbacks for *existing* sources.
-    -- It is important to remember that names can be used in the sorting even
-    -- if the source itself doesn't (yet) exists.
-    for _, v in ipairs(rule_sources) do
-        callbacks[v.name] = v.callback
-    end
+	-- Get all callbacks for *existing* sources.
+	-- It is important to remember that names can be used in the sorting even
+	-- if the source itself doesn't (yet) exists.
+	for _, v in ipairs(rule_sources) do
+		callbacks[v.name] = v.callback
+	end
 
-    rule_sources    = {}
-    callbacks[name] = callback
+	rule_sources    = {}
+	callbacks[name] = callback
 
-    for _, v in ipairs(res) do
-        if callbacks[v] then
-            table.insert(rule_sources, 1, {
-                callback = callbacks[v],
-                name     = v
-            })
-        end
-    end
+	for _, v in ipairs(res) do
+		if callbacks[v] then
+			table.insert(rule_sources, 1, {
+				callback = callbacks[v],
+				name     = v
+			})
+		end
+	end
 
-    return true
+	return true
 end
 
 --- Remove a source.
 -- @tparam string name The source name.
 -- @treturn boolean If the source was removed
 function rules.remove_rule_source(name)
-    rule_source_sort:remove(name)
+	rule_source_sort:remove(name)
 
-    for k, v in ipairs(rule_sources) do
-        if v.name == name then
-            table.remove(rule_sources, k)
-            return true
-        end
-    end
+	for k, v in ipairs(rule_sources) do
+		if v.name == name then
+			table.remove(rule_sources, k)
+			return true
+		end
+	end
 
-    return false
+	return false
 end
 
 -- Add the rules properties
 local function apply_awful_rules(c, props, callbacks)
-    for _, entry in ipairs(rules.matching_rules(c, rules.rules)) do
-        gtable.crush(props, entry.properties or {})
+	for _, entry in ipairs(rules.matching_rules(c, rules.rules)) do
+		gtable.crush(props, entry.properties or {})
 
-        if entry.callback then
-            table.insert(callbacks, entry.callback)
-        end
-    end
+		if entry.callback then
+			table.insert(callbacks, entry.callback)
+		end
+	end
 end
 
 --- The default `awful.rules` source.
@@ -349,17 +349,17 @@ rules.add_rule_source("awful.rules", apply_awful_rules, { "awful.spawn" }, {})
 
 -- Add startup_id overridden properties
 local function apply_spawn_rules(c, props, callbacks)
-    if c.startup_id and aspawn.snid_buffer[c.startup_id] then
-        local snprops, sncb = unpack(aspawn.snid_buffer[c.startup_id])
+	if c.startup_id and aspawn.snid_buffer[c.startup_id] then
+		local snprops, sncb = unpack(aspawn.snid_buffer[c.startup_id])
 
-        -- The SNID tag(s) always have precedence over the rules one(s)
-        if snprops.tag or snprops.tags or snprops.new_tag then
-            props.tag, props.tags, props.new_tag = nil, nil, nil
-        end
+		-- The SNID tag(s) always have precedence over the rules one(s)
+		if snprops.tag or snprops.tags or snprops.new_tag then
+			props.tag, props.tags, props.new_tag = nil, nil, nil
+		end
 
-        gtable.crush(props, snprops)
-        gtable.merge(callbacks, sncb)
-    end
+		gtable.crush(props, snprops)
+		gtable.merge(callbacks, sncb)
+	end
 end
 
 --- The rule source for clients spawned by `awful.spawn`.
@@ -373,29 +373,29 @@ end
 rules.add_rule_source("awful.spawn", apply_spawn_rules, {}, { "awful.rules" })
 
 local function apply_singleton_rules(c, props, callbacks)
-    local persis_id, info = c.single_instance_id, nil
+	local persis_id, info = c.single_instance_id, nil
 
-    -- This is a persistent property set by `awful.spawn`
-    if awesome.startup and persis_id then
-        info = aspawn.single_instance_manager.by_uid[persis_id]
-    elseif c.startup_id then
-        info                                                 = aspawn.single_instance_manager.by_snid[c.startup_id]
-        aspawn.single_instance_manager.by_snid[c.startup_id] = nil
-    elseif aspawn.single_instance_manager.by_pid[c.pid] then
-        info = aspawn.single_instance_manager.by_pid[c.pid].matcher(c) and
-                aspawn.single_instance_manager.by_pid[c.pid] or nil
-    end
+	-- This is a persistent property set by `awful.spawn`
+	if awesome.startup and persis_id then
+		info = aspawn.single_instance_manager.by_uid[persis_id]
+	elseif c.startup_id then
+		info                                                 = aspawn.single_instance_manager.by_snid[c.startup_id]
+		aspawn.single_instance_manager.by_snid[c.startup_id] = nil
+	elseif aspawn.single_instance_manager.by_pid[c.pid] then
+		info = aspawn.single_instance_manager.by_pid[c.pid].matcher(c) and
+				aspawn.single_instance_manager.by_pid[c.pid] or nil
+	end
 
-    if info then
-        c.single_instance_id = info.hash
-        gtable.crush(props, info.rules)
-        table.insert(callbacks, info.callback)
-        table.insert(info.instances, c)
+	if info then
+		c.single_instance_id = info.hash
+		gtable.crush(props, info.rules)
+		table.insert(callbacks, info.callback)
+		table.insert(info.instances, c)
 
-        -- Prevent apps with multiple clients from re-using this too often in
-        -- the first 30 seconds before the PID is cleared.
-        aspawn.single_instance_manager.by_pid[c.pid] = nil
-    end
+		-- Prevent apps with multiple clients from re-using this too often in
+		-- the first 30 seconds before the PID is cleared.
+		aspawn.single_instance_manager.by_pid[c.pid] = nil
+	end
 end
 
 --- The rule source for clients spawned by `awful.spawn.once` and `single_instance`.
@@ -415,20 +415,20 @@ rules.add_rule_source("awful.spawn_once", apply_singleton_rules, { "awful.spawn"
 --- Apply awful.rules.rules to a client.
 -- @client c The client.
 function rules.apply(c)
-    local callbacks, props = {}, {}
-    for _, v in ipairs(rule_sources) do
-        v.callback(c, props, callbacks)
-    end
+	local callbacks, props = {}, {}
+	for _, v in ipairs(rule_sources) do
+		v.callback(c, props, callbacks)
+	end
 
-    rules.execute(c, props, callbacks)
+	rules.execute(c, props, callbacks)
 end
 
 local function add_to_tag(c, t)
-    if not t then return end
+	if not t then return end
 
-    local tags = c:tags()
-    table.insert(tags, t)
-    c:tags(tags)
+	local tags = c:tags()
+	table.insert(tags, t)
+	c:tags(tags)
 end
 
 --- Extra rules properties.
@@ -479,140 +479,140 @@ rules.high_priority_properties = {}
 rules.delayed_properties       = {}
 
 local force_ignore             = {
-    titlebars_enabled = true, focus = true, screen = true, x = true,
-    y                 = true, width = true, height = true, geometry = true, placement = true,
-    border_width      = true, floating = true, size_hints_honor = true
+	titlebars_enabled = true, focus = true, screen = true, x = true,
+	y                 = true, width = true, height = true, geometry = true, placement = true,
+	border_width      = true, floating = true, size_hints_honor = true
 }
 
 function rules.high_priority_properties.tag(c, value, props)
-    if value then
-        if type(value) == "string" then
-            local name = value
-            value      = atag.find_by_name(c.screen, value)
-            if not value and not props.screen then
-                value = atag.find_by_name(nil, name)
-            end
-            if not value then
-                require("gears.debug").print_error("awful.rules-rule specified "
-                        .. "tag = '" .. name .. "', but no such tag exists")
-                return
-            end
-        end
+	if value then
+		if type(value) == "string" then
+			local name = value
+			value      = atag.find_by_name(c.screen, value)
+			if not value and not props.screen then
+				value = atag.find_by_name(nil, name)
+			end
+			if not value then
+				require("gears.debug").print_error("awful.rules-rule specified "
+						.. "tag = '" .. name .. "', but no such tag exists")
+				return
+			end
+		end
 
-        -- In case the tag has been forced to another screen, move the client
-        if c.screen ~= value.screen then
-            c.screen     = value.screen
-            props.screen = value.screen -- In case another rule query it
-        end
+		-- In case the tag has been forced to another screen, move the client
+		if c.screen ~= value.screen then
+			c.screen     = value.screen
+			props.screen = value.screen -- In case another rule query it
+		end
 
-        c:tags { value }
-    end
+		c:tags { value }
+	end
 end
 
 function rules.delayed_properties.switch_to_tags(c, value)
-    if not value then return end
-    atag.viewmore(c:tags(), c.screen)
+	if not value then return end
+	atag.viewmore(c:tags(), c.screen)
 end
 
 function rules.delayed_properties.switchtotag(c, value)
-    gdebug.deprecate("Use switch_to_tags instead of switchtotag", { deprecated_in = 5 })
+	gdebug.deprecate("Use switch_to_tags instead of switchtotag", { deprecated_in = 5 })
 
-    rules.delayed_properties.switch_to_tags(c, value)
+	rules.delayed_properties.switch_to_tags(c, value)
 end
 
 function rules.extra_properties.geometry(c, _, props)
-    local cur_geo = c:geometry()
+	local cur_geo = c:geometry()
 
-    local new_geo = type(props.geometry) == "function"
-            and props.geometry(c, props) or props.geometry or {}
+	local new_geo = type(props.geometry) == "function"
+			and props.geometry(c, props) or props.geometry or {}
 
-    for _, v in ipairs { "x", "y", "width", "height" } do
-        new_geo[v] = type(props[v]) == "function" and props[v](c, props)
-                or props[v] or new_geo[v] or cur_geo[v]
-    end
+	for _, v in ipairs { "x", "y", "width", "height" } do
+		new_geo[v] = type(props[v]) == "function" and props[v](c, props)
+				or props[v] or new_geo[v] or cur_geo[v]
+	end
 
-    c:geometry(new_geo) --TODO use request::geometry
+	c:geometry(new_geo) --TODO use request::geometry
 end
 
 function rules.high_priority_properties.new_tag(c, value, props)
-    local ty = type(value)
-    local t  = nil
+	local ty = type(value)
+	local t  = nil
 
-    if ty == "boolean" then
-        -- Create a new tag named after the client class
-        t = atag.add(c.class or "N/A", { screen = c.screen, volatile = true })
-    elseif ty == "string" then
-        -- Create a tag named after "value"
-        t = atag.add(value, { screen = c.screen, volatile = true })
-    elseif ty == "table" then
-        -- Assume a table of tags properties. Set the right screen, but
-        -- avoid editing the original table
-        local values  = value.screen and value or gtable.clone(value)
-        values.screen = values.screen or c.screen
+	if ty == "boolean" then
+		-- Create a new tag named after the client class
+		t = atag.add(c.class or "N/A", { screen = c.screen, volatile = true })
+	elseif ty == "string" then
+		-- Create a tag named after "value"
+		t = atag.add(value, { screen = c.screen, volatile = true })
+	elseif ty == "table" then
+		-- Assume a table of tags properties. Set the right screen, but
+		-- avoid editing the original table
+		local values  = value.screen and value or gtable.clone(value)
+		values.screen = values.screen or c.screen
 
-        t             = atag.add(value.name or c.class or "N/A", values)
+		t             = atag.add(value.name or c.class or "N/A", values)
 
-        -- In case the tag has been forced to another screen, move the client
-        c.screen      = t.screen
-        props.screen  = t.screen -- In case another rule query it
-    else
-        assert(false)
-    end
+		-- In case the tag has been forced to another screen, move the client
+		c.screen      = t.screen
+		props.screen  = t.screen -- In case another rule query it
+	else
+		assert(false)
+	end
 
-    add_to_tag(c, t)
+	add_to_tag(c, t)
 
-    return t
+	return t
 end
 
 function rules.extra_properties.placement(c, value, props)
-    -- Avoid problems
-    if awesome.startup and
-            (c.size_hints.user_position or c.size_hints.program_position) then
-        return
-    end
+	-- Avoid problems
+	if awesome.startup and
+			(c.size_hints.user_position or c.size_hints.program_position) then
+		return
+	end
 
-    local ty   = type(value)
+	local ty   = type(value)
 
-    local args = {
-        honor_workarea = props.honor_workarea ~= false,
-        honor_padding  = props.honor_padding ~= false
-    }
+	local args = {
+		honor_workarea = props.honor_workarea ~= false,
+		honor_padding  = props.honor_padding ~= false
+	}
 
-    if ty == "function" or (ty == "table" and
-            getmetatable(value) and getmetatable(value).__call
-    ) then
-        value(c, args)
-    elseif ty == "string" and a_place[value] then
-        a_place[value](c, args)
-    end
+	if ty == "function" or (ty == "table" and
+			getmetatable(value) and getmetatable(value).__call
+	) then
+		value(c, args)
+	elseif ty == "string" and a_place[value] then
+		a_place[value](c, args)
+	end
 end
 
 function rules.high_priority_properties.tags(c, value, props)
-    local current = c:tags()
+	local current = c:tags()
 
-    local tags, s = {}, nil
+	local tags, s = {}, nil
 
-    for _, t in ipairs(value) do
-        if type(t) == "string" then
-            t = atag.find_by_name(c.screen, t)
-        end
+	for _, t in ipairs(value) do
+		if type(t) == "string" then
+			t = atag.find_by_name(c.screen, t)
+		end
 
-        if t and ((not s) or t.screen == s) then
-            table.insert(tags, t)
-            s = s or t.screen
-        end
-    end
+		if t and ((not s) or t.screen == s) then
+			table.insert(tags, t)
+			s = s or t.screen
+		end
+	end
 
-    if s and s ~= c.screen then
-        c.screen     = s
-        props.screen = s -- In case another rule query it
-    end
+	if s and s ~= c.screen then
+		c.screen     = s
+		props.screen = s -- In case another rule query it
+	end
 
-    if #current == 0 or (value[1] and value[1].screen ~= current[1].screen) then
-        c:tags(tags)
-    else
-        c:tags(gtable.merge(current, tags))
-    end
+	if #current == 0 or (value[1] and value[1].screen ~= current[1].screen) then
+		c:tags(tags)
+	else
+		c:tags(gtable.merge(current, tags))
+	end
 end
 
 --- Apply properties and callbacks to a client.
@@ -620,121 +620,121 @@ end
 -- @tab props Properties to apply.
 -- @tab[opt] callbacks Callbacks to apply.
 function rules.execute(c, props, callbacks)
-    -- This has to be done first, as it will impact geometry related props.
-    if props.titlebars_enabled and (type(props.titlebars_enabled) ~= "function"
-            or props.titlebars_enabled(c, props)) then
-        c:emit_signal("request::titlebars", "rules", { properties = props })
-        c._request_titlebars_called = true
-    end
+	-- This has to be done first, as it will impact geometry related props.
+	if props.titlebars_enabled and (type(props.titlebars_enabled) ~= "function"
+			or props.titlebars_enabled(c, props)) then
+		c:emit_signal("request::titlebars", "rules", { properties = props })
+		c._request_titlebars_called = true
+	end
 
-    -- Border width will also cause geometry related properties to fail
-    if props.border_width then
-        c.border_width = type(props.border_width) == "function" and
-                props.border_width(c, props) or props.border_width
-    end
+	-- Border width will also cause geometry related properties to fail
+	if props.border_width then
+		c.border_width = type(props.border_width) == "function" and
+				props.border_width(c, props) or props.border_width
+	end
 
-    -- Size hints will be re-applied when setting width/height unless it is
-    -- disabled first
-    if props.size_hints_honor ~= nil then
-        c.size_hints_honor = type(props.size_hints_honor) == "function" and props.size_hints_honor(c, props)
-                or props.size_hints_honor
-    end
+	-- Size hints will be re-applied when setting width/height unless it is
+	-- disabled first
+	if props.size_hints_honor ~= nil then
+		c.size_hints_honor = type(props.size_hints_honor) == "function" and props.size_hints_honor(c, props)
+				or props.size_hints_honor
+	end
 
-    -- Geometry will only work if floating is true, otherwise the "saved"
-    -- geometry will be restored.
-    if props.floating ~= nil then
-        c.floating = type(props.floating) == "function" and props.floating(c, props)
-                or props.floating
-    end
+	-- Geometry will only work if floating is true, otherwise the "saved"
+	-- geometry will be restored.
+	if props.floating ~= nil then
+		c.floating = type(props.floating) == "function" and props.floating(c, props)
+				or props.floating
+	end
 
-    -- Before requesting a tag, make sure the screen is right
-    if props.screen then
-        c.screen = type(props.screen) == "function" and screen[props.screen(c, props)]
-                or screen[props.screen]
-    end
+	-- Before requesting a tag, make sure the screen is right
+	if props.screen then
+		c.screen = type(props.screen) == "function" and screen[props.screen(c, props)]
+				or screen[props.screen]
+	end
 
-    -- Some properties need to be handled first. For example, many properties
-    -- require that the client is tagged, this isn't yet the case.
-    for prop, handler in pairs(rules.high_priority_properties) do
-        local value = props[prop]
-        if value ~= nil then
-            if type(value) == "function" then
-                value = value(c, props)
-            end
-            handler(c, value, props)
-        end
-    end
+	-- Some properties need to be handled first. For example, many properties
+	-- require that the client is tagged, this isn't yet the case.
+	for prop, handler in pairs(rules.high_priority_properties) do
+		local value = props[prop]
+		if value ~= nil then
+			if type(value) == "function" then
+				value = value(c, props)
+			end
+			handler(c, value, props)
+		end
+	end
 
-    -- Make sure the tag is selected before the main rules are called.
-    -- Otherwise properties like "urgent" or "focus" may fail (if they were
-    -- overridden by other callbacks).
-    -- Previously this was done in a second client.manage callback, but caused
-    -- a race condition where the order of modules being loaded would change
-    -- the outcome.
-    c:emit_signal("request::tag", nil, { reason = "rules" })
+	-- Make sure the tag is selected before the main rules are called.
+	-- Otherwise properties like "urgent" or "focus" may fail (if they were
+	-- overridden by other callbacks).
+	-- Previously this was done in a second client.manage callback, but caused
+	-- a race condition where the order of modules being loaded would change
+	-- the outcome.
+	c:emit_signal("request::tag", nil, { reason = "rules" })
 
-    -- By default, rc.lua uses no_overlap+no_offscreen placement. This has to
-    -- be executed before x/y/width/height/geometry as it would otherwise
-    -- always override the user specified position with the default rule.
-    if props.placement then
-        -- It may be a function, so this one doesn't execute it like others
-        rules.extra_properties.placement(c, props.placement, props)
-    end
+	-- By default, rc.lua uses no_overlap+no_offscreen placement. This has to
+	-- be executed before x/y/width/height/geometry as it would otherwise
+	-- always override the user specified position with the default rule.
+	if props.placement then
+		-- It may be a function, so this one doesn't execute it like others
+		rules.extra_properties.placement(c, props.placement, props)
+	end
 
-    -- Handle the geometry (since tags and screen are set).
-    if props.height or props.width or props.x or props.y or props.geometry then
-        rules.extra_properties.geometry(c, nil, props)
-    end
+	-- Handle the geometry (since tags and screen are set).
+	if props.height or props.width or props.x or props.y or props.geometry then
+		rules.extra_properties.geometry(c, nil, props)
+	end
 
-    -- Apply the remaining properties (after known race conditions are handled).
-    for property, value in pairs(props) do
-        if property ~= "focus" and type(value) == "function" then
-            value = value(c, props)
-        end
+	-- Apply the remaining properties (after known race conditions are handled).
+	for property, value in pairs(props) do
+		if property ~= "focus" and type(value) == "function" then
+			value = value(c, props)
+		end
 
-        local ignore = rules.high_priority_properties[property] or
-                rules.delayed_properties[property] or force_ignore[property]
+		local ignore = rules.high_priority_properties[property] or
+				rules.delayed_properties[property] or force_ignore[property]
 
-        if not ignore then
-            if rules.extra_properties[property] then
-                rules.extra_properties[property](c, value, props)
-            elseif type(c[property]) == "function" then
-                c[property](c, value)
-            else
-                c[property] = value
-            end
-        end
-    end
+		if not ignore then
+			if rules.extra_properties[property] then
+				rules.extra_properties[property](c, value, props)
+			elseif type(c[property]) == "function" then
+				c[property](c, value)
+			else
+				c[property] = value
+			end
+		end
+	end
 
-    -- Apply all callbacks.
-    if callbacks then
-        for _, callback in pairs(callbacks) do
-            protected_call(callback, c)
-        end
-    end
+	-- Apply all callbacks.
+	if callbacks then
+		for _, callback in pairs(callbacks) do
+			protected_call(callback, c)
+		end
+	end
 
-    -- Apply the delayed properties
-    for prop, handler in pairs(rules.delayed_properties) do
-        if not force_ignore[prop] then
-            local value = props[prop]
-            if value ~= nil then
-                if type(value) == "function" then
-                    value = value(c, props)
-                end
-                handler(c, value, props)
-            end
-        end
-    end
+	-- Apply the delayed properties
+	for prop, handler in pairs(rules.delayed_properties) do
+		if not force_ignore[prop] then
+			local value = props[prop]
+			if value ~= nil then
+				if type(value) == "function" then
+					value = value(c, props)
+				end
+				handler(c, value, props)
+			end
+		end
+	end
 
-    -- Do this at last so we do not erase things done by the focus signal.
-    if props.focus and (type(props.focus) ~= "function" or props.focus(c)) then
-        c:emit_signal('request::activate', "rules", { raise = not awesome.startup })
-    end
+	-- Do this at last so we do not erase things done by the focus signal.
+	if props.focus and (type(props.focus) ~= "function" or props.focus(c)) then
+		c:emit_signal('request::activate', "rules", { raise = not awesome.startup })
+	end
 end
 
 -- TODO v5 deprecate this
 function rules.completed_with_payload_callback(c, props, callbacks)
-    rules.execute(c, props, callbacks)
+	rules.execute(c, props, callbacks)
 end
 
 client.connect_signal("manage", rules.apply)

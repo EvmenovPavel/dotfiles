@@ -15,27 +15,27 @@ local constraint   = { mt = {} }
 
 -- Layout a constraint layout
 function constraint:layout(_, width, height)
-    if self._private.widget then
-        return { base.place_widget_at(self._private.widget, 0, 0, width, height) }
-    end
+	if self._private.widget then
+		return { base.place_widget_at(self._private.widget, 0, 0, width, height) }
+	end
 end
 
 -- Fit a constraint layout into the given space
 function constraint:fit(context, width, height)
-    local w, h
-    if self._private.widget then
-        w    = self._private.strategy(width, self._private.width)
-        h    = self._private.strategy(height, self._private.height)
+	local w, h
+	if self._private.widget then
+		w    = self._private.strategy(width, self._private.width)
+		h    = self._private.strategy(height, self._private.height)
 
-        w, h = base.fit_widget(self, context, self._private.widget, w, h)
-    else
-        w, h = 0, 0
-    end
+		w, h = base.fit_widget(self, context, self._private.widget, w, h)
+	else
+		w, h = 0, 0
+	end
 
-    w = self._private.strategy(w, self._private.width)
-    h = self._private.strategy(h, self._private.height)
+	w = self._private.strategy(w, self._private.width)
+	h = self._private.strategy(h, self._private.height)
 
-    return w, h
+	return w, h
 end
 
 --- The widget to be constrained.
@@ -43,25 +43,25 @@ end
 -- @tparam widget widget The widget
 
 function constraint:set_widget(widget)
-    self._private.widget = widget
-    self:emit_signal("widget::layout_changed")
+	self._private.widget = widget
+	self:emit_signal("widget::layout_changed")
 end
 
 function constraint:get_widget()
-    return self._private.widget
+	return self._private.widget
 end
 
 --- Get the number of children element
 -- @treturn table The children
 function constraint:get_children()
-    return { self._private.widget }
+	return { self._private.widget }
 end
 
 --- Replace the layout children
 -- This layout only accept one children, all others will be ignored
 -- @tparam table children A table composed of valid widgets
 function constraint:set_children(children)
-    self:set_widget(children[1])
+	self:set_widget(children[1])
 end
 
 --- Set the strategy to use for the constraining. Valid values are 'max',
@@ -69,28 +69,28 @@ end
 -- @property strategy
 
 function constraint:set_strategy(val)
-    local func = {
-        min   = function(real_size, limit)
-            return limit and math.max(limit, real_size) or real_size
-        end,
-        max   = function(real_size, limit)
-            return limit and math.min(limit, real_size) or real_size
-        end,
-        exact = function(real_size, limit)
-            return limit or real_size
-        end
-    }
+	local func = {
+		min   = function(real_size, limit)
+			return limit and math.max(limit, real_size) or real_size
+		end,
+		max   = function(real_size, limit)
+			return limit and math.min(limit, real_size) or real_size
+		end,
+		exact = function(real_size, limit)
+			return limit or real_size
+		end
+	}
 
-    if not func[val] then
-        error("Invalid strategy for constraint layout: " .. tostring(val))
-    end
+	if not func[val] then
+		error("Invalid strategy for constraint layout: " .. tostring(val))
+	end
 
-    self._private.strategy = func[val]
-    self:emit_signal("widget::layout_changed")
+	self._private.strategy = func[val]
+	self:emit_signal("widget::layout_changed")
 end
 
 function constraint:get_strategy()
-    return self._private.strategy
+	return self._private.strategy
 end
 
 --- Set the maximum width to val. nil for no width limit.
@@ -98,12 +98,12 @@ end
 -- @param number
 
 function constraint:set_width(val)
-    self._private.width = val
-    self:emit_signal("widget::layout_changed")
+	self._private.width = val
+	self:emit_signal("widget::layout_changed")
 end
 
 function constraint:get_width()
-    return self._private.width
+	return self._private.width
 end
 
 --- Set the maximum height to val. nil for no height limit.
@@ -111,21 +111,21 @@ end
 -- @param number
 
 function constraint:set_height(val)
-    self._private.height = val
-    self:emit_signal("widget::layout_changed")
+	self._private.height = val
+	self:emit_signal("widget::layout_changed")
 end
 
 function constraint:get_height()
-    return self._private.height
+	return self._private.height
 end
 
 --- Reset this layout. The widget will be unreferenced, strategy set to "max"
 -- and the constraints set to nil.
 function constraint:reset()
-    self._private.width  = nil
-    self._private.height = nil
-    self:set_strategy("max")
-    self:set_widget(nil)
+	self._private.width  = nil
+	self._private.height = nil
+	self:set_strategy("max")
+	self:set_widget(nil)
 end
 
 --- Returns a new constraint container.
@@ -142,23 +142,23 @@ end
 -- @treturn table A new constraint container
 -- @function wibox.container.constraint
 local function new(widget, strategy, width, height)
-    local ret = base.make_widget(nil, nil, { enable_properties = true })
+	local ret = base.make_widget(nil, nil, { enable_properties = true })
 
-    gtable.crush(ret, constraint, true)
+	gtable.crush(ret, constraint, true)
 
-    ret:set_strategy(strategy or "max")
-    ret:set_width(width)
-    ret:set_height(height)
+	ret:set_strategy(strategy or "max")
+	ret:set_width(width)
+	ret:set_height(height)
 
-    if widget then
-        ret:set_widget(widget)
-    end
+	if widget then
+		ret:set_widget(widget)
+	end
 
-    return ret
+	return ret
 end
 
 function constraint.mt:__call(...)
-    return new(...)
+	return new(...)
 end
 
 --@DOC_widget_COMMON@

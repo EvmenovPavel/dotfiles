@@ -57,56 +57,56 @@ local stack  = { mt = {} }
 -- @tparam number spacing Spacing between widgets.
 
 function stack:layout(_, width, height)
-    local result       = {}
-    local spacing      = self._private.spacing
+	local result       = {}
+	local spacing      = self._private.spacing
 
-    width              = width - math.abs(self._private.h_offset * #self._private.widgets) - 2 * spacing
-    height             = height - math.abs(self._private.v_offset * #self._private.widgets) - 2 * spacing
+	width              = width - math.abs(self._private.h_offset * #self._private.widgets) - 2 * spacing
+	height             = height - math.abs(self._private.v_offset * #self._private.widgets) - 2 * spacing
 
-    local h_off, v_off = spacing, spacing
+	local h_off, v_off = spacing, spacing
 
-    for _, v in pairs(self._private.widgets) do
-        table.insert(result, base.place_widget_at(v, h_off, v_off, width, height))
-        h_off, v_off = h_off + self._private.h_offset, v_off + self._private.v_offset
-        if self._private.top_only then break end
-    end
+	for _, v in pairs(self._private.widgets) do
+		table.insert(result, base.place_widget_at(v, h_off, v_off, width, height))
+		h_off, v_off = h_off + self._private.h_offset, v_off + self._private.v_offset
+		if self._private.top_only then break end
+	end
 
-    return result
+	return result
 end
 
 function stack:fit(context, orig_width, orig_height)
-    local max_w, max_h = 0, 0
-    local spacing      = self._private.spacing
+	local max_w, max_h = 0, 0
+	local spacing      = self._private.spacing
 
-    for _, v in pairs(self._private.widgets) do
-        local w, h   = base.fit_widget(self, context, v, orig_width, orig_height)
-        max_w, max_h = math.max(max_w, w + 2 * spacing), math.max(max_h, h + 2 * spacing)
-    end
+	for _, v in pairs(self._private.widgets) do
+		local w, h   = base.fit_widget(self, context, v, orig_width, orig_height)
+		max_w, max_h = math.max(max_w, w + 2 * spacing), math.max(max_h, h + 2 * spacing)
+	end
 
-    return math.min(max_w, orig_width), math.min(max_h, orig_height)
+	return math.min(max_w, orig_width), math.min(max_h, orig_height)
 end
 
 --- If only the first stack widget is drawn
 -- @property top_only
 
 function stack:get_top_only()
-    return self._private.top_only
+	return self._private.top_only
 end
 
 function stack:set_top_only(top_only)
-    self._private.top_only = top_only
+	self._private.top_only = top_only
 end
 
 --- Raise a widget at `index` to the top of the stack
 -- @tparam number index the widget index to raise
 function stack:raise(index)
-    if (not index) or self._private.widgets[index] then return end
+	if (not index) or self._private.widgets[index] then return end
 
-    local w = self._private.widgets[index]
-    table.remove(self._private.widgets, index)
-    table.insert(self._private.widgets, w)
+	local w = self._private.widgets[index]
+	table.remove(self._private.widgets, index)
+	table.insert(self._private.widgets, w)
 
-    self:emit_signal("widget::layout_changed")
+	self:emit_signal("widget::layout_changed")
 end
 
 --- Raise the first instance of `widget`
@@ -114,18 +114,18 @@ end
 -- @tparam[opt=false] boolean recursive Also look deeper in the hierarchy to
 --   find the widget
 function stack:raise_widget(widget, recursive)
-    local idx, layout = self:index(widget, recursive)
+	local idx, layout = self:index(widget, recursive)
 
-    if not idx or not layout then return end
+	if not idx or not layout then return end
 
-    -- Bubble up in the stack until the right index is found
-    while layout and layout ~= self do
-        idx, layout = self:index(layout, recursive)
-    end
+	-- Bubble up in the stack until the right index is found
+	while layout and layout ~= self do
+		idx, layout = self:index(layout, recursive)
+	end
 
-    if layout == self and idx ~= 1 then
-        self:raise(idx)
-    end
+	if layout == self and idx ~= 1 then
+		self:raise(idx)
+	end
 end
 
 --- Add an horizontal offset to each layers.
@@ -148,13 +148,13 @@ end
 -- @see horizontal_offset
 
 function stack:set_horizontal_offset(value)
-    self._private.h_offset = value
-    self:emit_signal("widget::layout_changed")
+	self._private.h_offset = value
+	self:emit_signal("widget::layout_changed")
 end
 
 function stack:set_vertical_offset(value)
-    self._private.v_offset = value
-    self:emit_signal("widget::layout_changed")
+	self._private.v_offset = value
+	self:emit_signal("widget::layout_changed")
 end
 
 --- Create a new stack layout.
@@ -162,18 +162,18 @@ end
 -- @treturn widget A new stack layout
 
 local function new(...)
-    local ret = fixed.horizontal(...)
+	local ret = fixed.horizontal(...)
 
-    gtable.crush(ret, stack, true)
+	gtable.crush(ret, stack, true)
 
-    ret._private.h_offset = 0
-    ret._private.v_offset = 0
+	ret._private.h_offset = 0
+	ret._private.v_offset = 0
 
-    return ret
+	return ret
 end
 
 function stack.mt:__call(_, ...)
-    return new(...)
+	return new(...)
 end
 
 --@DOC_widget_COMMON@

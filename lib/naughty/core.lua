@@ -187,11 +187,11 @@ gtable.crush(naughty, require("lib.naughty.constants"))
 -- @propemits true false
 
 local properties      = {
-    suspended                = false,
-    expiration_paused        = false,
-    auto_reset_timeout       = true,
-    image_animations_enabled = false,
-    persistence_enabled      = false,
+	suspended                = false,
+	expiration_paused        = false,
+	auto_reset_timeout       = true,
+	image_animations_enabled = false,
+	persistence_enabled      = false,
 }
 
 --TODO v5 Deprecate the public `naughty.notifications` (to make it private)
@@ -201,82 +201,82 @@ naughty.notifications = { suspended = { }, _expired = { {} } }
 naughty._active       = {}
 
 local function get_screen(s)
-    return s and capi.screen[s]
+	return s and capi.screen[s]
 end
 
 local function init_screen(s)
-    if naughty.notifications[s] then
-        return
-    end
+	if naughty.notifications[s] then
+		return
+	end
 
-    naughty.notifications[s] = {
-        top_left      = {},
-        top_middle    = {},
-        top_right     = {},
-        bottom_left   = {},
-        bottom_middle = {},
-        bottom_right  = {},
-        middle        = {},
-    }
+	naughty.notifications[s] = {
+		top_left      = {},
+		top_middle    = {},
+		top_right     = {},
+		bottom_left   = {},
+		bottom_middle = {},
+		bottom_right  = {},
+		middle        = {},
+	}
 end
 
 screen.connect_for_each_screen(init_screen)
 
 capi.screen.connect_signal("removed", function(scr)
-    -- Allow the notifications to be moved to another screen.
+	-- Allow the notifications to be moved to another screen.
 
-    for _, list in pairs(naughty.notifications[scr]) do
-        -- Clone the list to avoid having an iterator while mutating.
-        list = gtable.clone(list, false)
+	for _, list in pairs(naughty.notifications[scr]) do
+		-- Clone the list to avoid having an iterator while mutating.
+		list = gtable.clone(list, false)
 
-        for _, n in ipairs(list) do
-            naughty.emit_signal("request::screen", n, "removed", {})
-        end
-    end
+		for _, n in ipairs(list) do
+			naughty.emit_signal("request::screen", n, "removed", {})
+		end
+	end
 
-    for _, n in ipairs(naughty._active) do
-        if n._private.args and get_screen(n._private.args.screen) == scr then
-            n._private.args.screen = nil
-        end
-    end
+	for _, n in ipairs(naughty._active) do
+		if n._private.args and get_screen(n._private.args.screen) == scr then
+			n._private.args.screen = nil
+		end
+	end
 
-    -- Destroy all notifications on this screen
-    naughty.destroy_all_notifications({ scr })
-    naughty.notifications[scr] = nil
+	-- Destroy all notifications on this screen
+	naughty.destroy_all_notifications({ scr })
+	naughty.notifications[scr] = nil
 end)
 
 local function remove_from_index(n)
-    for _, positions in pairs(naughty.notifications) do
-        for _, ns in pairs(positions) do
-            for k, n2 in ipairs(ns) do
-                if n2 == n then
-                    assert(ns[k + 1] ~= n, "The notification index is corrupted")
-                    table.remove(ns, k)
-                    return
-                end
-            end
-        end
-    end
+	for _, positions in pairs(naughty.notifications) do
+		for _, ns in pairs(positions) do
+			for k, n2 in ipairs(ns) do
+				if n2 == n then
+					assert(ns[k + 1] ~= n, "The notification index is corrupted")
+					table.remove(ns, k)
+					return
+				end
+			end
+		end
+	end
 end
 
 -- When id or screen are set after the object is created, update the indexing.
 local function update_index(n)
-    -- Do things in the right order.
-    if not n._private.registered then
-        return
-    end
+	-- Do things in the right order.
+	if not n._private.registered then
+		return
+	end
 
-    assert(not n._private.is_destroyed, "The notification index is corrupted")
+	assert(not n._private.is_destroyed, "The notification index is corrupted")
 
-    -- Find the only index and remove it (there's an useless loop, but it's small).
-    remove_from_index(n)
+	-- Find the only index and remove it (there's an useless loop, but it's small).
+	remove_from_index(n)
 
-    -- Add to the index again
-    local s                  = get_screen(n.screen
-            or (n.preset and n.preset.screen)
-            or screen.focused())
-    naughty.notifications[s] = naughty.notifications[s] or {}
-    table.insert(naughty.notifications[s][n.position], n)
+	-- Add to the index again
+	local s                  = get_screen(n.screen
+			or (n.preset and n.preset.screen)
+			or screen.focused())
+	naughty.notifications[s] = naughty.notifications[s] or {}
+	table.insert(naughty.notifications[s][n.position], n)
 end
 
 --- Notification state.
@@ -285,8 +285,8 @@ end
 --
 -- @deprecated naughty.is_suspended
 function naughty.is_suspended()
-    gdebug.deprecate("Use naughty.suspended", { deprecated_in = 5 })
-    return properties.suspended
+	gdebug.deprecate("Use naughty.suspended", { deprecated_in = 5 })
+	return properties.suspended
 end
 
 --- Suspend notifications.
@@ -295,85 +295,85 @@ end
 --
 -- @deprecated naughty.suspend
 function naughty.suspend()
-    gdebug.deprecate("Use naughty.suspended = true", { deprecated_in = 5 })
-    properties.suspended = true
+	gdebug.deprecate("Use naughty.suspended = true", { deprecated_in = 5 })
+	properties.suspended = true
 end
 
 function _setup_class_signals(t, args)
-    args        = args or {}
-    local conns = {}
+	args        = args or {}
+	local conns = {}
 
-    function t.connect_signal(name, func)
-        assert(name)
-        conns[name] = conns[name] or {}
-        table.insert(conns[name], func)
-    end
+	function t.connect_signal(name, func)
+		assert(name)
+		conns[name] = conns[name] or {}
+		table.insert(conns[name], func)
+	end
 
-    -- A variant of emit_signal which stops once a condition is met.
-    if args.allow_chain_of_responsibility then
-        function t._emit_signal_if(name, condition, ...)
-            assert(name)
-            for _, func in pairs(conns[name] or {}) do
-                if condition(...) then
-                    return
-                end
-                func(...)
-            end
-        end
-    end
+	-- A variant of emit_signal which stops once a condition is met.
+	if args.allow_chain_of_responsibility then
+		function t._emit_signal_if(name, condition, ...)
+			assert(name)
+			for _, func in pairs(conns[name] or {}) do
+				if condition(...) then
+					return
+				end
+				func(...)
+			end
+		end
+	end
 
 
-    --- Emit a notification signal.
-    -- @tparam string name The signal name.
-    -- @param ... The signal callback arguments
-    function t.emit_signal(name, ...)
-        assert(name)
-        for _, func in pairs(conns[name] or {}) do
-            func(...)
-        end
-    end
+	--- Emit a notification signal.
+	-- @tparam string name The signal name.
+	-- @param ... The signal callback arguments
+	function t.emit_signal(name, ...)
+		assert(name)
+		for _, func in pairs(conns[name] or {}) do
+			func(...)
+		end
+	end
 
-    --- Disconnect a signal from a source.
-    -- @tparam string name The name of the signal
-    -- @tparam function func The attached function
-    -- @treturn boolean If the disconnection was successful
-    function t.disconnect_signal(name, func)
-        for k, v in ipairs(conns[name] or {}) do
-            if v == func then
-                table.remove(conns[name], k)
-                return true
-            end
-        end
-        return false
-    end
+	--- Disconnect a signal from a source.
+	-- @tparam string name The name of the signal
+	-- @tparam function func The attached function
+	-- @treturn boolean If the disconnection was successful
+	function t.disconnect_signal(name, func)
+		for k, v in ipairs(conns[name] or {}) do
+			if v == func then
+				table.remove(conns[name], k)
+				return true
+			end
+		end
+		return false
+	end
 
-    return conns
+	return conns
 end
 
 local conns = _setup_class_signals(
-        naughty, { allow_chain_of_responsibility = true }
+		naughty, { allow_chain_of_responsibility = true }
 )
 
 local function resume()
-    properties.suspended = false
-    for _, v in ipairs(naughty.notifications.suspended) do
-        local args = v._private.args
-        assert(args)
-        v._private.args = nil
+	properties.suspended = false
+	for _, v in ipairs(naughty.notifications.suspended) do
+		local args = v._private.args
+		assert(args)
+		v._private.args = nil
 
-        v:emit_signal("property::suspended", false)
+		v:emit_signal("property::suspended", false)
 
-        naughty.emit_signal("added", v, args)
-        naughty.emit_signal("request::display", v, "resume", args)
-        if v.timer then
-            v.timer:start()
-        end
+		naughty.emit_signal("added", v, args)
+		naughty.emit_signal("request::display", v, "resume", args)
+		if v.timer then
+			v.timer:start()
+		end
 
-        if not v._private.args then
-            v._private.args = args
-        end
-    end
-    naughty.notifications.suspended = { }
+		if not v._private.args then
+			v._private.args = args
+		end
+	end
+	naughty.notifications.suspended = { }
 end
 
 --- Resume notifications.
@@ -382,8 +382,8 @@ end
 --
 -- @deprecated naughty.resume
 function naughty.resume()
-    gdebug.deprecate("Use naughty.suspended = false", { deprecated_in = 5 })
-    resume()
+	gdebug.deprecate("Use naughty.suspended = false", { deprecated_in = 5 })
+	resume()
 end
 
 --- Toggle notification state.
@@ -392,12 +392,12 @@ end
 --
 -- @deprecated naughty.toggle
 function naughty.toggle()
-    gdebug.deprecate("Use naughty.suspended = not naughty.suspended", { deprecated_in = 5 })
-    if properties.suspended then
-        naughty.resume()
-    else
-        naughty.suspend()
-    end
+	gdebug.deprecate("Use naughty.suspended = not naughty.suspended", { deprecated_in = 5 })
+	if properties.suspended then
+		naughty.resume()
+	else
+		naughty.suspend()
+	end
 end
 
 -- This allows notification to be updated later.
@@ -405,16 +405,16 @@ local counter = 1
 
 -- Identifier support.
 function naughty._gen_next_id()
-    counter = counter + 1
-    return counter
+	counter = counter + 1
+	return counter
 end
 
 function naughty.get_next_notification_id()
-    return naughty._gen_next_id()
+	return naughty._gen_next_id()
 end
 
 function naughty._gen_id()
-    return counter
+	return counter
 end
 
 --- Destroy notification by notification object
@@ -428,41 +428,41 @@ end
 -- @return True if the popup was successfully destroyed, nil otherwise
 -- @deprecated naughty.destroy
 function naughty.destroy(notification, reason, keep_visible)
-    if notification and notification.box.visible then
-        if naughty.notifications.suspended then
-            for k, v in pairs(naughty.notifications.suspended) do
-                if v.box == notification.box then
-                    table.remove(naughty.notifications.suspended, k)
-                    break
-                end
-            end
-        end
+	if notification and notification.box.visible then
+		if naughty.notifications.suspended then
+			for k, v in pairs(naughty.notifications.suspended) do
+				if v.box == notification.box then
+					table.remove(naughty.notifications.suspended, k)
+					break
+				end
+			end
+		end
 
-        local scr = notification.screen
-        table.remove(naughty.notifications[scr][notification.position], notification.idx)
+		local scr = notification.screen
+		table.remove(naughty.notifications[scr][notification.position], notification.idx)
 
-        if notification.timer then
-            notification.timer:stop()
-        end
+		if notification.timer then
+			notification.timer:stop()
+		end
 
-        if not keep_visible then
-            notification.box.visible = false
-            naughty.emit_signal("destroyed", scr)
-        end
+		if not keep_visible then
+			notification.box.visible = false
+			naughty.emit_signal("destroyed", scr)
+		end
 
-        if notification.destroy_cb and reason ~= naughty.notification_closed_reason.silent then
-            notification.destroy_cb(reason or naughty.notification_closed_reason.undefined)
-        end
+		if notification.destroy_cb and reason ~= naughty.notification_closed_reason.silent then
+			notification.destroy_cb(reason or naughty.notification_closed_reason.undefined)
+		end
 
-        return true
-    end
-    --gdebug.deprecate("Use notification:destroy(reason, keep_visible)", { deprecated_in = 5 })
-    --
-    --if not notification then
-    --    return
-    --end
-    --
-    --return notification:destroy(reason, keep_visible)
+		return true
+	end
+	--gdebug.deprecate("Use notification:destroy(reason, keep_visible)", { deprecated_in = 5 })
+	--
+	--if not notification then
+	--    return
+	--end
+	--
+	--return notification:destroy(reason, keep_visible)
 end
 
 --- Destroy all notifications on given screens.
@@ -476,27 +476,27 @@ end
 -- @see notification_closed_reason
 -- @staticfct naughty.destroy_all_notifications
 function naughty.destroy_all_notifications(screens, reason)
-    if not screens then
-        screens = {}
-        for key, _ in pairs(naughty.notifications) do
-            table.insert(screens, key)
-        end
-    end
+	if not screens then
+		screens = {}
+		for key, _ in pairs(naughty.notifications) do
+			table.insert(screens, key)
+		end
+	end
 
-    local ret = true
+	local ret = true
 
-    for _, scr in pairs(screens) do
-        for _, list in pairs(naughty.notifications[scr]) do
-            while #list > 0 do
-                -- Better cause an error than risk an infinite loop.
-                assert(not list[1]._private.is_destroyed)
+	for _, scr in pairs(screens) do
+		for _, list in pairs(naughty.notifications[scr]) do
+			while #list > 0 do
+				-- Better cause an error than risk an infinite loop.
+				assert(not list[1]._private.is_destroyed)
 
-                ret = ret and list[1]:destroy(reason)
-            end
-        end
-    end
+				ret = ret and list[1]:destroy(reason)
+			end
+		end
+	end
 
-    return ret
+	return ret
 end
 
 --- Get notification by ID
@@ -505,34 +505,34 @@ end
 -- @treturn naughty.notification|nil notification object if it was found, nil otherwise
 -- @staticfct naughty.get_by_id
 function naughty.get_by_id(id)
-    -- iterate the notifications to get the notfications with the correct ID
-    for s in capi.screen do
-        for p in pairs(naughty.notifications[s] or {}) do
-            for _, notification in pairs(naughty.notifications[s][p]) do
-                if notification.id == id then
-                    return notification
-                end
-            end
-        end
-    end
+	-- iterate the notifications to get the notfications with the correct ID
+	for s in capi.screen do
+		for p in pairs(naughty.notifications[s] or {}) do
+			for _, notification in pairs(naughty.notifications[s][p]) do
+				if notification.id == id then
+					return notification
+				end
+			end
+		end
+	end
 end
 
 -- Use an explicit getter to make it read only.
 function naughty.get_active()
-    return naughty._active
+	return naughty._active
 end
 
 function naughty.get_has_display_handler()
-    return conns["request::display"] and #conns["request::display"] > 0 or false
+	return conns["request::display"] and #conns["request::display"] > 0 or false
 end
 
 -- Presets are "deprecated" when notification rules are used.
 function naughty.get__has_preset_handler()
-    return conns["request::preset"] and #conns["request::preset"] > 0 or false
+	return conns["request::preset"] and #conns["request::preset"] > 0 or false
 end
 
 function naughty._reset_display_handlers()
-    conns["request::display"] = nil
+	conns["request::display"] = nil
 end
 
 --- Set new notification timeout.
@@ -543,13 +543,13 @@ end
 -- @tparam number new_timeout Time in seconds after which notification disappears.
 -- @deprecated naughty.reset_timeout
 function naughty.reset_timeout(notification, new_timeout)
-    gdebug.deprecate("Use notification:reset_timeout(new_timeout)", { deprecated_in = 5 })
+	gdebug.deprecate("Use notification:reset_timeout(new_timeout)", { deprecated_in = 5 })
 
-    if not notification then
-        return
-    end
+	if not notification then
+		return
+	end
 
-    notification:reset_timeout(new_timeout)
+	notification:reset_timeout(new_timeout)
 end
 
 --- Replace title and text of an existing notification.
@@ -563,97 +563,97 @@ end
 -- @return None.
 -- @deprecated naughty.replace_text
 function naughty.replace_text(notification, new_title, new_text)
-    gdebug.deprecate(
-            "Use notification.text = new_text; notification.title = new_title",
-            { deprecated_in = 5 }
-    )
+	gdebug.deprecate(
+			"Use notification.text = new_text; notification.title = new_title",
+			{ deprecated_in = 5 }
+	)
 
-    if not notification then
-        return
-    end
+	if not notification then
+		return
+	end
 
-    notification.title = new_title or notification.title
-    notification.text  = new_text or notification.text
+	notification.title = new_title or notification.title
+	notification.text  = new_text or notification.text
 end
 
 -- Remove the notification from the internal list(s)
 local function cleanup(self, reason)
-    assert(reason, "Use n:destroy() instead of emitting the signal directly")
+	assert(reason, "Use n:destroy() instead of emitting the signal directly")
 
-    if properties.suspended then
-        for k, v in ipairs(naughty.notifications.suspended) do
-            if v == self then
-                table.remove(naughty.notifications.suspended, k)
-                break
-            end
-        end
-    end
-    local scr = self.screen
+	if properties.suspended then
+		for k, v in ipairs(naughty.notifications.suspended) do
+			if v == self then
+				table.remove(naughty.notifications.suspended, k)
+				break
+			end
+		end
+	end
+	local scr = self.screen
 
-    assert(naughty.notifications[scr][self.position][self.idx] == self)
-    remove_from_index(self)
+	assert(naughty.notifications[scr][self.position][self.idx] == self)
+	remove_from_index(self)
 
-    -- Update all indices
-    for k, n in ipairs(naughty.notifications[scr][self.position]) do
-        n.idx = k
-    end
+	-- Update all indices
+	for k, n in ipairs(naughty.notifications[scr][self.position]) do
+		n.idx = k
+	end
 
-    -- Remove from the global active list.
-    for k, n in ipairs(naughty._active) do
-        if n == self then
-            table.remove(naughty._active, k)
-            naughty.emit_signal("property::active")
-        end
-    end
+	-- Remove from the global active list.
+	for k, n in ipairs(naughty._active) do
+		if n == self then
+			table.remove(naughty._active, k)
+			naughty.emit_signal("property::active")
+		end
+	end
 
-    -- `self.timer.started` will be false if the expiration was paused.
-    if self.timer and self.timer.started then
-        self.timer:stop()
-    end
+	-- `self.timer.started` will be false if the expiration was paused.
+	if self.timer and self.timer.started then
+		self.timer:stop()
+	end
 
-    if self.destroy_cb and reason ~= naughty.notification_closed_reason.silent then
-        self.destroy_cb(reason or naughty.notification_closed_reason.undefined)
-    end
+	if self.destroy_cb and reason ~= naughty.notification_closed_reason.silent then
+		self.destroy_cb(reason or naughty.notification_closed_reason.undefined)
+	end
 end
 
 naughty.connect_signal("destroyed", cleanup)
 
 -- Proxy the global suspension state on all notification objects
 local function get_suspended(self)
-    return properties.suspended and not self.ignore_suspend
+	return properties.suspended and not self.ignore_suspend
 end
 
 function naughty.set_suspended(value)
-    if properties["suspended"] == value then
-        return
-    end
+	if properties["suspended"] == value then
+		return
+	end
 
-    properties["suspended"] = value
+	properties["suspended"] = value
 
-    if value then
-        for _, n in pairs(naughty._active) do
-            if not n.ignore_suspend then
-                if n.timer and n.timer.started then
-                    n.timer:stop()
-                end
+	if value then
+		for _, n in pairs(naughty._active) do
+			if not n.ignore_suspend then
+				if n.timer and n.timer.started then
+					n.timer:stop()
+				end
 
-                n:emit_signal("property::suspended", true)
-                table.insert(naughty.notifications.suspended, n)
-            end
-        end
-    else
-        resume()
-    end
+				n:emit_signal("property::suspended", true)
+				table.insert(naughty.notifications.suspended, n)
+			end
+		end
+	else
+		resume()
+	end
 end
 
 function naughty.set_expiration_paused(p)
-    properties.expiration_paused = p
+	properties.expiration_paused = p
 
-    if not p then
-        for _, n in ipairs(naughty.notifications._expired[1]) do
-            n:destroy(naughty.notification_closed_reason.expired)
-        end
-    end
+	if not p then
+		for _, n in ipairs(naughty.notifications._expired[1]) do
+			n:destroy(naughty.notification_closed_reason.expired)
+		end
+	end
 end
 
 --- The default handler for `request::screen`.
@@ -663,11 +663,11 @@ end
 -- @signalhandler naughty.default_screen_handler
 
 function naughty.default_screen_handler(n)
-    if n.screen and n.screen.valid then
-        return
-    end
+	if n.screen and n.screen.valid then
+		return
+	end
 
-    n.screen = screen.focused()
+	n.screen = screen.focused()
 end
 
 naughty.connect_signal("request::screen", naughty.default_screen_handler)
@@ -783,72 +783,72 @@ naughty.connect_signal("request::screen", naughty.default_screen_handler)
 
 -- Register a new notification object.
 local function register(notification, args)
-    assert(not notification._private.registered)
+	assert(not notification._private.registered)
 
-    -- Add the some more properties
-    rawset(notification, "get_suspended", get_suspended)
+	-- Add the some more properties
+	rawset(notification, "get_suspended", get_suspended)
 
-    local s = get_screen(notification.screen or args.screen
-            or (notification.preset and notification.preset.screen))
+	local s = get_screen(notification.screen or args.screen
+			or (notification.preset and notification.preset.screen))
 
-    if not s then
-        naughty.emit_signal("request::screen", notification, "new", {})
-        s = notification.screen
-    end
+	if not s then
+		naughty.emit_signal("request::screen", notification, "new", {})
+		s = notification.screen
+	end
 
-    assert(s)
+	assert(s)
 
-    if not naughty.notifications[s] then
-        init_screen(get_screen(s))
-    end
+	if not naughty.notifications[s] then
+		init_screen(get_screen(s))
+	end
 
-    -- insert the notification to the table
-    table.insert(naughty._active, notification)
-    table.insert(naughty.notifications[s][notification.position], notification)
-    notification.idx                 = #naughty.notifications[s][notification.position]
-    notification.screen              = s
+	-- insert the notification to the table
+	table.insert(naughty._active, notification)
+	table.insert(naughty.notifications[s][notification.position], notification)
+	notification.idx                 = #naughty.notifications[s][notification.position]
+	notification.screen              = s
 
-    notification._private.registered = true
+	notification._private.registered = true
 
-    notification._private.args       = args
+	notification._private.args       = args
 
-    if properties.suspended and not args.ignore_suspend then
-        table.insert(naughty.notifications.suspended, notification)
-    else
-        naughty.emit_signal("added", notification, args)
-    end
+	if properties.suspended and not args.ignore_suspend then
+		table.insert(naughty.notifications.suspended, notification)
+	else
+		naughty.emit_signal("added", notification, args)
+	end
 
-    assert(rawget(notification, "preset") or naughty._has_preset_handler)
+	assert(rawget(notification, "preset") or naughty._has_preset_handler)
 
-    naughty.emit_signal("property::active")
+	naughty.emit_signal("property::active")
 
-    -- return the notification
-    return notification
+	-- return the notification
+	return notification
 end
 
 naughty.connect_signal("new", register)
 
 local function index_miss(_, key)
-    if rawget(naughty, "get_" .. key) then
-        return rawget(naughty, "get_" .. key)()
-    elseif properties[key] ~= nil then
-        return properties[key]
-    else
-        return nil
-    end
+	if rawget(naughty, "get_" .. key) then
+		return rawget(naughty, "get_" .. key)()
+	elseif properties[key] ~= nil then
+		return properties[key]
+	else
+		return nil
+	end
 end
 
 local function set_index_miss(_, key, value)
-    if rawget(naughty, "set_" .. key) then
-        return rawget(naughty, "set_" .. key)(value)
-    elseif properties[key] ~= nil then
-        assert(type(value) == "boolean")
-        properties[key] = value
+	if rawget(naughty, "set_" .. key) then
+		return rawget(naughty, "set_" .. key)(value)
+	elseif properties[key] ~= nil then
+		assert(type(value) == "boolean")
+		properties[key] = value
 
-        naughty.emit_signal("property::" .. key, value)
-    else
-        rawset(naughty, key, value)
-    end
+		naughty.emit_signal("property::" .. key, value)
+	else
+		rawset(naughty, key, value)
+	end
 end
 
 --- Create a notification.
@@ -904,69 +904,69 @@ end
 local nnotif = nil
 
 function naughty.notify(args)
-    gdebug.deprecate(
-            "Use local notif = naughty.notification(args)",
-            { deprecated_in = 5 }
-    )
+	gdebug.deprecate(
+			"Use local notif = naughty.notification(args)",
+			{ deprecated_in = 5 }
+	)
 
-    --TODO v6 remove this hack
-    nnotif  = nnotif or require("lib.naughty.notification")
+	--TODO v6 remove this hack
+	nnotif  = nnotif or require("lib.naughty.notification")
 
-    -- The existing notification object, if any.
-    local n = args and args.replaces_id and
-            self.get_by_id(args.replaces_id) or nil
+	-- The existing notification object, if any.
+	local n = args and args.replaces_id and
+			self.get_by_id(args.replaces_id) or nil
 
-    -- It was possible to update the notification content using `replaces_id`.
-    -- This is a concept that come from the dbus API and leaked into the public
-    -- API. It has all kind of issues and brokenness, but it being used.
-    if n then
-        return gtable.crush(n, args)
-    end
+	-- It was possible to update the notification content using `replaces_id`.
+	-- This is a concept that come from the dbus API and leaked into the public
+	-- API. It has all kind of issues and brokenness, but it being used.
+	if n then
+		return gtable.crush(n, args)
+	end
 
-    return nnotif(args)
+	return nnotif(args)
 end
 
 --- Request handler to get the icon using the clients icons.
 -- @signalhandler naughty.client_icon_handler
 function naughty.client_icon_handler(self, context)
-    if context ~= "clients" then
-        return
-    end
+	if context ~= "clients" then
+		return
+	end
 
-    local clients = self:get_clients()
+	local clients = self:get_clients()
 
-    for _, t in ipairs { "normal", "dialog" } do
-        for _, c in ipairs(clients) do
-            if c.type == t then
-                self._private.icon = gsurface(c.icon) --TODO support other size
-                return
-            end
-        end
-    end
+	for _, t in ipairs { "normal", "dialog" } do
+		for _, c in ipairs(clients) do
+			if c.type == t then
+				self._private.icon = gsurface(c.icon) --TODO support other size
+				return
+			end
+		end
+	end
 end
 
 --- Request handler to get the icon using the image or path.
 -- @signalhandler naughty.icon_path_handler
 function naughty.icon_path_handler(self, context, hints)
-    if context ~= "image" and context ~= "path" then
-        return
-    end
+	if context ~= "image" and context ~= "path" then
+		return
+	end
 
-    self._private.icon = gsurface.load_uncached_silently(
-            hints.path or hints.image
-    )
+	self._private.icon = gsurface.load_uncached_silently(
+			hints.path or hints.image
+	)
 end
 
 --- Request handler for clearing the icon when asked by ie, DBus.
 -- @signalhandler naughty.icon_clear_handler
 function naughty.icon_clear_handler(self, context, hints)
-    --luacheck: no unused args
-    if context ~= "dbus_clear" then
-        return
-    end
+	--luacheck: no unused args
+	if context ~= "dbus_clear" then
+		return
+	end
 
-    self._private.icon = nil
-    self:emit_signal("property::icon")
+	self._private.icon = nil
+	self:emit_signal("property::icon")
 end
 
 naughty.connect_signal("property::screen", update_index)

@@ -22,81 +22,81 @@ local background   = { mt = {} }
 
 -- Draw this widget
 function background:draw(context, cr, width, height)
-    if not self._private.widget or not self._private.widget:get_visible() then
-        return
-    end
+	if not self._private.widget or not self._private.widget:get_visible() then
+		return
+	end
 
-    -- Keep the shape path in case there is a border
-    self._private.path = nil
+	-- Keep the shape path in case there is a border
+	self._private.path = nil
 
-    if self._private.shape then
-        -- Only add the offset if there is something to draw
-        local offset = ((self._private.shape_border_width and self._private.shape_border_color)
-                and self._private.shape_border_width or 0) / 2
+	if self._private.shape then
+		-- Only add the offset if there is something to draw
+		local offset = ((self._private.shape_border_width and self._private.shape_border_color)
+				and self._private.shape_border_width or 0) / 2
 
-        cr:translate(offset, offset)
-        self._private.shape(cr, width - 2 * offset, height - 2 * offset, unpack(self._private.shape_args or {}))
-        cr:translate(-offset, -offset)
-        self._private.path = cr:copy_path()
-        cr:clip()
-    end
+		cr:translate(offset, offset)
+		self._private.shape(cr, width - 2 * offset, height - 2 * offset, unpack(self._private.shape_args or {}))
+		cr:translate(-offset, -offset)
+		self._private.path = cr:copy_path()
+		cr:clip()
+	end
 
-    if self._private.background then
-        cr:set_source(self._private.background)
-        cr:paint()
-    end
-    if self._private.bgimage then
-        if type(self._private.bgimage) == "function" then
-            self._private.bgimage(context, cr, width, height, unpack(self._private.bgimage_args))
-        else
-            local pattern = cairo.Pattern.create_for_surface(self._private.bgimage)
-            cr:set_source(pattern)
-            cr:paint()
-        end
-    end
+	if self._private.background then
+		cr:set_source(self._private.background)
+		cr:paint()
+	end
+	if self._private.bgimage then
+		if type(self._private.bgimage) == "function" then
+			self._private.bgimage(context, cr, width, height, unpack(self._private.bgimage_args))
+		else
+			local pattern = cairo.Pattern.create_for_surface(self._private.bgimage)
+			cr:set_source(pattern)
+			cr:paint()
+		end
+	end
 
 end
 
 -- Draw the border
 function background:after_draw_children(_, cr)
-    -- Draw the border
-    if self._private.path and self._private.shape_border_width and self._private.shape_border_width > 0 then
-        cr:append_path(self._private.path)
-        cr:set_source(color(self._private.shape_border_color or self._private.foreground or beautiful.fg_normal))
+	-- Draw the border
+	if self._private.path and self._private.shape_border_width and self._private.shape_border_width > 0 then
+		cr:append_path(self._private.path)
+		cr:set_source(color(self._private.shape_border_color or self._private.foreground or beautiful.fg_normal))
 
-        cr:set_line_width(self._private.shape_border_width)
-        cr:stroke()
-        self._private.path = nil
-    end
+		cr:set_line_width(self._private.shape_border_width)
+		cr:stroke()
+		self._private.path = nil
+	end
 end
 
 -- Prepare drawing the children of this widget
 function background:before_draw_children(_, cr)
-    if self._private.foreground then
-        cr:set_source(self._private.foreground)
-    end
+	if self._private.foreground then
+		cr:set_source(self._private.foreground)
+	end
 
-    -- Clip the shape
-    if self._private.path and self._private.shape_clip then
-        cr:append_path(self._private.path)
-        cr:clip()
-    end
+	-- Clip the shape
+	if self._private.path and self._private.shape_clip then
+		cr:append_path(self._private.path)
+		cr:clip()
+	end
 end
 
 -- Layout this widget
 function background:layout(_, width, height)
-    if self._private.widget then
-        return { base.place_widget_at(self._private.widget, 0, 0, width, height) }
-    end
+	if self._private.widget then
+		return { base.place_widget_at(self._private.widget, 0, 0, width, height) }
+	end
 end
 
 -- Fit this widget into the given area
 function background:fit(context, width, height)
-    if not self._private.widget then
-        return 0, 0
-    end
+	if not self._private.widget then
+		return 0, 0
+	end
 
-    return base.fit_widget(self, context, self._private.widget, width, height)
+	return base.fit_widget(self, context, self._private.widget, width, height)
 end
 
 --- The widget displayed in the background widget.
@@ -105,28 +105,28 @@ end
 --  area
 
 function background:set_widget(widget)
-    if widget then
-        base.check_widget(widget)
-    end
-    self._private.widget = widget
-    self:emit_signal("widget::layout_changed")
+	if widget then
+		base.check_widget(widget)
+	end
+	self._private.widget = widget
+	self:emit_signal("widget::layout_changed")
 end
 
 function background:get_widget()
-    return self._private.widget
+	return self._private.widget
 end
 
 -- Get children element
 -- @treturn table The children
 function background:get_children()
-    return { self._private.widget }
+	return { self._private.widget }
 end
 
 -- Replace the layout children
 -- This layout only accept one children, all others will be ignored
 -- @tparam table children A table composed of valid widgets
 function background:set_children(children)
-    self:set_widget(children[1])
+	self:set_widget(children[1])
 end
 
 --- The background color/pattern/gradient to use.
@@ -136,16 +136,16 @@ end
 -- @see gears.color
 
 function background:set_bg(bg)
-    if bg then
-        self._private.background = color(bg)
-    else
-        self._private.background = nil
-    end
-    self:emit_signal("widget::redraw_needed")
+	if bg then
+		self._private.background = color(bg)
+	else
+		self._private.background = nil
+	end
+	self:emit_signal("widget::redraw_needed")
 end
 
 function background:get_bg()
-    return self._private.background
+	return self._private.background
 end
 
 --- The foreground (text) color/pattern/gradient to use.
@@ -155,16 +155,16 @@ end
 -- @see gears.color
 
 function background:set_fg(fg)
-    if fg then
-        self._private.foreground = color(fg)
-    else
-        self._private.foreground = nil
-    end
-    self:emit_signal("widget::redraw_needed")
+	if fg then
+		self._private.foreground = color(fg)
+	else
+		self._private.foreground = nil
+	end
+	self:emit_signal("widget::redraw_needed")
 end
 
 function background:get_fg()
-    return self._private.foreground
+	return self._private.foreground
 end
 
 --- The background shap     e.
@@ -184,17 +184,17 @@ end
 -- @see gears.shape
 -- @see shape
 function background:set_shape(shape, ...)
-    local args = { ... }
+	local args = { ... }
 
-    if shape == self._private.shape and #args == 0 then return end
+	if shape == self._private.shape and #args == 0 then return end
 
-    self._private.shape      = shape
-    self._private.shape_args = { ... }
-    self:emit_signal("widget::redraw_needed")
+	self._private.shape      = shape
+	self._private.shape_args = { ... }
+	self:emit_signal("widget::redraw_needed")
 end
 
 function background:get_shape()
-    return self._private.shape
+	return self._private.shape
 end
 
 --- When a `shape` is set, also draw a border.
@@ -204,14 +204,14 @@ end
 -- @tparam number width The border width
 
 function background:set_shape_border_width(width)
-    if self._private.shape_border_width == width then return end
+	if self._private.shape_border_width == width then return end
 
-    self._private.shape_border_width = width
-    self:emit_signal("widget::redraw_needed")
+	self._private.shape_border_width = width
+	self:emit_signal("widget::redraw_needed")
 end
 
 function background:get_shape_border_width()
-    return self._private.shape_border_width
+	return self._private.shape_border_width
 end
 
 --- When a `shape` is set, also draw a border.
@@ -222,14 +222,14 @@ end
 -- @see gears.color
 
 function background:set_shape_border_color(fg)
-    if self._private.shape_border_color == fg then return end
+	if self._private.shape_border_color == fg then return end
 
-    self._private.shape_border_color = fg
-    self:emit_signal("widget::redraw_needed")
+	self._private.shape_border_color = fg
+	self:emit_signal("widget::redraw_needed")
 end
 
 function background:get_shape_border_color()
-    return self._private.shape_border_color
+	return self._private.shape_border_color
 end
 
 --- When a `shape` is set, make sure nothing is drawn outside of it.
@@ -238,14 +238,14 @@ end
 -- @tparam boolean value If the shape clip is enable
 
 function background:set_shape_clip(value)
-    if self._private.shape_clip == value then return end
+	if self._private.shape_clip == value then return end
 
-    self._private.shape_clip = value
-    self:emit_signal("widget::redraw_needed")
+	self._private.shape_clip = value
+	self:emit_signal("widget::redraw_needed")
 end
 
 function background:get_shape_clip()
-    return self._private.shape_clip or false
+	return self._private.shape_clip or false
 end
 
 --- The background image to use
@@ -256,13 +256,13 @@ end
 -- @see gears.surface
 
 function background:set_bgimage(image, ...)
-    self._private.bgimage      = type(image) == "function" and image or surface.load(image)
-    self._private.bgimage_args = { ... }
-    self:emit_signal("widget::redraw_needed")
+	self._private.bgimage      = type(image) == "function" and image or surface.load(image)
+	self._private.bgimage_args = { ... }
+	self:emit_signal("widget::redraw_needed")
 end
 
 function background:get_bgimage()
-    return self._private.bgimage
+	return self._private.bgimage
 end
 
 --- Returns a new background container.
@@ -274,22 +274,22 @@ end
 -- @param[opt] shape A `gears.shape` compatible shape function
 -- @function wibox.container.background
 local function new(widget, bg, shape)
-    local ret = base.make_widget(nil, nil, {
-        enable_properties = true,
-    })
+	local ret = base.make_widget(nil, nil, {
+		enable_properties = true,
+	})
 
-    gtable.crush(ret, background, true)
+	gtable.crush(ret, background, true)
 
-    ret._private.shape = shape
+	ret._private.shape = shape
 
-    ret:set_widget(widget)
-    ret:set_bg(bg)
+	ret:set_widget(widget)
+	ret:set_bg(bg)
 
-    return ret
+	return ret
 end
 
 function background.mt:__call(...)
-    return new(...)
+	return new(...)
 end
 
 --@DOC_widget_COMMON@

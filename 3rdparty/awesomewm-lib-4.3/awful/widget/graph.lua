@@ -8,9 +8,9 @@
 local gdebug = require("gears.debug")
 
 return gdebug.deprecate_class(
-        require("wibox.widget.graph"),
-        "awful.widget.graph",
-        "wibox.widget.graph"
+		require("wibox.widget.graph"),
+		"awful.widget.graph",
+		"wibox.widget.graph"
 )
 
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

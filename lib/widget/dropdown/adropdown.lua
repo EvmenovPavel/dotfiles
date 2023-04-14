@@ -12,131 +12,131 @@ local button     = { button = button }
 local wbutton    = {}
 
 function wbutton:new(args)
-    local args = args or {}
+	local args = args or {}
 
-    if not args or not args.image then
-        return widget.empty_widget()
-    end
+	if not args or not args.image then
+		return widget.empty_widget()
+	end
 
-    local w              = wmapi.widget:imagebox()
-    local orig_set_image = w.set_image
-    local img_release
-    local img_press
+	local w              = wmapi.widget:imagebox()
+	local orig_set_image = w.set_image
+	local img_release
+	local img_press
 
-    function w:set_image(image)
-        img_release = surface.load(image)
-        img_press   = img_release:create_similar(cairo.Content.COLOR_ALPHA, img_release.width, img_release.height)
-        local cr    = cairo.Context(img_press)
-        cr:set_source_surface(img_release, 2, 2)
-        cr:paint()
-        orig_set_image(self, img_release)
-    end
+	function w:set_image(image)
+		img_release = surface.load(image)
+		img_press   = img_release:create_similar(cairo.Content.COLOR_ALPHA, img_release.width, img_release.height)
+		local cr    = cairo.Context(img_press)
+		cr:set_source_surface(img_release, 2, 2)
+		cr:paint()
+		orig_set_image(self, img_release)
+	end
 
-    w:set_image(args.image)
-    w:buttons(abutton({}, 1, function()
-        orig_set_image(w, img_press)
-    end,
-            function()
-                orig_set_image(w, img_release)
-            end))
+	w:set_image(args.image)
+	w:buttons(abutton({}, 1, function()
+		orig_set_image(w, img_press)
+	end,
+			function()
+				orig_set_image(w, img_release)
+			end))
 
-    w:connect_signal("mouse::leave", function(self)
-        orig_set_image(self, img_release)
-    end)
+	w:connect_signal("mouse::leave", function(self)
+		orig_set_image(self, img_release)
+	end)
 
-    return w
+	return w
 end
 
 function button:new(args)
-    local args             = args or {}
+	local args             = args or {}
 
-    local mod              = args.mod or {}
-    local _button          = args._button or mouse.button_click_left
-    local press            = args.press or nil
+	local mod              = args.mod or {}
+	local _button          = args._button or mouse.button_click_left
+	local press            = args.press or nil
 
-    local mod_key          = key.shift
-    local key_switch       = key.enter
+	local mod_key          = key.shift
+	local key_switch       = key.enter
 
-    local release          = args.release or
-            function()
-                keygrabber.run(
-                        function(mod, keys, event)
-                            if keys == key_switch and event == "press" then
+	local release          = args.release or
+			function()
+				keygrabber.run(
+						function(mod, keys, event)
+							if keys == key_switch and event == "press" then
 
-                                local fun = args.release
+								local fun = args.release
 
-                                fun()
+								fun()
 
-                            elseif keys == mod_key and event == "release" then
-                                keygrabber.stop()
-                            end
-                        end
-                )
+							elseif keys == mod_key and event == "release" then
+								keygrabber.stop()
+							end
+						end
+				)
 
-                log:debug("args.release")
-            end
+				log:debug("args.release")
+			end
 
-    local ignore_modifiers = { "Lock", "Mod2" }
+	local ignore_modifiers = { "Lock", "Mod2" }
 
-    local ret              = {}
-    local subsets          = gmath.subsets(ignore_modifiers)
+	local ret              = {}
+	local subsets          = gmath.subsets(ignore_modifiers)
 
-    for _, set in ipairs(subsets) do
-        ret[#ret + 1] = self.button({
-            modifiers = gtable.join(mod, set),
-            button    = _button
-        })
-        if press then
-            ret[#ret]:connect_signal("press", function(_, ...)
-                press(...)
-            end)
-        end
-        if release then
-            ret[#ret]:connect_signal("release", function(_, ...)
-                release(...)
-            end)
-        end
-    end
+	for _, set in ipairs(subsets) do
+		ret[#ret + 1] = self.button({
+			modifiers = gtable.join(mod, set),
+			button    = _button
+		})
+		if press then
+			ret[#ret]:connect_signal("press", function(_, ...)
+				press(...)
+			end)
+		end
+		if release then
+			ret[#ret]:connect_signal("release", function(_, ...)
+				release(...)
+			end)
+		end
+	end
 
-    return ret
+	return ret
 end
 
 function dropdown:create(args)
-    local args = args or {}
+	local args = args or {}
 
-    if not args.command and not args.menu then
-        return
-    end
+	if not args.command and not args.menu then
+		return
+	end
 
-    local w = wbutton:new(args)
-    if not w then
-        return
-    end
+	local w = wbutton:new(args)
+	if not w then
+		return
+	end
 
-    local ret  = {}
+	local ret  = {}
 
-    ret.widget = w
+	ret.widget = w
 
-    local b
-    if args.command then
-        b = gtable.join(w:buttons(),
-                button:new({
-                    release = function()
-                        spawn(args.command)
-                    end
-                }))
-    elseif args.menu then
-        b = gtable.join(w:buttons(),
-                button:new({
-                    release = function()
-                        args.menu:toggle()
-                    end
-                }))
-    end
+	local b
+	if args.command then
+		b = gtable.join(w:buttons(),
+				button:new({
+					release = function()
+						spawn(args.command)
+					end
+				}))
+	elseif args.menu then
+		b = gtable.join(w:buttons(),
+				button:new({
+					release = function()
+						args.menu:toggle()
+					end
+				}))
+	end
 
-    w:buttons(b)
+	w:buttons(b)
 
-    return ret
+	return ret
 end
 
 return dropdown

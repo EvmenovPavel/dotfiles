@@ -124,69 +124,69 @@ local props     = { "shape_border_color", "bg_image", "fg",
 
 -- Use a cached loop instead of an large function like the taglist and tasklist
 local function update_style(self)
-    self._private.style_cache = self._private.style_cache or {}
+	self._private.style_cache = self._private.style_cache or {}
 
-    for _, state in ipairs { "normal", "selected" } do
-        local s = {}
+	for _, state in ipairs { "normal", "selected" } do
+		local s = {}
 
-        for _, prop in ipairs(props) do
-            if self._private.style[prop .. "_" .. state] ~= nil then
-                s[prop] = self._private.style[prop .. "_" .. state]
-            else
-                s[prop] = beautiful["notification_action_" .. prop .. "_" .. state]
-            end
-        end
+		for _, prop in ipairs(props) do
+			if self._private.style[prop .. "_" .. state] ~= nil then
+				s[prop] = self._private.style[prop .. "_" .. state]
+			else
+				s[prop] = beautiful["notification_action_" .. prop .. "_" .. state]
+			end
+		end
 
-        -- Set a fallback for the icon size to prevent them from being gigantic
-        s.icon_size                      = s.icon_size
-                or beautiful.get_font_height(beautiful.font) * 1.5
+		-- Set a fallback for the icon size to prevent them from being gigantic
+		s.icon_size                      = s.icon_size
+				or beautiful.get_font_height(beautiful.font) * 1.5
 
-        self._private.style_cache[state] = s
-    end
+		self._private.style_cache[state] = s
+	end
 end
 
 local function wb_label(action, self)
-    -- Get the name
-    local name  = action.name
+	-- Get the name
+	local name  = action.name
 
-    local style = self._private.style_cache[action.selected and "selected" or "normal"]
+	local style = self._private.style_cache[action.selected and "selected" or "normal"]
 
-    -- Add the underline
-    name        = style.underline ~= false and
-            ("<u>" .. name .. "</u>") or name
+	-- Add the underline
+	name        = style.underline ~= false and
+			("<u>" .. name .. "</u>") or name
 
-    local icon  = beautiful.notification_action_label_only ~= true and action.icon or nil
+	local icon  = beautiful.notification_action_label_only ~= true and action.icon or nil
 
-    if style.fg then
-        name = "<span color='" .. style.fg .. "'>" .. name .. "</span>"
-    end
+	if style.fg then
+		name = "<span color='" .. style.fg .. "'>" .. name .. "</span>"
+	end
 
-    if action.icon_only or beautiful.notification_action_icon_only then
-        name = nil
-    end
+	if action.icon_only or beautiful.notification_action_icon_only then
+		name = nil
+	end
 
-    return name, style.bg, style.bg_image, icon, style
+	return name, style.bg, style.bg_image, icon, style
 end
 
 local function update(self)
-    local n = self._private.notification[1]
+	local n = self._private.notification[1]
 
-    if not self._private.layout or not n then
-        return
-    end
+	if not self._private.layout or not n then
+		return
+	end
 
-    awcommon.list_update(
-            self._private.layout,
-            self._private.default_buttons,
-            function(o)
-                return wb_label(o, self)
-            end,
-            self._private.data,
-            n.actions,
-            {
-                widget_template = self._private.widget_template
-            }
-    )
+	awcommon.list_update(
+			self._private.layout,
+			self._private.default_buttons,
+			function(o)
+				return wb_label(o, self)
+			end,
+			self._private.data,
+			n.actions,
+			{
+				widget_template = self._private.widget_template
+			}
+	)
 end
 
 local actionlist = {}
@@ -251,69 +251,69 @@ local actionlist = {}
 
 
 function actionlist:set_notification(notif)
-    self._private.notification = setmetatable({ notif }, { __mode = "v" })
+	self._private.notification = setmetatable({ notif }, { __mode = "v" })
 
-    if not self._private.layout then
-        self._private.layout = wibox.layout.fixed.horizontal()
-    end
+	if not self._private.layout then
+		self._private.layout = wibox.layout.fixed.horizontal()
+	end
 
-    update(self)
+	update(self)
 
-    self:emit_signal("widget::layout_changed")
-    self:emit_signal("widget::redraw_needed")
-    self:emit_signal("property::notification", notif)
+	self:emit_signal("widget::layout_changed")
+	self:emit_signal("widget::redraw_needed")
+	self:emit_signal("property::notification", notif)
 end
 
 function actionlist:set_base_layout(layout)
-    self._private.layout = layout
+	self._private.layout = layout
 
-    update(self)
+	update(self)
 
-    self:emit_signal("widget::layout_changed")
-    self:emit_signal("widget::redraw_needed")
-    self:emit_signal("property::base_layout", layout)
+	self:emit_signal("widget::layout_changed")
+	self:emit_signal("widget::redraw_needed")
+	self:emit_signal("property::base_layout", layout)
 end
 
 function actionlist:set_widget_template(widget_template)
-    self._private.widget_template = widget_template
+	self._private.widget_template = widget_template
 
-    -- Remove the existing instances
-    self._private.data            = {}
+	-- Remove the existing instances
+	self._private.data            = {}
 
-    update(self)
+	update(self)
 
-    self:emit_signal("widget::layout_changed")
-    self:emit_signal("widget::redraw_needed")
-    self:emit_signal("property::widget_template", widget_template)
+	self:emit_signal("widget::layout_changed")
+	self:emit_signal("widget::redraw_needed")
+	self:emit_signal("property::widget_template", widget_template)
 end
 
 function actionlist:set_style(style)
-    self._private.style = style or {}
+	self._private.style = style or {}
 
-    update_style(self)
-    update(self)
+	update_style(self)
+	update(self)
 
-    self:emit_signal("widget::layout_changed")
-    self:emit_signal("widget::redraw_needed")
-    self:emit_signal("property::style", style)
+	self:emit_signal("widget::layout_changed")
+	self:emit_signal("widget::redraw_needed")
+	self:emit_signal("property::style", style)
 end
 
 function actionlist:get_notification()
-    return self._private.notification
+	return self._private.notification
 end
 
 function actionlist:layout(_, width, height)
-    if self._private.layout then
-        return { wibox.widget.base.place_widget_at(self._private.layout, 0, 0, width, height) }
-    end
+	if self._private.layout then
+		return { wibox.widget.base.place_widget_at(self._private.layout, 0, 0, width, height) }
+	end
 end
 
 function actionlist:fit(context, width, height)
-    if not self._private.layout then
-        return 0, 0
-    end
+	if not self._private.layout then
+		return 0, 0
+	end
 
-    return wibox.widget.base.fit_widget(self, context, self._private.layout, width, height)
+	return wibox.widget.base.fit_widget(self, context, self._private.layout, width, height)
 end
 
 --- Create an action list.
@@ -342,31 +342,31 @@ end
 -- @constructorfct naughty.list.actions
 
 local function new(_, args)
-    args      = args or {}
+	args      = args or {}
 
-    local wdg = wibox.widget.base.make_widget(nil, nil, {
-        enable_properties = true,
-    })
+	local wdg = wibox.widget.base.make_widget(nil, nil, {
+		enable_properties = true,
+	})
 
-    gtable.crush(wdg, actionlist, true)
+	gtable.crush(wdg, actionlist, true)
 
-    wdg._private.data         = {}
-    wdg._private.notification = {}
+	wdg._private.data         = {}
+	wdg._private.notification = {}
 
-    gtable.crush(wdg, args, false)
+	gtable.crush(wdg, args, false)
 
-    wdg._private.style = wdg._private.style or {}
+	wdg._private.style = wdg._private.style or {}
 
-    update_style(wdg)
+	update_style(wdg)
 
-    wdg._private.default_buttons = gtable.join(
-            abutton({ }, 1, function(a)
-                local notif = wdg._private.notification[1]
-                a:invoke(notif)
-            end)
-    )
+	wdg._private.default_buttons = gtable.join(
+			abutton({ }, 1, function(a)
+				local notif = wdg._private.notification[1]
+				a:invoke(notif)
+			end)
+	)
 
-    return wdg
+	return wdg
 end
 
 --@DOC_object_COMMON@

@@ -25,10 +25,10 @@ local theme_assets   = require("beautiful.theme_assets")
 local gtk            = require("beautiful.gtk")
 
 local beautiful      = {
-    xresources   = xresources,
-    theme_assets = theme_assets,
-    gtk          = gtk,
-    mt           = {}
+	xresources   = xresources,
+	theme_assets = theme_assets,
+	gtk          = gtk,
+	mt           = {}
 }
 
 -- Local data
@@ -107,47 +107,47 @@ local active_font
 --   string or a lgi.Pango.FontDescription.
 -- @treturn table A table with `name`, `description` and `height`.
 local function load_font(name)
-    name = name or active_font
-    if name and type(name) ~= "string" then
-        if descs[name] then
-            name = descs[name]
-        else
-            name = name:to_string()
-        end
-    end
-    if fonts[name] then
-        return fonts[name]
-    end
+	name = name or active_font
+	if name and type(name) ~= "string" then
+		if descs[name] then
+			name = descs[name]
+		else
+			name = name:to_string()
+		end
+	end
+	if fonts[name] then
+		return fonts[name]
+	end
 
-    -- Load new font
-    local desc = Pango.FontDescription.from_string(name)
-    local ctx  = PangoCairo.font_map_get_default():create_context()
-    ctx:set_resolution(beautiful.xresources.get_dpi())
+	-- Load new font
+	local desc = Pango.FontDescription.from_string(name)
+	local ctx  = PangoCairo.font_map_get_default():create_context()
+	ctx:set_resolution(beautiful.xresources.get_dpi())
 
-    -- Apply default values from the context (e.g. a default font size)
-    desc:merge(ctx:get_font_description(), false)
+	-- Apply default values from the context (e.g. a default font size)
+	desc:merge(ctx:get_font_description(), false)
 
-    -- Calculate font height.
-    local metrics = ctx:get_metrics(desc, nil)
-    local height  = math.ceil((metrics:get_ascent() + metrics:get_descent()) / Pango.SCALE)
-    if height == 0 then
-        height = desc:get_size() / Pango.SCALE
-        gears_debug.print_warning(string.format(
-                "beautiful.load_font: could not get height for '%s' (likely missing font), using %d.",
-                name, height))
-    end
+	-- Calculate font height.
+	local metrics = ctx:get_metrics(desc, nil)
+	local height  = math.ceil((metrics:get_ascent() + metrics:get_descent()) / Pango.SCALE)
+	if height == 0 then
+		height = desc:get_size() / Pango.SCALE
+		gears_debug.print_warning(string.format(
+				"beautiful.load_font: could not get height for '%s' (likely missing font), using %d.",
+				name, height))
+	end
 
-    local font  = { name = name, description = desc, height = height }
-    fonts[name] = font
-    descs[desc] = name
-    return font
+	local font  = { name = name, description = desc, height = height }
+	fonts[name] = font
+	descs[desc] = name
+	return font
 end
 
 --- Set an active font
 --
 -- @param name The font
 local function set_font(name)
-    active_font = load_font(name).name
+	active_font = load_font(name).name
 end
 
 --- Get a font description.
@@ -156,7 +156,7 @@ end
 -- @tparam string|lgi.Pango.FontDescription name The name of the font.
 -- @treturn lgi.Pango.FontDescription
 function beautiful.get_font(name)
-    return load_font(name).description
+	return load_font(name).description
 end
 
 --- Get a new font with merged attributes, based on another one.
@@ -166,18 +166,18 @@ end
 -- @tparam string merge Attributes that should be merged, e.g. "bold".
 -- @treturn lgi.Pango.FontDescription
 function beautiful.get_merged_font(name, merge)
-    local font   = beautiful.get_font(name)
-    merge        = Pango.FontDescription.from_string(merge)
-    local merged = font:copy_static()
-    merged:merge(merge, true)
-    return beautiful.get_font(merged:to_string())
+	local font   = beautiful.get_font(name)
+	merge        = Pango.FontDescription.from_string(merge)
+	local merged = font:copy_static()
+	merged:merge(merge, true)
+	return beautiful.get_font(merged:to_string())
 end
 
 --- Get the height of a font.
 --
 -- @param name Name of the font
 function beautiful.get_font_height(name)
-    return load_font(name).height
+	return load_font(name).height
 end
 
 --- Function that initializes the theme settings. Should be run at the
@@ -209,65 +209,65 @@ end
 --   containing all the theme values.
 -- @treturn true|nil True if successful, nil in case of error.
 function beautiful.init(config)
-    if config then
-        local state, t_theme = nil, nil
-        local homedir        = os.getenv("HOME")
+	if config then
+		local state, t_theme = nil, nil
+		local homedir        = os.getenv("HOME")
 
-        -- If `config` is the path to a theme file, run this file,
-        -- otherwise if it is a theme table, save it.
-        local t_config       = type(config)
-        if t_config == 'string' then
-            -- Expand the '~' $HOME shortcut
-            config    = config:gsub("^~/", homedir .. "/")
-            local dir = Gio.File.new_for_path(config):get_parent()
-            rawset(beautiful, "theme_path", dir and (dir:get_path() .. "/") or nil)
-            theme   = protected_call(dofile, config)
-            t_theme = type(theme)
-            state   = t_theme == 'table' and next(theme)
-        elseif t_config == 'table' then
-            rawset(beautiful, "theme_path", nil)
-            theme = config
-            state = next(theme)
-        end
+		-- If `config` is the path to a theme file, run this file,
+		-- otherwise if it is a theme table, save it.
+		local t_config       = type(config)
+		if t_config == 'string' then
+			-- Expand the '~' $HOME shortcut
+			config    = config:gsub("^~/", homedir .. "/")
+			local dir = Gio.File.new_for_path(config):get_parent()
+			rawset(beautiful, "theme_path", dir and (dir:get_path() .. "/") or nil)
+			theme   = protected_call(dofile, config)
+			t_theme = type(theme)
+			state   = t_theme == 'table' and next(theme)
+		elseif t_config == 'table' then
+			rawset(beautiful, "theme_path", nil)
+			theme = config
+			state = next(theme)
+		end
 
-        if state then
-            -- expand '~'
-            if homedir then
-                for k, v in pairs(theme) do
-                    if type(v) == "string" then theme[k] = v:gsub("^~/", homedir .. "/") end
-                end
-            end
+		if state then
+			-- expand '~'
+			if homedir then
+				for k, v in pairs(theme) do
+					if type(v) == "string" then theme[k] = v:gsub("^~/", homedir .. "/") end
+				end
+			end
 
-            if theme.font then set_font(theme.font) end
-            return true
-        else
-            rawset(beautiful, "theme_path", nil)
-            theme      = {}
-            local file = t_config == 'string' and (" from: " .. config)
-            local err  = (file and t_theme == 'table' and "got an empty table" .. file)
-                    or (file and t_theme ~= 'table' and "got a " .. t_theme .. file)
-                    or (t_config == 'table' and "got an empty table")
-                    or ("got a " .. t_config)
-            return gears_debug.print_error("beautiful: error loading theme: " .. err)
-        end
-    else
-        return gears_debug.print_error("beautiful: error loading theme: no theme specified")
-    end
+			if theme.font then set_font(theme.font) end
+			return true
+		else
+			rawset(beautiful, "theme_path", nil)
+			theme      = {}
+			local file = t_config == 'string' and (" from: " .. config)
+			local err  = (file and t_theme == 'table' and "got an empty table" .. file)
+					or (file and t_theme ~= 'table' and "got a " .. t_theme .. file)
+					or (t_config == 'table' and "got an empty table")
+					or ("got a " .. t_config)
+			return gears_debug.print_error("beautiful: error loading theme: " .. err)
+		end
+	else
+		return gears_debug.print_error("beautiful: error loading theme: no theme specified")
+	end
 end
 
 --- Get the current theme.
 --
 -- @treturn table The current theme table.
 function beautiful.get()
-    return theme
+	return theme
 end
 
 function beautiful.mt:__index(k)
-    return theme[k]
+	return theme[k]
 end
 
 function beautiful.mt:__newindex(k, v)
-    theme[k] = v
+	theme[k] = v
 end
 
 -- Set the default font

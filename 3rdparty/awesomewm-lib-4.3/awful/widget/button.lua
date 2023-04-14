@@ -27,34 +27,34 @@ local button       = { mt = {} }
 -- @param args Widget arguments. "image" is the image to display.
 -- @return A textbox widget configured as a button.
 function button.new(args)
-    if not args or not args.image then
-        return widget.empty_widget()
-    end
+	if not args or not args.image then
+		return widget.empty_widget()
+	end
 
-    local w              = imagebox()
-    local orig_set_image = w.set_image
-    local img_release
-    local img_press
+	local w              = imagebox()
+	local orig_set_image = w.set_image
+	local img_release
+	local img_press
 
-    function w:set_image(image)
-        img_release = surface.load(image)
-        img_press   = img_release:create_similar(cairo.Content.COLOR_ALPHA, img_release.width, img_release.height)
-        local cr    = cairo.Context(img_press)
-        cr:set_source_surface(img_release, 2, 2)
-        cr:paint()
-        orig_set_image(self, img_release)
-    end
-    w:set_image(args.image)
-    w:buttons(abutton({}, 1, function() orig_set_image(w, img_press) end,
-            function() orig_set_image(w, img_release) end))
+	function w:set_image(image)
+		img_release = surface.load(image)
+		img_press   = img_release:create_similar(cairo.Content.COLOR_ALPHA, img_release.width, img_release.height)
+		local cr    = cairo.Context(img_press)
+		cr:set_source_surface(img_release, 2, 2)
+		cr:paint()
+		orig_set_image(self, img_release)
+	end
+	w:set_image(args.image)
+	w:buttons(abutton({}, 1, function() orig_set_image(w, img_press) end,
+			function() orig_set_image(w, img_release) end))
 
-    w:connect_signal("mouse::leave", function(self) orig_set_image(self, img_release) end)
+	w:connect_signal("mouse::leave", function(self) orig_set_image(self, img_release) end)
 
-    return w
+	return w
 end
 
 function button.mt:__call(...)
-    return button.new(...)
+	return button.new(...)
 end
 
 --@DOC_widget_COMMON@

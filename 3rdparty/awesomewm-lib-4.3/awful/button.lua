@@ -38,23 +38,23 @@ local ignore_modifiers = { "Lock", "Mod2" }
 -- @see button
 -- @treturn table A table with one or several button objects.
 function button.new(mod, _button, press, release)
-    local ret     = {}
-    local subsets = gmath.subsets(ignore_modifiers)
-    for _, set in ipairs(subsets) do
-        ret[#ret + 1] = capi.button({ modifiers = gtable.join(mod, set),
-                                      button    = _button })
-        if press then
-            ret[#ret]:connect_signal("press", function(_, ...) press(...) end)
-        end
-        if release then
-            ret[#ret]:connect_signal("release", function(_, ...) release(...) end)
-        end
-    end
-    return ret
+	local ret     = {}
+	local subsets = gmath.subsets(ignore_modifiers)
+	for _, set in ipairs(subsets) do
+		ret[#ret + 1] = capi.button({ modifiers = gtable.join(mod, set),
+		                              button    = _button })
+		if press then
+			ret[#ret]:connect_signal("press", function(_, ...) press(...) end)
+		end
+		if release then
+			ret[#ret]:connect_signal("release", function(_, ...) release(...) end)
+		end
+	end
+	return ret
 end
 
 function button.mt:__call(...)
-    return button.new(...)
+	return button.new(...)
 end
 
 return setmetatable(button, button.mt)

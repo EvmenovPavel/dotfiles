@@ -21,9 +21,9 @@
 
 -- Grab environment we need
 local capi    = {
-    client = client,
-    mouse  = mouse,
-    screen = screen
+	client = client,
+	mouse  = mouse,
+	screen = screen
 }
 local gmath   = require("gears.math")
 local awful   = require("awful")
@@ -36,7 +36,7 @@ local gstring = require("gears.string")
 local gdebug  = require("gears.debug")
 
 local function get_screen(s)
-    return s and capi.screen[s]
+	return s and capi.screen[s]
 end
 
 
@@ -129,79 +129,79 @@ local common_args        = { w    = wibox.layout.fixed.horizontal(),
 -- @param c The desired text color.
 -- @return the text wrapped in a span tag.
 local function colortext(s, c)
-    return "<span color='" .. gcolor.ensure_pango_color(c) .. "'>" .. s .. "</span>"
+	return "<span color='" .. gcolor.ensure_pango_color(c) .. "'>" .. s .. "</span>"
 end
 
 --- Get how the menu item should be displayed.
 -- @param o The menu item.
 -- @return item name, item background color, background image, item icon.
 local function label(o)
-    local fg_color = theme.menubar_fg_normal or theme.menu_fg_normal or theme.fg_normal
-    local bg_color = theme.menubar_bg_normal or theme.menu_bg_normal or theme.bg_normal
-    if o.focused then
-        fg_color = theme.menubar_fg_focus or theme.menu_fg_focus or theme.fg_focus
-        bg_color = theme.menubar_bg_focus or theme.menu_bg_focus or theme.bg_focus
-    end
-    return colortext(gstring.xml_escape(o.name), fg_color),
-    bg_color,
-    nil,
-    o.icon
+	local fg_color = theme.menubar_fg_normal or theme.menu_fg_normal or theme.fg_normal
+	local bg_color = theme.menubar_bg_normal or theme.menu_bg_normal or theme.bg_normal
+	if o.focused then
+		fg_color = theme.menubar_fg_focus or theme.menu_fg_focus or theme.fg_focus
+		bg_color = theme.menubar_bg_focus or theme.menu_bg_focus or theme.bg_focus
+	end
+	return colortext(gstring.xml_escape(o.name), fg_color),
+	bg_color,
+	nil,
+	o.icon
 end
 
 local function load_count_table()
-    if instance.count_table then
-        return instance.count_table
-    end
-    instance.count_table  = {}
-    local count_file_name = gfs.get_cache_dir() .. "/menu_count_file"
-    local count_file      = io.open(count_file_name, "r")
-    if count_file then
-        for line in count_file:lines() do
-            local name, count = string.match(line, "([^;]+);([^;]+)")
-            if name ~= nil and count ~= nil then
-                instance.count_table[name] = count
-            end
-        end
-        count_file:close()
-    end
-    return instance.count_table
+	if instance.count_table then
+		return instance.count_table
+	end
+	instance.count_table  = {}
+	local count_file_name = gfs.get_cache_dir() .. "/menu_count_file"
+	local count_file      = io.open(count_file_name, "r")
+	if count_file then
+		for line in count_file:lines() do
+			local name, count = string.match(line, "([^;]+);([^;]+)")
+			if name ~= nil and count ~= nil then
+				instance.count_table[name] = count
+			end
+		end
+		count_file:close()
+	end
+	return instance.count_table
 end
 
 local function write_count_table(count_table)
-    count_table           = count_table or instance.count_table
-    local count_file_name = gfs.get_cache_dir() .. "/menu_count_file"
-    local count_file      = assert(io.open(count_file_name, "w"))
-    for name, count in pairs(count_table) do
-        local str = string.format("%s;%d\n", name, count)
-        count_file:write(str)
-    end
-    count_file:close()
+	count_table           = count_table or instance.count_table
+	local count_file_name = gfs.get_cache_dir() .. "/menu_count_file"
+	local count_file      = assert(io.open(count_file_name, "w"))
+	for name, count in pairs(count_table) do
+		local str = string.format("%s;%d\n", name, count)
+		count_file:write(str)
+	end
+	count_file:close()
 end
 
 --- Perform an action for the given menu item.
 -- @param o The menu item.
 -- @return if the function processed the callback, new awful.prompt command, new awful.prompt prompt text.
 local function perform_action(o)
-    if not o then return end
-    if o.key then
-        current_category = o.key
-        local new_prompt = shownitems[current_item].name .. ": "
-        previous_item    = current_item
-        current_item     = 1
-        return true, "", new_prompt
-    elseif shownitems[current_item].cmdline then
-        awful.spawn(shownitems[current_item].cmdline)
-        -- load count_table from cache file
-        local count_table    = load_count_table()
-        -- increase count
-        local curname        = shownitems[current_item].name
-        count_table[curname] = (count_table[curname] or 0) + 1
-        -- write updated count table to cache file
-        write_count_table(count_table)
-        -- Let awful.prompt execute dummy exec_callback and
-        -- done_callback to stop the keygrabber properly.
-        return false
-    end
+	if not o then return end
+	if o.key then
+		current_category = o.key
+		local new_prompt = shownitems[current_item].name .. ": "
+		previous_item    = current_item
+		current_item     = 1
+		return true, "", new_prompt
+	elseif shownitems[current_item].cmdline then
+		awful.spawn(shownitems[current_item].cmdline)
+		-- load count_table from cache file
+		local count_table    = load_count_table()
+		-- increase count
+		local curname        = shownitems[current_item].name
+		count_table[curname] = (count_table[curname] or 0) + 1
+		-- write updated count table to cache file
+		write_count_table(count_table)
+		-- Let awful.prompt execute dummy exec_callback and
+		-- done_callback to stop the keygrabber properly.
+		return false
+	end
 end
 
 -- Cut item list to return only current page.
@@ -210,166 +210,166 @@ end
 -- @tparam number|screen scr Screen
 -- @return table List of items for current page.
 local function get_current_page(all_items, query, scr)
-    scr = get_screen(scr)
-    if not instance.prompt.width then
-        instance.prompt.width = compute_text_width(instance.prompt.prompt, scr)
-    end
-    if not menubar.left_label_width then
-        menubar.left_label_width = compute_text_width(menubar.left_label, scr)
-    end
-    if not menubar.right_label_width then
-        menubar.right_label_width = compute_text_width(menubar.right_label, scr)
-    end
-    local available_space = instance.geometry.width - menubar.right_margin -
-            menubar.right_label_width - menubar.left_label_width -
-            compute_text_width(query, scr) - instance.prompt.width
+	scr = get_screen(scr)
+	if not instance.prompt.width then
+		instance.prompt.width = compute_text_width(instance.prompt.prompt, scr)
+	end
+	if not menubar.left_label_width then
+		menubar.left_label_width = compute_text_width(menubar.left_label, scr)
+	end
+	if not menubar.right_label_width then
+		menubar.right_label_width = compute_text_width(menubar.right_label, scr)
+	end
+	local available_space = instance.geometry.width - menubar.right_margin -
+			menubar.right_label_width - menubar.left_label_width -
+			compute_text_width(query, scr) - instance.prompt.width
 
-    local width_sum       = 0
-    local current_page    = {}
-    for i, item in ipairs(all_items) do
-        item.width = item.width or
-                compute_text_width(item.name, scr) +
-                        (item.icon and instance.geometry.height or 0) + list_interspace
-        if width_sum + item.width > available_space then
-            if current_item < i then
-                table.insert(current_page, { name = menubar.right_label, icon = nil })
-                break
-            end
-            current_page = { { name = menubar.left_label, icon = nil }, item, }
-            width_sum    = item.width
-        else
-            table.insert(current_page, item)
-            width_sum = width_sum + item.width
-        end
-    end
-    return current_page
+	local width_sum       = 0
+	local current_page    = {}
+	for i, item in ipairs(all_items) do
+		item.width = item.width or
+				compute_text_width(item.name, scr) +
+						(item.icon and instance.geometry.height or 0) + list_interspace
+		if width_sum + item.width > available_space then
+			if current_item < i then
+				table.insert(current_page, { name = menubar.right_label, icon = nil })
+				break
+			end
+			current_page = { { name = menubar.left_label, icon = nil }, item, }
+			width_sum    = item.width
+		else
+			table.insert(current_page, item)
+			width_sum = width_sum + item.width
+		end
+	end
+	return current_page
 end
 
 --- Update the menubar according to the command entered by user.
 -- @tparam number|screen scr Screen
 local function menulist_update(scr)
-    local query               = instance.query or ""
-    shownitems                = {}
-    local pattern             = gstring.query_to_pattern(query)
+	local query               = instance.query or ""
+	shownitems                = {}
+	local pattern             = gstring.query_to_pattern(query)
 
-    -- All entries are added to a list that will be sorted
-    -- according to the priority (first) and weight (second) of its
-    -- entries.
-    -- If categories are used in the menu, we add the entries matching
-    -- the current query with high priority as to ensure they are
-    -- displayed first. Afterwards the non-category entries are added.
-    -- All entries are weighted according to the number of times they
-    -- have been executed previously (stored in count_table).
-    local count_table         = load_count_table()
-    local command_list        = {}
+	-- All entries are added to a list that will be sorted
+	-- according to the priority (first) and weight (second) of its
+	-- entries.
+	-- If categories are used in the menu, we add the entries matching
+	-- the current query with high priority as to ensure they are
+	-- displayed first. Afterwards the non-category entries are added.
+	-- All entries are weighted according to the number of times they
+	-- have been executed previously (stored in count_table).
+	local count_table         = load_count_table()
+	local command_list        = {}
 
-    local PRIO_NONE           = 0
-    local PRIO_CATEGORY_MATCH = 2
+	local PRIO_NONE           = 0
+	local PRIO_CATEGORY_MATCH = 2
 
-    -- Add the categories
-    if menubar.show_categories then
-        for _, v in pairs(menubar.menu_gen.all_categories) do
-            v.focused = false
-            if not current_category and v.use then
+	-- Add the categories
+	if menubar.show_categories then
+		for _, v in pairs(menubar.menu_gen.all_categories) do
+			v.focused = false
+			if not current_category and v.use then
 
-                -- check if current query matches a category
-                if string.match(v.name, pattern) then
+				-- check if current query matches a category
+				if string.match(v.name, pattern) then
 
-                    v.weight = 0
-                    v.prio   = PRIO_CATEGORY_MATCH
+					v.weight = 0
+					v.prio   = PRIO_CATEGORY_MATCH
 
-                    -- get use count from count_table if present
-                    -- and use it as weight
-                    if string.len(pattern) > 0 and count_table[v.name] ~= nil then
-                        v.weight = tonumber(count_table[v.name])
-                    end
+					-- get use count from count_table if present
+					-- and use it as weight
+					if string.len(pattern) > 0 and count_table[v.name] ~= nil then
+						v.weight = tonumber(count_table[v.name])
+					end
 
-                    -- check for prefix match
-                    if string.match(v.name, "^" .. pattern) then
-                        -- increase default priority
-                        v.prio = PRIO_CATEGORY_MATCH + 1
-                    else
-                        v.prio = PRIO_CATEGORY_MATCH
-                    end
+					-- check for prefix match
+					if string.match(v.name, "^" .. pattern) then
+						-- increase default priority
+						v.prio = PRIO_CATEGORY_MATCH + 1
+					else
+						v.prio = PRIO_CATEGORY_MATCH
+					end
 
-                    table.insert(command_list, v)
-                end
-            end
-        end
-    end
+					table.insert(command_list, v)
+				end
+			end
+		end
+	end
 
-    -- Add the applications according to their name and cmdline
-    for _, v in ipairs(menubar.menu_entries) do
-        v.focused = false
-        if not current_category or v.category == current_category then
+	-- Add the applications according to their name and cmdline
+	for _, v in ipairs(menubar.menu_entries) do
+		v.focused = false
+		if not current_category or v.category == current_category then
 
-            -- check if the query matches either the name or the commandline
-            -- of some entry
-            if string.match(v.name, pattern)
-                    or string.match(v.cmdline, pattern) then
+			-- check if the query matches either the name or the commandline
+			-- of some entry
+			if string.match(v.name, pattern)
+					or string.match(v.cmdline, pattern) then
 
-                v.weight = 0
-                v.prio   = PRIO_NONE
+				v.weight = 0
+				v.prio   = PRIO_NONE
 
-                -- get use count from count_table if present
-                -- and use it as weight
-                if string.len(pattern) > 0 and count_table[v.name] ~= nil then
-                    v.weight = tonumber(count_table[v.name])
-                end
+				-- get use count from count_table if present
+				-- and use it as weight
+				if string.len(pattern) > 0 and count_table[v.name] ~= nil then
+					v.weight = tonumber(count_table[v.name])
+				end
 
-                -- check for prefix match
-                if string.match(v.name, "^" .. pattern)
-                        or string.match(v.cmdline, "^" .. pattern) then
-                    -- increase default priority
-                    v.prio = PRIO_NONE + 1
-                else
-                    v.prio = PRIO_NONE
-                end
+				-- check for prefix match
+				if string.match(v.name, "^" .. pattern)
+						or string.match(v.cmdline, "^" .. pattern) then
+					-- increase default priority
+					v.prio = PRIO_NONE + 1
+				else
+					v.prio = PRIO_NONE
+				end
 
-                table.insert(command_list, v)
-            end
-        end
-    end
+				table.insert(command_list, v)
+			end
+		end
+	end
 
-    local function compare_counts(a, b)
-        if a.prio == b.prio then
-            return a.weight > b.weight
-        end
-        return a.prio > b.prio
-    end
+	local function compare_counts(a, b)
+		if a.prio == b.prio then
+			return a.weight > b.weight
+		end
+		return a.prio > b.prio
+	end
 
-    -- sort command_list by weight (highest first)
-    table.sort(command_list, compare_counts)
-    -- copy into showitems
-    shownitems = command_list
+	-- sort command_list by weight (highest first)
+	table.sort(command_list, compare_counts)
+	-- copy into showitems
+	shownitems = command_list
 
-    if #shownitems > 0 then
-        -- Insert a run item value as the last choice
-        table.insert(shownitems, { name = "Exec: " .. query, cmdline = query, icon = nil })
+	if #shownitems > 0 then
+		-- Insert a run item value as the last choice
+		table.insert(shownitems, { name = "Exec: " .. query, cmdline = query, icon = nil })
 
-        if current_item > #shownitems then
-            current_item = #shownitems
-        end
-        shownitems[current_item].focused = true
-    else
-        table.insert(shownitems, { name = "", cmdline = query, icon = nil })
-    end
+		if current_item > #shownitems then
+			current_item = #shownitems
+		end
+		shownitems[current_item].focused = true
+	else
+		table.insert(shownitems, { name = "", cmdline = query, icon = nil })
+	end
 
-    common.list_update(common_args.w, nil, label,
-            common_args.data,
-            get_current_page(shownitems, query, scr))
+	common.list_update(common_args.w, nil, label,
+			common_args.data,
+			get_current_page(shownitems, query, scr))
 end
 
 --- Refresh menubar's cache by reloading .desktop files.
 -- @tparam[opt] screen scr Screen.
 function menubar.refresh(scr)
-    scr = get_screen(scr or awful.screen.focused() or 1)
-    menubar.menu_gen.generate(function(entries)
-        menubar.menu_entries = entries
-        if instance then
-            menulist_update(scr)
-        end
-    end)
+	scr = get_screen(scr or awful.screen.focused() or 1)
+	menubar.menu_gen.generate(function(entries)
+		menubar.menu_entries = entries
+		if instance then
+			menulist_update(scr)
+		end
+	end)
 end
 
 --- Awful.prompt keypressed callback to be used when the user presses a key.
@@ -378,126 +378,126 @@ end
 -- @param comm The current command in the prompt.
 -- @return if the function processed the callback, new awful.prompt command, new awful.prompt prompt text.
 local function prompt_keypressed_callback(mod, key, comm)
-    if key == "Left" or (mod.Control and key == "j") then
-        current_item = math.max(current_item - 1, 1)
-        return true
-    elseif key == "Right" or (mod.Control and key == "k") then
-        current_item = current_item + 1
-        return true
-    elseif key == "BackSpace" then
-        if comm == "" and current_category then
-            current_category = nil
-            current_item     = previous_item
-            return true, nil, "Run: "
-        end
-    elseif key == "Escape" then
-        if current_category then
-            current_category = nil
-            current_item     = previous_item
-            return true, nil, "Run: "
-        end
-    elseif key == "Home" then
-        current_item = 1
-        return true
-    elseif key == "End" then
-        current_item = #shownitems
-        return true
-    elseif key == "Return" or key == "KP_Enter" then
-        if mod.Control then
-            current_item = #shownitems
-            if mod.Mod1 then
-                -- add a terminal to the cmdline
-                shownitems[current_item].cmdline = menubar.utils.terminal
-                        .. " -e " .. shownitems[current_item].cmdline
-            end
-        end
-        return perform_action(shownitems[current_item])
-    end
-    return false
+	if key == "Left" or (mod.Control and key == "j") then
+		current_item = math.max(current_item - 1, 1)
+		return true
+	elseif key == "Right" or (mod.Control and key == "k") then
+		current_item = current_item + 1
+		return true
+	elseif key == "BackSpace" then
+		if comm == "" and current_category then
+			current_category = nil
+			current_item     = previous_item
+			return true, nil, "Run: "
+		end
+	elseif key == "Escape" then
+		if current_category then
+			current_category = nil
+			current_item     = previous_item
+			return true, nil, "Run: "
+		end
+	elseif key == "Home" then
+		current_item = 1
+		return true
+	elseif key == "End" then
+		current_item = #shownitems
+		return true
+	elseif key == "Return" or key == "KP_Enter" then
+		if mod.Control then
+			current_item = #shownitems
+			if mod.Mod1 then
+				-- add a terminal to the cmdline
+				shownitems[current_item].cmdline = menubar.utils.terminal
+						.. " -e " .. shownitems[current_item].cmdline
+			end
+		end
+		return perform_action(shownitems[current_item])
+	end
+	return false
 end
 
 --- Show the menubar on the given screen.
 -- @param[opt] scr Screen.
 function menubar.show(scr)
-    scr                = get_screen(scr or awful.screen.focused() or 1)
-    local fg_color     = theme.menubar_fg_normal or theme.menu_fg_normal or theme.fg_normal
-    local bg_color     = theme.menubar_bg_normal or theme.menu_bg_normal or theme.bg_normal
-    local border_width = theme.menubar_border_width or theme.menu_border_width or 0
-    local border_color = theme.menubar_border_color or theme.menu_border_color
+	scr                = get_screen(scr or awful.screen.focused() or 1)
+	local fg_color     = theme.menubar_fg_normal or theme.menu_fg_normal or theme.fg_normal
+	local bg_color     = theme.menubar_bg_normal or theme.menu_bg_normal or theme.bg_normal
+	local border_width = theme.menubar_border_width or theme.menu_border_width or 0
+	local border_color = theme.menubar_border_color or theme.menu_border_color
 
-    if not instance then
-        -- Add to each category the name of its key in all_categories
-        for k, v in pairs(menubar.menu_gen.all_categories) do
-            v.key = k
-        end
+	if not instance then
+		-- Add to each category the name of its key in all_categories
+		for k, v in pairs(menubar.menu_gen.all_categories) do
+			v.key = k
+		end
 
-        if menubar.cache_entries then
-            menubar.refresh(scr)
-        end
+		if menubar.cache_entries then
+			menubar.refresh(scr)
+		end
 
-        instance     = {
-            wibox       = wibox {
-                ontop        = true,
-                bg           = bg_color,
-                fg           = fg_color,
-                border_width = border_width,
-                border_color = border_color,
-            },
-            widget      = common_args.w,
-            prompt      = awful.widget.prompt(),
-            query       = nil,
-            count_table = nil,
-        }
-        local layout = wibox.layout.fixed.horizontal()
-        layout:add(instance.prompt)
-        layout:add(instance.widget)
-        instance.wibox:set_widget(layout)
-    end
+		instance     = {
+			wibox       = wibox {
+				ontop        = true,
+				bg           = bg_color,
+				fg           = fg_color,
+				border_width = border_width,
+				border_color = border_color,
+			},
+			widget      = common_args.w,
+			prompt      = awful.widget.prompt(),
+			query       = nil,
+			count_table = nil,
+		}
+		local layout = wibox.layout.fixed.horizontal()
+		layout:add(instance.prompt)
+		layout:add(instance.widget)
+		instance.wibox:set_widget(layout)
+	end
 
-    if instance.wibox.visible then
-        -- Menu already shown, exit
-        return
-    elseif not menubar.cache_entries then
-        menubar.refresh(scr)
-    end
+	if instance.wibox.visible then
+		-- Menu already shown, exit
+		return
+	elseif not menubar.cache_entries then
+		menubar.refresh(scr)
+	end
 
-    -- Set position and size
-    local scrgeom     = scr.workarea
-    local geometry    = menubar.geometry
-    instance.geometry = { x      = geometry.x or scrgeom.x,
-                          y      = geometry.y or scrgeom.y,
-                          height = geometry.height or gmath.round(theme.get_font_height() * 1.5),
-                          width  = (geometry.width or scrgeom.width) - border_width * 2 }
-    instance.wibox:geometry(instance.geometry)
+	-- Set position and size
+	local scrgeom     = scr.workarea
+	local geometry    = menubar.geometry
+	instance.geometry = { x      = geometry.x or scrgeom.x,
+	                      y      = geometry.y or scrgeom.y,
+	                      height = geometry.height or gmath.round(theme.get_font_height() * 1.5),
+	                      width  = (geometry.width or scrgeom.width) - border_width * 2 }
+	instance.wibox:geometry(instance.geometry)
 
-    current_item     = 1
-    current_category = nil
-    menulist_update(scr)
+	current_item     = 1
+	current_category = nil
+	menulist_update(scr)
 
-    local prompt_args = menubar.prompt_args or {}
+	local prompt_args = menubar.prompt_args or {}
 
-    awful.prompt.run(setmetatable({
-        prompt              = "Run: ",
-        textbox             = instance.prompt.widget,
-        completion_callback = awful.completion.shell,
-        history_path        = gfs.get_cache_dir() .. "/history_menu",
-        done_callback       = menubar.hide,
-        changed_callback    = function(query)
-            instance.query = query
-            menulist_update(scr)
-        end,
-        keypressed_callback = prompt_keypressed_callback
-    }, { __index = prompt_args }))
+	awful.prompt.run(setmetatable({
+		prompt              = "Run: ",
+		textbox             = instance.prompt.widget,
+		completion_callback = awful.completion.shell,
+		history_path        = gfs.get_cache_dir() .. "/history_menu",
+		done_callback       = menubar.hide,
+		changed_callback    = function(query)
+			instance.query = query
+			menulist_update(scr)
+		end,
+		keypressed_callback = prompt_keypressed_callback
+	}, { __index = prompt_args }))
 
-    instance.wibox.visible = true
+	instance.wibox.visible = true
 end
 
 --- Hide the menubar.
 function menubar.hide()
-    if instance then
-        instance.wibox.visible = false
-        instance.query         = nil
-    end
+	if instance then
+		instance.wibox.visible = false
+		instance.query         = nil
+	end
 end
 
 --- Get a menubar wibox.
@@ -505,18 +505,18 @@ end
 -- @return menubar wibox.
 -- @deprecated get
 function menubar.get(scr)
-    gdebug.deprecate("Use menubar.show() instead", { deprecated_in = 5 })
-    menubar.refresh(scr)
-    -- Add to each category the name of its key in all_categories
-    for k, v in pairs(menubar.menu_gen.all_categories) do
-        v.key = k
-    end
-    return common_args.w
+	gdebug.deprecate("Use menubar.show() instead", { deprecated_in = 5 })
+	menubar.refresh(scr)
+	-- Add to each category the name of its key in all_categories
+	for k, v in pairs(menubar.menu_gen.all_categories) do
+		v.key = k
+	end
+	return common_args.w
 end
 
 local mt = {}
 function mt.__call(_, ...)
-    return menubar.get(...)
+	return menubar.get(...)
 end
 
 return setmetatable(menubar, mt)

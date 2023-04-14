@@ -197,192 +197,192 @@ local properties   = { "border_color", "color", "background_color",
 }
 
 function progressbar.draw(pbar, _, cr, width, height)
-    local ticks_gap  = pbar._private.ticks_gap or 1
-    local ticks_size = pbar._private.ticks_size or 4
+	local ticks_gap  = pbar._private.ticks_gap or 1
+	local ticks_size = pbar._private.ticks_size or 4
 
-    -- We want one pixel wide lines
-    cr:set_line_width(1)
+	-- We want one pixel wide lines
+	cr:set_line_width(1)
 
-    local max_value = pbar._private.max_value
+	local max_value = pbar._private.max_value
 
-    local value     = math.min(max_value, math.max(0, pbar._private.value))
+	local value     = math.min(max_value, math.max(0, pbar._private.value))
 
-    if value >= 0 then
-        value = value / max_value
-    end
-    local border_width        = pbar._private.border_width
-            or beautiful.progressbar_border_width or 0
+	if value >= 0 then
+		value = value / max_value
+	end
+	local border_width        = pbar._private.border_width
+			or beautiful.progressbar_border_width or 0
 
-    local bcol                = pbar._private.border_color or beautiful.progressbar_border_color
+	local bcol                = pbar._private.border_color or beautiful.progressbar_border_color
 
-    border_width              = bcol and border_width or 0
+	border_width              = bcol and border_width or 0
 
-    local bg                  = pbar._private.background_color or
-            beautiful.progressbar_bg or "#ff0000aa"
+	local bg                  = pbar._private.background_color or
+			beautiful.progressbar_bg or "#ff0000aa"
 
-    local bg_width, bg_height = width, height
+	local bg_width, bg_height = width, height
 
-    local clip                = pbar._private.clip ~= false and beautiful.progressbar_clip ~= false
+	local clip                = pbar._private.clip ~= false and beautiful.progressbar_clip ~= false
 
-    -- Apply the margins
-    local margin              = pbar._private.margins or beautiful.progressbar_margins
+	-- Apply the margins
+	local margin              = pbar._private.margins or beautiful.progressbar_margins
 
-    if margin then
-        if type(margin) == "number" then
-            cr:translate(margin, margin)
-            bg_width, bg_height = bg_width - 2 * margin, bg_height - 2 * margin
-        else
-            cr:translate(margin.left or 0, margin.top or 0)
-            bg_height = bg_height -
-                    (margin.top or 0) - (margin.bottom or 0)
-            bg_width  = bg_width -
-                    (margin.left or 0) - (margin.right or 0)
-        end
-    end
+	if margin then
+		if type(margin) == "number" then
+			cr:translate(margin, margin)
+			bg_width, bg_height = bg_width - 2 * margin, bg_height - 2 * margin
+		else
+			cr:translate(margin.left or 0, margin.top or 0)
+			bg_height = bg_height -
+					(margin.top or 0) - (margin.bottom or 0)
+			bg_width  = bg_width -
+					(margin.left or 0) - (margin.right or 0)
+		end
+	end
 
-    -- Draw the background shape
-    if border_width > 0 then
-        -- Cairo draw half of the border outside of the path area
-        cr:translate(border_width / 2, border_width / 2)
-        bg_width, bg_height = bg_width - border_width, bg_height - border_width
-        cr:set_line_width(border_width)
-    end
+	-- Draw the background shape
+	if border_width > 0 then
+		-- Cairo draw half of the border outside of the path area
+		cr:translate(border_width / 2, border_width / 2)
+		bg_width, bg_height = bg_width - border_width, bg_height - border_width
+		cr:set_line_width(border_width)
+	end
 
-    local background_shape = pbar._private.shape or
-            beautiful.progressbar_shape or shape.rectangle
+	local background_shape = pbar._private.shape or
+			beautiful.progressbar_shape or shape.rectangle
 
-    background_shape(cr, bg_width, bg_height)
+	background_shape(cr, bg_width, bg_height)
 
-    cr:set_source(color(bg))
+	cr:set_source(color(bg))
 
-    local over_drawn_width  = bg_width + border_width
-    local over_drawn_height = bg_height + border_width
+	local over_drawn_width  = bg_width + border_width
+	local over_drawn_height = bg_height + border_width
 
-    if border_width > 0 then
-        cr:fill_preserve()
+	if border_width > 0 then
+		cr:fill_preserve()
 
-        -- Draw the border
-        cr:set_source(color(bcol))
+		-- Draw the border
+		cr:set_source(color(bcol))
 
-        cr:stroke()
+		cr:stroke()
 
-        over_drawn_width  = over_drawn_width - 2 * border_width
-        over_drawn_height = over_drawn_height - 2 * border_width
-    else
-        cr:fill()
-    end
+		over_drawn_width  = over_drawn_width - 2 * border_width
+		over_drawn_height = over_drawn_height - 2 * border_width
+	else
+		cr:fill()
+	end
 
-    -- Undo the translation
-    cr:translate(-border_width / 2, -border_width / 2)
+	-- Undo the translation
+	cr:translate(-border_width / 2, -border_width / 2)
 
-    -- Make sure the bar stay in the shape
-    if clip then
-        background_shape(cr, bg_width, bg_height)
-        cr:clip()
-        cr:translate(border_width, border_width)
-    else
-        -- Assume the background size is irrelevant to the bar itself
-        if type(margin) == "number" then
-            cr:translate(-margin, -margin)
-        else
-            cr:translate(-(margin.left or 0), -(margin.top or 0))
-        end
+	-- Make sure the bar stay in the shape
+	if clip then
+		background_shape(cr, bg_width, bg_height)
+		cr:clip()
+		cr:translate(border_width, border_width)
+	else
+		-- Assume the background size is irrelevant to the bar itself
+		if type(margin) == "number" then
+			cr:translate(-margin, -margin)
+		else
+			cr:translate(-(margin.left or 0), -(margin.top or 0))
+		end
 
-        over_drawn_height = height
-        over_drawn_width  = width
-    end
+		over_drawn_height = height
+		over_drawn_width  = width
+	end
 
-    -- Apply the padding
-    local padding = pbar._private.paddings or beautiful.progressbar_paddings
+	-- Apply the padding
+	local padding = pbar._private.paddings or beautiful.progressbar_paddings
 
-    if padding then
-        if type(padding) == "number" then
-            cr:translate(padding, padding)
-            over_drawn_height = over_drawn_height - 2 * padding
-            over_drawn_width  = over_drawn_width - 2 * padding
-        else
-            cr:translate(padding.left or 0, padding.top or 0)
+	if padding then
+		if type(padding) == "number" then
+			cr:translate(padding, padding)
+			over_drawn_height = over_drawn_height - 2 * padding
+			over_drawn_width  = over_drawn_width - 2 * padding
+		else
+			cr:translate(padding.left or 0, padding.top or 0)
 
-            over_drawn_height = over_drawn_height -
-                    (padding.top or 0) - (padding.bottom or 0)
-            over_drawn_width  = over_drawn_width -
-                    (padding.left or 0) - (padding.right or 0)
-        end
-    end
+			over_drawn_height = over_drawn_height -
+					(padding.top or 0) - (padding.bottom or 0)
+			over_drawn_width  = over_drawn_width -
+					(padding.left or 0) - (padding.right or 0)
+		end
+	end
 
-    over_drawn_width       = math.max(over_drawn_width, 0)
-    over_drawn_height      = math.max(over_drawn_height, 0)
+	over_drawn_width       = math.max(over_drawn_width, 0)
+	over_drawn_height      = math.max(over_drawn_height, 0)
 
-    local rel_x            = over_drawn_width * value
+	local rel_x            = over_drawn_width * value
 
 
-    -- Draw the progressbar shape
+	-- Draw the progressbar shape
 
-    local bar_shape        = pbar._private.bar_shape or
-            beautiful.progressbar_bar_shape or shape.rectangle
+	local bar_shape        = pbar._private.bar_shape or
+			beautiful.progressbar_bar_shape or shape.rectangle
 
-    local bar_border_width = pbar._private.bar_border_width or
-            beautiful.progressbar_bar_border_width or pbar._private.border_width or
-            beautiful.progressbar_border_width or 0
+	local bar_border_width = pbar._private.bar_border_width or
+			beautiful.progressbar_bar_border_width or pbar._private.border_width or
+			beautiful.progressbar_border_width or 0
 
-    local bar_border_color = pbar._private.bar_border_color or
-            beautiful.progressbar_bar_border_color
+	local bar_border_color = pbar._private.bar_border_color or
+			beautiful.progressbar_bar_border_color
 
-    bar_border_width       = bar_border_color and bar_border_width or 0
+	bar_border_width       = bar_border_color and bar_border_width or 0
 
-    over_drawn_width       = over_drawn_width - bar_border_width
-    over_drawn_height      = over_drawn_height - bar_border_width
-    cr:translate(bar_border_width / 2, bar_border_width / 2)
+	over_drawn_width       = over_drawn_width - bar_border_width
+	over_drawn_height      = over_drawn_height - bar_border_width
+	cr:translate(bar_border_width / 2, bar_border_width / 2)
 
-    bar_shape(cr, rel_x, over_drawn_height)
+	bar_shape(cr, rel_x, over_drawn_height)
 
-    cr:set_source(color(pbar._private.color or beautiful.progressbar_fg or "#ff0000"))
+	cr:set_source(color(pbar._private.color or beautiful.progressbar_fg or "#ff0000"))
 
-    if bar_border_width > 0 then
-        cr:fill_preserve()
-        cr:set_source(color(bar_border_color))
-        cr:set_line_width(bar_border_width)
-        cr:stroke()
-    else
-        cr:fill()
-    end
+	if bar_border_width > 0 then
+		cr:fill_preserve()
+		cr:set_source(color(bar_border_color))
+		cr:set_line_width(bar_border_width)
+		cr:stroke()
+	else
+		cr:fill()
+	end
 
-    if pbar._private.ticks then
-        for i = 0, width / (ticks_size + ticks_gap) - border_width do
-            local rel_offset = over_drawn_width / 1 - (ticks_size + ticks_gap) * i
+	if pbar._private.ticks then
+		for i = 0, width / (ticks_size + ticks_gap) - border_width do
+			local rel_offset = over_drawn_width / 1 - (ticks_size + ticks_gap) * i
 
-            if rel_offset <= rel_x then
-                cr:rectangle(rel_offset,
-                        border_width,
-                        ticks_gap,
-                        over_drawn_height)
-            end
-        end
-        cr:set_source(color(pbar._private.background_color or "#000000aa"))
-        cr:fill()
-    end
+			if rel_offset <= rel_x then
+				cr:rectangle(rel_offset,
+						border_width,
+						ticks_gap,
+						over_drawn_height)
+			end
+		end
+		cr:set_source(color(pbar._private.background_color or "#000000aa"))
+		cr:fill()
+	end
 end
 
 function progressbar:fit(_, width, height)
-    return width, height
+	return width, height
 end
 
 --- Set the progressbar value.
 -- @param value The progress bar value between 0 and 1.
 function progressbar:set_value(value)
-    value               = value or 0
+	value               = value or 0
 
-    self._private.value = value
+	self._private.value = value
 
-    self:emit_signal("widget::redraw_needed")
-    return self
+	self:emit_signal("widget::redraw_needed")
+	return self
 end
 
 function progressbar:set_max_value(max_value)
 
-    self._private.max_value = max_value
+	self._private.max_value = max_value
 
-    self:emit_signal("widget::redraw_needed")
+	self:emit_signal("widget::redraw_needed")
 end
 
 --- Set the progressbar height.
@@ -391,8 +391,8 @@ end
 -- @param height The height to set.
 -- @deprecated set_height
 function progressbar:set_height(height)
-    gdebug.deprecate("Use a `wibox.container.constraint` widget or `forced_height`", { deprecated_in = 4 })
-    self:set_forced_height(height)
+	gdebug.deprecate("Use a `wibox.container.constraint` widget or `forced_height`", { deprecated_in = 4 })
+	self:set_forced_height(height)
 end
 
 --- Set the progressbar width.
@@ -401,24 +401,24 @@ end
 -- @param width The width to set.
 -- @deprecated set_width
 function progressbar:set_width(width)
-    gdebug.deprecate("Use a `wibox.container.constraint` widget or `forced_width`", { deprecated_in = 4 })
-    self:set_forced_width(width)
+	gdebug.deprecate("Use a `wibox.container.constraint` widget or `forced_width`", { deprecated_in = 4 })
+	self:set_forced_width(width)
 end
 
 -- Build properties function
 for _, prop in ipairs(properties) do
-    if not progressbar["set_" .. prop] then
-        progressbar["set_" .. prop] = function(pbar, value)
-            pbar._private[prop] = value
-            pbar:emit_signal("widget::redraw_needed")
-            return pbar
-        end
-    end
+	if not progressbar["set_" .. prop] then
+		progressbar["set_" .. prop] = function(pbar, value)
+			pbar._private[prop] = value
+			pbar:emit_signal("widget::redraw_needed")
+			return pbar
+		end
+	end
 end
 
 function progressbar:set_vertical(value)
-    --luacheck: no unused_args
-    gdebug.deprecate("Use a `wibox.container.rotate` widget", { deprecated_in = 4 })
+	--luacheck: no unused_args
+	gdebug.deprecate("Use a `wibox.container.rotate` widget", { deprecated_in = 4 })
 end
 
 
@@ -428,24 +428,24 @@ end
 -- @return A progressbar widget.
 -- @function wibox.widget.progressbar
 function progressbar.new(args)
-    args                    = args or {}
+	args                    = args or {}
 
-    local pbar              = base.make_widget(nil, nil, {
-        enable_properties = true,
-    })
+	local pbar              = base.make_widget(nil, nil, {
+		enable_properties = true,
+	})
 
-    pbar._private.width     = args.width or 100
-    pbar._private.height    = args.height or 20
-    pbar._private.value     = 0
-    pbar._private.max_value = 1
+	pbar._private.width     = args.width or 100
+	pbar._private.height    = args.height or 20
+	pbar._private.value     = 0
+	pbar._private.max_value = 1
 
-    gtable.crush(pbar, progressbar, true)
+	gtable.crush(pbar, progressbar, true)
 
-    return pbar
+	return pbar
 end
 
 function progressbar.mt:__call(...)
-    return progressbar.new(...)
+	return progressbar.new(...)
 end
 
 --@DOC_widget_COMMON@

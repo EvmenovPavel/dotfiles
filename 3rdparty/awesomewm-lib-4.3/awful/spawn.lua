@@ -218,9 +218,9 @@
 ---------------------------------------------------------------------------
 
 local capi           = {
-    awesome = awesome,
-    mouse   = mouse,
-    client  = client,
+	awesome = awesome,
+	mouse   = mouse,
+	client  = client,
 }
 local lgi            = require("lgi")
 local Gio            = lgi.Gio
@@ -235,96 +235,96 @@ local spawn          = {}
 
 local end_of_file
 do
-    -- API changes, bug fixes and lots of fun. Figure out how a EOF is signalled.
-    local input
-    if not pcall(function()
-        -- No idea when this API changed, but some versions expect a string,
-        -- others a table with some special(?) entries
-        input = Gio.DataInputStream.new(Gio.MemoryInputStream.new_from_data(""))
-    end) then
-        input = Gio.DataInputStream.new(Gio.MemoryInputStream.new_from_data({}))
-    end
-    local line, length = input:read_line()
-    if not line then
-        -- Fixed in 2016: NULL on the C side is transformed to nil in Lua
-        end_of_file = function(arg)
-            return not arg
-        end
-    elseif tostring(line) == "" and #line ~= length then
-        -- "Historic" behaviour for end-of-file:
-        -- - NULL is turned into an empty string
-        -- - The length variable is not initialized
-        -- It's highly unlikely that the uninitialized variable has value zero.
-        -- Use this hack to detect EOF.
-        end_of_file = function(arg1, arg2)
-            return #arg1 ~= arg2
-        end
-    else
-        assert(tostring(line) == "", "Cannot determine how to detect EOF")
-        -- The above uninitialized variable was fixed and thus length is
-        -- always 0 when line is NULL in C. We cannot tell apart an empty line and
-        -- EOF in this case.
-        require("gears.debug").print_warning("Cannot reliably detect EOF on an "
-                .. "GIOInputStream with this LGI version")
-        end_of_file = function(arg)
-            return tostring(arg) == ""
-        end
-    end
+	-- API changes, bug fixes and lots of fun. Figure out how a EOF is signalled.
+	local input
+	if not pcall(function()
+		-- No idea when this API changed, but some versions expect a string,
+		-- others a table with some special(?) entries
+		input = Gio.DataInputStream.new(Gio.MemoryInputStream.new_from_data(""))
+	end) then
+		input = Gio.DataInputStream.new(Gio.MemoryInputStream.new_from_data({}))
+	end
+	local line, length = input:read_line()
+	if not line then
+		-- Fixed in 2016: NULL on the C side is transformed to nil in Lua
+		end_of_file = function(arg)
+			return not arg
+		end
+	elseif tostring(line) == "" and #line ~= length then
+		-- "Historic" behaviour for end-of-file:
+		-- - NULL is turned into an empty string
+		-- - The length variable is not initialized
+		-- It's highly unlikely that the uninitialized variable has value zero.
+		-- Use this hack to detect EOF.
+		end_of_file = function(arg1, arg2)
+			return #arg1 ~= arg2
+		end
+	else
+		assert(tostring(line) == "", "Cannot determine how to detect EOF")
+		-- The above uninitialized variable was fixed and thus length is
+		-- always 0 when line is NULL in C. We cannot tell apart an empty line and
+		-- EOF in this case.
+		require("gears.debug").print_warning("Cannot reliably detect EOF on an "
+				.. "GIOInputStream with this LGI version")
+		end_of_file = function(arg)
+			return tostring(arg) == ""
+		end
+	end
 end
 
 local function hash_command(cmd, rules)
-    rules              = rules or {}
-    cmd                = type(cmd) == "string" and cmd or table.concat(cmd, ';')
+	rules              = rules or {}
+	cmd                = type(cmd) == "string" and cmd or table.concat(cmd, ';')
 
-    -- Do its best at adding some entropy
-    local concat_rules = nil
-    concat_rules       = function(r, depth)
-        if depth > 2 then return end
+	-- Do its best at adding some entropy
+	local concat_rules = nil
+	concat_rules       = function(r, depth)
+		if depth > 2 then return end
 
-        local keys = gtable.keys(rules)
+		local keys = gtable.keys(rules)
 
-        for _, k in ipairs(keys) do
-            local v = r[k]
-            local t = type(v)
+		for _, k in ipairs(keys) do
+			local v = r[k]
+			local t = type(v)
 
-            if t == "string" or t == "number" then
-                cmd = cmd .. k .. v
-            elseif t == "tag" then
-                cmd = cmd .. k .. v.name
-            elseif t == "table" and not t.connect_signal then
-                cmd = cmd .. k
-                concat_rules(v, depth + 1)
-            end
-        end
-    end
+			if t == "string" or t == "number" then
+				cmd = cmd .. k .. v
+			elseif t == "tag" then
+				cmd = cmd .. k .. v.name
+			elseif t == "table" and not t.connect_signal then
+				cmd = cmd .. k
+				concat_rules(v, depth + 1)
+			end
+		end
+	end
 
-    concat_rules(rules, 1)
+	concat_rules(rules, 1)
 
-    local glibstr = GLib.String(cmd)
+	local glibstr = GLib.String(cmd)
 
-    return string.format('%x', math.ceil(GLib.String.hash(glibstr)))
+	return string.format('%x', math.ceil(GLib.String.hash(glibstr)))
 end
 
 spawn.snid_buffer = {}
 
 function spawn.on_snid_callback(c)
-    local entry = spawn.snid_buffer[c.startup_id]
-    if entry then
-        local props    = entry[1]
-        local callback = entry[2]
-        --TODO v5: Remove this signal
-        c:emit_signal("spawn::completed_with_payload", props, callback)
+	local entry = spawn.snid_buffer[c.startup_id]
+	if entry then
+		local props    = entry[1]
+		local callback = entry[2]
+		--TODO v5: Remove this signal
+		c:emit_signal("spawn::completed_with_payload", props, callback)
 
-        gtimer.delayed_call(function()
-            spawn.snid_buffer[c.startup_id] = nil
-        end)
-    end
+		gtimer.delayed_call(function()
+			spawn.snid_buffer[c.startup_id] = nil
+		end)
+	end
 end
 
 function spawn.on_snid_cancel(id)
-    if spawn.snid_buffer[id] then
-        spawn.snid_buffer[id] = nil
-    end
+	if spawn.snid_buffer[id] then
+		spawn.snid_buffer[id] = nil
+	end
 end
 
 --- Spawn a program, and optionally apply properties and/or run a callback.
@@ -343,29 +343,29 @@ end
 --   a `callback` is provided.
 -- @treturn[2] string Error message.
 function spawn.spawn(cmd, sn_rules, callback)
-    if cmd and cmd ~= "" then
-        local enable_sn = (sn_rules ~= false or callback)
-        enable_sn       = not not enable_sn -- Force into a boolean.
-        local pid, snid = capi.awesome.spawn(cmd, enable_sn)
-        -- The snid will be nil in case of failure
-        if snid then
-            sn_rules                = type(sn_rules) ~= "boolean" and sn_rules or {}
-            spawn.snid_buffer[snid] = { sn_rules, { callback } }
-        end
-        return pid, snid
-    end
-    -- For consistency
-    return "Error: No command to execute"
+	if cmd and cmd ~= "" then
+		local enable_sn = (sn_rules ~= false or callback)
+		enable_sn       = not not enable_sn -- Force into a boolean.
+		local pid, snid = capi.awesome.spawn(cmd, enable_sn)
+		-- The snid will be nil in case of failure
+		if snid then
+			sn_rules                = type(sn_rules) ~= "boolean" and sn_rules or {}
+			spawn.snid_buffer[snid] = { sn_rules, { callback } }
+		end
+		return pid, snid
+	end
+	-- For consistency
+	return "Error: No command to execute"
 end
 
 --- Spawn a program using the shell.
 -- This calls `cmd` with `$SHELL -c` (via `awful.util.shell`).
 -- @tparam string cmd The command.
 function spawn.with_shell(cmd)
-    if cmd and cmd ~= "" then
-        cmd = { util.shell, "-c", cmd }
-        return capi.awesome.spawn(cmd, false)
-    end
+	if cmd and cmd ~= "" then
+		cmd = { util.shell, "-c", cmd }
+		return capi.awesome.spawn(cmd, false)
+	end
 end
 
 --- Spawn a program and asynchronously capture its output line by line.
@@ -388,35 +388,35 @@ end
 -- @treturn[1] Integer the PID of the forked process.
 -- @treturn[2] string Error message.
 function spawn.with_line_callback(cmd, callbacks)
-    local stdout_callback, stderr_callback, done_callback, exit_callback = callbacks.stdout, callbacks.stderr, callbacks.output_done, callbacks.exit
-    local have_stdout, have_stderr                                       = stdout_callback ~= nil, stderr_callback ~= nil
-    local pid, _, stdin, stdout, stderr                                  = capi.awesome.spawn(cmd,
-            false, false, have_stdout, have_stderr, exit_callback)
-    if type(pid) == "string" then
-        -- Error
-        return pid
-    end
+	local stdout_callback, stderr_callback, done_callback, exit_callback = callbacks.stdout, callbacks.stderr, callbacks.output_done, callbacks.exit
+	local have_stdout, have_stderr                                       = stdout_callback ~= nil, stderr_callback ~= nil
+	local pid, _, stdin, stdout, stderr                                  = capi.awesome.spawn(cmd,
+			false, false, have_stdout, have_stderr, exit_callback)
+	if type(pid) == "string" then
+		-- Error
+		return pid
+	end
 
-    local done_before = false
-    local function step_done()
-        if have_stdout and have_stderr and not done_before then
-            done_before = true
-            return
-        end
-        if done_callback then
-            done_callback()
-        end
-    end
-    if have_stdout then
-        spawn.read_lines(Gio.UnixInputStream.new(stdout, true),
-                stdout_callback, step_done, true)
-    end
-    if have_stderr then
-        spawn.read_lines(Gio.UnixInputStream.new(stderr, true),
-                stderr_callback, step_done, true)
-    end
-    assert(stdin == nil)
-    return pid
+	local done_before = false
+	local function step_done()
+		if have_stdout and have_stderr and not done_before then
+			done_before = true
+			return
+		end
+		if done_callback then
+			done_callback()
+		end
+	end
+	if have_stdout then
+		spawn.read_lines(Gio.UnixInputStream.new(stdout, true),
+				stdout_callback, step_done, true)
+	end
+	if have_stderr then
+		spawn.read_lines(Gio.UnixInputStream.new(stderr, true),
+				stderr_callback, step_done, true)
+	end
+	assert(stdin == nil)
+	return pid
 end
 
 --- Asynchronously spawn a program and capture its output.
@@ -432,41 +432,41 @@ end
 -- @treturn[2] string Error message.
 -- @see spawn.with_line_callback
 function spawn.easy_async(cmd, callback)
-    local stdout = ''
-    local stderr = ''
-    local exitcode, exitreason
-    local function parse_stdout(str)
-        stdout = stdout .. str .. "\n"
-    end
-    local function parse_stderr(str)
-        stderr = stderr .. str .. "\n"
-    end
-    local function done_callback()
-        return callback(stdout, stderr, exitreason, exitcode)
-    end
-    local exit_callback_fired        = false
-    local output_done_callback_fired = false
-    local function exit_callback(reason, code)
-        exitcode            = code
-        exitreason          = reason
-        exit_callback_fired = true
-        if output_done_callback_fired then
-            return done_callback()
-        end
-    end
-    local function output_done_callback()
-        output_done_callback_fired = true
-        if exit_callback_fired then
-            return done_callback()
-        end
-    end
-    return spawn.with_line_callback(
-            cmd, {
-                stdout      = parse_stdout,
-                stderr      = parse_stderr,
-                exit        = exit_callback,
-                output_done = output_done_callback
-            })
+	local stdout = ''
+	local stderr = ''
+	local exitcode, exitreason
+	local function parse_stdout(str)
+		stdout = stdout .. str .. "\n"
+	end
+	local function parse_stderr(str)
+		stderr = stderr .. str .. "\n"
+	end
+	local function done_callback()
+		return callback(stdout, stderr, exitreason, exitcode)
+	end
+	local exit_callback_fired        = false
+	local output_done_callback_fired = false
+	local function exit_callback(reason, code)
+		exitcode            = code
+		exitreason          = reason
+		exit_callback_fired = true
+		if output_done_callback_fired then
+			return done_callback()
+		end
+	end
+	local function output_done_callback()
+		output_done_callback_fired = true
+		if exit_callback_fired then
+			return done_callback()
+		end
+	end
+	return spawn.with_line_callback(
+			cmd, {
+				stdout      = parse_stdout,
+				stderr      = parse_stderr,
+				exit        = exit_callback,
+				output_done = output_done_callback
+			})
 end
 
 --- Call `spawn.easy_async` with a shell.
@@ -482,7 +482,7 @@ end
 -- @treturn[2] string Error message.
 -- @see spawn.with_line_callback
 function spawn.easy_async_with_shell(cmd, callback)
-    return spawn.easy_async({ util.shell, "-c", cmd or "" }, callback)
+	return spawn.easy_async({ util.shell, "-c", cmd or "" }, callback)
 end
 
 --- Read lines from a Gio input stream
@@ -493,129 +493,129 @@ end
 --   operation finishes (e.g. due to end of file).
 -- @tparam[opt=false] boolean close Should the stream be closed after end-of-file?
 function spawn.read_lines(input_stream, line_callback, done_callback, close)
-    local stream = Gio.DataInputStream.new(input_stream)
-    local function done()
-        if close then
-            stream:close()
-        end
-        stream:set_buffer_size(0)
-        if done_callback then
-            protected_call(done_callback)
-        end
-    end
-    local start_read, finish_read
-    start_read  = function()
-        stream:read_line_async(GLib.PRIORITY_DEFAULT, nil, finish_read)
-    end
-    finish_read = function(obj, res)
-        local line, length = obj:read_line_finish(res)
-        if type(length) ~= "number" then
-            -- Error
-            print("Error in awful.spawn.read_lines:", tostring(length))
-            done()
-        elseif end_of_file(line, length) then
-            -- End of file
-            done()
-        else
-            -- Read a line
-            -- This needs tostring() for older lgi versions which returned
-            -- "GLib.Bytes" instead of Lua strings (I guess)
-            protected_call(line_callback, tostring(line))
+	local stream = Gio.DataInputStream.new(input_stream)
+	local function done()
+		if close then
+			stream:close()
+		end
+		stream:set_buffer_size(0)
+		if done_callback then
+			protected_call(done_callback)
+		end
+	end
+	local start_read, finish_read
+	start_read  = function()
+		stream:read_line_async(GLib.PRIORITY_DEFAULT, nil, finish_read)
+	end
+	finish_read = function(obj, res)
+		local line, length = obj:read_line_finish(res)
+		if type(length) ~= "number" then
+			-- Error
+			print("Error in awful.spawn.read_lines:", tostring(length))
+			done()
+		elseif end_of_file(line, length) then
+			-- End of file
+			done()
+		else
+			-- Read a line
+			-- This needs tostring() for older lgi versions which returned
+			-- "GLib.Bytes" instead of Lua strings (I guess)
+			protected_call(line_callback, tostring(line))
 
-            -- Read the next line
-            start_read()
-        end
-    end
-    start_read()
+			-- Read the next line
+			start_read()
+		end
+	end
+	start_read()
 end
 
 -- When a command should only be executed once or only have a single instance,
 -- track the SNID set on them to prevent multiple execution.
 spawn.single_instance_manager = {
-    by_snid = {},
-    by_pid  = {},
-    by_uid  = {},
+	by_snid = {},
+	by_pid  = {},
+	by_uid  = {},
 }
 
 aclient.property.persist("single_instance_id", "string")
 
 -- Check if the client is running either using the rule source or the matcher.
 local function is_running(hash, matcher)
-    local status = spawn.single_instance_manager.by_uid[hash]
-    if not status then return false end
+	local status = spawn.single_instance_manager.by_uid[hash]
+	if not status then return false end
 
-    if #status.instances == 0 then return false end
+	if #status.instances == 0 then return false end
 
-    for _, c in ipairs(status.instances) do
-        if c.valid then return true end
-    end
+	for _, c in ipairs(status.instances) do
+		if c.valid then return true end
+	end
 
-    if matcher then
-        for _, c in ipairs(client.get()) do
-            if matcher(c) then return true end
-        end
-    end
+	if matcher then
+		for _, c in ipairs(client.get()) do
+			if matcher(c) then return true end
+		end
+	end
 
-    return false
+	return false
 end
 
 -- Keep the data related to this hash.
 local function register_common(hash, rules, matcher, callback)
-    local status = spawn.single_instance_manager.by_uid[hash]
-    if status then return status end
+	local status = spawn.single_instance_manager.by_uid[hash]
+	if status then return status end
 
-    status                                     = {
-        rules     = rules,
-        callback  = callback,
-        instances = setmetatable({}, { __mode = "v" }),
-        hash      = hash,
-        exec      = false,
-        matcher   = matcher,
-    }
+	status                                     = {
+		rules     = rules,
+		callback  = callback,
+		instances = setmetatable({}, { __mode = "v" }),
+		hash      = hash,
+		exec      = false,
+		matcher   = matcher,
+	}
 
-    spawn.single_instance_manager.by_uid[hash] = status
+	spawn.single_instance_manager.by_uid[hash] = status
 
-    return status
+	return status
 end
 
 local function run_once_common(hash, cmd, keep_pid)
-    local pid, snid = spawn.spawn(cmd)
+	local pid, snid = spawn.spawn(cmd)
 
-    if type(pid) == "string" or not snid then return pid, snid end
+	if type(pid) == "string" or not snid then return pid, snid end
 
-    assert(spawn.single_instance_manager.by_uid[hash])
+	assert(spawn.single_instance_manager.by_uid[hash])
 
-    local status                                = spawn.single_instance_manager.by_uid[hash]
-    status.exec                                 = true
+	local status                                = spawn.single_instance_manager.by_uid[hash]
+	status.exec                                 = true
 
-    spawn.single_instance_manager.by_snid[snid] = status
+	spawn.single_instance_manager.by_snid[snid] = status
 
-    if keep_pid then
-        spawn.single_instance_manager.by_pid[pid] = status
-    end
+	if keep_pid then
+		spawn.single_instance_manager.by_pid[pid] = status
+	end
 
-    -- Prevent issues related to PID being re-used and a memory leak
-    gtimer {
-        single_shot = true,
-        autostart   = true,
-        timeout     = 30,
-        callback    = function()
-            spawn.single_instance_manager.by_pid[pid]   = nil
-            spawn.single_instance_manager.by_snid[snid] = nil
-        end
-    }
+	-- Prevent issues related to PID being re-used and a memory leak
+	gtimer {
+		single_shot = true,
+		autostart   = true,
+		timeout     = 30,
+		callback    = function()
+			spawn.single_instance_manager.by_pid[pid]   = nil
+			spawn.single_instance_manager.by_snid[snid] = nil
+		end
+	}
 
-    return pid, snid
+	return pid, snid
 end
 
 local function run_after_startup(f)
-    -- The clients are not yet managed during the first execution, so it will
-    -- miss existing instances.
-    if awesome.startup then
-        gtimer.delayed_call(f)
-    else
-        f()
-    end
+	-- The clients are not yet managed during the first execution, so it will
+	-- miss existing instances.
+	if awesome.startup then
+		gtimer.delayed_call(f)
+	else
+		f()
+	end
 end
 
 --- Spawn a command if it has not been spawned before.
@@ -642,13 +642,13 @@ end
 -- @tparam[opt] function callback A callback function when the client is created.
 -- @see awful.rules
 function spawn.once(cmd, rules, matcher, unique_id, callback)
-    local hash   = unique_id or hash_command(cmd, rules)
-    local status = register_common(hash, rules, matcher, callback)
-    run_after_startup(function()
-        if not status.exec and not is_running(hash, matcher) then
-            run_once_common(hash, cmd, matcher ~= nil)
-        end
-    end)
+	local hash   = unique_id or hash_command(cmd, rules)
+	local status = register_common(hash, rules, matcher, callback)
+	run_after_startup(function()
+		if not status.exec and not is_running(hash, matcher) then
+			run_once_common(hash, cmd, matcher ~= nil)
+		end
+	end)
 end
 
 --- Spawn a command if an instance is not already running.
@@ -674,13 +674,13 @@ end
 -- @tparam[opt] function callback A callback function when the client is created.
 -- @see awful.rules
 function spawn.single_instance(cmd, rules, matcher, unique_id, callback)
-    local hash = unique_id or hash_command(cmd, rules)
-    register_common(hash, rules, matcher, callback)
-    run_after_startup(function()
-        if not is_running(hash, matcher) then
-            return run_once_common(hash, cmd, matcher ~= nil)
-        end
-    end)
+	local hash = unique_id or hash_command(cmd, rules)
+	register_common(hash, rules, matcher, callback)
+	run_after_startup(function()
+		if not is_running(hash, matcher) then
+			return run_once_common(hash, cmd, matcher ~= nil)
+		end
+	end)
 end
 
 local raise_rules = { focus = true, switch_to_tags = true, raise = true }
@@ -701,25 +701,25 @@ local raise_rules = { focus = true, switch_to_tags = true, raise = true }
 -- @see awful.rules
 -- @treturn client The client if it already exists.
 function spawn.raise_or_spawn(cmd, rules, matcher, unique_id, callback)
-    local hash   = unique_id or hash_command(cmd, rules)
+	local hash   = unique_id or hash_command(cmd, rules)
 
-    local status = spawn.single_instance_manager.by_uid[hash]
-    if status then
-        for _, c in ipairs(status.instances) do
-            if c.valid then
-                c:emit_signal("request::activate", "spawn.raise_or_spawn", raise_rules)
-                return c
-            end
-        end
-    end
+	local status = spawn.single_instance_manager.by_uid[hash]
+	if status then
+		for _, c in ipairs(status.instances) do
+			if c.valid then
+				c:emit_signal("request::activate", "spawn.raise_or_spawn", raise_rules)
+				return c
+			end
+		end
+	end
 
-    -- Do not modify the original. It also can't be a metatable.__index due to
-    -- its "broken" `pairs()` support.
-    local props = gtable.join(rules, raise_rules)
+	-- Do not modify the original. It also can't be a metatable.__index due to
+	-- its "broken" `pairs()` support.
+	local props = gtable.join(rules, raise_rules)
 
-    spawn.single_instance(cmd, props, matcher, unique_id, callback)
+	spawn.single_instance(cmd, props, matcher, unique_id, callback)
 
-    return nil
+	return nil
 end
 
 capi.awesome.connect_signal("spawn::canceled", spawn.on_snid_cancel)

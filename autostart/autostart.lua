@@ -3,31 +3,31 @@ local autostart = {}
 local awful     = require("awful")
 
 local function list()
-    return {
-        "gxkb",
-        "nm-applet",
-        "blueman-applet",
-        "flameshot",
-        "copyq",
-        "lxpolkit",
-        "megasync",
-        --"touchpad-indicator",
-        --"indicator-stickynotes"
-    }
+	return {
+		"gxkb",
+		"nm-applet",
+		"blueman-applet",
+		"flameshot",
+		"copyq",
+		"lxpolkit",
+		"megasync",
+		--"touchpad-indicator",
+		--"indicator-stickynotes"
+	}
 end
 
 function autostart:start()
-    for i, it in pairs(list()) do
-        local cmd        = tostring(it)
-        local findme     = cmd
-        local firstspace = cmd:find(" ")
+	for i, it in pairs(list()) do
+		local cmd        = tostring(it)
+		local findme     = cmd
+		local firstspace = cmd:find(" ")
 
-        if firstspace then
-            findme = cmd:sub(0, firstspace - 1)
-        end
+		if firstspace then
+			findme = cmd:sub(0, firstspace - 1)
+		end
 
-        awful.spawn.with_shell(string.format("pgrep -u $USER -x %s > /dev/null || (%s)", findme, cmd))
-    end
+		awful.spawn.with_shell(string.format("pgrep -u $USER -x %s > /dev/null || (%s)", findme, cmd))
+	end
 end
 
 return autostart

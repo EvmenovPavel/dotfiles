@@ -12,8 +12,8 @@ local drawable          = require("wibox.drawable")
 local beautiful         = require("beautiful")
 local gtable            = require("gears.table")
 local capi              = {
-    awesome = awesome,
-    screen  = screen
+	awesome = awesome,
+	screen  = screen
 }
 local setmetatable      = setmetatable
 local error             = error
@@ -48,98 +48,98 @@ local display_on_screen = "primary"
 -- @tparam[opt=0] integer systray_icon_spacing The icon spacing
 
 local function should_display_on(s)
-    if display_on_screen == "primary" then
-        return s == capi.screen.primary
-    end
-    return s == display_on_screen
+	if display_on_screen == "primary" then
+		return s == capi.screen.primary
+	end
+	return s == display_on_screen
 end
 
 function systray:draw(context, cr, width, height)
-    if not should_display_on(context.screen) then
-        return
-    end
+	if not should_display_on(context.screen) then
+		return
+	end
 
-    local x, y, _, _  = wbase.rect_to_device_geometry(cr, 0, 0, width, height)
-    local num_entries = capi.awesome.systray()
-    local max_rows    = math.floor(tonumber(beautiful.systray_max_rows) or 1)
-    local rows        = math.max(math.min(num_entries, max_rows), 1)
-    local cols        = math.ceil(num_entries / rows)
-    local bg          = beautiful.bg_systray or beautiful.bg_normal or "#000000"
-    local spacing     = beautiful.systray_icon_spacing or 0
+	local x, y, _, _  = wbase.rect_to_device_geometry(cr, 0, 0, width, height)
+	local num_entries = capi.awesome.systray()
+	local max_rows    = math.floor(tonumber(beautiful.systray_max_rows) or 1)
+	local rows        = math.max(math.min(num_entries, max_rows), 1)
+	local cols        = math.ceil(num_entries / rows)
+	local bg          = beautiful.bg_systray or beautiful.bg_normal or "#000000"
+	local spacing     = beautiful.systray_icon_spacing or 0
 
-    if context and not context.wibox then
-        error("The systray widget can only be placed inside a wibox.")
-    end
+	if context and not context.wibox then
+		error("The systray widget can only be placed inside a wibox.")
+	end
 
-    -- Figure out if the cairo context is rotated
-    local dir_x, dir_y = cr:user_to_device_distance(1, 0)
-    local is_rotated   = abs(dir_x) < abs(dir_y)
+	-- Figure out if the cairo context is rotated
+	local dir_x, dir_y = cr:user_to_device_distance(1, 0)
+	local is_rotated   = abs(dir_x) < abs(dir_y)
 
-    local in_dir, ortho, base
-    if horizontal then
-        in_dir, ortho = width, height
-        is_rotated    = not is_rotated
-    else
-        ortho, in_dir = width, height
-    end
-    -- The formula for a given base, spacing, and num_entries for the necessary
-    -- space is (draw a picture to convince yourself; this assumes horizontal):
-    --   height = (base + spacing) * rows - spacing
-    --   width = (base + spacing) * cols - spacing
-    -- Now, we check if we are limited by horizontal or vertical space: Which of
-    -- the two limits the base size more?
-    base = (ortho + spacing) / rows - spacing
-    if (base + spacing) * cols - spacing > in_dir then
-        -- Solving the "width" formula above for "base" (with width=in_dir):
-        base = (in_dir + spacing) / cols - spacing
-    end
-    capi.awesome.systray(context.wibox.drawin, math.ceil(x), math.ceil(y),
-            base, is_rotated, bg, reverse, spacing, rows)
+	local in_dir, ortho, base
+	if horizontal then
+		in_dir, ortho = width, height
+		is_rotated    = not is_rotated
+	else
+		ortho, in_dir = width, height
+	end
+	-- The formula for a given base, spacing, and num_entries for the necessary
+	-- space is (draw a picture to convince yourself; this assumes horizontal):
+	--   height = (base + spacing) * rows - spacing
+	--   width = (base + spacing) * cols - spacing
+	-- Now, we check if we are limited by horizontal or vertical space: Which of
+	-- the two limits the base size more?
+	base = (ortho + spacing) / rows - spacing
+	if (base + spacing) * cols - spacing > in_dir then
+		-- Solving the "width" formula above for "base" (with width=in_dir):
+		base = (in_dir + spacing) / cols - spacing
+	end
+	capi.awesome.systray(context.wibox.drawin, math.ceil(x), math.ceil(y),
+			base, is_rotated, bg, reverse, spacing, rows)
 end
 
 -- Private API. Does not appear in LDoc on purpose. This function is called
 -- some time after the systray is removed from some drawable. It's purpose is to
 -- really remove the systray.
 function systray:_kickout(context)
-    capi.awesome.systray(context.wibox.drawin)
+	capi.awesome.systray(context.wibox.drawin)
 end
 
 function systray:fit(context, width, height)
-    if not should_display_on(context.screen) then
-        return 0, 0
-    end
+	if not should_display_on(context.screen) then
+		return 0, 0
+	end
 
-    local num_entries = capi.awesome.systray()
-    local max_rows    = math.floor(tonumber(beautiful.systray_max_rows) or 1)
-    local rows        = math.max(math.min(num_entries, max_rows), 1)
-    local cols        = math.ceil(num_entries / rows)
-    local base        = base_size
-    local spacing     = beautiful.systray_icon_spacing or 0
-    if num_entries == 0 then
-        return 0, 0
-    end
-    if base == nil then
-        if horizontal then
-            base = math.min(math.floor((height + spacing) / rows) - spacing,
-                    math.floor((width + spacing) / cols) - spacing)
-        else
-            base = math.min(math.floor((width + spacing) / rows) - spacing,
-                    math.floor((height + spacing) / cols) - spacing)
-        end
-    end
-    base = base + spacing
-    if horizontal then
-        return base * cols - spacing, base * rows - spacing
-    end
-    return base * rows - spacing, base * cols - spacing
+	local num_entries = capi.awesome.systray()
+	local max_rows    = math.floor(tonumber(beautiful.systray_max_rows) or 1)
+	local rows        = math.max(math.min(num_entries, max_rows), 1)
+	local cols        = math.ceil(num_entries / rows)
+	local base        = base_size
+	local spacing     = beautiful.systray_icon_spacing or 0
+	if num_entries == 0 then
+		return 0, 0
+	end
+	if base == nil then
+		if horizontal then
+			base = math.min(math.floor((height + spacing) / rows) - spacing,
+					math.floor((width + spacing) / cols) - spacing)
+		else
+			base = math.min(math.floor((width + spacing) / rows) - spacing,
+					math.floor((height + spacing) / cols) - spacing)
+		end
+	end
+	base = base + spacing
+	if horizontal then
+		return base * cols - spacing, base * rows - spacing
+	end
+	return base * rows - spacing, base * cols - spacing
 end
 
 -- Check if the function was called like :foo() or .foo() and do the right thing
 local function get_args(self, ...)
-    if self == instance then
-        return ...
-    end
-    return self, ...
+	if self == instance then
+		return ...
+	end
+	return self, ...
 end
 
 --- Set the size of a single icon.
@@ -156,11 +156,11 @@ end
 -- @propemits true false
 
 function systray:set_base_size(size)
-    base_size = get_args(self, size)
-    if instance then
-        instance:emit_signal("widget::layout_changed")
-        instance:emit_signal("property::base_size", size)
-    end
+	base_size = get_args(self, size)
+	if instance then
+		instance:emit_signal("widget::layout_changed")
+		instance:emit_signal("property::base_size", size)
+	end
 end
 
 --- Decide between horizontal or vertical display.
@@ -170,11 +170,11 @@ end
 -- @propemits true false
 
 function systray:set_horizontal(horiz)
-    horizontal = get_args(self, horiz)
-    if instance then
-        instance:emit_signal("widget::layout_changed")
-        instance:emit_signal("property::horizontal", horiz)
-    end
+	horizontal = get_args(self, horiz)
+	if instance then
+		instance:emit_signal("widget::layout_changed")
+		instance:emit_signal("property::horizontal", horiz)
+	end
 end
 
 --- Should the systray icons be displayed in reverse order?
@@ -184,11 +184,11 @@ end
 -- @propemits true false
 
 function systray:set_reverse(rev)
-    reverse = get_args(self, rev)
-    if instance then
-        instance:emit_signal("widget::redraw_needed")
-        instance:emit_signal("property::reverse", rev)
-    end
+	reverse = get_args(self, rev)
+	if instance then
+		instance:emit_signal("widget::redraw_needed")
+		instance:emit_signal("property::reverse", rev)
+	end
 end
 
 --- Set the screen that the systray should be displayed on.
@@ -204,11 +204,11 @@ end
 -- @propemits true false
 
 function systray:set_screen(s)
-    display_on_screen = get_args(self, s)
-    if instance then
-        instance:emit_signal("widget::layout_changed")
-        instance:emit_signal("property::screen", s)
-    end
+	display_on_screen = get_args(self, s)
+	if instance then
+		instance:emit_signal("widget::layout_changed")
+		instance:emit_signal("property::screen", s)
+	end
 end
 
 --- Create the systray widget.
@@ -223,35 +223,35 @@ end
 -- @usebeautiful beautiful.systray_max_rows
 
 local function new(revers)
-    local ret = wbase.make_widget(nil, nil, { enable_properties = true })
+	local ret = wbase.make_widget(nil, nil, { enable_properties = true })
 
-    gtable.crush(ret, systray, true)
+	gtable.crush(ret, systray, true)
 
-    if revers then
-        ret:set_reverse(true)
-    end
+	if revers then
+		ret:set_reverse(true)
+	end
 
-    capi.awesome.connect_signal("systray::update", function()
-        ret:emit_signal("widget::layout_changed")
-        ret:emit_signal("widget::redraw_needed")
-    end)
+	capi.awesome.connect_signal("systray::update", function()
+		ret:emit_signal("widget::layout_changed")
+		ret:emit_signal("widget::redraw_needed")
+	end)
 
-    capi.screen.connect_signal("primary_changed", function()
-        if display_on_screen == "primary" then
-            ret:emit_signal("widget::layout_changed")
-        end
-    end)
+	capi.screen.connect_signal("primary_changed", function()
+		if display_on_screen == "primary" then
+			ret:emit_signal("widget::layout_changed")
+		end
+	end)
 
-    drawable._set_systray_widget(ret)
+	drawable._set_systray_widget(ret)
 
-    return ret
+	return ret
 end
 
 function systray.mt:__call(...)
-    if not instance then
-        instance = new(...)
-    end
-    return instance
+	if not instance then
+		instance = new(...)
+	end
+	return instance
 end
 
 return setmetatable(systray, systray.mt)

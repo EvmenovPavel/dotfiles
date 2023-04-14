@@ -23,18 +23,18 @@ local gears = { geometry = { rectangle = {} } }
 -- @tparam number y Y coordinate of point
 -- @treturn number The squared distance of the rectangle to the provided point
 function gears.geometry.rectangle.get_square_distance(geom, x, y)
-    local dist_x, dist_y = 0, 0
-    if x < geom.x then
-        dist_x = geom.x - x
-    elseif x >= geom.x + geom.width then
-        dist_x = x - geom.x - geom.width + 1
-    end
-    if y < geom.y then
-        dist_y = geom.y - y
-    elseif y >= geom.y + geom.height then
-        dist_y = y - geom.y - geom.height + 1
-    end
-    return dist_x * dist_x + dist_y * dist_y
+	local dist_x, dist_y = 0, 0
+	if x < geom.x then
+		dist_x = geom.x - x
+	elseif x >= geom.x + geom.width then
+		dist_x = x - geom.x - geom.width + 1
+	end
+	if y < geom.y then
+		dist_y = geom.y - y
+	elseif y >= geom.y + geom.height then
+		dist_y = y - geom.y - geom.height + 1
+	end
+	return dist_x * dist_x + dist_y * dist_y
 end
 
 --- Return the closest rectangle from `list` for a given point.
@@ -43,17 +43,17 @@ end
 -- @tparam number y The y coordinate
 -- @return The key from the closest geometry.
 function gears.geometry.rectangle.get_closest_by_coord(list, x, y)
-    local dist = math.huge
-    local ret  = nil
+	local dist = math.huge
+	local ret  = nil
 
-    for k, v in pairs(list) do
-        local d = gears.geometry.rectangle.get_square_distance(v, x, y)
-        if d < dist then
-            ret, dist = k, d
-        end
-    end
+	for k, v in pairs(list) do
+		local d = gears.geometry.rectangle.get_square_distance(v, x, y)
+		if d < dist then
+			ret, dist = k, d
+		end
+	end
 
-    return ret
+	return ret
 end
 
 --- Return the rectangle containing the [x, y] point.
@@ -67,12 +67,12 @@ end
 -- @return The key from the closest geometry. In case no result is found, *nil*
 --  is returned.
 function gears.geometry.rectangle.get_by_coord(list, x, y)
-    for k, geometry in pairs(list) do
-        if x >= geometry.x and x < geometry.x + geometry.width
-                and y >= geometry.y and y < geometry.y + geometry.height then
-            return k
-        end
-    end
+	for k, geometry in pairs(list) do
+		if x >= geometry.x and x < geometry.x + geometry.width
+				and y >= geometry.y and y < geometry.y + geometry.height then
+			return k
+		end
+	end
 end
 
 --- Return true whether rectangle B is in the right direction
@@ -82,16 +82,16 @@ end
 -- @param gB The geometric specification for rectangle B.
 -- @return True if B is in the direction of A.
 local function is_in_direction(dir, gA, gB)
-    if dir == "up" then
-        return gA.y > gB.y
-    elseif dir == "down" then
-        return gA.y < gB.y
-    elseif dir == "left" then
-        return gA.x > gB.x
-    elseif dir == "right" then
-        return gA.x < gB.x
-    end
-    return false
+	if dir == "up" then
+		return gA.y > gB.y
+	elseif dir == "down" then
+		return gA.y < gB.y
+	elseif dir == "left" then
+		return gA.x > gB.x
+	elseif dir == "right" then
+		return gA.x < gB.x
+	end
+	return false
 end
 
 --- Calculate distance between two points.
@@ -102,22 +102,22 @@ end
 -- @param _gB The second rectangle.
 -- @return The distance between the screens.
 local function calculate_distance(dir, _gA, _gB)
-    local gAx = _gA.x
-    local gAy = _gA.y
-    local gBx = _gB.x
-    local gBy = _gB.y
+	local gAx = _gA.x
+	local gAy = _gA.y
+	local gBx = _gB.x
+	local gBy = _gB.y
 
-    if dir == "up" then
-        gBy = _gB.y + _gB.height
-    elseif dir == "down" then
-        gAy = _gA.y + _gA.height
-    elseif dir == "left" then
-        gBx = _gB.x + _gB.width
-    elseif dir == "right" then
-        gAx = _gA.x + _gA.width
-    end
+	if dir == "up" then
+		gBy = _gB.y + _gB.height
+	elseif dir == "down" then
+		gAy = _gA.y + _gA.height
+	elseif dir == "left" then
+		gBx = _gB.x + _gB.width
+	elseif dir == "right" then
+		gAx = _gA.x + _gA.width
+	end
 
-    return math.sqrt((gBx - gAx) ^ 2 + (gBy - gAy) ^ 2)
+	return math.sqrt((gBx - gAx) ^ 2 + (gBy - gAy) ^ 2)
 end
 
 --- Get the nearest rectangle in the given direction. Every rectangle is specified as a table
@@ -127,24 +127,24 @@ end
 -- @tparam table cur The current rectangle.
 -- @return The index for the rectangle in recttbl closer to cur in the given direction. nil if none found.
 function gears.geometry.rectangle.get_in_direction(dir, recttbl, cur)
-    local dist, dist_min
-    local target = nil
+	local dist, dist_min
+	local target = nil
 
-    -- We check each object
-    for i, rect in pairs(recttbl) do
-        -- Check geometry to see if object is located in the right direction.
-        if is_in_direction(dir, cur, rect) then
-            -- Calculate distance between current and checked object.
-            dist = calculate_distance(dir, cur, rect)
+	-- We check each object
+	for i, rect in pairs(recttbl) do
+		-- Check geometry to see if object is located in the right direction.
+		if is_in_direction(dir, cur, rect) then
+			-- Calculate distance between current and checked object.
+			dist = calculate_distance(dir, cur, rect)
 
-            -- If distance is shorter then keep the object.
-            if not target or dist < dist_min then
-                target   = i
-                dist_min = dist
-            end
-        end
-    end
-    return target
+			-- If distance is shorter then keep the object.
+			if not target or dist < dist_min then
+				target   = i
+				dist_min = dist
+			end
+		end
+	end
+	return target
 end
 
 --- Check if an area intersect another area.
@@ -152,10 +152,10 @@ end
 -- @param b The other area.
 -- @return True if they intersect, false otherwise.
 function gears.geometry.rectangle.area_intersect_area(a, b)
-    return (b.x < a.x + a.width
-            and b.x + b.width > a.x
-            and b.y < a.y + a.height
-            and b.y + b.height > a.y)
+	return (b.x < a.x + a.width
+			and b.x + b.width > a.x
+			and b.y < a.y + a.height
+			and b.y + b.height > a.y)
 end
 
 --- Get the intersect area between a and b.
@@ -171,15 +171,15 @@ end
 -- @tparam number b.height The rectangle height
 -- @treturn table The intersect area.
 function gears.geometry.rectangle.get_intersection(a, b)
-    local g  = {}
-    g.x      = math.max(a.x, b.x)
-    g.y      = math.max(a.y, b.y)
-    g.width  = math.min(a.x + a.width, b.x + b.width) - g.x
-    g.height = math.min(a.y + a.height, b.y + b.height) - g.y
-    if g.width <= 0 or g.height <= 0 then
-        g.width, g.height = 0, 0
-    end
-    return g
+	local g  = {}
+	g.x      = math.max(a.x, b.x)
+	g.y      = math.max(a.y, b.y)
+	g.width  = math.min(a.x + a.width, b.x + b.width) - g.x
+	g.height = math.min(a.y + a.height, b.y + b.height) - g.y
+	if g.width <= 0 or g.height <= 0 then
+		g.width, g.height = 0, 0
+	end
+	return g
 end
 
 --- Remove an area from a list, splitting the space between several area that
@@ -192,52 +192,52 @@ end
 -- @tparam number elem.height The rectangle height
 -- @return The new area list.
 function gears.geometry.rectangle.area_remove(areas, elem)
-    for i = #areas, 1, -1 do
-        -- Check if the 'elem' intersect
-        if gears.geometry.rectangle.area_intersect_area(areas[i], elem) then
-            -- It does? remove it
-            local r     = table.remove(areas, i)
-            local inter = gears.geometry.rectangle.get_intersection(r, elem)
+	for i = #areas, 1, -1 do
+		-- Check if the 'elem' intersect
+		if gears.geometry.rectangle.area_intersect_area(areas[i], elem) then
+			-- It does? remove it
+			local r     = table.remove(areas, i)
+			local inter = gears.geometry.rectangle.get_intersection(r, elem)
 
-            if inter.x > r.x then
-                table.insert(areas, {
-                    x      = r.x,
-                    y      = r.y,
-                    width  = inter.x - r.x,
-                    height = r.height
-                })
-            end
+			if inter.x > r.x then
+				table.insert(areas, {
+					x      = r.x,
+					y      = r.y,
+					width  = inter.x - r.x,
+					height = r.height
+				})
+			end
 
-            if inter.y > r.y then
-                table.insert(areas, {
-                    x      = r.x,
-                    y      = r.y,
-                    width  = r.width,
-                    height = inter.y - r.y
-                })
-            end
+			if inter.y > r.y then
+				table.insert(areas, {
+					x      = r.x,
+					y      = r.y,
+					width  = r.width,
+					height = inter.y - r.y
+				})
+			end
 
-            if inter.x + inter.width < r.x + r.width then
-                table.insert(areas, {
-                    x      = inter.x + inter.width,
-                    y      = r.y,
-                    width  = (r.x + r.width) - (inter.x + inter.width),
-                    height = r.height
-                })
-            end
+			if inter.x + inter.width < r.x + r.width then
+				table.insert(areas, {
+					x      = inter.x + inter.width,
+					y      = r.y,
+					width  = (r.x + r.width) - (inter.x + inter.width),
+					height = r.height
+				})
+			end
 
-            if inter.y + inter.height < r.y + r.height then
-                table.insert(areas, {
-                    x      = r.x,
-                    y      = inter.y + inter.height,
-                    width  = r.width,
-                    height = (r.y + r.height) - (inter.y + inter.height)
-                })
-            end
-        end
-    end
+			if inter.y + inter.height < r.y + r.height then
+				table.insert(areas, {
+					x      = r.x,
+					y      = inter.y + inter.height,
+					width  = r.width,
+					height = (r.y + r.height) - (inter.y + inter.height)
+				})
+			end
+		end
+	end
 
-    return areas
+	return areas
 end
 
 return gears.geometry

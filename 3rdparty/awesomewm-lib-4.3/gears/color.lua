@@ -68,43 +68,43 @@ local pattern_cache
 -- @usage -- This will return 0, 1, 0, 1
 -- gears.color.parse_color("#00ff00ff")
 function color.parse_color(col)
-    local rgb = {}
-    if string.match(col, "^#%x+$") then
-        local hex_str = col:sub(2, #col)
-        local channels
-        if #hex_str % 3 == 0 then
-            channels = 3
-        elseif #hex_str % 4 == 0 then
-            channels = 4
-        else
-            return nil
-        end
-        local chars_per_channel = #hex_str / channels
-        if chars_per_channel > 4 then
-            return nil
-        end
-        local dividor = (0x10 ^ chars_per_channel) - 1
-        for idx = 1, #hex_str, chars_per_channel do
-            local channel_val = tonumber(hex_str:sub(idx, idx + chars_per_channel - 1), 16)
-            table.insert(rgb, channel_val / dividor)
-        end
-        if channels == 3 then
-            table.insert(rgb, 1)
-        end
-    else
-        local c = Pango.Color()
-        if not c:parse(col) then
-            return nil
-        end
-        rgb = {
-            c.red / 0xffff,
-            c.green / 0xffff,
-            c.blue / 0xffff,
-            1.0
-        }
-    end
-    assert(#rgb == 4, col)
-    return unpack(rgb)
+	local rgb = {}
+	if string.match(col, "^#%x+$") then
+		local hex_str = col:sub(2, #col)
+		local channels
+		if #hex_str % 3 == 0 then
+			channels = 3
+		elseif #hex_str % 4 == 0 then
+			channels = 4
+		else
+			return nil
+		end
+		local chars_per_channel = #hex_str / channels
+		if chars_per_channel > 4 then
+			return nil
+		end
+		local dividor = (0x10 ^ chars_per_channel) - 1
+		for idx = 1, #hex_str, chars_per_channel do
+			local channel_val = tonumber(hex_str:sub(idx, idx + chars_per_channel - 1), 16)
+			table.insert(rgb, channel_val / dividor)
+		end
+		if channels == 3 then
+			table.insert(rgb, 1)
+		end
+	else
+		local c = Pango.Color()
+		if not c:parse(col) then
+			return nil
+		end
+		rgb = {
+			c.red / 0xffff,
+			c.green / 0xffff,
+			c.blue / 0xffff,
+			1.0
+		}
+	end
+	assert(#rgb == 4, col)
+	return unpack(rgb)
 end
 
 --- Find all numbers in a string
@@ -112,11 +112,11 @@ end
 -- @tparam string s The string to parse
 -- @return Each number found as a separate value
 local function parse_numbers(s)
-    local res = {}
-    for k in string.gmatch(s, "-?[0-9]+[.]?[0-9]*") do
-        table.insert(res, tonumber(k))
-    end
-    return unpack(res)
+	local res = {}
+	for k in string.gmatch(s, "-?[0-9]+[.]?[0-9]*") do
+		table.insert(res, tonumber(k))
+	end
+	return unpack(res)
 end
 
 --- Create a solid pattern
@@ -124,12 +124,12 @@ end
 -- @param col The color for the pattern
 -- @return A cairo pattern object
 function color.create_solid_pattern(col)
-    if col == nil then
-        col = "#000000"
-    elseif type(col) == "table" then
-        col = col.color
-    end
-    return cairo.Pattern.create_rgba(color.parse_color(col))
+	if col == nil then
+		col = "#000000"
+	elseif type(col) == "table" then
+		col = col.color
+	end
+	return cairo.Pattern.create_rgba(color.parse_color(col))
 end
 
 --- Create an image pattern from a png file
@@ -137,13 +137,13 @@ end
 -- @param file The filename of the file
 -- @return a cairo pattern object
 function color.create_png_pattern(file)
-    if type(file) == "table" then
-        file = file.file
-    end
-    local image   = surface.load(file)
-    local pattern = cairo.Pattern.create_for_surface(image)
-    pattern:set_extend(cairo.Extend.REPEAT)
-    return pattern
+	if type(file) == "table" then
+		file = file.file
+	end
+	local image   = surface.load(file)
+	local pattern = cairo.Pattern.create_for_surface(image)
+	pattern:set_extend(cairo.Extend.REPEAT)
+	return pattern
 end
 
 --- Add stops to the given pattern.
@@ -151,35 +151,35 @@ end
 -- @param iterator An iterator that returns strings. Each of those strings
 --   should be in the form place,color where place is in [0, 1].
 local function add_iterator_stops(p, iterator)
-    for k in iterator do
-        local sub        = string.gmatch(k, "[^,]+")
-        local point, clr = sub(), sub()
-        p:add_color_stop_rgba(point, color.parse_color(clr))
-    end
+	for k in iterator do
+		local sub        = string.gmatch(k, "[^,]+")
+		local point, clr = sub(), sub()
+		p:add_color_stop_rgba(point, color.parse_color(clr))
+	end
 end
 
 --- Add a list of stops to a given pattern
 local function add_stops_table(pat, arg)
-    for _, stop in ipairs(arg) do
-        pat:add_color_stop_rgba(stop[1], color.parse_color(stop[2]))
-    end
+	for _, stop in ipairs(arg) do
+		pat:add_color_stop_rgba(stop[1], color.parse_color(stop[2]))
+	end
 end
 
 --- Create a pattern from a string
 local function string_pattern(creator, arg)
-    local iterator = string.gmatch(arg, "[^:]+")
-    -- Create a table where each entry is a number from the original string
-    local args     = { parse_numbers(iterator()) }
-    local to       = { parse_numbers(iterator()) }
-    -- Now merge those two tables
-    for _, v in pairs(to) do
-        table.insert(args, v)
-    end
-    -- And call our creator function with the values
-    local p = creator(unpack(args))
+	local iterator = string.gmatch(arg, "[^:]+")
+	-- Create a table where each entry is a number from the original string
+	local args     = { parse_numbers(iterator()) }
+	local to       = { parse_numbers(iterator()) }
+	-- Now merge those two tables
+	for _, v in pairs(to) do
+		table.insert(args, v)
+	end
+	-- And call our creator function with the values
+	local p = creator(unpack(args))
 
-    add_iterator_stops(p, iterator)
-    return p
+	add_iterator_stops(p, iterator)
+	return p
 end
 
 --- Create a linear pattern object.
@@ -193,17 +193,17 @@ end
 -- @tparam string|table arg The argument describing the pattern.
 -- @return a cairo pattern object
 function color.create_linear_pattern(arg)
-    local pat
+	local pat
 
-    if type(arg) == "string" then
-        return string_pattern(cairo.Pattern.create_linear, arg)
-    elseif type(arg) ~= "table" then
-        error("Wrong argument type: " .. type(arg))
-    end
+	if type(arg) == "string" then
+		return string_pattern(cairo.Pattern.create_linear, arg)
+	elseif type(arg) ~= "table" then
+		error("Wrong argument type: " .. type(arg))
+	end
 
-    pat = cairo.Pattern.create_linear(arg.from[1], arg.from[2], arg.to[1], arg.to[2])
-    add_stops_table(pat, arg.stops)
-    return pat
+	pat = cairo.Pattern.create_linear(arg.from[1], arg.from[2], arg.to[1], arg.to[2])
+	add_stops_table(pat, arg.stops)
+	return pat
 end
 
 --- Create a radial pattern object.
@@ -218,26 +218,26 @@ end
 -- @tparam string|table arg The argument describing the pattern
 -- @return a cairo pattern object
 function color.create_radial_pattern(arg)
-    local pat
+	local pat
 
-    if type(arg) == "string" then
-        return string_pattern(cairo.Pattern.create_radial, arg)
-    elseif type(arg) ~= "table" then
-        error("Wrong argument type: " .. type(arg))
-    end
+	if type(arg) == "string" then
+		return string_pattern(cairo.Pattern.create_radial, arg)
+	elseif type(arg) ~= "table" then
+		error("Wrong argument type: " .. type(arg))
+	end
 
-    pat = cairo.Pattern.create_radial(arg.from[1], arg.from[2], arg.from[3],
-            arg.to[1], arg.to[2], arg.to[3])
-    add_stops_table(pat, arg.stops)
-    return pat
+	pat = cairo.Pattern.create_radial(arg.from[1], arg.from[2], arg.from[3],
+			arg.to[1], arg.to[2], arg.to[3])
+	add_stops_table(pat, arg.stops)
+	return pat
 end
 
 --- Mapping of all supported color types. New entries can be added.
 color.types = {
-    solid  = color.create_solid_pattern,
-    png    = color.create_png_pattern,
-    linear = color.create_linear_pattern,
-    radial = color.create_radial_pattern
+	solid  = color.create_solid_pattern,
+	png    = color.create_png_pattern,
+	linear = color.create_linear_pattern,
+	radial = color.create_radial_pattern
 }
 
 --- Create a pattern from a given string.
@@ -250,34 +250,34 @@ color.types = {
 -- @param col The string describing the pattern.
 -- @return a cairo pattern object
 function color.create_pattern_uncached(col)
-    -- If it already is a cairo pattern, just leave it as that
-    if cairo.Pattern:is_type_of(col) then
-        return col
-    end
-    col = col or "#000000"
-    if type(col) == "string" then
-        local t = string.match(col, "[^:]+")
-        if color.types[t] then
-            local pos = string.len(t)
-            local arg = string.sub(col, pos + 2)
-            return color.types[t](arg)
-        end
-    elseif type(col) == "table" then
-        local t = col.type
-        if color.types[t] then
-            return color.types[t](col)
-        end
-    end
-    return color.create_solid_pattern(col)
+	-- If it already is a cairo pattern, just leave it as that
+	if cairo.Pattern:is_type_of(col) then
+		return col
+	end
+	col = col or "#000000"
+	if type(col) == "string" then
+		local t = string.match(col, "[^:]+")
+		if color.types[t] then
+			local pos = string.len(t)
+			local arg = string.sub(col, pos + 2)
+			return color.types[t](arg)
+		end
+	elseif type(col) == "table" then
+		local t = col.type
+		if color.types[t] then
+			return color.types[t](col)
+		end
+	end
+	return color.create_solid_pattern(col)
 end
 
 --- Create a pattern from a given string, same as @{gears.color}.
 -- @see gears.color
 function color.create_pattern(col)
-    if cairo.Pattern:is_type_of(col) then
-        return col
-    end
-    return pattern_cache:get(col or "#000000")
+	if cairo.Pattern:is_type_of(col) then
+		return col
+	end
+	return pattern_cache:get(col or "#000000")
 end
 
 --- Check if a pattern is opaque.
@@ -286,49 +286,49 @@ end
 -- @param col An argument that `create_pattern` accepts.
 -- @return The pattern if it is surely opaque, else nil
 function color.create_opaque_pattern(col)
-    local pattern = color.create_pattern(col)
-    local kind    = pattern:get_type()
+	local pattern = color.create_pattern(col)
+	local kind    = pattern:get_type()
 
-    if kind == "SOLID" then
-        local _, _, _, _, alpha = pattern:get_rgba()
-        if alpha ~= 1 then
-            return
-        end
-        return pattern
-    elseif kind == "SURFACE" then
-        local status, surf = pattern:get_surface()
-        if status ~= "SUCCESS" or surf.content ~= "COLOR" then
-            -- The surface has an alpha channel which *might* be non-opaque
-            return
-        end
+	if kind == "SOLID" then
+		local _, _, _, _, alpha = pattern:get_rgba()
+		if alpha ~= 1 then
+			return
+		end
+		return pattern
+	elseif kind == "SURFACE" then
+		local status, surf = pattern:get_surface()
+		if status ~= "SUCCESS" or surf.content ~= "COLOR" then
+			-- The surface has an alpha channel which *might* be non-opaque
+			return
+		end
 
-        -- Only the "NONE" extend mode is forbidden, everything else doesn't
-        -- introduce transparent parts
-        if pattern:get_extend() == "NONE" then
-            return
-        end
+		-- Only the "NONE" extend mode is forbidden, everything else doesn't
+		-- introduce transparent parts
+		if pattern:get_extend() == "NONE" then
+			return
+		end
 
-        return pattern
-    elseif kind == "LINEAR" then
-        local _, stops = pattern:get_color_stop_count()
+		return pattern
+	elseif kind == "LINEAR" then
+		local _, stops = pattern:get_color_stop_count()
 
-        -- No color stops or extend NONE -> pattern *might* contain transparency
-        if stops == 0 or pattern:get_extend() == "NONE" then
-            return
-        end
+		-- No color stops or extend NONE -> pattern *might* contain transparency
+		if stops == 0 or pattern:get_extend() == "NONE" then
+			return
+		end
 
-        -- Now check if any of the color stops contain transparency
-        for i = 0, stops - 1 do
-            local _, _, _, _, _, alpha = pattern:get_color_stop_rgba(i)
-            if alpha ~= 1 then
-                return
-            end
-        end
-        return pattern
-    end
+		-- Now check if any of the color stops contain transparency
+		for i = 0, stops - 1 do
+			local _, _, _, _, _, alpha = pattern:get_color_stop_rgba(i)
+			if alpha ~= 1 then
+				return
+			end
+		end
+		return pattern
+	end
 
-    -- Unknown type, e.g. mesh or raster source or unsupported type (radial
-    -- gradients can do weird self-intersections)
+	-- Unknown type, e.g. mesh or raster source or unsupported type (radial
+	-- gradients can do weird self-intersections)
 end
 
 --- Fill non-transparent area of an image with a given color.
@@ -336,13 +336,13 @@ end
 -- @param new_color New color.
 -- @return Recolored image.
 function color.recolor_image(image, new_color)
-    if type(image) == 'string' then
-        image = surface.duplicate_surface(image)
-    end
-    local cr = cairo.Context.create(image)
-    cr:set_source(color.create_pattern(new_color))
-    cr:mask(cairo.Pattern.create_for_surface(image), 0, 0)
-    return image
+	if type(image) == 'string' then
+		image = surface.duplicate_surface(image)
+	end
+	local cr = cairo.Context.create(image)
+	cr:set_source(color.create_pattern(new_color))
+	cr:mask(cairo.Pattern.create_for_surface(image), 0, 0)
+	return image
 end
 
 --- Get a valid color for Pango markup
@@ -350,17 +350,17 @@ end
 -- @tparam string fallback The color to return if the first is invalid. (default: black)
 -- @treturn string color if it is valid, else fallback.
 function color.ensure_pango_color(check_color, fallback)
-    check_color = tostring(check_color)
-    -- Pango markup supports alpha, PangoColor does not. Thus, check for this.
-    local len   = #check_color
-    if string.match(check_color, "^#%x+$") and (len == 5 or len == 9 or len == 17) then
-        return check_color
-    end
-    return Pango.Color.parse(Pango.Color(), check_color) and check_color or fallback or "black"
+	check_color = tostring(check_color)
+	-- Pango markup supports alpha, PangoColor does not. Thus, check for this.
+	local len   = #check_color
+	if string.match(check_color, "^#%x+$") and (len == 5 or len == 9 or len == 17) then
+		return check_color
+	end
+	return Pango.Color.parse(Pango.Color(), check_color) and check_color or fallback or "black"
 end
 
 function color.mt.__call(_, ...)
-    return color.create_pattern(...)
+	return color.create_pattern(...)
 end
 
 pattern_cache     = require("gears.cache").new(color.create_pattern_uncached)

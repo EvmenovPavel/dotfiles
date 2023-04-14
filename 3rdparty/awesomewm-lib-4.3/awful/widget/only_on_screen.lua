@@ -13,8 +13,8 @@ local setmetatable   = setmetatable
 local base           = require("wibox.widget.base")
 local gtable         = require("gears.table")
 local capi           = {
-    screen  = screen,
-    awesome = awesome
+	screen  = screen,
+	awesome = awesome
 }
 
 local only_on_screen = { mt = {} }
@@ -22,29 +22,29 @@ local only_on_screen = { mt = {} }
 local instances      = setmetatable({}, { __mode = "k" })
 
 local function should_display_on(self, s)
-    if not self._private.widget then
-        return false
-    end
-    local own_s = self._private.screen
-    if type(own_s) == "number" and (own_s < 1 or own_s > capi.screen.count()) then
-        -- Invalid screen number
-        return false
-    end
-    return capi.screen[self._private.screen] == s
+	if not self._private.widget then
+		return false
+	end
+	local own_s = self._private.screen
+	if type(own_s) == "number" and (own_s < 1 or own_s > capi.screen.count()) then
+		-- Invalid screen number
+		return false
+	end
+	return capi.screen[self._private.screen] == s
 end
 
 -- Layout this layout
 function only_on_screen:layout(context, ...)
-    if not should_display_on(self, context.screen) then return end
-    return { base.place_widget_at(self._private.widget, 0, 0, ...) }
+	if not should_display_on(self, context.screen) then return end
+	return { base.place_widget_at(self._private.widget, 0, 0, ...) }
 end
 
 -- Fit this layout into the given area
 function only_on_screen:fit(context, ...)
-    if not should_display_on(self, context.screen) then
-        return 0, 0
-    end
-    return base.fit_widget(self, context, self._private.widget, ...)
+	if not should_display_on(self, context.screen) then
+		return 0, 0
+	end
+	return base.fit_widget(self, context, self._private.widget, ...)
 end
 
 --- The widget to be displayed
@@ -52,28 +52,28 @@ end
 -- @tparam widget widget The widget
 
 function only_on_screen:set_widget(widget)
-    if widget then
-        base.check_widget(widget)
-    end
-    self._private.widget = widget
-    self:emit_signal("widget::layout_changed")
+	if widget then
+		base.check_widget(widget)
+	end
+	self._private.widget = widget
+	self:emit_signal("widget::layout_changed")
 end
 
 function only_on_screen:get_widget()
-    return self._private.widget
+	return self._private.widget
 end
 
 --- Get the number of children element
 -- @treturn table The children
 function only_on_screen:get_children()
-    return { self._private.widget }
+	return { self._private.widget }
 end
 
 --- Replace the layout children
 -- This layout only accept one children, all others will be ignored
 -- @tparam table children A table composed of valid widgets
 function only_on_screen:set_children(children)
-    self:set_widget(children[1])
+	self:set_widget(children[1])
 end
 
 --- The screen to display on. Can be a screen object, a screen index, a screen
@@ -82,12 +82,12 @@ end
 -- @tparam screen|string|integer screen The screen.
 
 function only_on_screen:set_screen(s)
-    self._private.screen = s
-    self:emit_signal("widget::layout_changed")
+	self._private.screen = s
+	self:emit_signal("widget::layout_changed")
 end
 
 function only_on_screen:get_screen()
-    return self._private.screen
+	return self._private.screen
 end
 
 --- Returns a new only_on_screen container.
@@ -98,46 +98,46 @@ end
 -- @treturn table A new only_on_screen container
 -- @function wibox.container.only_on_screen
 local function new(widget, s)
-    local ret = base.make_widget(nil, nil, { enable_properties = true })
+	local ret = base.make_widget(nil, nil, { enable_properties = true })
 
-    gtable.crush(ret, only_on_screen, true)
+	gtable.crush(ret, only_on_screen, true)
 
-    ret:set_widget(widget)
-    ret:set_screen(s or "primary")
+	ret:set_widget(widget)
+	ret:set_screen(s or "primary")
 
-    instances[ret] = true
+	instances[ret] = true
 
-    return ret
+	return ret
 end
 
 function only_on_screen.mt:__call(...)
-    return new(...)
+	return new(...)
 end
 
 -- Handle lots of cases where a screen changes and thus this widget jumps around
 
 capi.screen.connect_signal("primary_changed", function()
-    for widget in pairs(instances) do
-        if widget._private.widget and widget._private.screen == "primary" then
-            widget:emit_signal("widget::layout_changed")
-        end
-    end
+	for widget in pairs(instances) do
+		if widget._private.widget and widget._private.screen == "primary" then
+			widget:emit_signal("widget::layout_changed")
+		end
+	end
 end)
 
 capi.screen.connect_signal("list", function()
-    for widget in pairs(instances) do
-        if widget._private.widget and type(widget._private.screen) == "number" then
-            widget:emit_signal("widget::layout_changed")
-        end
-    end
+	for widget in pairs(instances) do
+		if widget._private.widget and type(widget._private.screen) == "number" then
+			widget:emit_signal("widget::layout_changed")
+		end
+	end
 end)
 
 capi.screen.connect_signal("property::outputs", function()
-    for widget in pairs(instances) do
-        if widget._private.widget and type(widget._private.screen) == "string" then
-            widget:emit_signal("widget::layout_changed")
-        end
-    end
+	for widget in pairs(instances) do
+		if widget._private.widget and type(widget._private.screen) == "string" then
+			widget:emit_signal("widget::layout_changed")
+		end
+	end
 end)
 
 --@DOC_widget_COMMON@

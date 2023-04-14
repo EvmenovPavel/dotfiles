@@ -3,16 +3,16 @@ local wibox  = require("wibox")
 local slider = {}
 
 function slider:init(args)
-    local ret  = {}
+	local ret  = {}
 
-    local args = args or {}
+	local args = args or {}
 
-    ret.widget = wibox.widget({
-        type   = "slider",
-        widget = wibox.widget.slider,
-    })
+	ret.widget = wibox.widget({
+		type   = "slider",
+		widget = wibox.widget.slider,
+	})
 
-    return ret
+	return ret
 end
 
 return slider

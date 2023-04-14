@@ -3,16 +3,16 @@ local wibox     = require("wibox")
 local textclock = {}
 
 function textclock:init(args)
-    local ret  = {}
+	local ret  = {}
 
-    local args = args or {}
+	local args = args or {}
 
-    ret.widget = wibox.widget({
-        widget = wibox.widget.textclock,
-        type   = "textclock"
-    })
+	ret.widget = wibox.widget({
+		widget = wibox.widget.textclock,
+		type   = "textclock"
+	})
 
-    return ret
+	return ret
 end
 
 return textclock

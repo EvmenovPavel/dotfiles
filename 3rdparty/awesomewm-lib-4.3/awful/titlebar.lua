@@ -25,13 +25,13 @@ local imagebox      = require("wibox.widget.imagebox")
 local textbox       = require("wibox.widget.textbox")
 local base          = require("wibox.widget.base")
 local capi          = {
-    client = client
+	client = client
 }
 
 local titlebar      = {
-    widget         = {},
-    enable_tooltip = true,
-    fallback_name  = '<unknown>'
+	widget         = {},
+	enable_tooltip = true,
+	fallback_name  = '<unknown>'
 }
 
 
@@ -438,28 +438,28 @@ local all_titlebars = setmetatable({}, { __mode = 'k' })
 
 -- Get a color for a titlebar, this tests many values from the array and the theme
 local function get_color(name, c, args)
-    local suffix = "_normal"
-    if capi.client.focus == c then
-        suffix = "_focus"
-    end
-    local function get(array)
-        return array["titlebar_" .. name .. suffix] or array["titlebar_" .. name] or array[name .. suffix] or array[name]
-    end
-    return get(args) or get(beautiful)
+	local suffix = "_normal"
+	if capi.client.focus == c then
+		suffix = "_focus"
+	end
+	local function get(array)
+		return array["titlebar_" .. name .. suffix] or array["titlebar_" .. name] or array[name .. suffix] or array[name]
+	end
+	return get(args) or get(beautiful)
 end
 
 local function get_titlebar_function(c, position)
-    if position == "left" then
-        return c.titlebar_left
-    elseif position == "right" then
-        return c.titlebar_right
-    elseif position == "top" then
-        return c.titlebar_top
-    elseif position == "bottom" then
-        return c.titlebar_bottom
-    else
-        error("Invalid titlebar position '" .. position .. "'")
-    end
+	if position == "left" then
+		return c.titlebar_left
+	elseif position == "right" then
+		return c.titlebar_right
+	elseif position == "top" then
+		return c.titlebar_top
+	elseif position == "bottom" then
+		return c.titlebar_bottom
+	else
+		error("Invalid titlebar position '" .. position .. "'")
+	end
 end
 
 --- Call `request::titlebars` to allow themes or rc.lua to create them even
@@ -469,23 +469,23 @@ end
 -- @tparam string keep Keep the titlebar at this position
 -- @treturn boolean If the titlebars were loaded
 local function load_titlebars(c, hide_all, keep)
-    if c._request_titlebars_called then return false end
+	if c._request_titlebars_called then return false end
 
-    c:emit_signal("request::titlebars", "awful.titlebar", {})
+	c:emit_signal("request::titlebars", "awful.titlebar", {})
 
-    if hide_all then
-        -- Don't bother checking if it has been created, `.hide` don't works
-        -- anyway.
-        for _, tb in ipairs { "top", "bottom", "left", "right" } do
-            if tb ~= keep then
-                titlebar.hide(c, tb)
-            end
-        end
-    end
+	if hide_all then
+		-- Don't bother checking if it has been created, `.hide` don't works
+		-- anyway.
+		for _, tb in ipairs { "top", "bottom", "left", "right" } do
+			if tb ~= keep then
+				titlebar.hide(c, tb)
+			end
+		end
+	end
 
-    c._request_titlebars_called = true
+	c._request_titlebars_called = true
 
-    return true
+	return true
 end
 
 --- Get a client's titlebar.
@@ -503,60 +503,60 @@ end
 -- @tparam[opt=top] string args.font
 -- @function awful.titlebar
 local function new(c, args)
-    args           = args or {}
-    local position = args.position or "top"
-    local size     = args.size or gmath.round(beautiful.get_font_height(args.font) * 1.5)
-    local d        = get_titlebar_function(c, position)(c, size)
+	args           = args or {}
+	local position = args.position or "top"
+	local size     = args.size or gmath.round(beautiful.get_font_height(args.font) * 1.5)
+	local d        = get_titlebar_function(c, position)(c, size)
 
-    -- Make sure that there is never more than one titlebar for any given client
-    local bars     = all_titlebars[c]
-    if not bars then
-        bars             = {}
-        all_titlebars[c] = bars
-    end
+	-- Make sure that there is never more than one titlebar for any given client
+	local bars     = all_titlebars[c]
+	if not bars then
+		bars             = {}
+		all_titlebars[c] = bars
+	end
 
-    local ret
-    if not bars[position] then
-        local context = {
-            client   = c,
-            position = position
-        }
-        ret           = drawable(d, context, "awful.titlebar")
-        ret:_inform_visible(true)
-        local function update_colors()
-            local args_ = bars[position].args
-            ret:set_bg(get_color("bg", c, args_))
-            ret:set_fg(get_color("fg", c, args_))
-            ret:set_bgimage(get_color("bgimage", c, args_))
-        end
+	local ret
+	if not bars[position] then
+		local context = {
+			client   = c,
+			position = position
+		}
+		ret           = drawable(d, context, "awful.titlebar")
+		ret:_inform_visible(true)
+		local function update_colors()
+			local args_ = bars[position].args
+			ret:set_bg(get_color("bg", c, args_))
+			ret:set_fg(get_color("fg", c, args_))
+			ret:set_bgimage(get_color("bgimage", c, args_))
+		end
 
-        bars[position] = {
-            args          = args,
-            drawable      = ret,
-            update_colors = update_colors
-        }
+		bars[position] = {
+			args          = args,
+			drawable      = ret,
+			update_colors = update_colors
+		}
 
-        -- Update the colors when focus changes
-        c:connect_signal("focus", update_colors)
-        c:connect_signal("unfocus", update_colors)
+		-- Update the colors when focus changes
+		c:connect_signal("focus", update_colors)
+		c:connect_signal("unfocus", update_colors)
 
-        -- Inform the drawable when it becomes invisible
-        c:connect_signal("unmanage", function() ret:_inform_visible(false) end)
-    else
-        bars[position].args = args
-        ret                 = bars[position].drawable
-    end
+		-- Inform the drawable when it becomes invisible
+		c:connect_signal("unmanage", function() ret:_inform_visible(false) end)
+	else
+		bars[position].args = args
+		ret                 = bars[position].drawable
+	end
 
-    -- Make sure the titlebar has the right colors applied
-    bars[position].update_colors()
+	-- Make sure the titlebar has the right colors applied
+	bars[position].update_colors()
 
-    -- Handle declarative/recursive widget container
-    ret.setup            = base.widget.setup
+	-- Handle declarative/recursive widget container
+	ret.setup            = base.widget.setup
 
-    c._private           = c._private or {}
-    c._private.titlebars = bars
+	c._private           = c._private or {}
+	c._private.titlebars = bars
 
-    return ret
+	return ret
 end
 
 --- Show a client's titlebar.
@@ -564,12 +564,12 @@ end
 -- @param[opt] position The position of the titlebar. Must be one of "left",
 --   "right", "top", "bottom". Default is "top".
 function titlebar.show(c, position)
-    position = position or "top"
-    if load_titlebars(c, true, position) then return end
-    local bars = all_titlebars[c]
-    local data = bars and bars[position]
-    local args = data and data.args
-    new(c, args)
+	position = position or "top"
+	if load_titlebars(c, true, position) then return end
+	local bars = all_titlebars[c]
+	local data = bars and bars[position]
+	local args = data and data.args
+	new(c, args)
 end
 
 --- Hide a client's titlebar.
@@ -577,8 +577,8 @@ end
 -- @param[opt] position The position of the titlebar. Must be one of "left",
 --   "right", "top", "bottom". Default is "top".
 function titlebar.hide(c, position)
-    position = position or "top"
-    get_titlebar_function(c, position)(c, 0)
+	position = position or "top"
+	get_titlebar_function(c, position)(c, 0)
 end
 
 --- Toggle a client's titlebar, hiding it if it is visible, otherwise showing it.
@@ -586,14 +586,14 @@ end
 -- @param[opt] position The position of the titlebar. Must be one of "left",
 --   "right", "top", "bottom". Default is "top".
 function titlebar.toggle(c, position)
-    position = position or "top"
-    if load_titlebars(c, true, position) then return end
-    local _, size = get_titlebar_function(c, position)(c)
-    if size == 0 then
-        titlebar.show(c, position)
-    else
-        titlebar.hide(c, position)
-    end
+	position = position or "top"
+	if load_titlebars(c, true, position) then return end
+	local _, size = get_titlebar_function(c, position)(c)
+	if size == 0 then
+		titlebar.show(c, position)
+	else
+		titlebar.hide(c, position)
+	end
 end
 
 --- Create a new titlewidget. A title widget displays the name of a client.
@@ -602,14 +602,14 @@ end
 -- @param c The client for which a titlewidget should be created.
 -- @return The title widget.
 function titlebar.widget.titlewidget(c)
-    local ret = textbox()
-    local function update()
-        ret:set_text(c.name or titlebar.fallback_name)
-    end
-    c:connect_signal("property::name", update)
-    update()
+	local ret = textbox()
+	local function update()
+		ret:set_text(c.name or titlebar.fallback_name)
+	end
+	c:connect_signal("property::name", update)
+	update()
 
-    return ret
+	return ret
 end
 
 --- Create a new icon widget. An icon widget displays the icon of a client.
@@ -618,7 +618,7 @@ end
 -- @param c The client for which an icon widget should be created.
 -- @return The icon widget.
 function titlebar.widget.iconwidget(c)
-    return clienticon(c)
+	return clienticon(c)
 end
 
 --- Create a new button widget. A button widget displays an image and reacts to
@@ -635,144 +635,144 @@ end
 -- @param action Function that is called when the button is clicked.
 -- @return The widget
 function titlebar.widget.button(c, name, selector, action)
-    local ret = imagebox()
+	local ret = imagebox()
 
-    if titlebar.enable_tooltip then
-        ret._private.tooltip = atooltip({ objects = { ret }, delay_show = 1 })
-        ret._private.tooltip:set_text(name)
-    end
+	if titlebar.enable_tooltip then
+		ret._private.tooltip = atooltip({ objects = { ret }, delay_show = 1 })
+		ret._private.tooltip:set_text(name)
+	end
 
-    local function update()
-        local img = selector(c)
-        if type(img) ~= "nil" then
-            -- Convert booleans automatically
-            if type(img) == "boolean" then
-                if img then
-                    img = "active"
-                else
-                    img = "inactive"
-                end
-            end
-            local prefix = "normal"
-            if capi.client.focus == c then
-                prefix = "focus"
-            end
-            if img ~= "" then
-                prefix = prefix .. "_"
-            end
-            local state = ret.state
-            if state ~= "" then
-                state = "_" .. state
-            end
-            -- First try with a prefix based on the client's focus state,
-            -- then try again without that prefix if nothing was found,
-            -- and finally, try a fallback for compatibility with Awesome 3.5 themes
-            local theme = beautiful["titlebar_" .. name .. "_button_" .. prefix .. img .. state]
-                    or beautiful["titlebar_" .. name .. "_button_" .. prefix .. img]
-                    or beautiful["titlebar_" .. name .. "_button_" .. img]
-                    or beautiful["titlebar_" .. name .. "_button_" .. prefix .. "_inactive"]
-            if theme then
-                img = theme
-            end
-        end
-        ret:set_image(img)
-    end
-    ret.state = ""
-    if action then
-        ret:buttons(abutton({ }, 1, nil, function()
-            ret.state = ""
-            update()
-            action(c, selector(c))
-        end))
-    else
-        ret:buttons(abutton({ }, 1, nil, function()
-            ret.state = ""
-            update()
-        end))
-    end
-    ret:connect_signal("mouse::enter", function()
-        ret.state = "hover"
-        update()
-    end)
-    ret:connect_signal("mouse::leave", function()
-        ret.state = ""
-        update()
-    end)
-    ret:connect_signal("button::press", function(_, _, _, b)
-        if b == 1 then
-            ret.state = "press"
-            update()
-        end
-    end)
-    ret.update = update
-    update()
+	local function update()
+		local img = selector(c)
+		if type(img) ~= "nil" then
+			-- Convert booleans automatically
+			if type(img) == "boolean" then
+				if img then
+					img = "active"
+				else
+					img = "inactive"
+				end
+			end
+			local prefix = "normal"
+			if capi.client.focus == c then
+				prefix = "focus"
+			end
+			if img ~= "" then
+				prefix = prefix .. "_"
+			end
+			local state = ret.state
+			if state ~= "" then
+				state = "_" .. state
+			end
+			-- First try with a prefix based on the client's focus state,
+			-- then try again without that prefix if nothing was found,
+			-- and finally, try a fallback for compatibility with Awesome 3.5 themes
+			local theme = beautiful["titlebar_" .. name .. "_button_" .. prefix .. img .. state]
+					or beautiful["titlebar_" .. name .. "_button_" .. prefix .. img]
+					or beautiful["titlebar_" .. name .. "_button_" .. img]
+					or beautiful["titlebar_" .. name .. "_button_" .. prefix .. "_inactive"]
+			if theme then
+				img = theme
+			end
+		end
+		ret:set_image(img)
+	end
+	ret.state = ""
+	if action then
+		ret:buttons(abutton({ }, 1, nil, function()
+			ret.state = ""
+			update()
+			action(c, selector(c))
+		end))
+	else
+		ret:buttons(abutton({ }, 1, nil, function()
+			ret.state = ""
+			update()
+		end))
+	end
+	ret:connect_signal("mouse::enter", function()
+		ret.state = "hover"
+		update()
+	end)
+	ret:connect_signal("mouse::leave", function()
+		ret.state = ""
+		update()
+	end)
+	ret:connect_signal("button::press", function(_, _, _, b)
+		if b == 1 then
+			ret.state = "press"
+			update()
+		end
+	end)
+	ret.update = update
+	update()
 
-    -- We do magic based on whether a client is focused above, so we need to
-    -- connect to the corresponding signal here.
-    c:connect_signal("focus", update)
-    c:connect_signal("unfocus", update)
+	-- We do magic based on whether a client is focused above, so we need to
+	-- connect to the corresponding signal here.
+	c:connect_signal("focus", update)
+	c:connect_signal("unfocus", update)
 
-    return ret
+	return ret
 end
 
 --- Create a new float button for a client.
 -- @param c The client for which the button is wanted.
 function titlebar.widget.floatingbutton(c)
-    local widget = titlebar.widget.button(c, "floating", aclient.object.get_floating, aclient.floating.toggle)
-    c:connect_signal("property::floating", widget.update)
-    return widget
+	local widget = titlebar.widget.button(c, "floating", aclient.object.get_floating, aclient.floating.toggle)
+	c:connect_signal("property::floating", widget.update)
+	return widget
 end
 
 --- Create a new maximize button for a client.
 -- @param c The client for which the button is wanted.
 function titlebar.widget.maximizedbutton(c)
-    local widget = titlebar.widget.button(c, "maximized", function(cl)
-        return cl.maximized
-    end, function(cl, state)
-        cl.maximized = not state
-    end)
-    c:connect_signal("property::maximized", widget.update)
-    return widget
+	local widget = titlebar.widget.button(c, "maximized", function(cl)
+		return cl.maximized
+	end, function(cl, state)
+		cl.maximized = not state
+	end)
+	c:connect_signal("property::maximized", widget.update)
+	return widget
 end
 
 --- Create a new minimize button for a client.
 -- @param c The client for which the button is wanted.
 function titlebar.widget.minimizebutton(c)
-    local widget = titlebar.widget.button(c, "minimize",
-            function() return "" end,
-            function(cl) cl.minimized = not cl.minimized end)
-    c:connect_signal("property::minimized", widget.update)
-    return widget
+	local widget = titlebar.widget.button(c, "minimize",
+			function() return "" end,
+			function(cl) cl.minimized = not cl.minimized end)
+	c:connect_signal("property::minimized", widget.update)
+	return widget
 end
 
 --- Create a new closing button for a client.
 -- @param c The client for which the button is wanted.
 function titlebar.widget.closebutton(c)
-    return titlebar.widget.button(c, "close", function() return "" end, function(cl) cl:kill() end)
+	return titlebar.widget.button(c, "close", function() return "" end, function(cl) cl:kill() end)
 end
 
 --- Create a new ontop button for a client.
 -- @param c The client for which the button is wanted.
 function titlebar.widget.ontopbutton(c)
-    local widget = titlebar.widget.button(c, "ontop",
-            function(cl) return cl.ontop end,
-            function(cl, state) cl.ontop = not state end)
-    c:connect_signal("property::ontop", widget.update)
-    return widget
+	local widget = titlebar.widget.button(c, "ontop",
+			function(cl) return cl.ontop end,
+			function(cl, state) cl.ontop = not state end)
+	c:connect_signal("property::ontop", widget.update)
+	return widget
 end
 
 --- Create a new sticky button for a client.
 -- @param c The client for which the button is wanted.
 function titlebar.widget.stickybutton(c)
-    local widget = titlebar.widget.button(c, "sticky",
-            function(cl) return cl.sticky end,
-            function(cl, state) cl.sticky = not state end)
-    c:connect_signal("property::sticky", widget.update)
-    return widget
+	local widget = titlebar.widget.button(c, "sticky",
+			function(cl) return cl.sticky end,
+			function(cl, state) cl.sticky = not state end)
+	c:connect_signal("property::sticky", widget.update)
+	return widget
 end
 
 client.connect_signal("unmanage", function(c)
-    all_titlebars[c] = nil
+	all_titlebars[c] = nil
 end)
 
 return setmetatable(titlebar, { __call = function(_, ...) return new(...) end })

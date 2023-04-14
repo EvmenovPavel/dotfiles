@@ -9,7 +9,7 @@ require("modules.modules")
 ---@overload fun(message:string)
 ---@param message string
 function error(message)
-    log:error(message)
+	log:error(message)
 end
 
 -- Global type --

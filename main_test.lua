@@ -176,49 +176,49 @@
 --default.action()
 
 LuaTypes    = {
-    null     = "nil",
-    boolean  = "boolean",
-    number   = "number",
-    string   = "string",
-    func     = "function",
-    userdata = "userdata",
-    thread   = "thread",
-    table    = "table",
-    screen   = "screen"
+	null     = "nil",
+	boolean  = "boolean",
+	number   = "number",
+	string   = "string",
+	func     = "function",
+	userdata = "userdata",
+	thread   = "thread",
+	table    = "table",
+	screen   = "screen"
 }
 
 local wmapi = {}
 function wmapi:is_empty(s)
-    -- if nil or "" - error "true"
-    return s == nil or s == ""
+	-- if nil or "" - error "true"
+	return s == nil or s == ""
 end
 
 local __private  = {}
 __private.markup = ""
 
 local function markup(markup)
-    if type(markup) == LuaTypes.string then
-        print(">>", __private.markup)
-        __private.markup = markup
-    end
+	if type(markup) == LuaTypes.string then
+		print(">>", __private.markup)
+		__private.markup = markup
+	end
 
-    return __private.markup
+	return __private.markup
 end
 
 local information = "Привет. Давай такой сценарий: на смешениях каналов 0% ТВ, 50% ТВ, 100%ТВ выполнить следующее:"
 
 local function sublen(message, len)
-    local sub_str = ""
+	local sub_str = ""
 
-    -- итератор utf8.codes() возвращает кодовые точки символов в строке
-    for _, code in utf8.codes(message) do
-        sub_str = sub_str .. utf8.char(code) -- добавляем символ в подстроку
-        if utf8.len(sub_str) >= len then
-            break -- прерываем цикл после добавления 2 символов в подстроку
-        end
-    end
+	-- итератор utf8.codes() возвращает кодовые точки символов в строке
+	for _, code in utf8.codes(message) do
+		sub_str = sub_str .. utf8.char(code) -- добавляем символ в подстроку
+		if utf8.len(sub_str) >= len then
+			break -- прерываем цикл после добавления 2 символов в подстроку
+		end
+	end
 
-    return sub_str
+	return sub_str
 end
 
 --print(information)

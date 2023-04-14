@@ -1,10 +1,10 @@
 local log_level       = {
-    LOG_LEVEL_DEBUG    = "DEBUG", -- /* normal debugging level */
-    LOG_LEVEL_INFO     = "INFO", -- /* chatty status but not debug */
-    LOG_LEVEL_WARNING  = "WARNING", -- /* can be set to fatal */
-    LOG_LEVEL_CRITICAL = "CRITICAL", -- /* always enabled, can be set to fatal */
-    LOG_LEVEL_ERROR    = "ERROR", -- /* "error" is always fatal (aborts) */
-    LOG_LEVEL_FATAL    = "FATAL",
+	LOG_LEVEL_DEBUG    = "DEBUG", -- /* normal debugging level */
+	LOG_LEVEL_INFO     = "INFO", -- /* chatty status but not debug */
+	LOG_LEVEL_WARNING  = "WARNING", -- /* can be set to fatal */
+	LOG_LEVEL_CRITICAL = "CRITICAL", -- /* always enabled, can be set to fatal */
+	LOG_LEVEL_ERROR    = "ERROR", -- /* "error" is always fatal (aborts) */
+	LOG_LEVEL_FATAL    = "FATAL",
 };
 
 local PARENT_LOG_PATH = os.getenv("HOME") .. "/.config/awesome/logs"
@@ -12,129 +12,129 @@ local PARENT_LOG_PATH = os.getenv("HOME") .. "/.config/awesome/logs"
 local logger          = {}
 
 local setting         = {
-    date_format     = "%Y-%m-%d",
-    time_format     = "%H.%M.%S",
-    datetime_format = "%Y-%m-%d %H.%M.%S",
+	date_format     = "%Y-%m-%d",
+	time_format     = "%H.%M.%S",
+	datetime_format = "%Y-%m-%d %H.%M.%S",
 
-    name_file       = "logging",
-    type_file       = ".log",
+	name_file       = "logging",
+	type_file       = ".log",
 
-    index           = 0
+	index           = 0
 }
 
 local private         = {
-    datetime         = os.date(setting.date_format),
-    filename         = nil,
-    currnet_log_path = nil,
+	datetime         = os.date(setting.date_format),
+	filename         = nil,
+	currnet_log_path = nil,
 }
 
 local function create_dirs()
-    -- создаем папку logs
-    if wmapi:is_dir(PARENT_LOG_PATH) then
-        wmapi:mkdir(PARENT_LOG_PATH)
-    end
+	-- создаем папку logs
+	if wmapi:is_dir(PARENT_LOG_PATH) then
+		wmapi:mkdir(PARENT_LOG_PATH)
+	end
 
-    -- создаем под папку с нынешней датой
-    private.currnet_log_path = PARENT_LOG_PATH .. "/" .. private.datetime
-    if wmapi:is_dir(private.currnet_log_path) then
-        wmapi:mkdir(private.currnet_log_path)
-    end
+	-- создаем под папку с нынешней датой
+	private.currnet_log_path = PARENT_LOG_PATH .. "/" .. private.datetime
+	if wmapi:is_dir(private.currnet_log_path) then
+		wmapi:mkdir(private.currnet_log_path)
+	end
 end
 
 local function update_datetime()
-    private.datetime = os.date(setting.date_format)
+	private.datetime = os.date(setting.date_format)
 end
 
 local function update_filename()
-    -- проверяем размер файла
-    private.filename = setting.name_file .. tostring(setting.index) .. setting.type_file
+	-- проверяем размер файла
+	private.filename = setting.name_file .. tostring(setting.index) .. setting.type_file
 
-    local file       = private.currnet_log_path .. "/" .. private.filename
-    local filesize   = wmapi:file_size(file)
+	local file       = private.currnet_log_path .. "/" .. private.filename
+	local filesize   = wmapi:file_size(file)
 
-    local temp_size  = math.ceil(filesize / 1024)
-    if temp_size > 60 then
-        setting.index = setting.index + 1
-        update_filename()
-    end
+	local temp_size  = math.ceil(filesize / 1024)
+	if temp_size > 60 then
+		setting.index = setting.index + 1
+		update_filename()
+	end
 end
 
 local function write_file(type, msg)
-    local pid = wmapi:get_pid()
+	local pid = wmapi:get_pid()
 
-    -- обновляем дату
-    update_datetime()
-    -- создаем папки
-    create_dirs()
-    -- обновляем имя файла
-    update_filename()
+	-- обновляем дату
+	update_datetime()
+	-- создаем папки
+	create_dirs()
+	-- обновляем имя файла
+	update_filename()
 
-    local date   = os.date(setting.datetime_format)
-    local str    = string.format("%s, [%s] %s: %s\n", date, pid, type, msg)
+	local date   = os.date(setting.datetime_format)
+	local str    = string.format("%s, [%s] %s: %s\n", date, pid, type, msg)
 
-    local file   = private.currnet_log_path .. "/" .. private.filename
+	local file   = private.currnet_log_path .. "/" .. private.filename
 
-    local stream = io.open(file, "a")
-    if stream then
-        stream:write(str)
+	local stream = io.open(file, "a")
+	if stream then
+		stream:write(str)
 
-        stream:close()
+		stream:close()
 
-        return false
-    end
+		return false
+	end
 
-    return true
+	return true
 end
 
 local function message(type, ...)
-    local msg
+	local msg
 
-    for i = 1, select("#", ...) do
-        local item = select(i, ...)
-        if msg == nil or msg == "" then
-            msg = tostring(item)
-        else
-            msg = msg .. ", " .. tostring(item)
-        end
-    end
+	for i = 1, select("#", ...) do
+		local item = select(i, ...)
+		if msg == nil or msg == "" then
+			msg = tostring(item)
+		else
+			msg = msg .. ", " .. tostring(item)
+		end
+	end
 
-    if ((msg == nil) or (msg == "")) then
-        return true
-    else
-        return write_file(type, msg)
-    end
+	if ((msg == nil) or (msg == "")) then
+		return true
+	else
+		return write_file(type, msg)
+	end
 end
 
 -- Logs a message with DEBUG level.
 function logger:debug(...)
-    message(log_level.LOG_LEVEL_DEBUG, ...)
+	message(log_level.LOG_LEVEL_DEBUG, ...)
 end
 
 -- Logs a message with INFO level.
 function logger:info(...)
-    message(log_level.LOG_LEVEL_INFO, ...)
+	message(log_level.LOG_LEVEL_INFO, ...)
 end
 
 -- Logs a message with WARNING level.
 function logger:warning(...)
-    message(log_level.LOG_LEVEL_WARNING, ...)
+	message(log_level.LOG_LEVEL_WARNING, ...)
 end
 
 -- Logs a message with CRITICAL level.
 function logger:critical(...)
-    message(log_level.LOG_LEVEL_CRITICAL, ...)
+	message(log_level.LOG_LEVEL_CRITICAL, ...)
 end
 
 -- Logs a message with ERROR level.
 function logger:error(...)
-    message(log_level.LOG_LEVEL_ERROR, ...)
+	message(log_level.LOG_LEVEL_ERROR, ...)
 end
 
 -- Logs a message with FATAL level.
 function logger:fatal(...)
-    message(log_level.LOG_LEVEL_FATAL, ...)
+	message(log_level.LOG_LEVEL_FATAL, ...)
 end
 
 return setmetatable(logger, { __call = function(_, ...)
-    return logger
+	return logger
 end })
