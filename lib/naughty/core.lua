@@ -429,7 +429,7 @@ end
 -- @deprecated naughty.destroy
 function naughty.destroy(notification, reason, keep_visible)
 	if notification and notification.box.visible then
-		if naughty.notifications.suspended then
+		if properties.suspended then
 			for k, v in pairs(naughty.notifications.suspended) do
 				if v.box == notification.box then
 					table.remove(naughty.notifications.suspended, k)
@@ -437,32 +437,23 @@ function naughty.destroy(notification, reason, keep_visible)
 				end
 			end
 		end
-
 		local scr = notification.screen
 		table.remove(naughty.notifications[scr][notification.position], notification.idx)
-
 		if notification.timer then
 			notification.timer:stop()
 		end
 
 		if not keep_visible then
 			notification.box.visible = false
-			naughty.emit_signal("destroyed", scr)
+			arrange(scr)
 		end
 
-		if notification.destroy_cb and reason ~= naughty.notification_closed_reason.silent then
-			notification.destroy_cb(reason or naughty.notification_closed_reason.undefined)
+		if notification.destroy_cb and reason ~= naughty.notificationClosedReason.silent then
+			notification.destroy_cb(reason or naughty.notificationClosedReason.undefined)
 		end
 
 		return true
 	end
-	--gdebug.deprecate("Use notification:destroy(reason, keep_visible)", { deprecated_in = 5 })
-	--
-	--if not notification then
-	--    return
-	--end
-	--
-	--return notification:destroy(reason, keep_visible)
 end
 
 --- Destroy all notifications on given screens.
@@ -506,8 +497,8 @@ end
 -- @staticfct naughty.get_by_id
 function naughty.get_by_id(id)
 	-- iterate the notifications to get the notfications with the correct ID
-	for s in capi.screen do
-		for p in pairs(naughty.notifications[s] or {}) do
+	for s in pairs(naughty.notifications) do
+		for p in pairs(naughty.notifications[s]) do
 			for _, notification in pairs(naughty.notifications[s][p]) do
 				if notification.id == id then
 					return notification
@@ -913,8 +904,7 @@ function naughty.notify(args)
 	nnotif  = nnotif or require("lib.naughty.notification")
 
 	-- The existing notification object, if any.
-	local n = args and args.replaces_id and
-			self.get_by_id(args.replaces_id) or nil
+	local n = args and args.replaces_id and self.get_by_id(args.replaces_id) or nil
 
 	-- It was possible to update the notification content using `replaces_id`.
 	-- This is a concept that come from the dbus API and leaked into the public

@@ -1035,6 +1035,30 @@ local function create(args)
 		enable_properties = true,
 	}
 
+	---- replace notification if needed
+	--local counter = naughty._gen_id()
+	--if args.replaces_id then
+	--	local obj = naughty.get_by_id(args.replaces_id)
+	--	if obj then
+	--		-- destroy this and ...
+	--		naughty.destroy(obj, naughty.notificationClosedReason.silent, true)
+	--		ret.reuse_box = obj.box
+	--	end
+	--
+	--	-- ... may use its ID
+	--	if args.replaces_id <= counter then
+	--		ret.id = args.replaces_id
+	--	else
+	--		--counter         = counter + 1
+	--		ret.id = naughty._gen_next_id()
+	--	end
+	--else
+	--	-- get a brand new ID
+	--	--counter         = counter + 1
+	--	ret.id = naughty._gen_next_id()
+	--end
+
+
 	if args.replaces_id then
 		-- Try to update existing objects when possible
 		local obj = naughty.get_by_id(args.replaces_id)

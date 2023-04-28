@@ -25,26 +25,31 @@
 -- @popupmod naughty.layout.legacy
 ----------------------------------------------------------------------------
 
-local capi         = { screen = screen, awesome = awesome }
-local naughty      = require("lib.naughty.core")
-local screen       = require("awful.screen")
-local button       = require("awful.button")
-local beautiful    = require("beautiful")
-local surface      = require("gears.surface")
-local wibox        = require("wibox")
-local gfs          = require("gears.filesystem")
-local gtable       = require("gears.table")
-local timer        = require("gears.timer")
-local gmath        = require("gears.math")
-local gears        = require("gears")
-local cairo        = require("lgi").cairo
-local util         = require("awful.util")
+local capi       = { screen = screen, awesome = awesome }
+local naughty    = require("lib.naughty.core")
+local screen     = require("awful.screen")
+local button     = require("awful.button")
+local beautiful  = require("beautiful")
+local surface    = require("gears.surface")
+local wibox      = require("wibox")
+local gfs        = require("gears.filesystem")
+local gtable     = require("gears.table")
+local timer      = require("gears.timer")
+local gmath      = require("gears.math")
+local gears      = require("gears")
+local cairo      = require("lgi").cairo
+local util       = require("awful.util")
 
-local properties   = {
-	"app_name", "title", "message"
+local MAX_WIDTH  = 350
+local MAX_HEIGHT = 95
+
+local prop_key   = "textbox_"
+
+local properties = {
+	app_name = "app_name",
+	title    = "title",
+	message  = "message"
 }
-
-local TEXTBOX_NAME = "textbox_"
 
 local function get_screen(s)
 	return s and capi.screen[s]
@@ -177,22 +182,12 @@ end
 
 local function update_size(self)
 	local s      = self.size_info
-	local width  = s.width
-	local height = s.height
-	local margin = s.margin
+	local width  = nil
+	local height = nil
 
 	-- calculate the width
 	if not width then
-		local numbers = {}
-
-		for _, prop in ipairs(properties) do
-			local w, _ = self[TEXTBOX_NAME .. prop]:get_preferred_size(self.screen)
-			table.insert(numbers, w)
-		end
-
-		-- Найти наибольшее число в массиве
-		local w = math.max(table.unpack(numbers))
-		width   = w + (self.iconbox and s.icon_w + 2 * margin or 0) + 2 * margin
+		width = MAX_WIDTH
 	end
 
 	if width < s.actions_max_width then
@@ -203,21 +198,9 @@ local function update_size(self)
 		width = math.min(width, s.max_width)
 	end
 
-
 	-- calculate the height
 	if not height then
-		local w = width - (self.iconbox and s.icon_w + 2 * margin or 0) - 2 * margin
-
-		local h = 0
-		for _, prop in ipairs(properties) do
-			h = h + self[TEXTBOX_NAME .. prop]:get_height_for_width(w, self.screen)
-		end
-
-		if self.iconbox and s.icon_h + 2 * margin > h + 2 * margin then
-			height = s.icon_h + 2 * margin
-		else
-			height = h + 2 * margin
-		end
+		height = MAX_HEIGHT
 	end
 
 	height = height + s.actions_total_height
@@ -241,6 +224,7 @@ local function update_size(self)
 	self.height  = height + 2 * border_width
 	self.width   = width + 2 * border_width
 	local offset = get_offset(self.screen, self.position, self.idx, self.width, self.height)
+
 	self.box:geometry({
 		width  = width,
 		height = height,
@@ -283,231 +267,81 @@ local function cleanup(self, _ --[[reason]], keep_visible)
 	arrange(scr)
 end
 
-naughty.connect_signal("destroyed", cleanup)
+local function create_actions(self, actions, margin, font, s)
+	local layout_actions       = wibox.layout.fixed.vertical()
+	local actions_total_height = 0
+	local actions_max_width    = 0
 
--- Don't copy paste the list of fallback, it is hard to spot mistakes.
-local function get_value(notification, args, preset, prop)
-	return notification[prop] -- set by the rules
-			or args[prop] -- magic and undocumented, but used by the legacy API
-			or preset[prop] --deprecated
-			or beautiful["notification_" .. prop] -- from the theme
+	for _, action in ipairs(actions) do
+		assert(type(action) == "table")
+		assert(action.name ~= nil)
+		local actiontextbox   = wmapi.widget:textbox()
+		local actionmarginbox = wibox.container.margin()
+		actionmarginbox:set_margins(margin)
+		actionmarginbox:set_widget(actiontextbox)
+		actiontextbox:set_valign("middle")
+		actiontextbox:set_font(font)
+		actiontextbox:set_markup(string.format('☛ <u>%s</u>', action.name))
+		-- calculate the height and width
+		local w, h              = actiontextbox:get_preferred_size(s)
+		local action_height     = h + 2 * margin
+		local action_width      = w + 2 * margin
+
+		actionmarginbox.buttons = {
+			button({ }, event.mouse.button_click_left, function()
+				action:invoke(self)
+			end),
+			button({ }, event.mouse.button_click_right, function()
+				action:invoke(self)
+			end),
+		}
+
+		layout_actions:add(actionmarginbox)
+
+		actions_total_height = actions_total_height + action_height
+		if actions_max_width < action_width then
+			actions_max_width = action_width
+		end
+	end
+
+	return layout_actions, actions_total_height, actions_max_width
 end
 
-function naughty.default_notification_handler(notification, args)
-	-- This is a fallback for users whose config doesn't have the newer
-	-- `request::display` section.
-	if naughty.has_display_handler and not notification._private.widget_template_failed then
-		return
-	end
+-- create iconbox
+local function create_iconbox(self, icon_data, icon_size, icon, size_info)
+	local iconbox = nil
 
-	-- If request::display is called more than once, simply make sure the wibox
-	-- is visible.
-	if notification.box then
-		notification.box.visible = true
-		return
-	end
-
-	local preset   = notification.preset or {}
-
-	local app_name = get_value(notification, args, preset, "app_name")
-	local title    = get_value(notification, args, preset, "title")
-	local message  = get_value(notification, args, preset, "message") or args.text or preset.text
-
-	local s        = get_screen(
-			get_value(notification, args, preset, "screen") or screen.focused()
-	)
-
-	if not s then
-		local err = "lib.naughty.notify: there is no screen available to display the following notification:"
-		err       = string.format("%s app_name='%s' title='%s' text='%s'", err, tostring(app_name or ""), tostring(title or ""), tostring(message or ""))
-		require("gears.debug").print_warning(err)
-		return
-	end
-
-	local timeout           = get_value(notification, args, preset, "timeout")
-	local app_icon          = get_value(notification, args, preset, "icon")
-	local icon_size         = get_value(notification, args, preset, "icon_size")
-	local ontop             = get_value(notification, args, preset, "ontop")
-	local hover_timeout     = get_value(notification, args, preset, "hover_timeout")
-	local position          = get_value(notification, args, preset, "position")
-
-	local actions           = notification.actions or args.actions
-	local destroy_cb        = args.destroy
-
-	-- beautiful
-	local font              = get_value(notification, args, preset, "font")
-			or beautiful.font or capi.awesome.font
-
-	local fg                = get_value(notification, args, preset, "fg")
-			or beautiful.fg_normal or '#ffffff'
-
-	local bg                = get_value(notification, args, preset, "bg")
-			or beautiful.bg_normal or '#535d6c'
-
-	local border_color      = get_value(notification, args, preset, "border_color")
-			or beautiful.bg_focus or '#535d6c'
-
-	local border_width      = get_value(notification, args, preset, "border_width")
-	local shape             = get_value(notification, args, preset, "shape")
-	local width             = get_value(notification, args, preset, "width")
-	local height            = get_value(notification, args, preset, "height")
-	local max_width         = get_value(notification, args, preset, "max_width")
-	local max_height        = get_value(notification, args, preset, "max_height")
-	local margin            = get_value(notification, args, preset, "margin")
-	local opacity           = get_value(notification, args, preset, "opacity")
-
-	notification.screen     = s
-	notification.destroy_cb = destroy_cb
-	notification.timeout    = timeout
-	notification.position   = position
-
-	-- hook destroy
-	notification.timeout    = timeout
-	local die               = notification.die
-
-	local run               = function()
-		if args.run then
-			args.run(notification)
-		else
-			die(naughty.notification_closed_reason.dismissed_by_user)
-		end
-	end
-
-	local hover_destroy     = function()
-		if hover_timeout == 0 then
-			die(naughty.notification_closed_reason.expired)
-		else
-			if notification.timer then
-				notification.timer:stop()
-			end
-			notification.timer = timer { timeout = hover_timeout }
-			notification.timer:connect_signal("timeout", function()
-				die(naughty.notification_closed_reason.expired)
-			end)
-			notification.timer:start()
-		end
-	end
-
-	-- create textbox
-	local function create_textbox(self, prop)
-		local textbox = wibox.widget.textbox()
-		textbox:set_valign("middle")
-		textbox:set_font(font)
-		textbox:set_text(self[prop])
-
-		self[TEXTBOX_NAME .. prop] = textbox
-	end
-
-	for _, prop in ipairs(properties) do
-		create_textbox(notification, prop)
-	end
-
-	local function update_textbox(self, _1, _2)
-		log:info(">> update_textbox:", _1, _2)
-		if not self.box then
-			return
-		end
-
-		--local app_name = self.app_name or ""
-		--local message  = self.message or ""
-		--message        = wmapi:sublen(message, 30)
-		--local title    = self.title or ""
-		--local textbox  = self.textbox
-	end
-
-	-- Update the content if it changes
-	notification:connect_signal("property::app_name", update_textbox)
-	notification:connect_signal("property::message", update_textbox)
-	notification:connect_signal("property::title", update_textbox)
-
-	local layout_actions       = wibox.layout.fixed.vertical()
-	local layout_top           = wibox.layout.fixed.horizontal()
-	local layout_middle        = wibox.layout.fixed.vertical()
-
-	local actions_max_width    = 0
-	local actions_total_height = 0
-	if actions then
-		for _, action in ipairs(actions) do
-			assert(type(action) == "table")
-			assert(action.name ~= nil)
-			local actiontextbox   = wmapi.widget:textbox()
-			local actionmarginbox = wibox.container.margin()
-			actionmarginbox:set_margins(margin)
-			actionmarginbox:set_widget(actiontextbox)
-			actiontextbox:set_valign("middle")
-			actiontextbox:set_font(font)
-			actiontextbox:set_markup(string.format('☛ <u>%s</u>', action.name))
-			-- calculate the height and width
-			local w, h              = actiontextbox:get_preferred_size(s)
-			local action_height     = h + 2 * margin
-			local action_width      = w + 2 * margin
-
-			actionmarginbox.buttons = {
-				button({ }, event.mouse.button_click_left, function()
-					action:invoke(notification)
-				end),
-				button({ }, event.mouse.button_click_right, function()
-					action:invoke(notification)
-				end),
-			}
-
-			layout_actions:add(actionmarginbox)
-
-			actions_total_height = actions_total_height + action_height
-			if actions_max_width < action_width then
-				actions_max_width = action_width
-			end
-		end
-	end
-
-	local size_info        = {
-		width                = width,
-		height               = height,
-		max_width            = max_width,
-		max_height           = max_height,
-		margin               = margin,
-		border_width         = border_width,
-		actions_max_width    = actions_max_width,
-		actions_total_height = actions_total_height,
-	}
-
-	-- create iconbox
-	local app_iconbox      = nil
-	local centered_iconbox = nil
-
-	if app_icon then
+	if icon_data then
 		-- Is this really an URI instead of a path?
-		if type(app_icon) == "string" and string.sub(app_icon, 1, 7) == "file://" then
-			app_icon = string.sub(app_icon, 8)
+		if type(icon_data) == "string" and string.sub(icon_data, 1, 7) == "file://" then
+			icon_data = string.sub(icon_data, 8)
 			-- urldecode URI path
-			app_icon = string.gsub(app_icon, "%%(%x%x)", function(x)
+			icon_data = string.gsub(icon_data, "%%(%x%x)", function(x)
 				return string.char(tonumber(x, 16))
 			end)
 		end
 
 		-- try to guess icon if the provided one is non-existent/readable
-		if type(app_icon) == "string" and not gfs.file_readable(app_icon) then
-			app_icon = util.geticonpath(app_icon, naughty.config.icon_formats, naughty.config.icon_dirs, icon_size) or app_icon
+		if type(icon_data) == "string" and not gfs.file_readable(icon_data) then
+			icon_data = util.geticonpath(icon_data, naughty.config.icon_formats, naughty.config.icon_dirs, icon_size) or icon_data
 		end
 
 		-- is the icon file readable?
-		local had_icon = type(app_icon) == "string"
-		app_icon       = surface.load_uncached_silently(app_icon)
-		if app_icon then
-			app_iconbox      = wmapi.widget:imagebox()
-			-- Создать контейнер и выровнять по центру
-			centered_iconbox = wibox.container.place(app_iconbox, { halign = "center", valign = "center" })
+		local had_icon = type(icon_data) == "string"
+		icon_data      = surface.load_uncached_silently(icon_data)
+		if icon_data then
+			iconbox = wmapi.widget:imagebox()
 		end
 
 		-- if we have an icon, use it
 		local function update_icon(icn)
 			if icn then
-				if max_height and icn:get_height() > max_height then
-					icon_size = icon_size and math.min(max_height, icon_size) or max_height
+				if size_info.max_height and icn:get_height() > size_info.max_height then
+					icon_size = icon_size and math.min(size_info.max_height, icon_size) or size_info.max_height
 				end
 
-				if max_width and icn:get_width() > max_width then
-					icon_size = icon_size and math.min(max_width, icon_size) or max_width
+				if size_info.max_width and icn:get_width() > size_info.max_width then
+					icon_size = icon_size and math.min(size_info.max_width, icon_size) or size_info.max_width
 				end
 
 				if icon_size and (icn:get_height() > icon_size or icn:get_width() > icon_size) then
@@ -531,43 +365,201 @@ function naughty.default_notification_handler(notification, args)
 					size_info.icon_h = icn:get_height()
 				end
 
-				app_iconbox:set_resize(true)
-				app_iconbox:set_image(icn)
+				--log:info("size_info.icon_w", size_info.icon_w)
+				--log:info("size_info.icon_h", size_info.icon_h)
 
-				-- Установить новый размер
-				centered_iconbox.forced_width  = size_info.icon_w
-				centered_iconbox.forced_height = size_info.icon_h
+				iconbox:set_clip_shape(gears.shape.rounded_rect)
+				iconbox:set_resize(true)
+				iconbox:set_image(icn)
+
+				--iconbox.forced_width  = 100--size_info.icon_w
+				--iconbox.forced_height = 100--size_info.icon_h
 			end
 		end
 
-		if app_icon then
-			notification:connect_signal("property::icon", function()
-				update_icon(surface.load_uncached_silently(notification.icon))
+		if icon_data then
+			self:connect_signal("property::icon", function()
+				update_icon(surface.load_uncached_silently(self.icon))
 			end)
-			update_icon(app_icon)
+			update_icon(icon_data)
 		elseif had_icon then
 			require("gears.debug").print_warning("naughty: failed to load icon " ..
-					(args.icon or preset.icon) ..
-					"(app_name: " .. app_name .. ")" ..
-					"(title: " .. title .. ")")
+					icon ..
+					"(app_name: " .. self.app_name .. ")" ..
+					"(title: " .. self.title .. ")")
 		end
-
 	end
 
-	notification.iconbox = app_iconbox
+	return iconbox
+end
+
+naughty.connect_signal("destroyed", cleanup)
+
+-- Don't copy paste the list of fallback, it is hard to spot mistakes.
+local function get_value(notification, args, preset, prop)
+	return notification[prop] -- set by the rules
+			or args[prop] -- magic and undocumented, but used by the legacy API
+			or preset[prop] --deprecated
+			or beautiful["notification_" .. prop] -- from the theme
+end
+
+function naughty.default_notification_handler(notification, args)
+	log:info("naughty.default_notification_handler")
+	-- This is a fallback for users whose config doesn't have the newer
+	-- `request::display` section.
+	if naughty.has_display_handler and not notification._private.widget_template_failed then
+		return
+	end
+
+	-- If request::display is called more than once, simply make sure the wibox
+	-- is visible.
+	if notification.box then
+		notification.box.visible = true
+		return
+	end
+
+	local preset   = notification.preset or {}
+
+	local app_name = get_value(notification, args, preset, "app_name")
+	local title    = get_value(notification, args, preset, "title")
+	local message  = get_value(notification, args, preset, "message") or args.text or preset.text
+
+	local screen   = get_screen(
+			get_value(notification, args, preset, "screen") or screen.focused()
+	)
+
+	if not screen then
+		local err = "lib.naughty.notify: there is no screen available to display the following notification:"
+		err       = string.format("%s app_name='%s' title='%s' text='%s'", err, tostring(app_name or ""), tostring(title or ""), tostring(message or ""))
+		require("gears.debug").print_warning(err)
+		return
+	end
+
+	local timeout           = get_value(notification, args, preset, "timeout")
+	local icon_data         = get_value(notification, args, preset, "icon")
+	local icon_size         = get_value(notification, args, preset, "icon_size")
+	local ontop             = get_value(notification, args, preset, "ontop")
+	local hover_timeout     = get_value(notification, args, preset, "hover_timeout")
+	local position          = get_value(notification, args, preset, "position")
+	local opacity           = get_value(notification, args, preset, "opacity")
+
+	local actions           = notification.actions or args.actions
+	local destroy_cb        = args.destroy
+
+	local icon              = args.icon or preset.icon
+	local shape             = get_value(notification, args, preset, "shape")
+
+	-- beautiful
+	local font              = get_value(notification, args, preset, "font") or beautiful.font or capi.awesome.font
+	local fg                = get_value(notification, args, preset, "fg") or beautiful.fg_normal or '#ffffff'
+	local bg                = get_value(notification, args, preset, "bg") or beautiful.bg_normal or '#535d6c'
+	local border_color      = get_value(notification, args, preset, "border_color") or beautiful.bg_focus or '#535d6c'
+
+	local size_info         = {
+		width                = get_value(notification, args, preset, "width"),
+		height               = get_value(notification, args, preset, "height"),
+		max_width            = get_value(notification, args, preset, "max_width"),
+		max_height           = get_value(notification, args, preset, "max_height"),
+		margin               = get_value(notification, args, preset, "margin"),
+		border_width         = get_value(notification, args, preset, "border_width"),
+		actions_max_width    = 0,
+		actions_total_height = 0,
+	}
+
+	notification.screen     = screen
+	notification.destroy_cb = destroy_cb
+	notification.timeout    = timeout
+	notification.position   = position
+
+	-- hook destroy
+	notification.timeout    = timeout
+	local die               = notification.die
+
+	local run               = function()
+		if args.run then
+			args.run(notification)
+		else
+			die(naughty.notification_closed_reason.dismissed_by_user)
+		end
+	end
+
+	local hover_destroy     = function()
+		if hover_timeout == 0 then
+			die(naughty.notification_closed_reason.expired)
+		else
+			if notification.timer then
+				notification.timer:stop()
+			end
+
+			notification.timer = timer { timeout = hover_timeout }
+			notification.timer:connect_signal("timeout", function()
+				die(naughty.notification_closed_reason.expired)
+			end)
+			notification.timer:start()
+		end
+	end
+
+	-- create textbox
+	local function create_textbox(self, prop)
+		local textbox = wmapi.widget:textbox()
+		textbox:set_valign("middle")
+		textbox:set_font(font)
+		textbox:set_text(self[prop])
+
+		self[prop_key .. prop] = textbox
+	end
+
+	for _, prop in pairs(properties) do
+		create_textbox(notification, prop)
+	end
+
+	local function update_textbox(self, _1, _2)
+		if not self.box then
+			return
+		end
+
+		--local app_name = self.app_name or ""
+		--local message  = self.message or ""
+		--message        = wmapi:sublen(message, 30)
+		--local title    = self.title or ""
+		--local textbox  = self.textbox
+	end
+
+	-- Update the content if it changes
+	notification:connect_signal("property::app_name", update_textbox)
+	notification:connect_signal("property::message", update_textbox)
+	notification:connect_signal("property::title", update_textbox)
+
+	-- App name
+	local layout_top          = wibox.layout.fixed.horizontal()
+	-- Icon
+	local layout_middle_left  = wibox.layout.fixed.horizontal()
+	-- Title + Message
+	local layout_middle_right = wibox.layout.fixed.vertical()
+	-- left + right meddle
+	local layout_middle       = wibox.layout.fixed.horizontal()
+
+	local layout_actions      = nil
+	if actions then
+		layout_actions, size_info.actions_total_height, size_info.actions_max_width = create_actions(notification, actions, size_info.margin, font, screen)
+	end
+
+	-- create iconbox
+	local iconbox        = create_iconbox(notification, icon_data, icon_size, icon, size_info)
+	notification.iconbox = iconbox
 
 	-- create container wibox
 	if not notification.reuse_box then
 		notification.box = wibox({ fg                 = fg,
-		                           bg                 = bg,
-		                           border_color       = border_color,
-		                           border_width       = border_width,
-		                           shape_border_color = shape and border_color,
-		                           shape_border_width = shape and border_width,
-		                           shape              = function(cr, width, height)
-			                           gears.shape.rounded_rect(cr, width, height, 10)
-		                           end,
-		                           type               = "notification" })
+								   bg                 = bg,
+								   border_color       = border_color,
+								   border_width       = size_info.border_width,
+								   shape_border_color = shape and border_color,
+								   shape_border_width = shape and size_info.border_width,
+								   shape              = function(cr, width, height)
+									   gears.shape.rounded_rect(cr, width, height, 10)
+								   end,
+								   type               = "notification" })
 	else
 		notification.box = notification.reuse_box
 	end
@@ -584,30 +576,40 @@ function naughty.default_notification_handler(notification, args)
 	notification.box.opacity = opacity
 	notification.box.visible = true
 
-	if centered_iconbox then
-		--layout:add(centered_iconbox)
-		layout_top:add(centered_iconbox)
+	if iconbox then
+		layout_middle_left:add(iconbox)
 	end
 
-	layout_top:add(notification[TEXTBOX_NAME .. "app_name"])
-	layout_middle:add(notification[TEXTBOX_NAME .. "title"])
-	layout_middle:add(notification[TEXTBOX_NAME .. "message"])
+	layout_top:add(notification[prop_key .. properties.app_name])
+	layout_middle_right:add(notification[prop_key .. properties.title])
+	layout_middle_right:add(notification[prop_key .. properties.message])
+
+	layout_middle:add(layout_middle_left)
+	layout_middle:add(layout_middle_right)
 
 	local completelayout = wibox.layout.fixed.vertical()
 	completelayout:add(layout_top)
 	completelayout:add(layout_middle)
-	completelayout:add(layout_actions)
-	notification.box:set_widget(completelayout)
+
+	if layout_actions then
+		completelayout:add(layout_actions)
+	end
+
+	local marginbox = wibox.container.margin()
+	marginbox:set_margins(10)
+	marginbox:set_widget(completelayout)
+
+	notification.box:set_widget(marginbox)
 
 	-- Setup the mouse events
-	completelayout:buttons(gtable.join(
+	marginbox:buttons(gtable.join(
 			button({}, event.mouse.button_click_left, nil, run),
 			button({}, event.mouse.button_click_right, nil, function()
 				die(naughty.notification_closed_reason.dismissed_by_user)
 			end)))
 
 	-- insert the notification to the table
-	table.insert(current_notifications[s][notification.position], notification)
+	table.insert(current_notifications[screen][notification.position], notification)
 
 	if naughty.suspended and not args.ignore_suspend then
 		notification.box.visible = false

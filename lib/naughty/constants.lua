@@ -17,7 +17,11 @@ local ret, no_clear            = {}, {}
 ret.config                     = {
 	padding         = dpi(4),
 	spacing         = dpi(1),
-	icon_dirs       = { "/usr/share/pixmaps/", "/usr/share/icons/hicolor" },
+	icon_dirs       = {
+		"/usr/share/pixmaps/",
+		--"/usr/share/icons/hicolor",
+		"/usr/share/icons/hicolor/48x48/apps/"
+	},
 	icon_formats    = { "png", "gif" },
 	notify_callback = nil,
 }

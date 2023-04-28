@@ -57,7 +57,6 @@ end
 
 -- Handle runtime errors during startup
 if capi.awesome.startup_errors then
-
 	-- Wait until `rc.lua` is executed before creating the notifications.
 	-- Otherwise nothing is handling them (yet).
 	client.connect_signal("scanning", function()
@@ -88,21 +87,21 @@ do
 	end)
 
 	gdebug.print_warning = function(message)
-		local msg   = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
+		local msg = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
 
-		local mgbox = wmapi.widget.messagebox()
-		mgbox:warning("print_warning", "Error", msg)
+		--local mgbox = wmapi.widget.messagebox()
+		--mgbox:warning("print_warning", "Warning", msg)
 
-		log:warning(msg)
+		--log:warning(msg)
 	end
 
 	gdebug.print_error   = function(message)
-		local msg   = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
+		local msg = os.date("%Y-%m-%d %T W: awesome: ") .. tostring(message) .. "\n"
 
-		local mgbox = wmapi.widget.messagebox()
-		mgbox:error("print_error", "Error", msg)
+		--local mgbox = wmapi.widget.messagebox()
+		--mgbox:error("print_error", "Error", msg)
 
-		log:error(msg)
+		--log:error(msg)
 	end
 end
 
