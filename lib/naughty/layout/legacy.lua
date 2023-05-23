@@ -39,6 +39,7 @@ local gmath      = require("gears.math")
 local gears      = require("gears")
 local cairo      = require("lgi").cairo
 local util       = require("awful.util")
+local dpi        = require("beautiful").xresources.apply_dpi
 
 local MAX_WIDTH  = 350
 local MAX_HEIGHT = 95
@@ -181,21 +182,21 @@ local function arrange(s)
 end
 
 local function update_size(self)
-	local s      = self.size_info
-	local width  = nil
-	local height = nil
+	local size_info = self.size_info
+	local width     = nil
+	local height    = nil
 
 	-- calculate the width
 	if not width then
 		width = MAX_WIDTH
 	end
 
-	if width < s.actions_max_width then
-		width = s.actions_max_width
+	if width < size_info.actions_max_width then
+		width = size_info.actions_max_width
 	end
 
-	if s.max_width then
-		width = math.min(width, s.max_width)
+	if size_info.max_width then
+		width = math.min(width, size_info.max_width)
 	end
 
 	-- calculate the height
@@ -203,16 +204,18 @@ local function update_size(self)
 		height = MAX_HEIGHT
 	end
 
-	height = height + s.actions_total_height
+	height = height + size_info.actions_total_height
 
-	if s.max_height then
-		height = math.min(height, s.max_height)
+	if size_info.max_height then
+		height = math.min(height, size_info.max_height)
 	end
 
 	-- crop to workarea size if too big
-	local workarea     = self.screen.workarea
-	local border_width = s.border_width or 0
-	local padding      = naughty.config.padding or 0
+	local workarea      = self.screen.workarea
+	local border_width  = size_info.border_width or 0
+	local border_height = size_info.border_height or 0
+
+	local padding       = naughty.config.padding or 0
 	if width > workarea.width - 2 * border_width - 2 * padding then
 		width = workarea.width - 2 * border_width - 2 * padding
 	end
@@ -221,8 +224,9 @@ local function update_size(self)
 	end
 
 	-- set size in notification object
-	self.height  = height + 2 * border_width
 	self.width   = width + 2 * border_width
+	self.height  = height + 2 * border_height
+
 	local offset = get_offset(self.screen, self.position, self.idx, self.width, self.height)
 
 	self.box:geometry({
@@ -336,44 +340,14 @@ local function create_iconbox(self, icon_data, icon_size, icon, size_info)
 		-- if we have an icon, use it
 		local function update_icon(icn)
 			if icn then
-				if size_info.max_height and icn:get_height() > size_info.max_height then
-					icon_size = icon_size and math.min(size_info.max_height, icon_size) or size_info.max_height
-				end
+				size_info.icon_w = icn:get_width()
+				size_info.icon_h = icn:get_height()
 
-				if size_info.max_width and icn:get_width() > size_info.max_width then
-					icon_size = icon_size and math.min(size_info.max_width, icon_size) or size_info.max_width
-				end
+				icn              = icon_data
 
-				if icon_size and (icn:get_height() > icon_size or icn:get_width() > icon_size) then
-					size_info.icon_scale_factor = icon_size / math.max(icn:get_height(),
-							icn:get_width())
-
-					size_info.icon_w            = icn:get_width() * size_info.icon_scale_factor
-					size_info.icon_h            = icn:get_height() * size_info.icon_scale_factor
-
-					local scaled                = cairo.ImageSurface(cairo.Format.ARGB32,
-							gmath.round(size_info.icon_w),
-							gmath.round(size_info.icon_h))
-
-					local cr                    = cairo.Context(scaled)
-					cr:scale(size_info.icon_scale_factor, size_info.icon_scale_factor)
-					cr:set_source_surface(icn, 0, 0)
-					cr:paint()
-					icn = scaled
-				else
-					size_info.icon_w = icn:get_width()
-					size_info.icon_h = icn:get_height()
-				end
-
-				--log:info("size_info.icon_w", size_info.icon_w)
-				--log:info("size_info.icon_h", size_info.icon_h)
-
-				iconbox:set_clip_shape(gears.shape.rounded_rect)
+				iconbox:set_clip_shape(gears.shape.rounded_rect, 9)
 				iconbox:set_resize(true)
 				iconbox:set_image(icn)
-
-				--iconbox.forced_width  = 100--size_info.icon_w
-				--iconbox.forced_height = 100--size_info.icon_h
 			end
 		end
 
@@ -404,7 +378,6 @@ local function get_value(notification, args, preset, prop)
 end
 
 function naughty.default_notification_handler(notification, args)
-	log:info("naughty.default_notification_handler")
 	-- This is a fallback for users whose config doesn't have the newer
 	-- `request::display` section.
 	if naughty.has_display_handler and not notification._private.widget_template_failed then
@@ -462,6 +435,7 @@ function naughty.default_notification_handler(notification, args)
 		max_height           = get_value(notification, args, preset, "max_height"),
 		margin               = get_value(notification, args, preset, "margin"),
 		border_width         = get_value(notification, args, preset, "border_width"),
+		border_height        = get_value(notification, args, preset, "border_height"),
 		actions_max_width    = 0,
 		actions_total_height = 0,
 	}

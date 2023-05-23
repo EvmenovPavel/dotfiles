@@ -12,7 +12,7 @@ local pairs           = pairs
 local type            = type
 local string          = string
 local capi            = { awesome = awesome,
-                          dbus    = dbus, }
+						  dbus    = dbus, }
 local gsurface        = require("gears.surface")
 local gdebug          = require("gears.debug")
 local protected_call  = require("gears.protected_call")
@@ -353,6 +353,7 @@ local function remove_capability(cap)
 end
 
 capi.dbus.connect_signal(dbus_method.dbusNotificationsInterface, method_call)
+
 capi.dbus.connect_signal("org.freedesktop.DBus.Introspectable", function(data)
 	if data.member == "Introspect" then
 		local xml = [=[<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object
@@ -405,6 +406,12 @@ capi.dbus.connect_signal("org.freedesktop.DBus.Introspectable", function(data)
     </node>]=]
 		return "s", xml
 	end
+end)
+
+-- Запуск цикла обработки событий AwesomeWM
+awesome.connect_signal("dbus::connected", function()
+	--dbus.request_name(conn, "session", 0)
+	log:info("dbus::connected")
 end)
 
 -- listen for dbus notification requests

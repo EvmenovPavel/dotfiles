@@ -672,7 +672,7 @@ end
 
 local properties = {
 	"message", "title", "timeout", "hover_timeout",
-	"app_name", "position", "ontop", "border_width",
+	"app_name", "position", "ontop", "border_width", "border_height",
 	"width", "font", "icon", "icon_size",
 	"fg", "bg", "height", "border_color",
 	"shape", "opacity", "margin", "ignore_suspend",
@@ -1035,30 +1035,6 @@ local function create(args)
 		enable_properties = true,
 	}
 
-	---- replace notification if needed
-	--local counter = naughty._gen_id()
-	--if args.replaces_id then
-	--	local obj = naughty.get_by_id(args.replaces_id)
-	--	if obj then
-	--		-- destroy this and ...
-	--		naughty.destroy(obj, naughty.notificationClosedReason.silent, true)
-	--		ret.reuse_box = obj.box
-	--	end
-	--
-	--	-- ... may use its ID
-	--	if args.replaces_id <= counter then
-	--		ret.id = args.replaces_id
-	--	else
-	--		--counter         = counter + 1
-	--		ret.id = naughty._gen_next_id()
-	--	end
-	--else
-	--	-- get a brand new ID
-	--	--counter         = counter + 1
-	--	ret.id = naughty._gen_next_id()
-	--end
-
-
 	if args.replaces_id then
 		-- Try to update existing objects when possible
 		local obj = naughty.get_by_id(args.replaces_id)
@@ -1107,23 +1083,28 @@ local function create(args)
 			ret.reuse_box = obj.box
 		end
 
+		ret.update_widget = false
 		-- ... may use its ID
-		if args.replaces_id <= naughty._gen_id() then
+		if args.replaces_id <= naughty.get_notification_id() then
 			ret.id = args.replaces_id
 			require("gears.debug").print_warning("ret.id = args.replaces_id")
 			log:info("Ошибка, тут должно остановиться по идеи!")
+
+			ret.update_widget = true
+			-- Ошибка возникает из-аз того, что, меняет позицию виджета
+			-- update_widget будет говорить, что виджет уже есть на экране
+			-- и
 		else
 			-- Only set the sender for new notifications.
 			args._unique_sender = args.sender
-
 			-- get a brand new ID
-			ret.id              = naughty._gen_next_id()
+			ret.id              = naughty.get_next_notification_id()
 		end
 	else
 		-- Only set the sender for new notifications.
 		args._unique_sender = args.sender
 		-- get a brand new ID
-		ret.id              = naughty._gen_next_id()
+		ret.id              = naughty.get_next_notification_id()
 	end
 
 	-- Old actions usually have callbacks and names. But this isn't non

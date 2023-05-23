@@ -413,7 +413,7 @@ function naughty.get_next_notification_id()
 	return naughty._gen_next_id()
 end
 
-function naughty._gen_id()
+function naughty.get_notification_id()
 	return counter
 end
 
@@ -445,6 +445,7 @@ function naughty.destroy(notification, reason, keep_visible)
 
 		if not keep_visible then
 			notification.box.visible = false
+			log:info("error - arrange(scr)")
 			arrange(scr)
 		end
 
@@ -892,8 +893,6 @@ end
 --   not displayed.
 -- @deprecated naughty.notify
 
-local nnotif = nil
-
 function naughty.notify(args)
 	gdebug.deprecate(
 			"Use local notif = naughty.notification(args)",
@@ -901,10 +900,10 @@ function naughty.notify(args)
 	)
 
 	--TODO v6 remove this hack
-	nnotif  = nnotif or require("lib.naughty.notification")
+	local nnotif = require("lib.naughty.notification")
 
 	-- The existing notification object, if any.
-	local n = args and args.replaces_id and self.get_by_id(args.replaces_id) or nil
+	local n      = args and args.replaces_id and self.get_by_id(args.replaces_id) or nil
 
 	-- It was possible to update the notification content using `replaces_id`.
 	-- This is a concept that come from the dbus API and leaked into the public
