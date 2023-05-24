@@ -25,36 +25,26 @@
 -- @popupmod naughty.layout.legacy
 ----------------------------------------------------------------------------
 
-local capi       = { screen = screen, awesome = awesome }
-local naughty    = require("lib.naughty.core")
-local screen     = require("awful.screen")
-local button     = require("awful.button")
-local beautiful  = require("beautiful")
-local surface    = require("gears.surface")
-local wibox      = require("wibox")
-local gfs        = require("gears.filesystem")
-local gtable     = require("gears.table")
-local timer      = require("gears.timer")
-local gmath      = require("gears.math")
-local gears      = require("gears")
-local cairo      = require("lgi").cairo
-local util       = require("awful.util")
-local dpi        = require("beautiful").xresources.apply_dpi
+local capi                  = {
+	screen  = screen,
+	awesome = awesome }
+local naughty               = require("lib.naughty.core")
+local utils                 = require("lib.naughty.layout.utils")
+local screen                = require("awful.screen")
+local button                = require("awful.button")
+local beautiful             = require("beautiful")
+local wibox                 = require("wibox")
+local gtable                = require("gears.table")
+local timer                 = require("gears.timer")
+local gears                 = require("gears")
 
-local MAX_WIDTH  = 350
-local MAX_HEIGHT = 95
+local prop_key              = "textbox_"
 
-local prop_key   = "textbox_"
-
-local properties = {
+local properties            = {
 	app_name = "app_name",
 	title    = "title",
 	message  = "message"
 }
-
-local function get_screen(s)
-	return s and capi.screen[s]
-end
 
 -- This is a copy of the table found in `naughty.core`. The reason the copy
 -- exists is to make sure there is only unidirectional coupling between the
@@ -64,7 +54,11 @@ end
 -- least be blacklisted internally.
 local current_notifications = setmetatable({}, { __mode = "k" })
 
-screen.connect_for_each_screen(function(s)
+local function get_screen(s)
+	return s and capi.screen[s]
+end
+
+local function init_screen(s)
 	current_notifications[s] = {
 		top_left      = {},
 		top_middle    = {},
@@ -74,13 +68,13 @@ screen.connect_for_each_screen(function(s)
 		bottom_right  = {},
 		middle        = {},
 	}
-end)
+end
 
-capi.screen.connect_signal("removed", function(s)
+local function removed(s)
 	timer.delayed_call(function()
 		current_notifications[s] = nil
 	end)
-end)
+end
 
 --- Sum heights of notifications at position
 --
@@ -115,10 +109,12 @@ end
 -- @return Absolute position and index in { x = X, y = Y, idx = I } table
 local function get_offset(s, position, idx, width, height)
 	s        = get_screen(s)
+
 	local ws = s.workarea
 	local v  = {}
-	idx      = idx or #current_notifications[s][position] + 1
-	width    = width or current_notifications[s][position][idx].width
+
+	idx      = idx or #naughty.notifications[s][position] + 1
+	width    = width or naughty.notifications[s][position][idx].width
 
 	-- calculate x
 	if position:match("left") then
@@ -130,16 +126,16 @@ local function get_offset(s, position, idx, width, height)
 	end
 
 	-- calculate existing popups' height
-	local existing = get_total_heights(s, position, idx - 1)
+	local existing = 0
+	for i = 1, idx - 1, 1 do
+		existing = existing + naughty.notifications[s][position][i].height + naughty.config.spacing
+	end
 
 	-- calculate y
 	if position:match("top") then
 		v.y = ws.y + naughty.config.padding + existing
-	elseif position:match("bottom") then
-		v.y = ws.y + ws.height - (naughty.config.padding + height + existing)
 	else
-		local total = get_total_heights(s, position)
-		v.y         = ws.y + (ws.height - total) / 2 + naughty.config.padding + existing
+		v.y = ws.y + ws.height - (naughty.config.padding + height + existing)
 	end
 
 	-- Find old notification to replace in case there is not enough room.
@@ -147,49 +143,31 @@ local function get_offset(s, position, idx, width, height)
 	-- e.g. critical ones.
 	local find_old_to_replace = function()
 		for i = 1, idx - 1 do
-			local n = current_notifications[s][position][i]
-			if n and n.timeout > 0 then
+			local n = naughty.notifications[s][position][i]
+			if n.timeout > 0 then
 				return n
 			end
 		end
 		-- Fallback to first one.
-		return current_notifications[s][position][1]
+		return naughty.notifications[s][position][1]
 	end
 
 	-- if positioned outside workarea, destroy oldest popup and recalculate
 	if v.y + height > ws.y + ws.height or v.y < ws.y then
-		local n = find_old_to_replace()
-		if n then
-			n:destroy(naughty.notification_closed_reason.too_many_on_screen)
-		end
-		v = get_offset(s, position, idx, width, height)
+		naughty.destroy(find_old_to_replace())
+		idx = idx - 1
+		v   = get_offset(s, position, idx, width, height)
 	end
+	if not v.idx then v.idx = idx end
 
 	return v
 end
 
---- Re-arrange notifications according to their position and index - internal
---
--- @return None
-local function arrange(s)
-	-- {} in case the screen has been deleted
-	for p in pairs(current_notifications[s] or {}) do
-		for i, notification in pairs(current_notifications[s][p]) do
-			local offset = get_offset(s, p, i, notification.width, notification.height)
-			notification.box:geometry({ x = offset.x, y = offset.y })
-		end
-	end
-end
-
 local function update_size(self)
-	local size_info = self.size_info
-	local width     = nil
-	local height    = nil
-
-	-- calculate the width
-	if not width then
-		width = MAX_WIDTH
-	end
+	local n_self    = self
+	local size_info = n_self.size_info
+	local width     = 350
+	local height    = 95
 
 	if width < size_info.actions_max_width then
 		width = size_info.actions_max_width
@@ -199,11 +177,6 @@ local function update_size(self)
 		width = math.min(width, size_info.max_width)
 	end
 
-	-- calculate the height
-	if not height then
-		height = MAX_HEIGHT
-	end
-
 	height = height + size_info.actions_total_height
 
 	if size_info.max_height then
@@ -211,33 +184,57 @@ local function update_size(self)
 	end
 
 	-- crop to workarea size if too big
-	local workarea      = self.screen.workarea
-	local border_width  = size_info.border_width or 0
-	local border_height = size_info.border_height or 0
+	local workarea     = n_self.screen.workarea
+	local border_width = size_info.border_width or 0
+	local padding      = naughty.config.padding or 0
 
-	local padding       = naughty.config.padding or 0
 	if width > workarea.width - 2 * border_width - 2 * padding then
 		width = workarea.width - 2 * border_width - 2 * padding
 	end
+
 	if height > workarea.height - 2 * border_width - 2 * padding then
 		height = workarea.height - 2 * border_width - 2 * padding
 	end
 
 	-- set size in notification object
-	self.width   = width + 2 * border_width
-	self.height  = height + 2 * border_height
+	n_self.height = height + 2 * border_width
+	n_self.width  = width + 2 * border_width
 
-	local offset = get_offset(self.screen, self.position, self.idx, self.width, self.height)
-
-	self.box:geometry({
+	local offset  = get_offset(n_self.screen, n_self.position, n_self.idx, n_self.width, n_self.height)
+	n_self.box:geometry({
 		width  = width,
 		height = height,
 		x      = offset.x,
 		y      = offset.y,
 	})
+	n_self.idx = offset.idx
 
 	-- update positions of other notifications
-	arrange(self.screen)
+	naughty.arrange(n_self.screen)
+end
+
+--- Install expiration timer for notification object.
+-- @tparam notification notification Notification object.
+-- @tparam number timeout Time in seconds to be set as expiration timeout.
+local function set_timeout(self, timeout)
+	local die = function(reason)
+		naughty.destroy(self, reason)
+	end
+
+	if timeout > 0 then
+		local timer_die = timer { timeout = timeout }
+		timer_die:connect_signal("timeout", function()
+			die(naughty.notificationClosedReason.expired)
+		end)
+
+		if not naughty.suspended then
+			timer_die:start()
+		end
+
+		self.timer = timer_die
+	end
+
+	self.die = die
 end
 
 local function seek_and_destroy(n)
@@ -253,7 +250,7 @@ local function seek_and_destroy(n)
 	end
 end
 
-local function cleanup(self, _ --[[reason]], keep_visible)
+local function destroyed(self, _ --[[reason]], keep_visible)
 	-- It is not a legacy notification
 	if not self.box then
 		return
@@ -268,106 +265,8 @@ local function cleanup(self, _ --[[reason]], keep_visible)
 		self.box.visible = false
 	end
 
-	arrange(scr)
+	naughty.arrange(scr)
 end
-
-local function create_actions(self, actions, margin, font, s)
-	local layout_actions       = wibox.layout.fixed.vertical()
-	local actions_total_height = 0
-	local actions_max_width    = 0
-
-	for _, action in ipairs(actions) do
-		assert(type(action) == "table")
-		assert(action.name ~= nil)
-		local actiontextbox   = wmapi.widget:textbox()
-		local actionmarginbox = wibox.container.margin()
-		actionmarginbox:set_margins(margin)
-		actionmarginbox:set_widget(actiontextbox)
-		actiontextbox:set_valign("middle")
-		actiontextbox:set_font(font)
-		actiontextbox:set_markup(string.format('☛ <u>%s</u>', action.name))
-		-- calculate the height and width
-		local w, h              = actiontextbox:get_preferred_size(s)
-		local action_height     = h + 2 * margin
-		local action_width      = w + 2 * margin
-
-		actionmarginbox.buttons = {
-			button({ }, event.mouse.button_click_left, function()
-				action:invoke(self)
-			end),
-			button({ }, event.mouse.button_click_right, function()
-				action:invoke(self)
-			end),
-		}
-
-		layout_actions:add(actionmarginbox)
-
-		actions_total_height = actions_total_height + action_height
-		if actions_max_width < action_width then
-			actions_max_width = action_width
-		end
-	end
-
-	return layout_actions, actions_total_height, actions_max_width
-end
-
--- create iconbox
-local function create_iconbox(self, icon_data, icon_size, icon, size_info)
-	local iconbox = nil
-
-	if icon_data then
-		-- Is this really an URI instead of a path?
-		if type(icon_data) == "string" and string.sub(icon_data, 1, 7) == "file://" then
-			icon_data = string.sub(icon_data, 8)
-			-- urldecode URI path
-			icon_data = string.gsub(icon_data, "%%(%x%x)", function(x)
-				return string.char(tonumber(x, 16))
-			end)
-		end
-
-		-- try to guess icon if the provided one is non-existent/readable
-		if type(icon_data) == "string" and not gfs.file_readable(icon_data) then
-			icon_data = util.geticonpath(icon_data, naughty.config.icon_formats, naughty.config.icon_dirs, icon_size) or icon_data
-		end
-
-		-- is the icon file readable?
-		local had_icon = type(icon_data) == "string"
-		icon_data      = surface.load_uncached_silently(icon_data)
-		if icon_data then
-			iconbox = wmapi.widget:imagebox()
-		end
-
-		-- if we have an icon, use it
-		local function update_icon(icn)
-			if icn then
-				size_info.icon_w = icn:get_width()
-				size_info.icon_h = icn:get_height()
-
-				icn              = icon_data
-
-				iconbox:set_clip_shape(gears.shape.rounded_rect, 9)
-				iconbox:set_resize(true)
-				iconbox:set_image(icn)
-			end
-		end
-
-		if icon_data then
-			self:connect_signal("property::icon", function()
-				update_icon(surface.load_uncached_silently(self.icon))
-			end)
-			update_icon(icon_data)
-		elseif had_icon then
-			require("gears.debug").print_warning("naughty: failed to load icon " ..
-					icon ..
-					"(app_name: " .. self.app_name .. ")" ..
-					"(title: " .. self.title .. ")")
-		end
-	end
-
-	return iconbox
-end
-
-naughty.connect_signal("destroyed", cleanup)
 
 -- Don't copy paste the list of fallback, it is hard to spot mistakes.
 local function get_value(notification, args, preset, prop)
@@ -375,6 +274,29 @@ local function get_value(notification, args, preset, prop)
 			or args[prop] -- magic and undocumented, but used by the legacy API
 			or preset[prop] --deprecated
 			or beautiful["notification_" .. prop] -- from the theme
+end
+
+-- create textbox
+local function create_textbox(self, prop, font)
+	local textbox = wmapi.widget:textbox()
+	textbox:set_valign("middle")
+	textbox:set_font(font)
+	textbox:set_text(self[prop])
+
+	self[prop_key .. prop] = textbox
+end
+
+--- Re-arrange notifications according to their position and index - internal
+--
+-- @return None
+function naughty.arrange(s)
+	-- {} in case the screen has been deleted
+	for p in pairs(current_notifications[s] or {}) do
+		for i, notification in pairs(current_notifications[s][p]) do
+			local offset = get_offset(s, p, i, notification.width, notification.height)
+			notification.box:geometry({ x = offset.x, y = offset.y })
+		end
+	end
 end
 
 function naughty.default_notification_handler(notification, args)
@@ -446,6 +368,7 @@ function naughty.default_notification_handler(notification, args)
 	notification.position   = position
 
 	-- hook destroy
+	--set_timeout(notification, timeout)
 	notification.timeout    = timeout
 	local die               = notification.die
 
@@ -473,18 +396,8 @@ function naughty.default_notification_handler(notification, args)
 		end
 	end
 
-	-- create textbox
-	local function create_textbox(self, prop)
-		local textbox = wmapi.widget:textbox()
-		textbox:set_valign("middle")
-		textbox:set_font(font)
-		textbox:set_text(self[prop])
-
-		self[prop_key .. prop] = textbox
-	end
-
 	for _, prop in pairs(properties) do
-		create_textbox(notification, prop)
+		create_textbox(notification, prop, font)
 	end
 
 	local function update_textbox(self, _1, _2)
@@ -515,12 +428,15 @@ function naughty.default_notification_handler(notification, args)
 
 	local layout_actions      = nil
 	if actions then
-		layout_actions, size_info.actions_total_height, size_info.actions_max_width = create_actions(notification, actions, size_info.margin, font, screen)
+		layout_actions, size_info.actions_total_height, size_info.actions_max_width = utils:create_actions(notification, actions, size_info.margin, font, screen)
 	end
 
 	-- create iconbox
-	local iconbox        = create_iconbox(notification, icon_data, icon_size, icon, size_info)
-	notification.iconbox = iconbox
+	local iconbox = nil
+	if icon_data then
+		iconbox              = utils:create_iconbox(notification, icon_data, icon_size, icon, size_info)
+		notification.iconbox = iconbox
+	end
 
 	-- create container wibox
 	if not notification.reuse_box then
@@ -588,6 +504,13 @@ function naughty.default_notification_handler(notification, args)
 	if naughty.suspended and not args.ignore_suspend then
 		notification.box.visible = false
 	end
+
+	return notification
 end
 
+screen.connect_for_each_screen(init_screen)
+
+capi.screen.connect_signal("removed", removed)
+
+naughty.connect_signal("destroyed", destroyed)
 naughty.connect_signal("request::fallback", naughty.default_notification_handler)

@@ -6,8 +6,9 @@ local beautiful     = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
 local capi          = {
-	mouse = mouse,
-	debug = debug
+	mouse  = mouse,
+	screen = screen,
+	debug  = debug
 }
 
 local posix         = require("posix")
@@ -189,7 +190,7 @@ end
 function wmapi:is_screen_primary(s)
 	local primary = self:screen_primary_id()
 
-	if s == screen[primary] then
+	if s == capi.screen[primary] then
 		return true
 	end
 
@@ -199,7 +200,7 @@ end
 function wmapi:screen_primary_id()
 	local primary = 1
 
-	if screen[primary] == nil then
+	if capi.screen[primary] == nil then
 		return 1
 	end
 
@@ -209,18 +210,18 @@ end
 function wmapi:screen_primary()
 	local primary = self:screen_primary_id()
 
-	return screen[primary]
+	return capi.screen[primary]
 end
 
 function wmapi:screen(index)
 	local index = index or self:screen_primary_id()
-	local count = screen.count()
+	local count = capi.screen.count()
 
 	if index > count or index < -1 then
-		return screen[self:screen_primary_id()]
+		return capi.screen[self:screen_primary_id()]
 	end
 
-	return screen[index]
+	return capi.screen[index]
 end
 
 function wmapi:traceback()
@@ -299,18 +300,18 @@ end
 
 function wmapi:screen_er(index)
 	local index = index or 0
-	local count = screen.count()
+	local count = capi.screen.count()
 
 	if index > count or index <= 0 then
 		return nil
 	end
 
-	return screen[index]
+	return capi.screen[index]
 end
 
 function wmapi:screen_id(s)
-	for i = 1, screen.count() do
-		if s == screen[i] then
+	for i = 1, capi.screen.count() do
+		if s == capi.screen[i] then
 			return i
 		end
 	end
@@ -399,7 +400,7 @@ end
 
 function wmapi:screen_geometry(index)
 	local index    = index or self:screen_primary_id()
-	local screen   = screen[index]
+	local screen   = capi.screen[index]
 	local geometry = screen.geometry
 
 	return {
@@ -410,14 +411,14 @@ end
 
 function wmapi:screen_height(index)
 	local index = index or self:screen_primary_id()
-	local s     = screen[index]
+	local s     = capi.screen[index]
 
 	return s.geometry.height
 end
 
 function wmapi:screen_width(index)
 	local index = index or self:screen_primary_id()
-	local s     = screen[index]
+	local s     = capi.screen[index]
 
 	return s.geometry.width
 end

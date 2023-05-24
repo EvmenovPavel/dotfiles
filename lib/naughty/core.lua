@@ -220,9 +220,7 @@ local function init_screen(s)
 	}
 end
 
-screen.connect_for_each_screen(init_screen)
-
-capi.screen.connect_signal("removed", function(scr)
+local function removed(scr)
 	-- Allow the notifications to be moved to another screen.
 
 	for _, list in pairs(naughty.notifications[scr]) do
@@ -243,7 +241,7 @@ capi.screen.connect_signal("removed", function(scr)
 	-- Destroy all notifications on this screen
 	naughty.destroy_all_notifications({ scr })
 	naughty.notifications[scr] = nil
-end)
+end
 
 local function remove_from_index(n)
 	for _, positions in pairs(naughty.notifications) do
@@ -373,6 +371,7 @@ local function resume()
 			v._private.args = args
 		end
 	end
+
 	naughty.notifications.suspended = { }
 end
 
@@ -437,16 +436,17 @@ function naughty.destroy(notification, reason, keep_visible)
 				end
 			end
 		end
+
 		local scr = notification.screen
 		table.remove(naughty.notifications[scr][notification.position], notification.idx)
+
 		if notification.timer then
 			notification.timer:stop()
 		end
 
 		if not keep_visible then
 			notification.box.visible = false
-			log:info("error - arrange(scr)")
-			arrange(scr)
+			naughty.arrange(scr)
 		end
 
 		if notification.destroy_cb and reason ~= naughty.notificationClosedReason.silent then
@@ -569,7 +569,7 @@ function naughty.replace_text(notification, new_title, new_text)
 end
 
 -- Remove the notification from the internal list(s)
-local function cleanup(self, reason)
+local function destroyed(self, reason)
 	assert(reason, "Use n:destroy() instead of emitting the signal directly")
 
 	if properties.suspended then
@@ -607,8 +607,6 @@ local function cleanup(self, reason)
 		self.destroy_cb(reason or naughty.notification_closed_reason.undefined)
 	end
 end
-
-naughty.connect_signal("destroyed", cleanup)
 
 -- Proxy the global suspension state on all notification objects
 local function get_suspended(self)
@@ -652,17 +650,15 @@ end
 --
 -- It selects `awful.screen.focused()`.
 --
--- @signalhandler naughty.default_screen_handler
+-- @signalhandler default_screen_handler
 
-function naughty.default_screen_handler(n)
+local function default_screen_handler(n)
 	if n.screen and n.screen.valid then
 		return
 	end
 
 	n.screen = screen.focused()
 end
-
-naughty.connect_signal("request::screen", naughty.default_screen_handler)
 
 --- Emitted when an error occurred and requires attention.
 -- @signal request::display_error
@@ -818,8 +814,6 @@ local function register(notification, args)
 	return notification
 end
 
-naughty.connect_signal("new", register)
-
 local function index_miss(_, key)
 	if rawget(naughty, "get_" .. key) then
 		return rawget(naughty, "get_" .. key)()
@@ -958,6 +952,14 @@ function naughty.icon_clear_handler(self, context, hints)
 	self:emit_signal("property::icon")
 end
 
+screen.connect_for_each_screen(init_screen)
+
+capi.screen.connect_signal("removed", removed)
+
+naughty.connect_signal("new", register)
+naughty.connect_signal("destroyed", destroyed)
+
+naughty.connect_signal("request::screen", default_screen_handler)
 naughty.connect_signal("property::screen", update_index)
 naughty.connect_signal("property::position", update_index)
 

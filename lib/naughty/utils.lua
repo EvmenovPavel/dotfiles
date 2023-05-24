@@ -9,7 +9,11 @@ local tins     = table.insert
 
 local utils    = {}
 
-function utils.convert_icon(w, h, rowstride, channels, data)
+function utils:is_empty(s)
+	return s == nil or s == ""
+end
+
+function utils:convert_icon(w, h, rowstride, channels, data)
 	-- Do the arguments look sane? (e.g. we have enough data)
 	local expected_length = rowstride * (h - 1) + w * channels
 	if w < 0 or h < 0 or rowstride < 0 or (channels ~= 3 and channels ~= 4) or

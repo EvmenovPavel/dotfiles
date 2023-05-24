@@ -47,55 +47,44 @@ local cst     = require("lib.naughty.constants")
 --  ButtonMask    = 0x00000300, -- FlagMask
 --};
 
-local function question(app_name, title, text, app_icon)
-	naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.low)
-end
+local type    = {
+	question    = "question",
+	information = "information",
+	warning     = "warning",
+	critical    = "critical",
+	error       = "error",
+	about       = "about",
+}
 
-local function information(app_name, title, text, app_icon)
-	naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.ok)
-end
-
-local function warning(app_name, title, text, app_icon)
-	naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.error)
-end
-
-local function critical(app_name, title, text, app_icon)
-	naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.critical)
-end
-
-local function error(app_name, title, text, app_icon)
-	naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.error)
-end
-
-local function about(app_name, title, text, app_icon)
-	naughty.dbus.notification(app_name, title, text, app_icon, cst.config._urgency.info)
+local function message(type, app_name, title, text, app_icon, urgency)
+	naughty.dbus.notification(app_name, title, text, app_icon, urgency)
 end
 
 local function new()
 	local ret = {}
 
 	function ret:question(app_name, title, text, app_icon)
-		question(app_name, title, text, app_icon)
+		message(type.question, app_name, title, text, app_icon, cst.config._urgency.low)
 	end
 
 	function ret:information(app_name, title, text, app_icon)
-		information(app_name, title, text, app_icon)
+		message(type.information, app_name, title, text, app_icon, cst.config._urgency.ok)
 	end
 
 	function ret:warning(app_name, title, text, app_icon)
-		warning(app_name, title, text, app_icon)
+		message(type.warning, app_name, title, text, app_icon, cst.config._urgency.warning)
 	end
 
 	function ret:critical(app_name, title, text, app_icon)
-		critical(app_name, title, text, app_icon)
+		message(type.critical, app_name, title, text, app_icon, cst.config._urgency.critical)
 	end
 
 	function ret:error(app_name, title, text, app_icon)
-		error(app_name, title, text, app_icon)
+		message(type.error, app_name, title, text, app_icon, cst.config._urgency.error)
 	end
 
 	function ret:about(app_name, title, text, app_icon)
-		about(app_name, title, text, app_icon)
+		message(type.about, app_name, title, text, app_icon, cst.config._urgency.info)
 	end
 
 	return ret

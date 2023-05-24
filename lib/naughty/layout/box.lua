@@ -43,7 +43,7 @@ local function init_screen(s)
 	by_position[s] = setmetatable({}, { __mode = "k" })
 
 	for _, pos in ipairs { "top_left", "top_middle", "top_right",
-	                       "bottom_left", "bottom_middle", "bottom_right" } do
+						   "bottom_left", "bottom_middle", "bottom_right" } do
 		by_position[s][pos] = setmetatable({}, { __mode = "v" })
 	end
 
@@ -96,7 +96,7 @@ end
 local function update_position(position, preset)
 	local pref  = position:match("top_") and "bottom" or "top"
 	local align = position:match("_(.*)")
-	                      :gsub("left", "front"):gsub("right", "back")
+						  :gsub("left", "front"):gsub("right", "back")
 
 	for _, pos in pairs(by_position) do
 		for k, wdg in ipairs(pos[position]) do
