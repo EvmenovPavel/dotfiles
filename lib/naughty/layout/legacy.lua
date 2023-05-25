@@ -487,8 +487,6 @@ function naughty.default_notification_handler(notification, args)
 	if naughty.suspended and not args.ignore_suspend then
 		notification.box.visible = false
 	end
-
-	return notification
 end
 
 screen.connect_for_each_screen(init_screen)
