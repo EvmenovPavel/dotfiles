@@ -86,15 +86,16 @@ end
 local function get_total_heights(s, position, idx)
 	local sum           = 0
 	local notifications = current_notifications[s][position]
+
 	idx                 = idx or #notifications
 	for i = 1, idx, 1 do
 		local n = notifications[i]
-
 		-- `n` will not nil when there is too many notifications to fit in `s`
 		if n then
 			sum = sum + n.height + naughty.config.spacing
 		end
 	end
+
 	return sum
 end
 

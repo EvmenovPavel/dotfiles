@@ -1086,10 +1086,8 @@ local function create(args)
 		ret.update_widget = false
 		-- ... may use its ID
 		if args.replaces_id <= naughty.get_notification_id() then
-			ret.id = args.replaces_id
 			require("gears.debug").print_warning("ret.id = args.replaces_id")
-			log:info("Ошибка, тут должно остановиться по идеи!")
-
+			ret.id            = args.replaces_id
 			ret.update_widget = true
 			-- Ошибка возникает из-аз того, что, меняет позицию виджета
 			-- update_widget будет говорить, что виджет уже есть на экране
