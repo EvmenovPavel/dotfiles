@@ -186,6 +186,9 @@ gtable.crush(naughty, require("lib.naughty.constants"))
 -- @tparam[opt=false] boolean persistence_enabled
 -- @propemits true false
 
+-- This allows notification to be updated later.
+local counter         = 1
+
 local properties      = {
 	suspended                = false,
 	expiration_paused        = false,
@@ -399,17 +402,10 @@ function naughty.toggle()
 	end
 end
 
--- This allows notification to be updated later.
-local counter = 1
-
 -- Identifier support.
-function naughty._gen_next_id()
+function naughty.get_next_notification_id()
 	counter = counter + 1
 	return counter
-end
-
-function naughty.get_next_notification_id()
-	return naughty._gen_next_id()
 end
 
 function naughty.get_notification_id()
@@ -449,8 +445,8 @@ function naughty.destroy(notification, reason, keep_visible)
 			naughty.arrange(scr)
 		end
 
-		if notification.destroy_cb and reason ~= naughty.notificationClosedReason.silent then
-			notification.destroy_cb(reason or naughty.notificationClosedReason.undefined)
+		if notification.destroy_cb and reason ~= naughty.notification_closed_reason.silent then
+			notification.destroy_cb(reason or naughty.notification_closed_reason.undefined)
 		end
 
 		return true

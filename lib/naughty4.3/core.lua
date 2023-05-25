@@ -510,8 +510,8 @@ end
 local function update_size(self)
 	local n_self    = self
 	local size_info = n_self.size_info
-	local width     = size_info.width
-	local height    = size_info.height
+	local width     = 350 --size_info.width
+	local height    = 95 --size_info.height
 	local margin    = size_info.margin
 
 	-- calculate the width

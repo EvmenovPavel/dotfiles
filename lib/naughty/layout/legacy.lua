@@ -113,8 +113,8 @@ local function get_offset(s, position, idx, width, height)
 	local ws = s.workarea
 	local v  = {}
 
-	idx      = idx or #naughty.notifications[s][position] + 1
-	width    = width or naughty.notifications[s][position][idx].width
+	idx      = idx or #current_notifications[s][position] + 1
+	width    = width or current_notifications[s][position][idx].width
 
 	-- calculate x
 	if position:match("left") then
@@ -126,16 +126,16 @@ local function get_offset(s, position, idx, width, height)
 	end
 
 	-- calculate existing popups' height
-	local existing = 0
-	for i = 1, idx - 1, 1 do
-		existing = existing + naughty.notifications[s][position][i].height + naughty.config.spacing
-	end
+	local existing = get_total_heights(s, position, idx - 1)
 
 	-- calculate y
 	if position:match("top") then
 		v.y = ws.y + naughty.config.padding + existing
-	else
+	elseif position:match("bottom") then
 		v.y = ws.y + ws.height - (naughty.config.padding + height + existing)
+	else
+		local total = get_total_heights(s, position)
+		v.y         = ws.y + (ws.height - total) / 2 + naughty.config.padding + existing
 	end
 
 	-- Find old notification to replace in case there is not enough room.
@@ -143,22 +143,28 @@ local function get_offset(s, position, idx, width, height)
 	-- e.g. critical ones.
 	local find_old_to_replace = function()
 		for i = 1, idx - 1 do
-			local n = naughty.notifications[s][position][i]
-			if n.timeout > 0 then
+			local n = current_notifications[s][position][i]
+			if n and n.timeout > 0 then
 				return n
 			end
 		end
 		-- Fallback to first one.
-		return naughty.notifications[s][position][1]
+		return current_notifications[s][position][1]
 	end
 
 	-- if positioned outside workarea, destroy oldest popup and recalculate
 	if v.y + height > ws.y + ws.height or v.y < ws.y then
-		naughty.destroy(find_old_to_replace())
+		local n = find_old_to_replace()
+		if n then
+			n:destroy(naughty.notification_closed_reason.too_many_on_screen)
+		end
 		idx = idx - 1
 		v   = get_offset(s, position, idx, width, height)
 	end
-	if not v.idx then v.idx = idx end
+
+	if not v.idx then
+		v.idx = idx
+	end
 
 	return v
 end
@@ -211,30 +217,6 @@ local function update_size(self)
 
 	-- update positions of other notifications
 	naughty.arrange(n_self.screen)
-end
-
---- Install expiration timer for notification object.
--- @tparam notification notification Notification object.
--- @tparam number timeout Time in seconds to be set as expiration timeout.
-local function set_timeout(self, timeout)
-	local die = function(reason)
-		naughty.destroy(self, reason)
-	end
-
-	if timeout > 0 then
-		local timer_die = timer { timeout = timeout }
-		timer_die:connect_signal("timeout", function()
-			die(naughty.notificationClosedReason.expired)
-		end)
-
-		if not naughty.suspended then
-			timer_die:start()
-		end
-
-		self.timer = timer_die
-	end
-
-	self.die = die
 end
 
 local function seek_and_destroy(n)
