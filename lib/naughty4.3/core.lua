@@ -9,11 +9,6 @@
 --luacheck: no max line length
 
 -- Package environment
-local pairs     = pairs
-local table     = table
-local type      = type
-local string    = string
-local pcall     = pcall
 local capi      = { screen  = screen,
 					awesome = awesome }
 local timer     = require("gears.timer")
@@ -222,7 +217,7 @@ local suspended                  = false
 -- @table notifications
 naughty.notifications            = { suspended = { } }
 
-screen.connect_for_each_screen(function(s)
+local function init_screen(s)
 	naughty.notifications[s] = {
 		top_left      = {},
 		top_middle    = {},
@@ -231,13 +226,13 @@ screen.connect_for_each_screen(function(s)
 		bottom_middle = {},
 		bottom_right  = {},
 	}
-end)
+end
 
-capi.screen.connect_signal("removed", function(scr)
+local function removed(scr)
 	-- Destroy all notifications on this screen
 	naughty.destroy_all_notifications({ scr })
 	naughty.notifications[scr] = nil
-end)
+end
 
 --- Notification state
 function naughty.is_suspended()
@@ -450,10 +445,14 @@ local function set_timeout(self, timeout)
 
 	if timeout > 0 then
 		local timer_die = timer { timeout = timeout }
-		timer_die:connect_signal("timeout", function() die(naughty.notificationClosedReason.expired) end)
+		timer_die:connect_signal("timeout", function()
+			die(naughty.notificationClosedReason.expired)
+		end)
+
 		if not suspended then
 			timer_die:start()
 		end
+
 		self.timer = timer_die
 	end
 
@@ -885,6 +884,10 @@ function naughty.notify(args)
 	-- return the notification
 	return notification
 end
+
+screen.connect_for_each_screen(init_screen)
+
+capi.screen.connect_signal("removed", removed)
 
 return naughty
 
