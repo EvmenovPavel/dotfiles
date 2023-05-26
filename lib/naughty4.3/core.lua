@@ -277,7 +277,33 @@ end
 -- @param[opt] width Popup width.
 -- @param height Popup height
 -- @return Absolute position and index in { x = X, y = Y, idx = I } table
+local function get_total_heights(s, position, idx)
+	local sum           = 0
+	local notifications = naughty.notifications[s][position]
+
+	idx                 = idx or #notifications
+	for i = 1, idx, 1 do
+		local n = notifications[i]
+		-- `n` will not nil when there is too many notifications to fit in `s`
+		if n then
+			sum = sum + n.height + naughty.config.spacing
+		end
+	end
+
+	return sum
+end
+
+--- Evaluate desired position of the notification by index - internal
+--
+-- @param s Screen to use
+-- @param position top_right | top_left | bottom_right | bottom_left
+--   | top_middle | bottom_middle | middle
+-- @param idx Index of the notification
+-- @param[opt] width Popup width.
+-- @param height Popup height
+-- @return Absolute position and index in { x = X, y = Y, idx = I } table
 local function get_offset(s, position, idx, width, height)
+	log:info("get_offset:", position, idx, width, height)
 	s        = get_screen(s)
 
 	local ws = s.workarea
@@ -296,16 +322,16 @@ local function get_offset(s, position, idx, width, height)
 	end
 
 	-- calculate existing popups' height
-	local existing = 0
-	for i = 1, idx - 1, 1 do
-		existing = existing + naughty.notifications[s][position][i].height + naughty.config.spacing
-	end
+	local existing = get_total_heights(s, position, idx - 1)
 
 	-- calculate y
 	if position:match("top") then
 		v.y = ws.y + naughty.config.padding + existing
-	else
+	elseif position:match("bottom") then
 		v.y = ws.y + ws.height - (naughty.config.padding + height + existing)
+	else
+		local total = get_total_heights(s, position)
+		v.y         = ws.y + (ws.height - total) / 2 + naughty.config.padding + existing
 	end
 
 	-- Find old notification to replace in case there is not enough room.
@@ -313,22 +339,30 @@ local function get_offset(s, position, idx, width, height)
 	-- e.g. critical ones.
 	local find_old_to_replace = function()
 		for i = 1, idx - 1 do
-			local n = naughty.notifications[s][position][i]
-			if n.timeout > 0 then
+			local n = current_notifications[s][position][i]
+			if n and n.timeout > 0 then
 				return n
 			end
 		end
 		-- Fallback to first one.
-		return naughty.notifications[s][position][1]
+		return current_notifications[s][position][1]
 	end
 
 	-- if positioned outside workarea, destroy oldest popup and recalculate
 	if v.y + height > ws.y + ws.height or v.y < ws.y then
-		naughty.destroy(find_old_to_replace())
+		--naughty.destroy(find_old_to_replace())
+		local n = find_old_to_replace()
+		if n then
+			n:destroy(naughty.notification_closed_reason.too_many_on_screen)
+		end
+
 		idx = idx - 1
 		v   = get_offset(s, position, idx, width, height)
 	end
-	if not v.idx then v.idx = idx end
+
+	if not v.idx then
+		v.idx = idx
+	end
 
 	return v
 end
@@ -569,6 +603,8 @@ local function update_size(self)
 		y      = offset.y,
 	})
 	n_self.idx = offset.idx
+
+	log:info(">>", width, height, offset.x, offset.y, offset.idx)
 
 	-- update positions of other notifications
 	arrange(n_self.screen)
@@ -853,8 +889,22 @@ function naughty.notify(args)
 	notification.box.opacity = opacity
 	notification.box.visible = true
 
+	local size_info          = notification.size_info
+
+	log:info("size_info:",
+			size_info.width,
+			size_info.height,
+			size_info.max_width,
+			size_info.max_height,
+			size_info.margin,
+			size_info.border_width,
+			size_info.border_height,
+			size_info.actions_max_width,
+			size_info.actions_total_height
+	)
+
 	-- populate widgets
-	local layout             = wibox.layout.fixed.horizontal()
+	local layout = wibox.layout.fixed.horizontal()
 
 	if iconmargin then
 		layout:add(iconmargin)

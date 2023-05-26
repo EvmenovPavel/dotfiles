@@ -565,42 +565,43 @@ function naughty.replace_text(notification, new_title, new_text)
 end
 
 -- Remove the notification from the internal list(s)
-local function destroyed(self, reason)
+local function destroyed(notification, reason)
 	assert(reason, "Use n:destroy() instead of emitting the signal directly")
 
 	if properties.suspended then
 		for k, v in ipairs(naughty.notifications.suspended) do
-			if v == self then
+			if v == notification then
 				table.remove(naughty.notifications.suspended, k)
 				break
 			end
 		end
 	end
-	local scr = self.screen
 
-	assert(naughty.notifications[scr][self.position][self.idx] == self)
-	remove_from_index(self)
+	local scr = notification.screen
+
+	assert(naughty.notifications[scr][notification.position][notification.idx] == notification)
+	remove_from_index(notification)
 
 	-- Update all indices
-	for k, n in ipairs(naughty.notifications[scr][self.position]) do
+	for k, n in ipairs(naughty.notifications[scr][notification.position]) do
 		n.idx = k
 	end
 
 	-- Remove from the global active list.
 	for k, n in ipairs(naughty._active) do
-		if n == self then
+		if n == notification then
 			table.remove(naughty._active, k)
 			naughty.emit_signal("property::active")
 		end
 	end
 
 	-- `self.timer.started` will be false if the expiration was paused.
-	if self.timer and self.timer.started then
-		self.timer:stop()
+	if notification.timer and notification.timer.started then
+		notification.timer:stop()
 	end
 
-	if self.destroy_cb and reason ~= naughty.notification_closed_reason.silent then
-		self.destroy_cb(reason or naughty.notification_closed_reason.undefined)
+	if notification.destroy_cb and reason ~= naughty.notification_closed_reason.silent then
+		notification.destroy_cb(reason or naughty.notification_closed_reason.undefined)
 	end
 end
 

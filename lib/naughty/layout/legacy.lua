@@ -159,6 +159,7 @@ local function get_offset(s, position, idx, width, height)
 		if n then
 			n:destroy(naughty.notification_closed_reason.too_many_on_screen)
 		end
+
 		idx = idx - 1
 		v   = get_offset(s, position, idx, width, height)
 	end
@@ -278,6 +279,7 @@ function naughty.arrange(s)
 		for i, notification in pairs(current_notifications[s][p]) do
 			local offset = get_offset(s, p, i, notification.width, notification.height)
 			notification.box:geometry({ x = offset.x, y = offset.y })
+			notification.idx = offset.idx
 		end
 	end
 end
@@ -302,11 +304,11 @@ function naughty.default_notification_handler(notification, args)
 	local title    = get_value(notification, args, preset, "title")
 	local message  = get_value(notification, args, preset, "message") or args.text or preset.text
 
-	local screen   = get_screen(
+	local s        = get_screen(
 			get_value(notification, args, preset, "screen") or screen.focused()
 	)
 
-	if not screen then
+	if not s then
 		local err = "lib.naughty.notify: there is no screen available to display the following notification:"
 		err       = string.format("%s app_name='%s' title='%s' text='%s'", err, tostring(app_name or ""), tostring(title or ""), tostring(message or ""))
 		require("gears.debug").print_warning(err)
@@ -345,7 +347,7 @@ function naughty.default_notification_handler(notification, args)
 		actions_total_height = 0,
 	}
 
-	notification.screen     = screen
+	notification.screen     = s
 	notification.destroy_cb = destroy_cb
 	notification.timeout    = timeout
 	notification.position   = position
@@ -482,10 +484,11 @@ function naughty.default_notification_handler(notification, args)
 			end)))
 
 	-- insert the notification to the table
-	table.insert(current_notifications[screen][notification.position], notification)
+	table.insert(current_notifications[s][notification.position], notification)
 
 	if naughty.suspended and not args.ignore_suspend then
 		notification.box.visible = false
+		table.insert(current_notifications.suspended, notification)
 	end
 end
 
