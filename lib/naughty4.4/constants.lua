@@ -57,7 +57,7 @@ no_clear.presets               = {
 		timeout       = 5,
 		hover_timeout = 5,
 	},
-	warning  = {
+	warning = {
 		bg            = "#ffaa00",
 		fg            = "#000000",
 		timeout       = 10,
@@ -96,7 +96,7 @@ ret.config.mapping             = {
 	{ { urgency = "critical" }, no_clear.presets.critical },
 	{ { urgency = "ok" }, no_clear.presets.ok },
 	{ { urgency = "info" }, no_clear.presets.info },
-	{ { urgency = "warning" }, no_clear.presets.warning },
+	{ { urgency = "warn" }, no_clear.presets.warning },
 	{ { urgency = "err" }, no_clear.presets.error },
 }
 

@@ -303,7 +303,6 @@ end
 -- @param height Popup height
 -- @return Absolute position and index in { x = X, y = Y, idx = I } table
 local function get_offset(s, position, idx, width, height)
-	log:info("get_offset:", position, idx, width, height)
 	s        = get_screen(s)
 
 	local ws = s.workarea
@@ -604,8 +603,6 @@ local function update_size(self)
 	})
 	n_self.idx = offset.idx
 
-	log:info(">>", width, height, offset.x, offset.y, offset.idx)
-
 	-- update positions of other notifications
 	arrange(n_self.screen)
 end
@@ -729,7 +726,6 @@ function naughty.notify(args)
 		-- ... may use its ID
 		if args.replaces_id <= counter then
 			notification.id = args.replaces_id
-			log:info("Ошибка, тут должно остановиться по идеи!")
 		else
 			notification.id = naughty.get_next_notification_id()
 		end
@@ -890,18 +886,6 @@ function naughty.notify(args)
 	notification.box.visible = true
 
 	local size_info          = notification.size_info
-
-	log:info("size_info:",
-			size_info.width,
-			size_info.height,
-			size_info.max_width,
-			size_info.max_height,
-			size_info.margin,
-			size_info.border_width,
-			size_info.border_height,
-			size_info.actions_max_width,
-			size_info.actions_total_height
-	)
 
 	-- populate widgets
 	local layout = wibox.layout.fixed.horizontal()
