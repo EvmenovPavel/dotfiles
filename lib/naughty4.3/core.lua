@@ -9,6 +9,11 @@
 --luacheck: no max line length
 
 -- Package environment
+local pairs     = pairs
+local table     = table
+local type      = type
+local string    = string
+local pcall     = pcall
 local capi      = { screen  = screen,
 					awesome = awesome }
 local timer     = require("gears.timer")
@@ -216,8 +221,7 @@ local suspended                  = false
 -- @field id Unique notification id based on a counter
 -- @table notifications
 naughty.notifications            = { suspended = { } }
-
-local function init_screen(s)
+screen.connect_for_each_screen(function(s)
 	naughty.notifications[s] = {
 		top_left      = {},
 		top_middle    = {},
@@ -226,13 +230,13 @@ local function init_screen(s)
 		bottom_middle = {},
 		bottom_right  = {},
 	}
-end
+end)
 
-local function removed(scr)
+capi.screen.connect_signal("removed", function(scr)
 	-- Destroy all notifications on this screen
 	naughty.destroy_all_notifications({ scr })
 	naughty.notifications[scr] = nil
-end
+end)
 
 --- Notification state
 function naughty.is_suspended()
@@ -247,15 +251,10 @@ end
 --- Resume notifications
 function naughty.resume()
 	suspended = false
-
 	for _, v in pairs(naughty.notifications.suspended) do
 		v.box.visible = true
-
-		if v.timer then
-			v.timer:start()
-		end
+		if v.timer then v.timer:start() end
 	end
-
 	naughty.notifications.suspended = { }
 end
 
@@ -277,37 +276,10 @@ end
 -- @param[opt] width Popup width.
 -- @param height Popup height
 -- @return Absolute position and index in { x = X, y = Y, idx = I } table
-local function get_total_heights(s, position, idx)
-	local sum           = 0
-	local notifications = naughty.notifications[s][position]
-
-	idx                 = idx or #notifications
-	for i = 1, idx, 1 do
-		local n = notifications[i]
-		-- `n` will not nil when there is too many notifications to fit in `s`
-		if n then
-			sum = sum + n.height + naughty.config.spacing
-		end
-	end
-
-	return sum
-end
-
---- Evaluate desired position of the notification by index - internal
---
--- @param s Screen to use
--- @param position top_right | top_left | bottom_right | bottom_left
---   | top_middle | bottom_middle | middle
--- @param idx Index of the notification
--- @param[opt] width Popup width.
--- @param height Popup height
--- @return Absolute position and index in { x = X, y = Y, idx = I } table
 local function get_offset(s, position, idx, width, height)
 	s        = get_screen(s)
-
 	local ws = s.workarea
 	local v  = {}
-
 	idx      = idx or #naughty.notifications[s][position] + 1
 	width    = width or naughty.notifications[s][position][idx].width
 
@@ -321,16 +293,16 @@ local function get_offset(s, position, idx, width, height)
 	end
 
 	-- calculate existing popups' height
-	local existing = get_total_heights(s, position, idx - 1)
+	local existing = 0
+	for i = 1, idx - 1, 1 do
+		existing = existing + naughty.notifications[s][position][i].height + naughty.config.spacing
+	end
 
 	-- calculate y
 	if position:match("top") then
 		v.y = ws.y + naughty.config.padding + existing
-	elseif position:match("bottom") then
-		v.y = ws.y + ws.height - (naughty.config.padding + height + existing)
 	else
-		local total = get_total_heights(s, position)
-		v.y         = ws.y + (ws.height - total) / 2 + naughty.config.padding + existing
+		v.y = ws.y + ws.height - (naughty.config.padding + height + existing)
 	end
 
 	-- Find old notification to replace in case there is not enough room.
@@ -338,30 +310,22 @@ local function get_offset(s, position, idx, width, height)
 	-- e.g. critical ones.
 	local find_old_to_replace = function()
 		for i = 1, idx - 1 do
-			local n = current_notifications[s][position][i]
-			if n and n.timeout > 0 then
+			local n = naughty.notifications[s][position][i]
+			if n.timeout > 0 then
 				return n
 			end
 		end
 		-- Fallback to first one.
-		return current_notifications[s][position][1]
+		return naughty.notifications[s][position][1]
 	end
 
 	-- if positioned outside workarea, destroy oldest popup and recalculate
 	if v.y + height > ws.y + ws.height or v.y < ws.y then
-		--naughty.destroy(find_old_to_replace())
-		local n = find_old_to_replace()
-		if n then
-			n:destroy(naughty.notification_closed_reason.too_many_on_screen)
-		end
-
+		naughty.destroy(find_old_to_replace())
 		idx = idx - 1
 		v   = get_offset(s, position, idx, width, height)
 	end
-
-	if not v.idx then
-		v.idx = idx
-	end
+	if not v.idx then v.idx = idx end
 
 	return v
 end
@@ -395,10 +359,8 @@ function naughty.destroy(notification, reason, keep_visible)
 				end
 			end
 		end
-
 		local scr = notification.screen
 		table.remove(naughty.notifications[scr][notification.position], notification.idx)
-
 		if notification.timer then
 			notification.timer:stop()
 		end
@@ -411,7 +373,6 @@ function naughty.destroy(notification, reason, keep_visible)
 		if notification.destroy_cb and reason ~= naughty.notificationClosedReason.silent then
 			notification.destroy_cb(reason or naughty.notificationClosedReason.undefined)
 		end
-
 		return true
 	end
 end
@@ -431,9 +392,7 @@ function naughty.destroy_all_notifications(screens, reason)
 			table.insert(screens, key)
 		end
 	end
-
 	local ret = true
-
 	for _, scr in pairs(screens) do
 		for _, list in pairs(naughty.notifications[scr]) do
 			while #list > 0 do
@@ -441,7 +400,6 @@ function naughty.destroy_all_notifications(screens, reason)
 			end
 		end
 	end
-
 	return ret
 end
 
@@ -471,39 +429,33 @@ end
 --- Install expiration timer for notification object.
 -- @tparam notification notification Notification object.
 -- @tparam number timeout Time in seconds to be set as expiration timeout.
-local function set_timeout(self, timeout)
+local function set_timeout(notification, timeout)
 	local die = function(reason)
-		naughty.destroy(self, reason)
+		naughty.destroy(notification, reason)
 	end
-
 	if timeout > 0 then
 		local timer_die = timer { timeout = timeout }
-		timer_die:connect_signal("timeout", function()
-			die(naughty.notificationClosedReason.expired)
-		end)
-
+		timer_die:connect_signal("timeout", function() die(naughty.notificationClosedReason.expired) end)
 		if not suspended then
 			timer_die:start()
 		end
-
-		self.timer = timer_die
+		notification.timer = timer_die
 	end
-
-	self.die = die
+	notification.die = die
 end
 
 --- Set new notification timeout.
 -- @tparam notification notification Notification object, which timer is to be reset.
 -- @tparam number new_timeout Time in seconds after which notification disappears.
 -- @return None.
-function naughty.reset_timeout(self, new_timeout)
-	if self.timer then self.timer:stop() end
+function naughty.reset_timeout(notification, new_timeout)
+	if notification.timer then notification.timer:stop() end
 
-	local timeout = new_timeout or self.timeout
-	set_timeout(self, timeout)
-	self.timeout = timeout
+	local timeout = new_timeout or notification.timeout
+	set_timeout(notification, timeout)
+	notification.timeout = timeout
 
-	self.timer:start()
+	notification.timer:start()
 end
 
 --- Escape and set title and text for notification object.
@@ -511,11 +463,11 @@ end
 -- @tparam string title Title of notification.
 -- @tparam string text Main text of notification.
 -- @return None.
-local function set_text(self, title, text)
+local function set_text(notification, title, text)
 	local escape_pattern = "[<>&]"
 	local escape_subs    = { ['<'] = "&lt;", ['>'] = "&gt;", ['&'] = "&amp;" }
 
-	local textbox        = self.textbox
+	local textbox        = notification.textbox
 
 	local function setMarkup(pattern, replacements)
 		return textbox:set_markup_silently(string.format('<b>%s</b>%s', title, text:gsub(pattern, replacements)))
@@ -539,72 +491,70 @@ local function set_text(self, title, text)
 	end
 end
 
-local function update_size(self)
-	local n_self    = self
-	local size_info = n_self.size_info
-	local width     = 350 --size_info.width
-	local height    = 95 --size_info.height
-	local margin    = size_info.margin
+local function update_size(notification)
+
+	local n      = notification
+	local s      = n.size_info
+	local width  = s.width
+	local height = s.height
+	local margin = s.margin
 
 	-- calculate the width
 	if not width then
-		local w, _ = n_self.textbox:get_preferred_size(n_self.screen)
-		width      = w + (n_self.iconbox and size_info.icon_w + 2 * margin or 0) + 2 * margin
+		local w, _ = n.textbox:get_preferred_size(n.screen)
+		width      = w + (n.iconbox and s.icon_w + 2 * margin or 0) + 2 * margin
 	end
 
-	if width < size_info.actions_max_width then
-		width = size_info.actions_max_width
+	if width < s.actions_max_width then
+		width = s.actions_max_width
 	end
 
-	if size_info.max_width then
-		width = math.min(width, size_info.max_width)
+	if s.max_width then
+		width = math.min(width, s.max_width)
 	end
 
 	-- calculate the height
 	if not height then
-		local w = width - (n_self.iconbox and size_info.icon_w + 2 * margin or 0) - 2 * margin
-		local h = n_self.textbox:get_height_for_width(w, n_self.screen)
-		if n_self.iconbox and size_info.icon_h + 2 * margin > h + 2 * margin then
-			height = size_info.icon_h + 2 * margin
+		local w = width - (n.iconbox and s.icon_w + 2 * margin or 0) - 2 * margin
+		local h = n.textbox:get_height_for_width(w, n.screen)
+		if n.iconbox and s.icon_h + 2 * margin > h + 2 * margin then
+			height = s.icon_h + 2 * margin
 		else
 			height = h + 2 * margin
 		end
 	end
 
-	height = height + size_info.actions_total_height
+	height = height + s.actions_total_height
 
-	if size_info.max_height then
-		height = math.min(height, size_info.max_height)
+	if s.max_height then
+		height = math.min(height, s.max_height)
 	end
 
 	-- crop to workarea size if too big
-	local workarea     = n_self.screen.workarea
-	local border_width = size_info.border_width or 0
+	local workarea     = n.screen.workarea
+	local border_width = s.border_width or 0
 	local padding      = naughty.config.padding or 0
-
 	if width > workarea.width - 2 * border_width - 2 * padding then
 		width = workarea.width - 2 * border_width - 2 * padding
 	end
-
 	if height > workarea.height - 2 * border_width - 2 * padding then
 		height = workarea.height - 2 * border_width - 2 * padding
 	end
 
 	-- set size in notification object
-	n_self.height = height + 2 * border_width
-	n_self.width  = width + 2 * border_width
-
-	local offset  = get_offset(n_self.screen, n_self.position, n_self.idx, n_self.width, n_self.height)
-	n_self.box:geometry({
+	n.height     = height + 2 * border_width
+	n.width      = width + 2 * border_width
+	local offset = get_offset(n.screen, n.position, n.idx, n.width, n.height)
+	n.box:geometry({
 		width  = width,
 		height = height,
 		x      = offset.x,
 		y      = offset.y,
 	})
-	n_self.idx = offset.idx
+	n.idx = offset.idx
 
 	-- update positions of other notifications
-	arrange(n_self.screen)
+	arrange(n.screen)
 end
 
 --- Replace title and text of an existing notification.
@@ -671,9 +621,7 @@ end
 function naughty.notify(args)
 	if naughty.config.notify_callback then
 		args = naughty.config.notify_callback(args)
-		if not args then
-			return
-		end
+		if not args then return end
 	end
 
 	-- gather variables together
@@ -699,18 +647,30 @@ function naughty.notify(args)
 	local destroy_cb    = args.destroy
 
 	-- beautiful
-	local font          = args.font or preset.font or beautiful.notification_font or beautiful.font or capi.awesome.font
-	local fg            = args.fg or preset.fg or beautiful.notification_fg or beautiful.fg_normal or '#ffffff'
-	local bg            = args.bg or preset.bg or beautiful.notification_bg or beautiful.bg_normal or '#535d6c'
-	local border_color  = args.border_color or preset.border_color or beautiful.notification_border_color or beautiful.bg_focus or '#535d6c'
-	local border_width  = args.border_width or preset.border_width or beautiful.notification_border_width
-	local shape         = args.shape or preset.shape or beautiful.notification_shape
-	local width         = args.width or preset.width or beautiful.notification_width
-	local height        = args.height or preset.height or beautiful.notification_height
-	local max_width     = args.max_width or preset.max_width or beautiful.notification_max_width
-	local max_height    = args.max_height or preset.max_height or beautiful.notification_max_height
-	local margin        = args.margin or preset.margin or beautiful.notification_margin
-	local opacity       = args.opacity or preset.opacity or beautiful.notification_opacity
+	local font          = args.font or preset.font or beautiful.notification_font or
+			beautiful.font or capi.awesome.font
+	local fg            = args.fg or preset.fg or
+			beautiful.notification_fg or beautiful.fg_normal or '#ffffff'
+	local bg            = args.bg or preset.bg or
+			beautiful.notification_bg or beautiful.bg_normal or '#535d6c'
+	local border_color  = args.border_color or preset.border_color or
+			beautiful.notification_border_color or beautiful.bg_focus or '#535d6c'
+	local border_width  = args.border_width or preset.border_width or
+			beautiful.notification_border_width
+	local shape         = args.shape or preset.shape or
+			beautiful.notification_shape
+	local width         = args.width or preset.width or
+			beautiful.notification_width
+	local height        = args.height or preset.height or
+			beautiful.notification_height
+	local max_width     = args.max_width or preset.max_width or
+			beautiful.notification_max_width
+	local max_height    = args.max_height or preset.max_height or
+			beautiful.notification_max_height
+	local margin        = args.margin or preset.margin or
+			beautiful.notification_margin
+	local opacity       = args.opacity or preset.opacity or
+			beautiful.notification_opacity
 	local notification  = { screen = s, destroy_cb = destroy_cb, timeout = timeout }
 
 	-- replace notification if needed
@@ -722,16 +682,17 @@ function naughty.notify(args)
 			naughty.destroy(obj, naughty.notificationClosedReason.silent, true)
 			reuse_box = obj.box
 		end
-
 		-- ... may use its ID
 		if args.replaces_id <= counter then
 			notification.id = args.replaces_id
 		else
-			notification.id = naughty.get_next_notification_id()
+			counter         = counter + 1
+			notification.id = counter
 		end
 	else
 		-- get a brand new ID
-		notification.id = naughty.get_next_notification_id()
+		counter         = counter + 1
+		notification.id = counter
 	end
 
 	notification.position = position
@@ -776,7 +737,6 @@ function naughty.notify(args)
 	local actionslayout        = wibox.layout.fixed.vertical()
 	local actions_max_width    = 0
 	local actions_total_height = 0
-
 	if actions then
 		for action, callback in pairs(actions) do
 			local actiontextbox   = wibox.widget.textbox()
@@ -808,7 +768,6 @@ function naughty.notify(args)
 	local iconbox        = nil
 	local iconmargin     = nil
 	local icon_w, icon_h = 0, 0
-
 	if icon then
 		-- Is this really an URI instead of a path?
 		if type(icon) == "string" and string.sub(icon, 1, 7) == "file://" then
@@ -846,7 +805,6 @@ function naughty.notify(args)
 			icon_h = icon:get_height()
 		end
 	end
-
 	notification.iconbox = iconbox
 
 	-- create container wibox
@@ -855,7 +813,6 @@ function naughty.notify(args)
 	else
 		notification.box = reuse_box
 	end
-
 	notification.box.fg                 = fg
 	notification.box.bg                 = bg
 	notification.box.border_color       = border_color
@@ -885,15 +842,11 @@ function naughty.notify(args)
 	notification.box.opacity = opacity
 	notification.box.visible = true
 
-	local size_info          = notification.size_info
-
 	-- populate widgets
-	local layout = wibox.layout.fixed.horizontal()
-
+	local layout             = wibox.layout.fixed.horizontal()
 	if iconmargin then
 		layout:add(iconmargin)
 	end
-
 	layout:add(marginbox)
 
 	local completelayout = wibox.layout.fixed.vertical()
@@ -918,10 +871,6 @@ function naughty.notify(args)
 	-- return the notification
 	return notification
 end
-
-screen.connect_for_each_screen(init_screen)
-
-capi.screen.connect_signal("removed", removed)
 
 return naughty
 
