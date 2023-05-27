@@ -17,8 +17,7 @@ local naction         = require("lib.naughty.action")
 local utils           = require("lib.naughty.utils")
 local cst             = require("lib.naughty.constants")
 local protected_call  = require("gears.protected_call")
-local gtable          = require("gears.table")
-local unpack          = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
+local unpack          = unpack or table.unpack
 
 local dbus_connection = {
 	session = "session",
