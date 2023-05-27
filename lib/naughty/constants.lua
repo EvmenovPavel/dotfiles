@@ -111,7 +111,7 @@ no_clear.defaults              = {
 	urgency      = "normal",
 	message      = "",
 	title        = "",
-	app_name     = "",
+	appname      = "",
 	ignore       = false,
 }
 

@@ -16,6 +16,10 @@ local tins     = table.insert
 
 local utils    = {}
 
+function utils:is_empty(s)
+	return s == nil or s == ""
+end
+
 -- create iconbox
 function utils:create_actions(actions, margin, font, s)
 	local layout_actions       = wibox.layout.fixed.vertical()
@@ -36,8 +40,8 @@ function utils:create_actions(actions, margin, font, s)
 		local action_width  = w + 2 * margin
 
 		actionmarginbox:buttons(gtable.join(
-				button({ }, 1, callback),
-				button({ }, 3, callback)
+				button({ }, event.mouse.button_click_left, callback),
+				button({ }, event.mouse.button_click_right, callback)
 		))
 		layout_actions:add(actionmarginbox)
 
@@ -92,7 +96,7 @@ function utils:create_iconbox(icon_data, icon_size)
 		elseif had_icon then
 			require("gears.debug").print_warning("naughty: failed to load icon " ..
 					icon_data ..
-					"(app_name: " .. self.app_name .. ")" ..
+					"(appname: " .. self.appname .. ")" ..
 					"(title: " .. self.title .. ")")
 		end
 	end

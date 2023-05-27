@@ -500,11 +500,12 @@ function naughty.notify(args)
 	-- gather variables together
 	local preset    = gtable.join(naughty.config.defaults or {}, args.preset or naughty.config.presets.normal or {})
 	local timeout   = args.timeout or preset.timeout
-	local icon_data = args.icon or preset.icon
+
+	local icon_data = args.icon_data or preset.icon_data
 	local icon_size = args.icon_size or preset.icon_size or beautiful.notification_icon_size
 
 	local appname   = args.appname or preset.appname
-	local message   = args.text or preset.text
+	local message   = args.message or preset.message
 	local title     = args.title or preset.title
 
 	local s         = get_screen(args.screen or preset.screen or screen.focused())
