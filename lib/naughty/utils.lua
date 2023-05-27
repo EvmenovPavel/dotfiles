@@ -17,7 +17,7 @@ local tins     = table.insert
 local utils    = {}
 
 -- create iconbox
-function utils:create_actions(self, actions, margin, font, s)
+function utils:create_actions(actions, margin, font, s)
 	local layout_actions       = wibox.layout.fixed.vertical()
 	local actions_total_height = 0
 	local actions_max_width    = 0
@@ -47,10 +47,11 @@ function utils:create_actions(self, actions, margin, font, s)
 		end
 	end
 
-	return layout_actions
+	return layout_actions, actions_total_height, actions_max_width
 end
 
-function utils:create_iconbox(self, icon_data, icon_size, size_info)
+-- create iconbox
+function utils:create_iconbox(icon_data, icon_size)
 	local iconbox = nil
 
 	if icon_data then
@@ -78,10 +79,7 @@ function utils:create_iconbox(self, icon_data, icon_size, size_info)
 		-- if we have an icon, use it
 		local function update_icon(icn)
 			if icn then
-				size_info.icon_w = icn:get_width()
-				size_info.icon_h = icn:get_height()
-
-				icn              = icon_data
+				icn = icon_data
 
 				iconbox:set_clip_shape(gears.shape.rounded_rect, 9)
 				iconbox:set_resize(true)
@@ -90,13 +88,10 @@ function utils:create_iconbox(self, icon_data, icon_size, size_info)
 		end
 
 		if icon_data then
-			--self:connect_signal("property::icon", function()
-			--	update_icon(gsurface.load_uncached_silently(self.icon))
-			--end)
 			update_icon(icon_data)
 		elseif had_icon then
 			require("gears.debug").print_warning("naughty: failed to load icon " ..
-					"icon" ..
+					icon_data ..
 					"(app_name: " .. self.app_name .. ")" ..
 					"(title: " .. self.title .. ")")
 		end

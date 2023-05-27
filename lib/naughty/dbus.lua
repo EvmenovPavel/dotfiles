@@ -156,7 +156,7 @@ local function Notify(data, appname, replaces_id, icon, title, text, actions, hi
 
 		return "u", naughty.get_next_notification_id()
 	elseif data.member == "CloseNotification" then
-		local obj = naughty.getById(appname)
+		local obj = naughty.get_by_id(appname)
 		if obj then
 			naughty.destroy(obj, naughty.notificationClosedReason.dismissedByCommand)
 		end
