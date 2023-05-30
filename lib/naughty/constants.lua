@@ -8,23 +8,54 @@
 -- @copyright 2008 koniu
 -- @copyright 2017 Emmanuel Lepage Vallee
 ----------------------------------------------------------------------------
-local beautiful                = require("beautiful")
-local gtable                   = require("gears.table")
-local dpi                      = beautiful.xresources.apply_dpi
+local beautiful     = require("beautiful")
+local gtable        = require("gears.table")
+local lfs           = require("lfs")
+local dpi           = beautiful.xresources.apply_dpi
 
-local ret, no_clear            = {}, {}
+local ret, no_clear = {}, {}
 
-ret.config                     = {
+ret.config          = {
 	padding         = dpi(4),
 	spacing         = dpi(1),
-	icon_dirs       = {
-		"/usr/share/pixmaps/",
-		--"/usr/share/icons/hicolor",
-		"/usr/share/icons/hicolor/48x48/apps/"
-	},
+	icon_dirs       = {},
 	icon_formats    = { "png", "gif" },
 	notify_callback = nil,
 }
+
+-- Функция для поиска директории в подпапках
+local function findDirectory(dir, targetDirectory)
+	local pathTable = {}
+
+	for entry in lfs.dir(dir) do
+		if entry ~= "." and entry ~= ".." then
+			local entryPath  = dir .. "/" .. entry
+			local attributes = lfs.attributes(entryPath)
+
+			if attributes and attributes.mode == "directory" then
+				if entry == targetDirectory then
+					--print("entryPath", entryPath)
+					table.insert(pathTable, entryPath .. "/")
+					return pathTable
+				else
+					local subdirectoryPath = findDirectory(entryPath, targetDirectory)
+					for i, path in ipairs(subdirectoryPath) do
+						table.insert(pathTable, path)
+					end
+				end
+			end
+		end
+	end
+
+	return pathTable
+end
+
+-- Ищем директорию в подпапках
+local foundDirectory = findDirectory("/usr/share/icons", "apps")
+
+for _, path in ipairs(foundDirectory) do
+	table.insert(ret.config.icon_dirs, path)
+end
 
 no_clear.presets               = {
 	low      = {

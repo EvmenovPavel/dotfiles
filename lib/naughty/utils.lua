@@ -1,6 +1,6 @@
+local cst      = require("lib.naughty.constants")
 local wibox    = require("wibox")
 local button   = require("awful.button")
-local cst      = require("lib.naughty.constants")
 local util     = require("awful.util")
 local gears    = require("gears")
 local gfs      = require("gears.filesystem")
@@ -55,12 +55,29 @@ function utils:create_actions(actions, margin, font, s)
 end
 
 -- create iconbox
-function utils:create_iconbox(icon_data, icon_size)
+function utils:create_iconbox(icon_data, icon_size, is_app)
 	local iconbox = nil
+	local is_app  = is_app or false
 
-	if icon_data then
+	-- if we have an icon, use it
+	local function update_icon(icn)
+		if icn then
+			iconbox = wmapi.widget:imagebox()
+			iconbox:set_clip_shape(gears.shape.rounded_rect, 9)
+			iconbox:set_resize(true)
+			iconbox:set_image(icn)
+
+			--iconbox.forced_width  = 55
+			--iconbox.forced_height = 55
+		end
+	end
+
+	if type(icon_data) == "userdata" then
+		icon_data = gsurface.load_uncached_silently(icon_data)
+		update_icon(icon_data)
+	elseif type(icon_data) == "string" then
 		-- Is this really an URI instead of a path?
-		if type(icon_data) == "string" and string.sub(icon_data, 1, 7) == "file://" then
+		if string.sub(icon_data, 1, 7) == "file://" then
 			icon_data = string.sub(icon_data, 8)
 			-- urldecode URI path
 			icon_data = string.gsub(icon_data, "%%(%x%x)", function(x)
@@ -69,35 +86,12 @@ function utils:create_iconbox(icon_data, icon_size)
 		end
 
 		-- try to guess icon if the provided one is non-existent/readable
-		if type(icon_data) == "string" and not gfs.file_readable(icon_data) then
+		if not gfs.file_readable(icon_data) and is_app then
 			icon_data = util.geticonpath(icon_data, cst.config.icon_formats, cst.config.icon_dirs, icon_size) or icon_data
-		end
-
-		-- is the icon file readable?
-		local had_icon = type(icon_data) == "string"
-		icon_data      = gsurface.load_uncached_silently(icon_data)
-		if icon_data then
-			iconbox = wmapi.widget:imagebox()
-		end
-
-		-- if we have an icon, use it
-		local function update_icon(icn)
-			if icn then
-				icn = icon_data
-
-				iconbox:set_clip_shape(gears.shape.rounded_rect, 9)
-				iconbox:set_resize(true)
-				iconbox:set_image(icn)
-			end
 		end
 
 		if icon_data then
 			update_icon(icon_data)
-		elseif had_icon then
-			require("gears.debug").print_warning("naughty: failed to load icon " ..
-					icon_data ..
-					"(appname: " .. self.appname .. ")" ..
-					"(title: " .. self.title .. ")")
 		end
 	end
 

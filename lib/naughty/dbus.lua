@@ -192,7 +192,7 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, messa
 			preset.callback(legacy_data, appname, replaces_id, app_icon, title, message, actions, hints, expire)) then
 
 		if app_icon ~= "" then
-			args.app_icon = app_icon
+			args.icon_data = app_icon
 		elseif hints.icon_data or hints.image_data then
 			if hints.icon_data == nil then
 				hints.icon_data = hints.image_data
@@ -210,6 +210,7 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, messa
 			-- Get the value as a GVariant and then use LGI's special
 			-- GVariant.data to get that as an LGI byte buffer. That one can
 			-- then by converted to a string via its __tostring metamethod.
+
 			local width, height, rowstride, has, bits, channels, icon_data = unpack(hints.icon_data)
 
 			args.icon_data                                                 = utils:convert_icon(width, height, rowstride, channels, icon_data)
@@ -336,7 +337,7 @@ end)
 -- listen for dbus notification requests
 capi.dbus.request_name(dbus_connection.session, dbus_method.dbusNotificationsInterface)
 
-dbus.notification = function(appname, title, text, app_icon, urgency)
+dbus.notification = function(type, appname, title, text, app_icon, urgency)
 	notif_methods.Notify({  }, appname, 0, app_icon, title, text,
 			{
 				"> 1", function() log:info("actions 'click >1'") end,

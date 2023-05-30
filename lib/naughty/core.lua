@@ -115,7 +115,9 @@ gtable.crush(naughty, require("lib.naughty.constants"))
 local counter         = 1
 
 -- True if notifying is suspended
-local suspended       = false
+local properties      = {
+	suspended = false,
+}
 
 --- Index of notifications per screen and position.
 -- See config table for valid 'position' values.
@@ -140,25 +142,29 @@ local function init_screen(s)
 	}
 end
 
+screen.connect_for_each_screen(init_screen)
+
 local function removed(scr)
 	-- Destroy all notifications on this screen
 	naughty.destroy_all_notifications({ scr })
 	naughty.notifications[scr] = nil
 end
 
+capi.screen.connect_signal("removed", removed)
+
 --- Notification state
 function naughty.is_suspended()
-	return suspended
+	return properties.suspended
 end
 
 --- Suspend notifications
 function naughty.suspend()
-	suspended = true
+	properties.suspended = true
 end
 
 --- Resume notifications
 function naughty.resume()
-	suspended = false
+	properties.suspended = false
 
 	for _, v in pairs(naughty.notifications.suspended) do
 		v.box.visible = true
@@ -173,11 +179,34 @@ end
 
 --- Toggle notification state
 function naughty.toggle()
-	if suspended then
+	if properties.suspended then
 		naughty.resume()
 	else
 		naughty.suspend()
 	end
+end
+
+--- Sum heights of notifications at position
+--
+-- @param s Screen to use
+-- @param position top_right | top_left | bottom_right | bottom_left
+--   | top_middle | bottom_middle | middle
+-- @param[opt] idx Index of last notification
+-- @return Height of notification stack with spacing
+local function get_total_heights(s, position, idx)
+	local sum           = 0
+	local notifications = naughty.notifications[s][position]
+
+	idx                 = idx or #notifications
+	for i = 1, idx, 1 do
+		local n = notifications[i]
+		-- `n` will not nil when there is too many notifications to fit in `s`
+		if n then
+			sum = sum + n.height + naughty.config.spacing
+		end
+	end
+
+	return sum
 end
 
 --- Evaluate desired position of the notification by index - internal
@@ -216,8 +245,11 @@ local function get_offset(s, position, idx, width, height)
 	-- calculate y
 	if position:match("top") then
 		v.y = ws.y + naughty.config.padding + existing
-	else
+	elseif position:match("bottom") then
 		v.y = ws.y + ws.height - (naughty.config.padding + height + existing)
+	else
+		local total = get_total_heights(s, position)
+		v.y         = ws.y + (ws.height - total) / 2 + naughty.config.padding + existing
 	end
 
 	-- Find old notification to replace in case there is not enough room.
@@ -269,7 +301,7 @@ end
 -- @return True if the popup was successfully destroyed, nil otherwise
 function naughty.destroy(notification, reason, keep_visible)
 	if notification and notification.box.visible then
-		if suspended then
+		if properties.suspended then
 			for k, v in pairs(naughty.notifications.suspended) do
 				if v.box == notification.box then
 					table.remove(naughty.notifications.suspended, k)
@@ -362,7 +394,7 @@ local function set_timeout(self, timeout)
 		local timer_die = timer { timeout = timeout }
 		timer_die:connect_signal("timeout", function() die(naughty.notificationClosedReason.expired) end)
 
-		if not suspended then
+		if not properties.suspended then
 			timer_die:start()
 		end
 
@@ -560,8 +592,6 @@ function naughty.notify(args)
 
 	notification.position = position
 
-	if title then title = title .. "\n" else title = "" end
-
 	-- hook destroy
 	set_timeout(notification, timeout)
 	local die                  = notification.die
@@ -580,7 +610,9 @@ function naughty.notify(args)
 		else
 			if notification.timer then notification.timer:stop() end
 			notification.timer = timer { timeout = hover_timeout }
-			notification.timer:connect_signal("timeout", function() die(naughty.notificationClosedReason.expired) end)
+			notification.timer:connect_signal("timeout", function()
+				die(naughty.notificationClosedReason.expired)
+			end)
 			notification.timer:start()
 		end
 	end
@@ -599,12 +631,18 @@ function naughty.notify(args)
 		notification.actionsbox                                 = layout_actions
 	end
 
-	---- create iconbox
+	-- create iconbox
 	local iconbox = nil
 	if icon_data then
 		iconbox              = utils:create_iconbox(icon_data, icon_size)
 		notification.iconbox = iconbox
 	end
+
+	--local appbox = nil
+	--if icon_data then
+	--	appbox              = utils:create_iconbox(appname, icon_size, true)
+	--	notification.appbox = appbox
+	--end
 
 	-- create container wibox
 	if not reuse_box then
@@ -687,7 +725,7 @@ function naughty.notify(args)
 	-- insert the notification to the table
 	table.insert(naughty.notifications[s][notification.position], notification)
 
-	if suspended and not args.ignore_suspend then
+	if properties.suspended and not args.ignore_suspend then
 		notification.box.visible = false
 		table.insert(naughty.notifications.suspended, notification)
 	end
@@ -695,10 +733,6 @@ function naughty.notify(args)
 	-- return the notification
 	return notification
 end
-
-screen.connect_for_each_screen(init_screen)
-
-capi.screen.connect_signal("removed", removed)
 
 return naughty
 
