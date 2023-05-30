@@ -12,6 +12,8 @@
 local capi      = { screen  = screen,
 					awesome = awesome }
 local utils     = require("lib.naughty.utils")
+local awful     = require("awful")
+local gears     = require("gears")
 local timer     = require("gears.timer")
 local button    = require("awful.button")
 local screen    = require("awful.screen")
@@ -152,38 +154,16 @@ end
 
 capi.screen.connect_signal("removed", removed)
 
---- Notification state
-function naughty.is_suspended()
-	return properties.suspended
-end
-
---- Suspend notifications
-function naughty.suspend()
-	properties.suspended = true
-end
-
---- Resume notifications
-function naughty.resume()
-	properties.suspended = false
-
-	for _, v in pairs(naughty.notifications.suspended) do
-		v.box.visible = true
-
-		if v.timer then
-			v.timer:start()
+local function get_clients(appname)
+	if appname ~= "" then
+		for _, c in ipairs(client.get()) do
+			if appname == c.instance or appname == c.class then
+				return c
+			end
 		end
 	end
 
-	naughty.notifications.suspended = { }
-end
-
---- Toggle notification state
-function naughty.toggle()
-	if properties.suspended then
-		naughty.resume()
-	else
-		naughty.suspend()
-	end
+	return nil
 end
 
 --- Sum heights of notifications at position
@@ -293,10 +273,88 @@ local function arrange(s)
 	end
 end
 
+local function update_size(self)
+	local size_info = self.size_info
+	local width     = 350
+	local height    = 95
+
+	if width < size_info.actions_max_width then
+		width = size_info.actions_max_width
+	end
+
+	if size_info.max_width then
+		width = math.min(width, size_info.max_width)
+	end
+
+	height = height + size_info.actions_total_height
+
+	if size_info.max_height then
+		height = math.min(height, size_info.max_height)
+	end
+
+	-- crop to workarea size if too big
+	local workarea     = self.screen.workarea
+	local border_width = size_info.border_width or 0
+	local padding      = naughty.config.padding or 0
+	if width > workarea.width - 2 * border_width - 2 * padding then
+		width = workarea.width - 2 * border_width - 2 * padding
+	end
+	if height > workarea.height - 2 * border_width - 2 * padding then
+		height = workarea.height - 2 * border_width - 2 * padding
+	end
+
+	-- set size in notification object
+	self.height  = height + 2 * border_width
+	self.width   = width + 2 * border_width
+	local offset = get_offset(self.screen, self.position, self.idx, self.width, self.height)
+	self.box:geometry({
+		width  = width,
+		height = height,
+		x      = offset.x,
+		y      = offset.y,
+	})
+	self.idx = offset.idx
+
+	-- update positions of other notifications
+	arrange(self.screen)
+end
+
+--- Install expiration timer for notification object.
+-- @tparam notification notification Notification object.
+-- @tparam number timeout Time in seconds to be set as expiration timeout.
+local function set_timeout(self, timeout)
+	local die = function(reason)
+		naughty.destroy(self, reason)
+	end
+
+	if timeout > 0 then
+		local timer_die = timer { timeout = timeout }
+		timer_die:connect_signal("timeout", function() die(naughty.notification_closed_reason.expired) end)
+
+		if not properties.suspended then
+			timer_die:start()
+		end
+
+		self.timer = timer_die
+	end
+
+	self.die = die
+end
+
+-- create textbox
+local function create_textbox(text, font)
+	local textbox = wmapi.widget:textbox()
+	textbox:set_valign("middle")
+	textbox:set_font(font)
+	textbox:set_text(text)
+
+	return textbox
+end
+
 --- Destroy notification by notification object
 --
 -- @param notification Notification object to be destroyed
--- @param reason One of the reasons from notificationClosedReason
+-- @param reason One of the reasons from notification_closed_reason
 -- @param[opt=false] keep_visible If true, keep the notification visible
 -- @return True if the popup was successfully destroyed, nil otherwise
 function naughty.destroy(notification, reason, keep_visible)
@@ -322,8 +380,8 @@ function naughty.destroy(notification, reason, keep_visible)
 			arrange(scr)
 		end
 
-		if notification.destroy_cb and reason ~= naughty.notificationClosedReason.silent then
-			notification.destroy_cb(reason or naughty.notificationClosedReason.undefined)
+		if notification.destroy_cb and reason ~= naughty.notification_closed_reason.silent then
+			notification.destroy_cb(reason or naughty.notification_closed_reason.undefined)
 		end
 
 		return true
@@ -334,7 +392,7 @@ end
 --
 -- @tparam table screens Table of screens on which notifications should be
 -- destroyed. If nil, destroy notifications on all screens.
--- @tparam naughty.notificationClosedReason reason Reason for closing
+-- @tparam naughty.notification_closed_reason reason Reason for closing
 -- notifications.
 -- @treturn true|nil True if all notifications were successfully destroyed, nil
 -- otherwise.
@@ -382,36 +440,38 @@ function naughty.get_next_notification_id()
 	return counter
 end
 
---- Install expiration timer for notification object.
--- @tparam notification notification Notification object.
--- @tparam number timeout Time in seconds to be set as expiration timeout.
-local function set_timeout(self, timeout)
-	local die = function(reason)
-		naughty.destroy(self, reason)
-	end
-
-	if timeout > 0 then
-		local timer_die = timer { timeout = timeout }
-		timer_die:connect_signal("timeout", function() die(naughty.notificationClosedReason.expired) end)
-
-		if not properties.suspended then
-			timer_die:start()
-		end
-
-		self.timer = timer_die
-	end
-
-	self.die = die
+--- Notification state
+function naughty.is_suspended()
+	return properties.suspended
 end
 
--- create textbox
-local function create_textbox(text, font)
-	local textbox = wmapi.widget:textbox()
-	textbox:set_valign("middle")
-	textbox:set_font(font)
-	textbox:set_text(text)
+--- Suspend notifications
+function naughty.suspend()
+	properties.suspended = true
+end
 
-	return textbox
+--- Resume notifications
+function naughty.resume()
+	properties.suspended = false
+
+	for _, v in pairs(naughty.notifications.suspended) do
+		v.box.visible = true
+
+		if v.timer then
+			v.timer:start()
+		end
+	end
+
+	naughty.notifications.suspended = { }
+end
+
+--- Toggle notification state
+function naughty.toggle()
+	if properties.suspended then
+		naughty.resume()
+	else
+		naughty.suspend()
+	end
 end
 
 --- Set new notification timeout.
@@ -426,52 +486,6 @@ function naughty.reset_timeout(self, new_timeout)
 	self.timeout = timeout
 
 	self.timer:start()
-end
-
-local function update_size(self)
-	local size_info = self.size_info
-	local width     = 350
-	local height    = 95
-
-	if width < size_info.actions_max_width then
-		width = size_info.actions_max_width
-	end
-
-	if size_info.max_width then
-		width = math.min(width, size_info.max_width)
-	end
-
-	height = height + size_info.actions_total_height
-
-	if size_info.max_height then
-		height = math.min(height, size_info.max_height)
-	end
-
-	-- crop to workarea size if too big
-	local workarea     = self.screen.workarea
-	local border_width = size_info.border_width or 0
-	local padding      = naughty.config.padding or 0
-	if width > workarea.width - 2 * border_width - 2 * padding then
-		width = workarea.width - 2 * border_width - 2 * padding
-	end
-	if height > workarea.height - 2 * border_width - 2 * padding then
-		height = workarea.height - 2 * border_width - 2 * padding
-	end
-
-	-- set size in notification object
-	self.height  = height + 2 * border_width
-	self.width   = width + 2 * border_width
-	local offset = get_offset(self.screen, self.position, self.idx, self.width, self.height)
-	self.box:geometry({
-		width  = width,
-		height = height,
-		x      = offset.x,
-		y      = offset.y,
-	})
-	self.idx = offset.idx
-
-	-- update positions of other notifications
-	arrange(self.screen)
 end
 
 --- Create a notification.
@@ -504,7 +518,7 @@ end
 -- @tparam[opt] func args.run Function to run on left click.  The notification
 --   object will be passed to it as an argument.
 --   You need to call e.g.
---   `notification.die(naughty.notificationClosedReason.dismissedByUser)` from
+--   `notification.die(naughty.notification_closed_reason.dismissed_by_user)` from
 --   there to dismiss the notification yourself.
 -- @tparam[opt] func args.destroy Function to run when notification is destroyed.
 -- @tparam[opt] table args.preset Table with any of the above parameters.
@@ -534,7 +548,6 @@ function naughty.notify(args)
 	local timeout   = args.timeout or preset.timeout
 
 	local icon_data = args.icon_data or preset.icon_data
-	local icon_size = args.icon_size or preset.icon_size or beautiful.notification_icon_size
 
 	local appname   = args.appname or preset.appname
 	local message   = args.message or preset.message
@@ -575,7 +588,7 @@ function naughty.notify(args)
 		local obj = naughty.get_by_id(args.replaces_id)
 		if obj then
 			-- destroy this and ...
-			naughty.destroy(obj, naughty.notificationClosedReason.silent, true)
+			naughty.destroy(obj, naughty.notification_closed_reason.silent, true)
 			reuse_box = obj.box
 		end
 
@@ -596,22 +609,14 @@ function naughty.notify(args)
 	set_timeout(notification, timeout)
 	local die                  = notification.die
 
-	local run                  = function()
-		if args.run then
-			args.run(notification)
-		else
-			die(naughty.notificationClosedReason.dismissedByUser)
-		end
-	end
-
 	local hover_destroy        = function()
 		if hover_timeout == 0 then
-			die(naughty.notificationClosedReason.expired)
+			die(naughty.notification_closed_reason.expired)
 		else
 			if notification.timer then notification.timer:stop() end
 			notification.timer = timer { timeout = hover_timeout }
 			notification.timer:connect_signal("timeout", function()
-				die(naughty.notificationClosedReason.expired)
+				die(naughty.notification_closed_reason.expired)
 			end)
 			notification.timer:start()
 		end
@@ -634,15 +639,21 @@ function naughty.notify(args)
 	-- create iconbox
 	local iconbox = nil
 	if icon_data then
-		iconbox              = utils:create_iconbox(icon_data, icon_size)
+		iconbox              = utils:create_iconbox(icon_data)
 		notification.iconbox = iconbox
 	end
 
-	--local appbox = nil
-	--if icon_data then
-	--	appbox              = utils:create_iconbox(appname, icon_size, true)
-	--	notification.appbox = appbox
-	--end
+	local appiconbox = nil
+	if appname then
+		local c = get_clients(appname)
+		if c then
+			appiconbox = awful.widget.clienticon(c)
+		else
+			appiconbox = utils:create_iconbox(appname, true)
+		end
+
+		notification.appiconbox = appiconbox
+	end
 
 	-- create container wibox
 	if not reuse_box then
@@ -651,13 +662,15 @@ function naughty.notify(args)
 		notification.box = reuse_box
 	end
 
-	notification.box.fg                 = fg
-	notification.box.bg                 = bg
-	notification.box.border_color       = border_color
-	notification.box.border_width       = border_width
-	notification.box.shape_border_color = shape and border_color
-	notification.box.shape_border_width = shape and border_width
-	notification.box.shape              = shape
+	notification.box.bg           = "#0B2035"
+	notification.box.fg           = "#EDFDFF"
+	--notification.box.border_color       = border_color
+	notification.box.border_width = border_width
+	--notification.box.shape_border_color = shape and border_color
+	--notification.box.shape_border_width = shape and border_width
+	notification.box.shape        = function(cr, width, height)
+		gears.shape.rounded_rect(cr, width, height, 13)
+	end
 
 	if hover_timeout then notification.box:connect_signal("mouse::enter", hover_destroy) end
 
@@ -680,6 +693,7 @@ function naughty.notify(args)
 	notification.box.opacity  = opacity
 	notification.box.visible  = true
 
+	-- Create widget
 	-- App name
 	local layout_top          = wibox.layout.fixed.horizontal()
 	-- Icon
@@ -690,11 +704,19 @@ function naughty.notify(args)
 	local layout_middle       = wibox.layout.fixed.horizontal()
 
 	-- populate widgets
+	-- Top widget
+	-- Icon app
+	if appiconbox then
+		layout_middle_left:add(appiconbox)
+	end
+
+	-- App name
+	layout_top:add(wappname)
+
 	if iconbox then
 		layout_middle_left:add(iconbox)
 	end
 
-	layout_top:add(wappname)
 	layout_middle_right:add(wtitle)
 	layout_middle_right:add(wmessage)
 
@@ -709,7 +731,28 @@ function naughty.notify(args)
 		completelayout:add(layout_actions)
 	end
 
-	local marginbox = wibox.container.margin()
+	local refresh_button = wibox.widget {
+		{
+			{
+				completelayout,
+				bg     = "#0B2035",
+				--opacity = 0.1,
+				--shape  = gears.shape.circle,
+				widget = wibox.container.background
+			},
+			margins = 20,
+			widget  = wibox.container.margin
+		},
+		--opacity = 0.,
+		bg     = "#0B2035",
+		widget = wibox.container.background
+	}
+
+	--local background     = wibox.container.background()
+	--background:add(completelayout)
+	--background.bg = "#FFFFFF"
+
+	local marginbox      = wibox.container.margin()
 	marginbox:set_margins(10)
 	marginbox:set_widget(completelayout)
 
@@ -717,10 +760,17 @@ function naughty.notify(args)
 
 	-- Setup the mouse events
 	marginbox:buttons(gtable.join(
-			button({}, event.mouse.button_click_left, nil, run),
+			button({}, event.mouse.button_click_left, nil, function()
+				if args.run then
+					args.run(notification)
+				else
+					die(naughty.notification_closed_reason.dismissed_by_user)
+				end
+			end),
 			button({}, event.mouse.button_click_right, nil, function()
 				die(naughty.notification_closed_reason.dismissed_by_user)
-			end)))
+			end)
+	))
 
 	-- insert the notification to the table
 	table.insert(naughty.notifications[s][notification.position], notification)

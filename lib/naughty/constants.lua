@@ -19,12 +19,12 @@ ret.config          = {
 	padding         = dpi(4),
 	spacing         = dpi(1),
 	icon_dirs       = {},
-	icon_formats    = { "png", "gif" },
+	icon_formats    = { "png", "svg", "gif" },
 	notify_callback = nil,
 }
 
 -- Функция для поиска директории в подпапках
-local function findDirectory(dir, targetDirectory)
+local function findDirectory(dir, targetDirectory, size)
 	local pathTable = {}
 
 	for entry in lfs.dir(dir) do
@@ -34,11 +34,11 @@ local function findDirectory(dir, targetDirectory)
 
 			if attributes and attributes.mode == "directory" then
 				if entry == targetDirectory then
-					--print("entryPath", entryPath)
 					table.insert(pathTable, entryPath .. "/")
+					--table.insert(pathTable, { entryPath .. "/", size })
 					return pathTable
 				else
-					local subdirectoryPath = findDirectory(entryPath, targetDirectory)
+					local subdirectoryPath = findDirectory(entryPath, targetDirectory, entry)
 					for i, path in ipairs(subdirectoryPath) do
 						table.insert(pathTable, path)
 					end
@@ -156,9 +156,6 @@ ret.notification_closed_reason = {
 	dismissed_by_command = 3,
 	undefined            = 4
 }
-
--- Legacy --TODO v5 remove this alias
-ret.notificationClosedReason   = ret.notification_closed_reason
 
 -- `no_clear` is used to prevent users from setting the entire table.
 -- If they did and we added a new default value, then it would not be

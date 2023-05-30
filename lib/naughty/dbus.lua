@@ -122,6 +122,11 @@ end
 
 function notif_methods.Notify(data, appname, replaces_id, app_icon, title, message, actions, hints, expire)
 	local args = {}
+
+	if appname ~= "" then
+		args.appname = appname
+	end
+
 	if message ~= "" then
 		args.message = message
 	else
@@ -131,10 +136,6 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, messa
 
 	if title ~= "" then
 		args.title = title
-	end
-
-	if appname ~= "" then
-		args.appname = appname
 	end
 
 	local preset       = args.preset or cst.config.defaults
@@ -252,7 +253,6 @@ function notif_methods.Notify(data, appname, replaces_id, app_icon, title, messa
 
 		args.urgency = args.urgency or "normal"
 
-		--notification = nnotif(args)
 		notification = naughty.notify(args)
 
 		if notification ~= nil then

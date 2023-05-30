@@ -55,7 +55,7 @@ function utils:create_actions(actions, margin, font, s)
 end
 
 -- create iconbox
-function utils:create_iconbox(icon_data, icon_size, is_app)
+function utils:create_iconbox(icon_data, is_app)
 	local iconbox = nil
 	local is_app  = is_app or false
 
@@ -87,7 +87,7 @@ function utils:create_iconbox(icon_data, icon_size, is_app)
 
 		-- try to guess icon if the provided one is non-existent/readable
 		if not gfs.file_readable(icon_data) and is_app then
-			icon_data = util.geticonpath(icon_data, cst.config.icon_formats, cst.config.icon_dirs, icon_size) or icon_data
+			icon_data = util.geticonpath(icon_data, cst.config.icon_formats, cst.config.icon_dirs, nil)
 		end
 
 		if icon_data then
