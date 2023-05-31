@@ -121,7 +121,7 @@ function battery:init()
 
 	wmapi:watch(bash_upower, 1,
 			function(stdout)
-				log:info("stdout", stdout)
+				--log:info("stdout", stdout)
 				local _upower = { buf = {}, swp = {} }
 
 				for line in stdout:gmatch("[^\r\n]+") do
@@ -205,8 +205,8 @@ function battery:init()
 
 				local image, value = self:updateWidgetInfo(_private.state, _private.value)
 
-				w_imagebox:image(image)
-				w_textbox:text(value)
+				w_imagebox:set_image(image)
+				w_textbox:set_text(value)
 
 				if _private.state == 1 and _private.notify ~= _private.state then
 					self:notify_power(_private.state)
@@ -220,8 +220,8 @@ function battery:init()
 			end)
 
 	local ret = wibox.widget({
-		w_imagebox:get(),
-		w_textbox:get(),
+		w_imagebox,
+		w_textbox,
 		layout = wibox.layout.align.horizontal
 	})
 

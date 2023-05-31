@@ -1,10 +1,10 @@
 local log_level       = {
-	LOG_LEVEL_DEBUG    = "DEBUG", -- /* normal debugging level */
-	LOG_LEVEL_INFO     = "INFO", -- /* chatty status but not debug */
-	LOG_LEVEL_WARNING  = "WARNING", -- /* can be set to fatal */
-	LOG_LEVEL_CRITICAL = "CRITICAL", -- /* always enabled, can be set to fatal */
-	LOG_LEVEL_ERROR    = "ERROR", -- /* "error" is always fatal (aborts) */
-	LOG_LEVEL_FATAL    = "FATAL",
+	LOG_LEVEL_DEBUG    = "debug", -- /* normal debugging level */
+	LOG_LEVEL_INFO     = "info", -- /* chatty status but not debug */
+	LOG_LEVEL_WARNING  = "warning", -- /* can be set to fatal */
+	LOG_LEVEL_CRITICAL = "critical", -- /* always enabled, can be set to fatal */
+	LOG_LEVEL_ERROR    = "error", -- /* "error" is always fatal (aborts) */
+	LOG_LEVEL_FATAL    = "fatal",
 };
 
 local PARENT_LOG_PATH = os.getenv("HOME") .. "/.config/awesome/logs"
@@ -25,7 +25,7 @@ local setting         = {
 local private         = {
 	datetime         = os.date(setting.date_format),
 	filename         = nil,
-	currnet_log_path = nil,
+	current_log_path = nil,
 }
 
 local function create_dirs()
@@ -35,9 +35,9 @@ local function create_dirs()
 	end
 
 	-- создаем под папку с нынешней датой
-	private.currnet_log_path = PARENT_LOG_PATH .. "/" .. private.datetime
-	if wmapi:is_dir(private.currnet_log_path) then
-		wmapi:mkdir(private.currnet_log_path)
+	private.current_log_path = PARENT_LOG_PATH .. "/" .. private.datetime
+	if wmapi:is_dir(private.current_log_path) then
+		wmapi:mkdir(private.current_log_path)
 	end
 end
 
@@ -45,11 +45,11 @@ local function update_datetime()
 	private.datetime = os.date(setting.date_format)
 end
 
-local function update_filename()
+local function update_filename(type)
 	-- проверяем размер файла
-	private.filename = setting.name_file .. tostring(setting.index) .. setting.type_file
+	private.filename = setting.name_file .. "_" .. type .. "_" .. tostring(setting.index) .. setting.type_file
 
-	local file       = private.currnet_log_path .. "/" .. private.filename
+	local file       = private.current_log_path .. "/" .. private.filename
 	local filesize   = wmapi:file_size(file)
 
 	local temp_size  = math.ceil(filesize / 1024)
@@ -60,19 +60,12 @@ local function update_filename()
 end
 
 local function write_file(type, msg)
-	local pid = wmapi:get_pid()
-
-	-- обновляем дату
-	update_datetime()
-	-- создаем папки
-	create_dirs()
-	-- обновляем имя файла
-	update_filename()
+	local pid    = wmapi:get_pid()
 
 	local date   = os.date(setting.datetime_format)
 	local str    = string.format("%s, [%s] %s: %s\n", date, pid, type, msg)
 
-	local file   = private.currnet_log_path .. "/" .. private.filename
+	local file   = private.current_log_path .. "/" .. private.filename
 
 	local stream = io.open(file, "a")
 	if stream then
@@ -87,6 +80,13 @@ local function write_file(type, msg)
 end
 
 local function message(type, ...)
+	-- обновляем дату
+	update_datetime()
+	-- создаем папки
+	create_dirs()
+	-- обновляем имя файла
+	update_filename(type)
+
 	local msg
 
 	for i = 1, select("#", ...) do

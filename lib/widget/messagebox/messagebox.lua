@@ -57,7 +57,7 @@ local type    = {
 }
 
 local function message(type, app_name, title, text, app_icon, urgency)
-	naughty.dbus.notification(app_name, title, text, app_icon, urgency)
+	naughty.dbus.notification(type, app_name, title, text, app_icon, urgency)
 end
 
 local function new()
@@ -67,7 +67,7 @@ local function new()
 		message(type.question, app_name, title, text, app_icon, cst.config._urgency.low)
 	end
 
-	function ret:information(app_name, title, text, app_icon)
+	function ret:information(app_name, title, text, app_icon, _)
 		message(type.information, app_name, title, text, app_icon, cst.config._urgency.ok)
 	end
 

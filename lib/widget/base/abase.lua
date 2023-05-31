@@ -299,7 +299,7 @@ function base:init(type_name)
 
 	__private.shape = nil
 	function public:shape(shape)
-		if type(icon) == LuaTypes.func then
+		if type(icon_data) == LuaTypes.func then
 			__private.shape = shape
 		end
 

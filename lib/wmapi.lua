@@ -261,6 +261,9 @@ end
 
 function wmapi:is_file(path)
 	-- true - error
+	log:info("path:sub(-1)", path:sub(-1))
+	log:info("mode", lfs.attributes(path, "mode"))
+
 	return not (path:sub(-1) == "/" or lfs.attributes(path, "mode") == "file")
 end
 
@@ -524,20 +527,72 @@ end
 
 function wmapi:client_info(c)
 	if c then
+		local str   = "\n"
 
-		log:info(">> client_info")
-		log:debug("\n", c.name,
-				"window:    " .. tostring(c.window),
-				"tag:       " .. tostring(c.tag),
-				"tags:      " .. tostring(c.tags),
-				"instance:  " .. tostring(c.instance),
-				"class:     " .. tostring(c.class),
-				"screen:    " .. tostring(self:screen_id(c.screen)),
-				"exec_once: " .. tostring(c.exec_once),
-				"icon:      " .. tostring(c.icon),
-				"width:     " .. tostring(c.width),
-				"height:    " .. tostring(c.height)
-		)
+		local table = {
+			"window", --The X window id.
+			"name", --The client title.
+			"skip_taskbar", --True if the client does not want to be in taskbar.
+			"type", --The window type.
+			"class", --The client class.
+			"instance", --The client instance.
+			"pid", --The client PID, if available.
+			"role", --The window role, if available.
+			"machine", --The machine client is running on.
+			"icon_name", --The client name when iconified.
+			"icon", --The client icon as a surface.
+			"icon_sizes", --The available sizes of client icons.
+			"screen", --Client screen.
+			"hidden", --Define if the client must be hidden, i.e.
+			"minimized", --Define it the client must be iconify, i.e.
+			"size_hints_honor", --Honor size hints, e.g.
+			"border_width", --The client border width.
+			"border_color", --The client border color.
+			"urgent", --The client urgent state.
+			"content", --A cairo surface for the client window content.
+			"opacity", --The client opacity.
+			"ontop", --The client is on top of every other windows.
+			"above", --The client is above normal windows.
+			"below", --The client is below normal windows.
+			"fullscreen", --The client is fullscreen or not.
+			"maximized", --The client is maximized (horizontally and vertically) or not.
+			"maximized_horizontal", --The client is maximized horizontally or not.
+			"maximized_vertical", --The client is maximized vertically or not.
+			"transient_for", --The client the window is transient for.
+			"group_window", --Window identification unique to a group of windows.
+			"leader_window", --Identification unique to windows spawned by the same command.
+			"size_hints", --A table with size hints of the client.
+			"motif_wm_hints", --The motif WM hints of the client.
+			"sticky", --Set the client sticky, i.e.
+			"modal", --Indicate if the client is modal.
+			"focusable", --True if the client can receive the input focus.
+			"shape_bounding", --The client’s bounding shape as set by awesome as a (native) cairo surface.
+			"shape_clip", --The client’s clip shape as set by awesome as a (native) cairo surface.
+			"shape_input", --The client’s input shape as set by awesome as a (native) cairo surface.
+			"client_shape_bounding", --The client’s bounding shape as set by the program as a (native) cairo surface.
+			"client_shape_clip", --The client’s clip shape as set by the program as a (native) cairo surface.
+			"startup_id", --The FreeDesktop StartId.
+			"valid", --If the client that this object refers to is still managed by awesome.
+			"first_tag", --The first tag of the client.
+			"marked", --If a client is marked or not.
+			"is_fixed", --Return if a client has a fixed size or not.
+			"immobilized", --Is the client immobilized horizontally?
+			"immobilized", --Is the client immobilized vertically?
+			"floating", --The client floating state.
+			"x", --The x coordinates.
+			"y", --The y coordinates.
+			"width", --The width of the client.
+			"height", --The height of the client.
+			"dockable", --If the client is dockable.
+			"requests_no_titlebar", --If the client requests not to be decorated with a titlebar.
+			"shape", --Set the client shape.
+		}
+
+		for _, text in ipairs(table) do
+			str = str .. text .. ": " .. tostring(c[text]) .. ",	"
+		end
+
+		log:info(str)
 	end
 end
 
@@ -553,30 +608,6 @@ end
 
 local client_iterate = require("awful.client").iterate
 local gtable         = require("gears.table")
-
-function wmapi:logs(c)
-	log:debug(
-			"\nname:", c.name,
-			"\nskip_taskbar:", c.skip_taskbar,
-			"\nclass:", c.class,
-			"\ninstance:", c.instance,
-			"\npid:", c.pid,
-			"\nrole:", c.role,
-			"\nicon_name:", c.icon_name,
-			"\nicon:", c.icon,
-			"\nicon_sizes:", c.icon_sizes,
-			"\ngroup_window:", c.group_window,
-			"\nstartup_id:", c.startup_id,
-			"\nborder_width:", c.border_width,
-			"\nmaximized:", c.maximized,
-			"\nfullscreen:", c.fullscreen,
-			"\nmaximized_horizontal:", c.maximized_horizontal,
-			"\nmaximized_vertical:", c.maximized_vertical,
-			"\nwidth:", c.width,
-			"\nheight:", c.height,
-			"\n\n"
-	)
-end
 
 function wmapi:update_client(c)
 	if c.maximized or c.fullscreen then

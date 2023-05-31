@@ -1,9 +1,9 @@
 local shortcuts     = {
-	_NAME = "foggy.shortcuts"
+	_NAME = "modules.foggy.shortcuts"
 }
 
-local set_backlight = require('foggy.xrandr').actions.set_backlight
-local get_output    = require('foggy.menu').get_output
+local set_backlight = require('modules.foggy.xrandr').actions.set_backlight
+local get_output    = require('modules.foggy.menu').get_output
 
 function shortcuts.inc_backlight(step, screen)
 	local step      = step or 5

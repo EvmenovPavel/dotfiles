@@ -1,9 +1,9 @@
-local xinerama = require('foggy.xinerama')
-local xrandr   = require('foggy.xrandr')
+local xinerama = require('modules.foggy.xinerama')
+local xrandr   = require('modules.foggy.xrandr')
+local edid     = require('modules.foggy.edid')
 local awful    = require('awful')
-local edid     = require('foggy.edid')
 
-local menu     = { mt = {}, _NAME = "foggy.menu" }
+local menu     = { mt = {}, _NAME = "modules.foggy.menu" }
 
 local function get_output(screen_num)
 	local heads  = xinerama.info().heads
@@ -21,6 +21,7 @@ local function get_output(screen_num)
 			end
 		end
 	end
+
 	return co
 end
 
@@ -73,15 +74,19 @@ local function build_resolution_menu(co)
 	local resmenu = { { '&auto', function()
 		xrandr.actions.auto_mode(co.name)
 	end } }
+
 	for i, mode in ipairs(co.modes) do
 		local prefix = ' '
 		local suffix = ''
+
 		if mode == co.current_mode then
 			prefix = '✓'
 		end
+
 		if mode == co.default_mode then
 			suffix = ' *'
 		end
+
 		resmenu[#resmenu + 1] = { string.format('%s%dx%d@%2.0f%s', prefix, mode[1], mode[2], mode[3], suffix), function()
 			xrandr.actions.set_mode(co.name, mode)
 		end }
@@ -93,6 +98,7 @@ end
 local function build_position_menu(co)
 	local posmenu       = {}
 	local other_outputs = {}
+
 	for name, _out in pairs(xrandr.info().outputs) do
 		if name ~= co.name and _out.connected and _out.on then
 			other_outputs[#other_outputs + 1] = name
@@ -236,7 +242,7 @@ function menu.menu(current_screen)
 	current_screen = current_screen or mouse.screen.index
 	local thismenu = build_menu(current_screen)
 	awful.menu.new({ items = thismenu,
-	                 theme = { width = 280 } }):show()
+					 theme = { width = 280 } }):show()
 end
 
 function menu.backlight(current_screen)

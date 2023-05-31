@@ -3,7 +3,7 @@ local awful     = require("awful")
 local wibox     = require("wibox")
 local widgets   = require("widgets")
 
-local foggy     = require('foggy')
+local foggy     = require('modules.foggy')
 
 local mywibar   = {}
 
@@ -23,7 +23,7 @@ end
 
 function mywibar:w_right(s)
 	if wmapi:is_screen_primary(s) then
-		local scrnicon = wibox.widget.background(wibox.widget.imagebox(resources.awesome), '#313131')
+		local scrnicon = wibox.widget.background(wibox.widget.imagebox(resources.battery.full), '#313131')
 		scrnicon:buttons(awful.util.table.join(
 				awful.button({ }, event.mouse.button_click_left, function(c)
 					foggy.menu()
@@ -38,10 +38,10 @@ function mywibar:w_right(s)
 
 			widgets.volume(),
 			widgets.brightness(),
-			--widgets.battery(),
+			widgets.battery(),
 			widgets.calendar(),
 
-			--scrnicon,
+			scrnicon,
 
 			layout = wibox.layout.fixed.horizontal
 		}

@@ -280,68 +280,119 @@ end
 
 capi.dbus.connect_signal(dbus_method.dbusNotificationsInterface, method_call)
 
-capi.dbus.connect_signal(dbus_method.dbusIntrospectable, function(data)
+capi.dbus.connect_signal(dbus_method.dbusRemoveMatch,
+		function(_1, _2, _3, _4, _5, _6, _7, _8, _9, _0)
+			log:info("org.freedesktop.DBus.RemoveMatch")
+		end)
+capi.dbus.connect_signal(dbus_method.dbusAddMatch,
+		function(_1, _2, _3, _4, _5, _6, _7, _8, _9, _0)
+			log:info("org.freedesktop.DBus.AddMatch")
+		end)
+capi.dbus.connect_signal(dbus_method.signalNotificationClosed,
+		function(_1, _2, _3, _4, _5, _6, _7, _8, _9, _0)
+			log:info("org.freedesktop.Notifications.NotificationClosed")
+		end)
+capi.dbus.connect_signal(dbus_method.signalActionInvoked,
+		function(_1, _2, _3, _4, _5, _6, _7, _8, _9, _0)
+			log:info("org.freedesktop.Notifications.ActionInvoked")
+		end)
+capi.dbus.connect_signal(dbus_method.callGetCapabilities,
+		function(_1, _2, _3, _4, _5, _6, _7, _8, _9, _0)
+			log:info("org.freedesktop.Notifications.GetCapabilities")
+		end)
+capi.dbus.connect_signal(dbus_method.callCloseNotification,
+		function(_1, _2, _3, _4, _5, _6, _7, _8, _9, _0)
+			log:info("org.freedesktop.Notifications.CloseNotification")
+		end)
+capi.dbus.connect_signal(dbus_method.callNotify,
+		function(_1, _2, _3, _4, _5, _6, _7, _8, _9, _0)
+			log:info("org.freedesktop.Notifications.Notify")
+		end)
+capi.dbus.connect_signal(dbus_method.callGetServerInformation,
+		function(_1, _2, _3, _4, _5, _6, _7, _8, _9, _0)
+			log:info("org.freedesktop.Notifications.GetServerInformation")
+		end)
+
+local function dbusIntrospectable(data)
+	log:info("data", data)
 	if data.member == "Introspect" then
 		local xml = [=[<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object
-    Introspection 1.0//EN"
-    "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
-    <node>
-      <interface name="org.freedesktop.DBus.Introspectable">
-        <method name="Introspect">
-          <arg name="data" direction="out" type="s"/>
-        </method>
-      </interface>
-      <interface name=dbus_method.dbusNotificationsInterface>
-        <method name="GetCapabilities">
-          <arg name="caps" type="as" direction="out"/>
-        </method>
-        <method name="CloseNotification">
-          <arg name="id" type="u" direction="in"/>
-        </method>
-        <method name="Notify">
-          <arg name="app_name" type="s" direction="in"/>
-          <arg name="id" type="u" direction="in"/>
-          <arg name="icon" type="s" direction="in"/>
-          <arg name="summary" type="s" direction="in"/>
-          <arg name="body" type="s" direction="in"/>
-          <arg name="actions" type="as" direction="in"/>
-          <arg name="hints" type="a{sv}" direction="in"/>
-          <arg name="timeout" type="i" direction="in"/>
-          <arg name="return_id" type="u" direction="out"/>
-        </method>
-        <method name="GetServerInformation">
-          <arg name="return_name" type="s" direction="out"/>
-          <arg name="return_vendor" type="s" direction="out"/>
-          <arg name="return_version" type="s" direction="out"/>
-          <arg name="return_spec_version" type="s" direction="out"/>
-        </method>
-        <method name="GetServerInfo">
-          <arg name="return_name" type="s" direction="out"/>
-          <arg name="return_vendor" type="s" direction="out"/>
-          <arg name="return_version" type="s" direction="out"/>
-       </method>
-       <signal name="NotificationClosed">
-          <arg name="id" type="u" direction="out"/>
-          <arg name="reason" type="u" direction="out"/>
-       </signal>
-       <signal name="ActionInvoked">
-          <arg name="id" type="u" direction="out"/>
-          <arg name="action_key" type="s" direction="out"/>
-       </signal>
-      </interface>
-    </node>]=]
+					Introspection 1.0//EN"
+					"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+					<node>
+					  <interface name="org.freedesktop.Notifications.NotificationClosed">
+						<method name="NotificationClosed">
+						  <arg name="data" direction="out" type="s"/>
+						</method>
+					  </interface>
+					  <interface name="org.freedesktop.DBus.RemoveMatch">
+						<method name="RemoveMatch">
+						  <arg name="data" direction="out" type="s"/>
+						</method>
+					  </interface>
+					  <interface name="org.freedesktop.DBus.AddMatch">
+						<method name="AddMatch">
+						  <arg name="data" direction="out" type="s"/>
+						</method>
+					  </interface>
+					  <interface name="org.freedesktop.DBus.Introspectable">
+						<method name="Introspect">
+						  <arg name="data" direction="out" type="s"/>
+						</method>
+					  </interface>
+					  <interface name="org.freedesktop.Notifications">
+						<method name="GetCapabilities">
+						  <arg name="caps" type="as" direction="out"/>
+						</method>
+						<method name="CloseNotification">
+						  <arg name="id" type="u" direction="in"/>
+						</method>
+						<method name="Notify">
+						  <arg name="app_name" type="s" direction="in"/>
+						  <arg name="id" type="u" direction="in"/>
+						  <arg name="icon" type="s" direction="in"/>
+						  <arg name="summary" type="s" direction="in"/>
+						  <arg name="body" type="s" direction="in"/>
+						  <arg name="actions" type="as" direction="in"/>
+						  <arg name="hints" type="a{sv}" direction="in"/>
+						  <arg name="timeout" type="i" direction="in"/>
+						  <arg name="return_id" type="u" direction="out"/>
+						</method>
+						<method name="GetServerInformation">
+						  <arg name="return_name" type="s" direction="out"/>
+						  <arg name="return_vendor" type="s" direction="out"/>
+						  <arg name="return_version" type="s" direction="out"/>
+						  <arg name="return_spec_version" type="s" direction="out"/>
+						</method>
+						<method name="GetServerInfo">
+						  <arg name="return_name" type="s" direction="out"/>
+						  <arg name="return_vendor" type="s" direction="out"/>
+						  <arg name="return_version" type="s" direction="out"/>
+					   </method>
+					   <signal name="NotificationClosed">
+						  <arg name="id" type="u" direction="out"/>
+						  <arg name="reason" type="u" direction="out"/>
+					   </signal>
+					   <signal name="ActionInvoked">
+						  <arg name="id" type="u" direction="out"/>
+						  <arg name="action_key" type="s" direction="out"/>
+					   </signal>
+					  </interface>
+					</node>]=]
 		return "s", xml
 	end
-end)
+end
+
+capi.dbus.connect_signal(dbus_method.dbusIntrospectable, dbusIntrospectable)
 
 -- listen for dbus notification requests
-capi.dbus.request_name(dbus_connection.session, dbus_method.dbusNotificationsInterface)
-
 dbus.notification = function(type, appname, title, text, app_icon, urgency)
 	notif_methods.Notify({  }, appname, 0, app_icon, title, text,
 			{
-				"> 1", function() log:info("actions 'click >1'") end,
-				"> 2", function() log:info("actions 'click >2'") end
+				"> 1", function() log:info("actions 'click >1'")
+			end,
+				"> 2", function() log:info("actions 'click >2'")
+			end
 			},
 			{ urgency = urgency or "normal" }, -1)
 end

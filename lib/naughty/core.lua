@@ -21,11 +21,7 @@ local gtable    = require("gears.table")
 local beautiful = require("beautiful")
 local wibox     = require("wibox")
 
-local function get_screen(s)
-	return s and capi.screen[s]
-end
-
-local naughty = {}
+local naughty   = {}
 
 --[[--
 Naughty configuration - a table containing common popup settings.
@@ -154,15 +150,21 @@ end
 
 capi.screen.connect_signal("removed", removed)
 
-local function get_clients(appname)
+local function get_screen(s)
+	return s and capi.screen[s]
+end
+
+local function find_clients(appname)
 	if appname ~= "" then
 		for _, c in ipairs(client.get()) do
 			if appname == c.instance or appname == c.class then
+				log:info(">> find c {", appname, "} - instance:", c.instance, "class:", c.class)
 				return c
 			end
 		end
 	end
 
+	log:error("find_clients: Don't find appname {", appname, "}")
 	return nil
 end
 
@@ -645,7 +647,7 @@ function naughty.notify(args)
 
 	local appiconbox = nil
 	if appname then
-		local c = get_clients(appname)
+		local c = find_clients(appname)
 		if c then
 			appiconbox = awful.widget.clienticon(c)
 		else

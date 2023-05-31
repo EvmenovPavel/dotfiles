@@ -1,6 +1,38 @@
 local awful   = require("awful")
+local gears   = require("gears")
 
 local restart = {}
+
+-- Функция для поиска иконки приложения по его имени или частичному имени
+local function find_icon(name)
+	local icon_path = awful.util.getdir("config") .. "icons/"
+	local pattern   = "^" .. name:lower():gsub(" ", "_") .. ".*"
+	local cmd       = "xdg-icon-resource"
+	local prog      = cmd .. " --size 64 --novendor --size 32 --size 16 --theme hicolor --query " .. name
+	local p         = io.popen(prog)
+
+	local res       = p:read("*all")
+	p:close()
+	if res == "" then
+		return nil
+	end
+	local icon_name = res:match(":%s+(.+)%s+\n")
+	if icon_name ~= nil then
+		local path = icon_path .. icon_name
+		if gears.filesystem.file_readable(path) then
+			return path
+		end
+	end
+	for file in io.popen("ls " .. icon_path):lines() do
+		if file:lower():match(pattern) ~= nil then
+			local path = icon_path .. file
+			if gears.filesystem.file_readable(path) then
+				return path
+			end
+		end
+	end
+	return nil
+end
 
 function restart:init()
 	-- {{{ Menu
@@ -37,6 +69,15 @@ function restart:init()
 	local w             = wmapi.widget:button()
 
 	w:imagebox():set_image(resources.checkbox.checkbox)
+
+	-- Пример использования функции find_icon()
+	local icon_path = find_icon("firefox")
+	if icon_path ~= nil then
+		-- Использовать найденную иконку в качестве изображения
+		local icon = gears.surface.load(icon_path)
+		log:info("icon", icon)
+		-- ...
+	end
 
 	w:clicked(function()
 		local msg = wmapi.widget:messagebox()
